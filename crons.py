@@ -115,7 +115,7 @@ def cron_generate_sound_infos(dry_run=False, force=False):
 
             # Generate Basic infos
 
-            fname = os.path.join(current_app.config['UPLOADED_SOUND_DEST'], sound.filename)
+            fname = os.path.join(current_app.config['UPLOADED_SOUNDS_DEST'], sound.filename)
 
             if not _infos.done_basic or force:
                 print("- WORKING BASIC on {0}, {1}".format(sound.id, sound.filename))

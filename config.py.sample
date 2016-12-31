@@ -30,8 +30,7 @@ DEBUG_TB_INTERCEPT_REDIRECTS = False
 
 # Paginations
 
-# Can't be changed, sorry
-UPLOADED_SND_DEST = "/home/reel2bits/uploads/sounds"
+UPLOADED_SOUNDS_DEST = "/home/reel2bits/uploads/sounds"
 UPLOADS_DEFAULT_DEST = "/home/reel2bits/uploads"
 TEMP_DOWNLOAD_FOLDER = "/home/reel2bits/tmp"
 
