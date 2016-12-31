@@ -20,29 +20,37 @@
 
     {% for sound in user.sounds %}
         <div class="row">
-            <div class="col-lg-2">{# photo #}</div>
-            <div class="col-lg-10">
-                <div class="row">
-                    <div class="col-lg-7">
-                        <i class="fa fa-play-circle" aria-hidden="true"></i>&nbsp;
-                        <a href="{{ url_for("bp_sound.show", username=user.name, songslug=sound.slug) }}">{{ sound.title or sound.filename }}</a>
-                    </div>
-                    <div class="col-lg-2">
-                        <i class="fa fa-calendar" aria-hidden="true"></i>
-                        {{ duration_elapsed_human(sound.elapsed()) }}
-                    </div>
-                    <div class="col-lg-3">
-                        {% if sound.sound_infos.first() %}
-                            <i class="fa fa-clock-o" aria-hidden="true"></i>
-                            {{ duration_song_human(sound.sound_infos.one().duration) }}
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-12">{# spectrogram #}</div>
-                </div>
+
+        {% if sound.sound_infos.first() %}
+            {% set sound_infos = true %}
+            {% if sound.sound_infos.first().waveform != None %}
+                {% set waveform = true %}
+            {% else %}
+                {% set waveform = false %}
+            {% endif %}
+        {% else %}
+            {% set sound_infos = false %}
+        {% endif %}
+
+            <div class="col-lg-6">
+                <i class="fa fa-play-circle" aria-hidden="true"></i>&nbsp;
+                <a href="{{ url_for("bp_sound.show", username=user.name, songslug=sound.slug) }}">{{ sound.title or sound.filename }}</a>
+                <br />
+                <i class="fa fa-calendar" aria-hidden="true"></i> {{ duration_elapsed_human(sound.elapsed()) }} ago
+
+                {% if sound_infos %}
+                    &nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-play" aria-hidden="true"></i>
+                    {{ duration_song_human(sound.sound_infos.one().duration) }}
+                {% endif %}
+            </div>
+            <div class="col-lg-6">
+                {% if waveform %}
+                <img src="{{ url_for('get_uploads_stuff', thing='sounds', stuff='{0}.png'.format(sound.filename)) }}"/>
+                {% endif %}
             </div>
         </div>
+
+        <hr>
     {% endfor %}
 
 {% endblock %}

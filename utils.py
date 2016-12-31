@@ -240,3 +240,30 @@ def get_waveform(filename):
     if isinstance(json, list):
         json = json[0].rstrip()
     return json
+
+
+def create_png_waveform(filename):
+    binary = current_app.config['AUDIOWAVEFORM_BIN']
+    if not os.path.exists(binary) or not os.path.exists(filename):
+        add_log("AUDIOWAVEFORM_PNG", "ERROR", "Filename {0} or binary {1} invalid".format(filename, binary))
+        return None
+
+    pngwf = "{0}.png".format(filename)
+    cmd = [binary, '-i', filename, '--width', '384', '--height', '64', '--no-axis-labels', '-o', pngwf]
+
+    try:
+        process = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        if not process:
+            add_log("AUDIOWAVEFORM_PNG", "ERROR", "Subprocess returned None")
+            return None
+    except subprocess.CalledProcessError as e:
+        add_log("AUDIOWAVEFORM_PNG", "ERROR", "Process error: {0}".format(e))
+        return None
+
+    print("- Command ran with: {0}".format(process.args))
+
+    if process.stderr.startswith(b"Can't generate"):
+        add_log("AUDIOWAVEFORM_PNG", "ERROR", "Process error: {0}".format(process.stderr))
+        return None
+
+    return True

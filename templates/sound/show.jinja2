@@ -10,13 +10,21 @@
 
     <div class="row">
         <div class="col-lg-7 col-lg-offset-1">
-            <h3><i class="fa fa-music" aria-hidden="true"></i> {{ sound.title or sound.filename }}</h3>
+            <h3>{% if sound.public %}<i class="fa fa-music" aria-hidden="true"></i>{% else %}<i class="fa fa-lock" aria-hidden="true"></i>{% endif %} {{ sound.title or sound.filename }}</h3>
         </div>
 
         <div class="col-lg-3">
             <h3><i class="fa fa-calendar" aria-hidden="true"></i> {{ duration_elapsed_human(sound.elapsed()) }}</h3>
         </div>
     </div>
+
+    {% if sound.description %}
+        <div class="row sound-description">
+        <div class="col-lg-6 col-lg-offset-1">
+            {{ sound.description }}
+        </div>
+        </div>
+    {% endif %}
 
 <div class="row">
     <div class="col-lg-7 col-lg-offset-1">
@@ -53,7 +61,7 @@
             {% set info = sound.sound_infos.first() %}
             {% if info %}
                 <tr>
-                    <td class="si_btn_edit"><a class="btn btn-success btn-xs" href="">edit</a></td>
+                    <td class="si_btn_edit"><a class="btn btn-success btn-xs" href="{{ url_for('bp_sound.edit', username=sound.user.name, soundslug=sound.slug) }}">edit</a></td>
                     <td class="si_btn_delete"><a class="btn btn-danger btn-xs delete_link" href="{{ url_for('bp_sound.delete', username=sound.user.name, soundslug=sound.slug) }}">delete</a></td>
                 </tr>
                 <tr><td>Duration</td><td>{{ duration_song_human(info.duration) }}</td></tr>
@@ -83,7 +91,7 @@
 
 {% block scripts %}
     <script>
-    var wavesurfer = WaveSurfer.create({
+    opts = {
         backend: 'MediaElement',
         container: '#waveform',
         waveColor: 'darkorange',
@@ -91,15 +99,20 @@
         splitChannels: false,
         barWidth: 3,
         height: 64
-    });
+    };
 
     {% if waveform %}
-        var waveform = {{ waveform }}
+        var wavesurfer = WaveSurfer.create(opts);
 
-        let max = Math.max.apply(Math, waveform['data']);
+        var waveform = {{ waveform }};
+
+        var max = Math.max.apply(Math, waveform['data']);
 
         wavesurfer.load("{{ url_for('get_uploads_stuff', thing='sounds', stuff=sound.filename) }}", waveform['data'].map(p => p / max));
     {% else %}
+        opts["normalize"] = true;
+        var wavesurfer = WaveSurfer.create(opts);
+
         wavesurfer.load("{{ url_for('get_uploads_stuff', thing='sounds', stuff=sound.filename) }}");
     {% endif %}
 

@@ -76,3 +76,7 @@ body {
 td.si_btn_edit, td.si_btn_delete {
     text-align: center;
 }
+
+div.sound-description {
+    font-size: 10px;
+}

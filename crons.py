@@ -18,7 +18,7 @@ import mutagen
 import wave
 import contextlib
 from models import db, User, Sound, SoundInfo
-from utils import get_waveform
+from utils import get_waveform, create_png_waveform
 
 
 def get_basic_infos(fname):
@@ -96,6 +96,7 @@ def get_basic_infos(fname):
 
 
 def get_waveform_infos(fname):
+    create_png_waveform(fname)
     return get_waveform(fname)
 
 

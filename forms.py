@@ -5,7 +5,7 @@ from flask_security import RegisterForm, current_user
 from flask_uploads import UploadSet, AUDIO
 from flask_wtf import Form
 from flask_wtf.file import FileField, FileAllowed, FileRequired
-from wtforms import PasswordField, SubmitField, SelectField, BooleanField
+from wtforms import PasswordField, SubmitField, SelectField, BooleanField, TextAreaField
 from wtforms.validators import DataRequired, ValidationError
 from wtforms_alchemy import model_form_factory
 from wtforms import widgets
@@ -70,5 +70,13 @@ class SoundUploadForm(Form):
     title = StringField('Title')
     sound = FileField('File', [FileRequired(), FileAllowed(AUDIO)])
     public = BooleanField('Public', default=True)
+
+    submit = SubmitField('Upload')
+
+
+class SoundEditForm(Form):
+    title = StringField('Title')
+    public = BooleanField('Public', default=True)
+    description = TextAreaField('Description')
 
     submit = SubmitField('Upload')

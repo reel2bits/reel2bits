@@ -3,7 +3,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from flask_security import login_required, current_user
 from sqlalchemy import func
 from werkzeug.utils import secure_filename
-from forms import SoundUploadForm
+from forms import SoundUploadForm, SoundEditForm
 from models import db, User, UserLogging, Sound
 from flask_uploads import UploadSet, AUDIO
 
@@ -98,6 +98,28 @@ def upload():
     # GET
     return render_template('sound/upload.jinja2', pcfg=pcfg, form=form)
 
+
+@bp_sound.route('/user/<string:username>/<string:soundslug>/edit', methods=['GET', 'POST'])
+@login_required
+def edit(username, soundslug):
+    sound = Sound.query.filter(Sound.user_id == current_user.id, Sound.slug == soundslug).first()
+    if not sound:
+        flash("Sound not found", 'error')
+        return redirect(url_for('bp_users.profile', name=current_user.name))
+
+    pcfg = {"title": "Edit {0}".format(sound.title or sound.filename)}
+
+    form = SoundEditForm(request.form, sound)
+
+    if form.validate_on_submit():
+        sound.title = form.title.data
+        sound.public = form.public.data
+        sound.description = form.description.data
+
+        db.session.commit()
+        return redirect(url_for('bp_sound.show', username=current_user.name, songslug=sound.slug))
+
+    return render_template('sound/edit.jinja2', pcfg=pcfg, form=form, sound=sound)
 
 @bp_sound.route('/user/<string:username>/<string:soundslug>/delete', methods=['GET', 'DELETE', 'PUT'])
 @login_required
