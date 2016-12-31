@@ -25,7 +25,6 @@ def logs():
 
 
 @bp_users.route('/user/<string:name>', methods=['GET'])
-@login_required
 def profile(name):
     pcfg = {"title": "%s's profile" % name}
 
