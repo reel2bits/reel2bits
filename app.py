@@ -17,7 +17,7 @@ from controllers.users import bp_users
 from controllers.sound import bp_sound
 from forms import ExtendedRegisterForm
 from models import db, user_datastore
-from utils import dt_utc_to_user_tz, InvalidUsage, show_date_no_offset, is_admin, gcfg, duration_human
+from utils import InvalidUsage, is_admin, gcfg, duration_elapsed_human, duration_song_human
 
 __VERSION__ = "0.0.1"
 
@@ -36,7 +36,8 @@ def create_app(cfg=None):
     app.jinja_env.add_extension('jinja2.ext.do')
     app.jinja_env.globals.update(is_admin=is_admin)
     app.jinja_env.globals.update(gcfg=gcfg)
-    app.jinja_env.globals.update(duration_human=duration_human)
+    app.jinja_env.globals.update(duration_elapsed_human=duration_elapsed_human)
+    app.jinja_env.globals.update(duration_song_human=duration_song_human)
 
     # Logging
     if not app.debug:
@@ -85,10 +86,11 @@ def create_app(cfg=None):
     app.register_blueprint(bp_sound)
 
     # Used in development
-    @app.route('/uploads/<path:stuff>', methods=['GET'])
-    def get_uploads_stuff(stuff):
-        print("Get {0} from {1}".format(stuff, app.config['UPLOADS_DEFAULT_DEST']))
-        return send_from_directory(app.config['UPLOADS_DEFAULT_DEST'], stuff, as_attachment=False)
+    @app.route('/uploads/<string:thing>/<path:stuff>', methods=['GET'])
+    def get_uploads_stuff(thing, stuff):
+        dir = os.path.join(app.config['UPLOADS_DEFAULT_DEST'], thing)
+        print("Get {0} from {1}".format(stuff, dir))
+        return send_from_directory(dir, stuff, as_attachment=False)
 
     @app.errorhandler(404)
     def page_not_found(msg):

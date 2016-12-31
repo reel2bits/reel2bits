@@ -107,6 +107,15 @@ class SoundInfo(db.Model):
     rate = db.Column(db.String(255), nullable=True)
     channels = db.Column(db.Integer, nullable=True)
     codec = db.Column(db.String(255), nullable=True)
+    waveform = db.Column(db.Text, nullable=True)
+    bitrate = db.Column(db.Integer, nullable=True)
+    bitrate_mode = db.Column(db.String(10), nullable=True)
+    type = db.Column(db.String(20), nullable=True)
+    type_human = db.Column(db.String(20), nullable=True)
+
+    # States markers
+    done_basic = db.Column(db.Boolean, default=False)
+    done_waveform = db.Column(db.Boolean, default=False)
 
     sound_id = db.Column(db.Integer(), db.ForeignKey('sound.id'), nullable=False)
 
@@ -116,7 +125,11 @@ class Sound(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255), nullable=True)
-    uploaded = db.Column(db.DateTime(timezone=False), server_default=func.now(), onupdate=func.now())
+    uploaded = db.Column(db.DateTime(timezone=False),
+                         default=datetime.datetime.utcnow)
+    updated = db.Column(db.DateTime(timezone=False),
+                         default=datetime.datetime.utcnow,
+                         onupdate=datetime.datetime.utcnow)
     # TODO genre
     # TODO tags
     # TODO picture ?
@@ -129,7 +142,8 @@ class Sound(db.Model):
     sound_infos = db.relationship('SoundInfo', backref='sound_info', lazy='dynamic', cascade="delete")
 
     def elapsed(self):
-        el = self.uploaded - datetime.datetime.utcnow()
+        print("db: {0}, now: {1}".format(self.uploaded, datetime.datetime.utcnow()))
+        el = datetime.datetime.utcnow() - self.uploaded
         return el.total_seconds()
 
 
@@ -153,5 +167,5 @@ def make_slug(mapper, connection, target):
             title = "{0} {1}".format(target.id, target.title)
         slug = slugify(title)
         connection.execute(
-            User.__table__.update().where(User.__table__.c.id == target.id).values(slug=slug)
+            Sound.__table__.update().where(Sound.__table__.c.id == target.id).values(slug=slug)
         )

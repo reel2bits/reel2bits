@@ -3,9 +3,10 @@ import random
 import re
 import string
 from functools import wraps
+import subprocess
 
 import pytz
-from flask import flash
+from flask import flash, current_app
 from flask_security import current_user
 from markupsafe import Markup
 from unidecode import unidecode
@@ -134,8 +135,9 @@ def add_log(category, level, message):
     db.session.commit()
 
 
-def duration_human(seconds):
-    seconds = int(round(seconds))
+def duration_elapsed_human(seconds):
+    print(seconds)
+    seconds = round(seconds)
     minutes, seconds = divmod(seconds, 60)
     hours, minutes = divmod(minutes, 60)
     days, hours = divmod(hours, 24)
@@ -156,3 +158,85 @@ def duration_human(seconds):
         return '%d minute' % minutes + 's' * (minutes != 1)
     else:
         return 'right now'
+
+
+def duration_song_human(seconds):
+    if seconds is None:
+        return "error"
+    seconds = float(seconds)
+    seconds = seconds
+    minutes, seconds = divmod(seconds, 60)
+    hours, minutes = divmod(minutes, 60)
+    days, hours = divmod(hours, 24)
+    years, days = divmod(days, 365.242199)
+
+    minutes = int(minutes)
+    hours = int(hours)
+    days = int(days)
+    years = int(years)
+
+    if years > 0:
+        return '%d year' % years + 's' * (years != 1)
+    elif days > 0:
+        return '%d day' % days + 's' * (days != 1)
+    elif hours > 0:
+        return '%d hour' % hours + 's' * (hours != 1)
+    elif minutes > 0:
+        return '%d mn' % minutes + 's' * (minutes != 1)
+    else:
+        return '%.2f sec' % seconds + 's' * (seconds != 1)
+
+
+def get_waveform(filename):
+    binary = current_app.config['AUDIOWAVEFORM_BIN']
+    if not os.path.exists(binary) or not os.path.exists(filename):
+        add_log("AUDIOWAVEFORM", "ERROR", "Filename {0} or binary {1} invalid".format(filename, binary))
+        return None
+
+    tmpjson = "{0}.json".format(filename)
+
+    cmd = [binary, '-i', filename, '--pixels-per-second', '10', '-b', '8', '-o', tmpjson]
+
+    """
+    Failed: Can't generate "xxx" from "xxx"
+    OK:
+    Input file: piano2.wav
+    Frames: 302712
+    Sample rate: 48000 Hz
+    Channels: 2
+    Format: 0x10002
+    Sections: 1
+    Seekable: yes
+    Generating waveform data...
+    Samples per pixel: 4800
+    Input channels: 2
+    Done: 100%
+    Read 302712 frames
+    Generated 64 points
+    Writing output file: some-file.json
+    """
+
+    try:
+        process = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        if not process:
+            add_log("AUDIOWAVEFORM", "ERROR", "Subprocess returned None")
+            return None
+    except subprocess.CalledProcessError as e:
+        add_log("AUDIOWAVEFORM", "ERROR", "Process error: {0}".format(e))
+        return None
+
+    print("- Command ran with: {0}".format(process.args))
+
+    if process.stderr.startswith(b"Can't generate"):
+        add_log("AUDIOWAVEFORM", "ERROR", "Process error: {0}".format(process.stderr))
+        return None
+
+    json = None
+    with open(tmpjson, 'r') as f:
+        json = f.readlines()
+
+    os.unlink(tmpjson)
+
+    if isinstance(json, list):
+        json = json[0].rstrip()
+    return json

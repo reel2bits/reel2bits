@@ -1,0 +1,98 @@
+{% extends "layout.jinja2" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-7 col-lg-offset-1">
+            <h3><i class="fa fa-angle-double-left" aria-hidden="true"></i> <a href="{{ url_for("bp_users.profile", name=sound.user.name) }}">{{ sound.user.name }}</a></h3>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-7 col-lg-offset-1">
+            <h3><i class="fa fa-music" aria-hidden="true"></i> {{ sound.title or sound.filename }}</h3>
+        </div>
+
+        <div class="col-lg-3">
+            <h3><i class="fa fa-calendar" aria-hidden="true"></i> {{ duration_elapsed_human(sound.elapsed()) }}</h3>
+        </div>
+    </div>
+
+<div class="row">
+    <div class="col-lg-7 col-lg-offset-1">
+        <div class="row"><div class="col-lg-12">
+            <div id="waveform"></div>
+            <hr>
+        </div></div>
+        <div class="row"><div class="col-lg-7 col-lg-offset-3">
+            <p align="center">
+                <button class="btn btn-primary" onclick="wavesurfer.skipBackward()">
+                    <i class="fa fa-step-backward" aria-hidden="true"></i>
+                </button>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <button class="btn btn-primary" onclick="wavesurfer.playPause()">
+                    <i class="fa fa-play" aria-hidden="true"></i> / <i class="fa fa-pause" aria-hidden="true"></i>
+                </button>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <button class="btn btn-primary" onclick="wavesurfer.skipForward()">
+                    <i class="fa fa-step-forward" aria-hidden="true"></i>
+                </button>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <button class="btn btn-primary" onclick="wavesurfer.toggleMute()">
+                    <i class="fa fa-volume-off" aria-hidden="true"></i>
+                </button>
+            </p>
+        </div></div>
+    </div>
+    <div class="col-lg-3">
+        <table class="table table-condensed table-hoverable">
+            {% set info = sound.sound_infos.first() %}
+            {% if info %}
+                <tr><td>Duration</td><td>{{ duration_song_human(info.duration) }}</td></tr>
+                {% if info.type_human %}<tr><td>Type</td><td>{{ info.type_human }}</td></tr>{% endif %}
+                {% if info.codec %}<tr><td>Codec</td><td>{{ info.codec }}</td></tr>{% endif %}
+                {% if info.format %}<tr><td>Format</td><td>{{ info.format }} bits</td></tr>{% endif %}
+                {% if info.channels %}<tr><td>Channels</td><td>{{ info.channels }}</td></tr>{% endif %}
+                {% if info.rate %}<tr><td>Rate</td><td>{{ info.rate }} Hz</td></tr>{% endif %}
+
+                {% if info.bitrate and info.bitrate_mode %}
+                    <tr><td>Bitrate</td><td>{{ info.bitrate_mode }} {{ info.bitrate }} bps</td></tr>
+                {% else %}
+                    {% if info.bitrate %}
+                        <tr><td>Bitrate</td><td>{{ info.bitrate }} bps</td></tr>
+                    {% endif %}
+
+                    {% if info.bitrate_mode %}
+                        <tr><td>Bitrate mode</td><td>{{ info.bitrate_mode }}</td></tr>
+                    {% endif %}
+                {% endif %}
+
+            {% endif %}
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+    var wavesurfer = WaveSurfer.create({
+        backend: 'MediaElement',
+        container: '#waveform',
+        waveColor: 'darkorange',
+        progressColor: 'purple',
+        splitChannels: false,
+        barWidth: 3,
+        height: 64
+    });
+
+    {% if waveform %}
+        var waveform = {{ waveform }}
+
+        let max = Math.max.apply(Math, waveform['data']);
+
+        wavesurfer.load("{{ url_for('get_uploads_stuff', thing='sounds', stuff=sound.filename) }}", waveform['data'].map(p => p / max));
+    {% else %}
+        wavesurfer.load("{{ url_for('get_uploads_stuff', thing='sounds', stuff=sound.filename) }}")
+    {% endif %}
+    </script>
+{% endblock %}

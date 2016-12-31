@@ -19,6 +19,9 @@ Reel2Bits
     python3 reel2bits.py runserver # or whatever gunicorn whatever stuff
     Don't forget to update default Config by getting to "Your user" (top right) then "Config"
 
+    Also install this tool : https://github.com/bbc/audiowaveform
+    And adapt the path to it in config.py
+
 # Gunicorn
     gunicorn -w 2 -b 127.0.0.1:8000 --error-logfile=errors.log --access-logfile=access.log --chdir=$PWD reel2bits:app
 
@@ -29,16 +32,19 @@ Reel2Bits
   List of cron target availables.
   Makes sure to run them under the user which runs reel2bits and virtualenv if you use it.
   Commands:
-  - none yet
+  - python3 reel2bits.py cron generate_sound_infos
   
 # Crons explained
-  - none yet
+  - generate_sound_infos
+    - Get basic infos (bitrate, codec, samplerate, etc.) and Waveform data-points for HTML5 player
 
 # TODO
   - Albums
   - Tags
   - Genre
   - User picture
+  - Transcode and serve FLAC as MP3 CBR (HTML5 doesn't support FLAC)
+  - Transcode only for waveform OGG to MP3 CBR (audiowaveform doesn't support OGG)
 
 # Licensing
  - MIT License
