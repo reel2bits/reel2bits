@@ -1,14 +1,10 @@
-import datetime
-from libqth import is_valid_qth, qth_to_coords, coords_to_qth
-
 from flask_security import SQLAlchemyUserDatastore, UserMixin, RoleMixin
 from flask_sqlalchemy import SQLAlchemy, BaseQuery
-from geohelper import distance
 from sqlalchemy.sql import func
 from sqlalchemy_searchable import make_searchable, SearchQueryMixin
 from sqlalchemy import event
 from slugify import slugify
-from sqlalchemy_utils.types import TSVectorType
+import datetime
 
 db = SQLAlchemy()
 make_searchable()
@@ -131,6 +127,10 @@ class Sound(db.Model):
 
     user_id = db.Column(db.Integer(), db.ForeignKey('user.id'), nullable=False)
     sound_infos = db.relationship('SoundInfo', backref='sound_info', lazy='dynamic', cascade="delete")
+
+    def elapsed(self):
+        el = self.uploaded - datetime.datetime.utcnow()
+        return el.total_seconds()
 
 
 @event.listens_for(User, 'after_update')

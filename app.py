@@ -17,7 +17,7 @@ from controllers.users import bp_users
 from controllers.sound import bp_sound
 from forms import ExtendedRegisterForm
 from models import db, user_datastore
-from utils import dt_utc_to_user_tz, InvalidUsage, show_date_no_offset, is_admin, gcfg
+from utils import dt_utc_to_user_tz, InvalidUsage, show_date_no_offset, is_admin, gcfg, duration_human
 
 __VERSION__ = "0.0.1"
 
@@ -36,6 +36,7 @@ def create_app(cfg=None):
     app.jinja_env.add_extension('jinja2.ext.do')
     app.jinja_env.globals.update(is_admin=is_admin)
     app.jinja_env.globals.update(gcfg=gcfg)
+    app.jinja_env.globals.update(duration_human=duration_human)
 
     # Logging
     if not app.debug:

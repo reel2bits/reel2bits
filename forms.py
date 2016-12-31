@@ -5,18 +5,13 @@ from flask_security import RegisterForm, current_user
 from flask_uploads import UploadSet, AUDIO
 from flask_wtf import Form
 from flask_wtf.file import FileField, FileAllowed, FileRequired
-from wtforms import PasswordField, SubmitField, TextAreaField, SelectField, IntegerField, \
-    HiddenField, BooleanField
-from wtforms.ext.dateutil.fields import DateTimeField
-from wtforms.ext.sqlalchemy.fields import QuerySelectField
-from wtforms.validators import DataRequired, ValidationError, Optional
+from wtforms import PasswordField, SubmitField, SelectField, BooleanField
+from wtforms.validators import DataRequired, ValidationError
 from wtforms_alchemy import model_form_factory
-from wtforms_components.fields import SelectField as WTFComponentsSelectField
 from wtforms import widgets
 from wtforms.fields.core import StringField
 
 from models import db, User
-from utils import dt_utc_to_user_tz
 
 BaseModelForm = model_form_factory(Form)
 

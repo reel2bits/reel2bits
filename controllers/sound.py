@@ -23,8 +23,8 @@ def upload():
         if form.validate_on_submit():
             filename = sounds.save(request.files['sound'])
             rec = Sound()
-            rec.filename=filename
-            rec.user_id=current_user.id
+            rec.filename = filename
+            rec.user_id = current_user.id
             rec.title = form.title.data
             rec.public = form.public.data
 

@@ -9,7 +9,6 @@ from flask import flash
 from flask_security import current_user
 from markupsafe import Markup
 from unidecode import unidecode
-
 from models import db, Apitoken, Role, Logging, Config
 
 _punct_re = re.compile(r'[\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')
@@ -133,3 +132,27 @@ def add_log(category, level, message):
     a = Logging(category=category, level=level, message=message)
     db.session.add(a)
     db.session.commit()
+
+
+def duration_human(seconds):
+    seconds = int(round(seconds))
+    minutes, seconds = divmod(seconds, 60)
+    hours, minutes = divmod(minutes, 60)
+    days, hours = divmod(hours, 24)
+    years, days = divmod(days, 365.242199)
+
+    minutes = int(minutes)
+    hours = int(hours)
+    days = int(days)
+    years = int(years)
+
+    if years > 0:
+        return '%d year' % years + 's' * (years != 1)
+    elif days > 0:
+        return '%d day' % days + 's' * (days != 1)
+    elif hours > 0:
+        return '%d hour' % hours + 's' * (hours != 1)
+    elif minutes > 0:
+        return '%d minute' % minutes + 's' * (minutes != 1)
+    else:
+        return 'right now'

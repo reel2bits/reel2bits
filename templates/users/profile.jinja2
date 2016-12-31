@@ -2,45 +2,44 @@
 
 {% block content %}
     <div class="row">
-        <div class="col-lg-6">
-            <h3>{{ current_user.name }}'s profile</h3>
+        <div class="col-lg-10"><h3>{{ user.name }}'s profile</h3></div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-10">
+            See:&nbsp;<a href="{{ url_for('bp_users.profile', name=user.name) }}">all sounds</a>
+        </div>
+        <div class="col-lg-2">
+            {% if current_user.is_authenticated %}
+            <a class="btn btn-primary btn-xs" href="{{ url_for('bp_users.edit') }}">Edit profile</a>
+            {% endif %}
         </div>
     </div>
-<div class="row">
-    <div class="col-lg-6">
-        <table class="table table-condensed">
-            <tr>
-                <td>Username</td>
-                <td>{{ current_user.name }}</td>
-            </tr>
-            <tr>
-                <td>Roles</td>
-                <td>{{ current_user.join_roles(", ") }}</td>
-            </tr>
-            <tr>
-                <td>Email</td>
-                <td>{{ current_user.email }}</td>
-            </tr>
-            <tr>
-                <td>Timezone</td>
-                <td>{{ current_user.timezone }}</td>
-            </tr>
-            <tr>
-                <td>First name</td>
-                <td>{{ current_user.firstname or "No firstname defined" }}</td>
-            </tr>
-            <tr>
-                <td>Last name</td>
-                <td>{{ current_user.lastname or "No lastname defined"}}</td>
-            </tr>
-            <tr>
-                <td><a class="btn btn-primary" href="{{ url_for('bp_users.edit') }}">Edit profile</a></td>
-            </tr>
-        </table>
-    </div>
 
-    <div class="col-lg-6">
-    </div>
+    <hr>
 
-</div>
+    {% for sound in user.sounds %}
+        <div class="row">
+            <div class="col-lg-2">{# photo #}</div>
+            <div class="col-lg-10">
+                <div class="row">
+                    <div class="col-lg-7">
+                        <i class="fa fa-play-circle" aria-hidden="true"></i>&nbsp;
+                        <a href="">{{ sound.title or sound.filename }}</a>
+                    </div>
+                    <div class="col-lg-2">
+                        <i class="fa fa-calendar" aria-hidden="true"></i>
+                        {{ duration_human(sound.elapsed()) }}
+                    </div>
+                    <div class="col-lg-3">
+                        <i class="fa fa-clock-o" aria-hidden="true"></i>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">{# spectrogram #}</div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+
 {% endblock %}
