@@ -1,5 +1,5 @@
 import pytz
-from flask import Blueprint, render_template, request, redirect, url_for, flash, Response, abort
+from flask import Blueprint, render_template, request, redirect, url_for, flash, Response, abort, json
 from flask_security import login_required, current_user
 from sqlalchemy import func
 from werkzeug.utils import secure_filename
@@ -69,7 +69,8 @@ def waveform_json(username, songslug):
     si = sound.sound_infos.first()
     if not si:
         return abort(404)
-    return Response(si.waveform, mimetype='application/json;charset=utf-8')
+    wf = json.loads(si.waveform)
+    return Response(json.dumps(wf['data']), mimetype='application/json;charset=utf-8')
 
 
 @bp_sound.route('/sound/upload', methods=['GET', 'POST'])
