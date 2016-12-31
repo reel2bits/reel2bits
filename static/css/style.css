@@ -1,0 +1,74 @@
+/*
+ * Globals
+ */
+
+body {
+}
+
+.navbar-static-top {
+  margin-bottom: 19px;
+}
+
+
+/*
+ * Footer
+ */
+
+.blog-footer {
+  padding: 40px 0;
+  color: #999;
+  text-align: center;
+  background-color: #f9f9f9;
+  border-top: 1px solid #e5e5e5;
+  margin-top: 1em;
+}
+.blog-footer p:last-child {
+  margin-bottom: 0;
+}
+
+.well-ultra-sm {
+    padding: 2px;
+    margin-bottom: 0px;
+}
+
+.single-note {
+    margin-bottom: 2em;
+}
+
+.summary {
+    white-space: pre-wrap;
+}
+
+.pagination-page-info {
+    padding: .6em;
+    padding-left: 0;
+    width: 40em;
+    margin: .5em;
+    margin-left: 0;
+    font-size: 12px;
+}
+.pagination-page-info b {
+    color: black;
+    background: #6aa6ed;
+    padding-left: 2px;
+    padding: .1em .25em;
+    font-size: 150%;
+}
+
+#search-dd {
+    min-width: 310px;
+    padding: 14px 14px 14px;
+    overflow:hidden;
+}
+
+.row, .adv-search {
+    margin-bottom: 1em;
+}
+
+.form-adv-search .form-group {
+    margin-bottom: 0;
+}
+
+.form-adv-submit .col-lg-6 {
+    padding-left: 0;
+}

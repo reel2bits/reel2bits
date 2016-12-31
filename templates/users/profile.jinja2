@@ -1,0 +1,46 @@
+{% extends "layout.jinja2" %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-6">
+            <h3>{{ current_user.name }}'s profile</h3>
+        </div>
+    </div>
+<div class="row">
+    <div class="col-lg-6">
+        <table class="table table-condensed">
+            <tr>
+                <td>Username</td>
+                <td>{{ current_user.name }}</td>
+            </tr>
+            <tr>
+                <td>Roles</td>
+                <td>{{ current_user.join_roles(", ") }}</td>
+            </tr>
+            <tr>
+                <td>Email</td>
+                <td>{{ current_user.email }}</td>
+            </tr>
+            <tr>
+                <td>Timezone</td>
+                <td>{{ current_user.timezone }}</td>
+            </tr>
+            <tr>
+                <td>First name</td>
+                <td>{{ current_user.firstname or "No firstname defined" }}</td>
+            </tr>
+            <tr>
+                <td>Last name</td>
+                <td>{{ current_user.lastname or "No lastname defined"}}</td>
+            </tr>
+            <tr>
+                <td><a class="btn btn-primary" href="{{ url_for('bp_users.edit') }}">Edit profile</a></td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="col-lg-6">
+    </div>
+
+</div>
+{% endblock %}

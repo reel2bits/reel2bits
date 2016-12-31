@@ -1,0 +1,9 @@
+{% extends "layout.jinja2" %}
+{% block content %}
+    <div class="row">
+        <div class="col-md-4 col-md-offset-4" role="content">
+            <h3>{{ pcfg['error'] }} - {{ pcfg['message'] }} :'(</h3>
+            Maybe you can go back to the <a href="{{ url_for('bp_main.home') }}">index</a>.
+        </div>
+    </div>
+{% endblock %}

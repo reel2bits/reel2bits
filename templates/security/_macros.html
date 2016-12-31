@@ -1,0 +1,15 @@
+{% macro value_or_carret(value, suffix=None) %}
+{% if value %}
+{{ value }} {{ suffix if suffix }}
+{% else %}
+-
+{% endif %}
+{% endmacro %}
+
+{% macro value_checkbox(value) %}
+{% if value %}
+<span class="glyphicon glyphicon-ok"></span>
+{% else %}
+<span class="glyphicon glyphicon-remove"></span>
+{% endif %}
+{% endmacro %}

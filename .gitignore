@@ -1,0 +1,7 @@
+*.pyc
+config.py
+TODO.org
+.idea
+*.db
+uploads/pictures/*
+tmp/cty.xml

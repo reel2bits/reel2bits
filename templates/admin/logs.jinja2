@@ -1,0 +1,44 @@
+{% extends "layout.jinja2" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-xs-4">
+        <h3>Application logs (latest 100)</h3>
+    </div>
+    <div class="col-lg-offset-5 col-xs-3" style="margin-top: 1.6em">
+        Show only:
+        <a href="{{ url_for('bp_admin.logs') }}" class="btn btn-xs btn-default">all</a>
+        <a href="{{ url_for('bp_admin.logs', level='info') }}" class="btn btn-xs btn-info">info</a>
+        <a href="{{ url_for('bp_admin.logs', level='warning') }}" class="btn btn-xs btn-warning">warning</a>
+        <a href="{{ url_for('bp_admin.logs', level='error') }}" class="btn btn-xs btn-danger">error</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <table class="table table-condensed table-stripped table-bordered">
+            <tr>
+                <th>Date</th>
+                <th>Category</th>
+                <th>Level</th>
+                <th>User</th>
+                <th>Message</th>
+                <th>Actions</th>
+            </tr>
+            {% for log in logs %}
+                <tr>
+                    <td width="13%">{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                    <td>{{ log.category }}</td>
+                    <td>{{ log.level }}</td>
+                    <td>
+                        {{ log.user_id }}
+                    </td>
+                    <td>{{ log.message | replace('\r\n', '<br>') }}</td>
+                    <td></td>
+                </tr>
+            {% endfor %}
+        </table>
+
+    </div>
+</div>
+{% endblock %}

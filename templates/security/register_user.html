@@ -1,0 +1,26 @@
+{% extends "layout.jinja2" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <h3>Register user</h3>
+            <form action="{{ url_for_security('register') }}" method="POST" name="register_user_form" role="form" class="form">
+                {{ register_user_form.hidden_tag() }}
+                {{ wtf.form_errors(register_user_form, hiddens="only") }}
+
+                {{ wtf.form_field(register_user_form.email) }}
+                {{ wtf.form_field(register_user_form.name) }}
+                {{ wtf.form_field(register_user_form.password) }}
+                {% if register_user_form.password_confirm %}
+                    {{ wtf.form_field(register_user_form.password_confirm) }}
+                {% endif %}
+
+                {{ wtf.form_field(register_user_form.submit, button_map={'submit': 'success'}) }}
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
