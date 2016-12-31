@@ -2,7 +2,7 @@ import datetime
 from libqth import is_valid_qth
 
 from flask_security import RegisterForm, current_user
-from flask_uploads import UploadSet, IMAGES
+from flask_uploads import UploadSet, AUDIO
 from flask_wtf import Form
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 from wtforms import PasswordField, SubmitField, TextAreaField, SelectField, IntegerField, \
@@ -20,7 +20,7 @@ from utils import dt_utc_to_user_tz
 
 BaseModelForm = model_form_factory(Form)
 
-pictures = UploadSet('pictures', IMAGES)
+sounds = UploadSet('sounds', AUDIO)
 
 
 class PasswordFieldNotHidden(StringField):
@@ -69,3 +69,11 @@ class ConfigForm(Form):
     app_name = StringField('App Name', [DataRequired()])
 
     submit = SubmitField('Update config')
+
+
+class SoundUploadForm(Form):
+    title = StringField('Title')
+    sound = FileField('File', [FileRequired(), FileAllowed(AUDIO)])
+    public = BooleanField('Public', default=True)
+
+    submit = SubmitField('Upload')

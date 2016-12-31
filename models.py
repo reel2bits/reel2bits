@@ -127,9 +127,11 @@ class Sound(db.Model):
     description = db.Column(db.UnicodeText(), nullable=True)
     public = db.Column(db.Boolean(), default=True, nullable=False)
     slug = db.Column(db.String(255), unique=True, nullable=True)
+    filename = db.Column(db.String(255), unique=False, nullable=True)
 
     user_id = db.Column(db.Integer(), db.ForeignKey('user.id'), nullable=False)
     sound_infos = db.relationship('SoundInfo', backref='sound_info', lazy='dynamic', cascade="delete")
+
 
 @event.listens_for(User, 'after_update')
 @event.listens_for(User, 'after_insert')
@@ -145,7 +147,10 @@ def make_slug(mapper, connection, target):
 @event.listens_for(Sound, 'after_insert')
 def make_slug(mapper, connection, target):
     if not target.slug or target.slug == "":
-        title = "{0} {1}".format(target.id, target.title)
+        if not target.title or target.title == "":
+            title = "{0} {1}".format(target.id, target.filename)
+        else:
+            title = "{0} {1}".format(target.id, target.title)
         slug = slugify(title)
         connection.execute(
             User.__table__.update().where(User.__table__.c.id == target.id).values(slug=slug)

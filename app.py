@@ -9,11 +9,12 @@ from flask_bootstrap import Bootstrap
 from flask_mail import Mail
 from flask_migrate import Migrate
 from flask_security import Security
-from flask_uploads import configure_uploads, UploadSet, IMAGES
+from flask_uploads import configure_uploads, UploadSet, AUDIO
 
 from controllers.admin import bp_admin
 from controllers.main import bp_main
 from controllers.users import bp_users
+from controllers.sound import bp_sound
 from forms import ExtendedRegisterForm
 from models import db, user_datastore
 from utils import dt_utc_to_user_tz, InvalidUsage, show_date_no_offset, is_admin, gcfg
@@ -74,12 +75,13 @@ def create_app(cfg=None):
         response.status_code = error.status_code
         return response
 
-    pictures = UploadSet('pictures', IMAGES)
-    configure_uploads(app, pictures)
+    sounds = UploadSet('sounds', AUDIO)
+    configure_uploads(app, sounds)
 
     app.register_blueprint(bp_main)
     app.register_blueprint(bp_users)
     app.register_blueprint(bp_admin)
+    app.register_blueprint(bp_sound)
 
     # Used in development
     @app.route('/uploads/<path:stuff>', methods=['GET'])

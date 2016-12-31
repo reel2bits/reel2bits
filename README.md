@@ -33,6 +33,12 @@ Reel2Bits
   
 # Crons explained
   - none yet
-  
+
+# TODO
+  - Albums
+  - Tags
+  - Genre
+  - User picture
+
 # Licensing
  - MIT License

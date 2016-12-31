@@ -24,12 +24,12 @@ def logs():
     return render_template('users/user_logs.jinja2', pcfg=pcfg, logs=_logs)
 
 
-@bp_users.route('/user', methods=['GET'])
+@bp_users.route('/user/<string:name>', methods=['GET'])
 @login_required
-def profile():
-    pcfg = {"title": "My Profile"}
+def profile(name):
+    pcfg = {"title": "%s's profile" % name}
 
-    user = User.query.filter(User.id == current_user.id).first()
+    user = User.query.filter(User.name == name).first()
     if not user:
         flash("User not found", 'error')
         return redirect(url_for("bp_main.home"))

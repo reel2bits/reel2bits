@@ -4,4 +4,5 @@ TODO.org
 .idea
 *.db
 uploads/pictures/*
+uploads/sounds/*
 tmp/cty.xml

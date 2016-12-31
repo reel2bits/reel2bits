@@ -2,60 +2,39 @@ import pytz
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_security import login_required, current_user
 from sqlalchemy import func
+from werkzeug.utils import secure_filename
+from forms import SoundUploadForm
+from models import db, User, UserLogging, Sound
+from flask_uploads import UploadSet, AUDIO
 
-from forms import UserProfileForm
-from models import db, User, UserLogging
+bp_sound = Blueprint('bp_sound', __name__)
 
-bp_users = Blueprint('bp_users', __name__)
+sounds = UploadSet('sounds', AUDIO)
 
 
-@bp_users.route('/user/logs', methods=['GET'])
+@bp_sound.route('/sound/upload', methods=['GET', 'POST'])
 @login_required
-def logs():
-    level = request.args.get('level')
-    pcfg = {"title": "User Logs"}
-    if level:
-        _logs = UserLogging.query.filter(UserLogging.level == level.upper(),
-                                         UserLogging.user_id == current_user.id
-                                         ).order_by(UserLogging.timestamp.desc()).limit(100).all()
-    else:
-        _logs = UserLogging.query.filter(UserLogging.user_id == current_user.id
-                                         ).order_by(UserLogging.timestamp.desc()).limit(100).all()
-    return render_template('users/user_logs.jinja2', pcfg=pcfg, logs=_logs)
+def upload():
+    pcfg = {"title": "New upload"}
 
+    form = SoundUploadForm()
 
-@bp_users.route('/user', methods=['GET'])
-@login_required
-def profile():
-    pcfg = {"title": "My Profile"}
+    if request.method == 'POST' and 'sound' in request.files:
+        if form.validate_on_submit():
+            filename = sounds.save(request.files['sound'])
+            rec = Sound()
+            rec.filename=filename
+            rec.user_id=current_user.id
+            rec.title = form.title.data
+            rec.public = form.public.data
 
-    user = User.query.filter(User.id == current_user.id).first()
-    if not user:
-        flash("User not found", 'error')
-        return redirect(url_for("bp_main.home"))
+            db.session.add(rec)
+            db.session.commit()
+            flash('Uploaded !', 'success')
+        else:
+            return render_template('sound/upload.jinja2', pcfg=pcfg, form=form, flash='Error with the file')
+        return redirect(url_for('bp_main.home', username=current_user.name))
+        # TODO redirect to song page
 
-    return render_template('users/profile.jinja2', pcfg=pcfg, user=user)
-
-
-@bp_users.route('/user/edit', methods=['GET', 'POST'])
-@login_required
-def edit():
-    pcfg = {"title": "Edit my profile"}
-
-    user = User.query.filter(User.id == current_user.id).first()
-    if not user:
-        flash("User not found", 'error')
-        return redirect(url_for("bp_main.home"))
-
-    form = UserProfileForm(request.form, user)
-    form.timezone.choices = [[str(i), str(i)] for i in pytz.all_timezones]
-
-    if form.validate_on_submit():
-        user.lastname = form.lastname.data
-        user.firstname = form.firstname.data
-        user.timezone = form.timezone.data
-
-        db.session.commit()
-        return redirect(url_for('bp_users.profile'))
-
-    return render_template('users/edit.jinja2', pcfg=pcfg, form=form, user=user)
+    # GET
+    return render_template('sound/upload.jinja2', pcfg=pcfg, form=form)
