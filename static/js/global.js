@@ -39,3 +39,15 @@ $(document).ajaxError(function (event, request, settings) {
 $("a.delete_link").click(function() {
     return confirm("Are you sure you want to delete this item ?");
 });
+
+// http://stackoverflow.com/a/39595321
+Number.prototype.toRealFixed = function(digits) {
+    return Math.floor(this.valueOf() * Math.pow(10, digits)) / Math.pow(10, digits);
+};
+
+function secondsTimeSpanToMS(s) {
+    var m = Math.floor(s / 60); //Get remaining minutes
+    s -= m * 60;
+    s = Math.floor(s);
+    return (m < 10 ? '0' + m : m) + ":" + (s < 10 ? '0' + s : s); //zero padding on minutes and seconds
+}

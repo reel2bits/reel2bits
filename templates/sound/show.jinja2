@@ -24,7 +24,11 @@
             <div id="waveform"></div>
             <hr>
         </div></div>
-        <div class="row"><div class="col-lg-7 col-lg-offset-3">
+        <div class="row">
+            <div class="col-lg-3">
+                <span id="player-time-cur"></span> / <span id="player-time-tot"></span>
+            </div>
+            <div class="col-lg-7">
             <p align="center">
                 <button class="btn btn-primary" onclick="wavesurfer.skipBackward()">
                     <i class="fa fa-step-backward" aria-hidden="true"></i>
@@ -48,6 +52,10 @@
         <table class="table table-condensed table-hoverable">
             {% set info = sound.sound_infos.first() %}
             {% if info %}
+                <tr>
+                    <td class="si_btn_edit"><a class="btn btn-success btn-xs" href="">edit</a></td>
+                    <td class="si_btn_delete"><a class="btn btn-danger btn-xs delete_link" href="{{ url_for('bp_sound.delete', username=sound.user.name, soundslug=sound.slug) }}">delete</a></td>
+                </tr>
                 <tr><td>Duration</td><td>{{ duration_song_human(info.duration) }}</td></tr>
                 {% if info.type_human %}<tr><td>Type</td><td>{{ info.type_human }}</td></tr>{% endif %}
                 {% if info.codec %}<tr><td>Codec</td><td>{{ info.codec }}</td></tr>{% endif %}
@@ -92,7 +100,24 @@
 
         wavesurfer.load("{{ url_for('get_uploads_stuff', thing='sounds', stuff=sound.filename) }}", waveform['data'].map(p => p / max));
     {% else %}
-        wavesurfer.load("{{ url_for('get_uploads_stuff', thing='sounds', stuff=sound.filename) }}")
+        wavesurfer.load("{{ url_for('get_uploads_stuff', thing='sounds', stuff=sound.filename) }}");
     {% endif %}
+
+    $('#player-time-cur').html("00:00");
+    $('#player-time-tot').html(secondsTimeSpanToMS(wavesurfer.getDuration()));
+
+    wavesurfer.on('audioprocess', function() {
+        var current_time = wavesurfer.getCurrentTime();
+        $('#player-time-cur').html(secondsTimeSpanToMS(current_time));
+    });
+    wavesurfer.on('seek', function() {
+	    var current_time = wavesurfer.getCurrentTime();
+	    $('#player-time-cur').html(secondsTimeSpanToMS(current_time));
+    });
+
+    wavesurfer.on('ready', function() {
+        var duration_time = wavesurfer.getDuration();
+        $('#player-time-tot').html(secondsTimeSpanToMS(duration_time));
+    });
     </script>
 {% endblock %}

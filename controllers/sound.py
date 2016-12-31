@@ -97,3 +97,17 @@ def upload():
 
     # GET
     return render_template('sound/upload.jinja2', pcfg=pcfg, form=form)
+
+
+@bp_sound.route('/user/<string:username>/<string:soundslug>/delete', methods=['GET', 'DELETE', 'PUT'])
+@login_required
+def delete(username, soundslug):
+    sound = Sound.query.filter(Sound.user_id == current_user.id, Sound.slug == soundslug).first()
+    if not sound:
+        flash("Sound not found", 'error')
+        return redirect(url_for('bp_users.profile', name=current_user.name))
+
+    db.session.delete(sound)
+    db.session.commit()
+
+    return redirect(url_for('bp_users.profile', name=current_user.name))
