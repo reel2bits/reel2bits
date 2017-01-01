@@ -71,7 +71,11 @@
                     </td>
                     {% if current_user.is_authenticated and album.user_id == current_user.id  %}
                         <td class="si_btn_edit"><a class="btn btn-success btn-xs" href="{{ url_for('bp_albums.edit', username=album.user.name, setslug=album.slug) }}">edit</a></td>
-                        <td class="si_btn_delete"><a class="btn btn-danger btn-xs delete_link" href="{{ url_for('bp_albums.delete', username=album.user.name, setslug=album.slug) }}">delete</a></td>
+                        <td class="si_btn_delete">
+                        <a role="button" tabindex="0" class="btn btn-danger btn-xs" data-trigger="focus"
+                           data-container="body" data-toggle="popover" data-placement="top" data-html="true"
+                           data-content="<a class='btn btn-success btn-xs delete_log_link' href='{{ url_for('bp_albums.delete', username=album.user.name, setslug=album.slug) }}'>{{ gettext("yes really") }}</a>">{{ gettext("delete") }}</a>
+                        </td>
                     {% endif %}
                 </tr>
         </table>
@@ -174,6 +178,10 @@
         if (a.length > 0) {
             switch_song(a, true);
         }
+    });
+
+    $(function () {
+        $('[data-toggle="popover"]').popover();
     });
 
     // Initial call

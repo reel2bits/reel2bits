@@ -72,7 +72,11 @@
                     </td>
                     {% if current_user.is_authenticated and sound.user_id == current_user.id  %}
                         <td class="si_btn_edit"><a class="btn btn-success btn-xs" href="{{ url_for('bp_sound.edit', username=sound.user.name, soundslug=sound.slug) }}">edit</a></td>
-                        <td class="si_btn_delete"><a class="btn btn-danger btn-xs delete_link" href="{{ url_for('bp_sound.delete', username=sound.user.name, soundslug=sound.slug) }}">delete</a></td>
+                        <td class="si_btn_delete">
+                        <a role="button" tabindex="0" class="btn btn-danger btn-xs" data-trigger="focus"
+                           data-container="body" data-toggle="popover" data-placement="top" data-html="true"
+                           data-content="<a class='btn btn-success btn-xs delete_log_link' href='{{ url_for('bp_sound.delete', username=sound.user.name, soundslug=sound.slug) }}'>{{ gettext("yes really") }}</a>">{{ gettext("delete") }}</a>
+                        </td>
                     {% endif %}
                 </tr>
 
@@ -148,6 +152,10 @@
     wavesurfer.on('ready', function() {
         var duration_time = wavesurfer.getDuration();
         $('#player-time-tot').html(secondsTimeSpanToMS(duration_time));
+    });
+
+    $(function () {
+        $('[data-toggle="popover"]').popover();
     });
     </script>
 {% endblock %}
