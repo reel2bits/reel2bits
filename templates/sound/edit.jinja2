@@ -14,7 +14,7 @@
             {{ wtf.form_errors(form, hiddens=True) }}
             {{ wtf.form_field(form.title, 'horizontal', placeholder="What's the title ?") }}
             {{ wtf.form_field(form.description, 'horizontal', placeholder="Add a nice description ?") }}
-            {{ wtf.form_field(form.public, 'horizontal') }}
+            {{ wtf.form_field(form.private, 'horizontal') }}
             {{ wtf.form_field(form.submit, button_map={'submit': 'success'}) }}
         </form>
     </div>

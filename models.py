@@ -136,7 +136,7 @@ class Sound(db.Model):
     # TODO tags
     # TODO picture ?
     description = db.Column(db.UnicodeText(), nullable=True)
-    public = db.Column(db.Boolean(), default=True, nullable=False)
+    private = db.Column(db.Boolean(), default=False, nullable=True)
     slug = db.Column(db.String(255), unique=True, nullable=True)
     filename = db.Column(db.String(255), unique=False, nullable=True)
     filename_orig = db.Column(db.String(255), unique=False, nullable=True)

@@ -66,14 +66,14 @@ class ConfigForm(Form):
 class SoundUploadForm(Form):
     title = StringField('Title')
     sound = FileField('File', [FileRequired(), FileAllowed(AUDIO)])
-    public = BooleanField('Public', default=True)
+    private = BooleanField('Private', default=False)
 
     submit = SubmitField('Upload')
 
 
 class SoundEditForm(Form):
     title = StringField('Title')
-    public = BooleanField('Public', default=True)
+    private = BooleanField('Private', default=False)
     description = TextAreaField('Description')
 
     submit = SubmitField('Upload')

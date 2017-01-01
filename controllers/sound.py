@@ -22,7 +22,7 @@ def show(username, songslug):
         flash("Sound not found", "error")
         return redirect(url_for("bp_users.profile", name=user.name))
 
-    if not sound.public:
+    if sound.private:
         if current_user.is_authenticated:
             if sound.user_id != current_user.id:
                 flash("Sound not found", "error")
@@ -56,7 +56,7 @@ def waveform_json(username, songslug):
         flash("Sound not found", "error")
         return redirect(url_for("bp_users.profile", user=user.name))
 
-    if not sound.public:
+    if sound.private:
         if current_user:
             if sound.user_id != current_user.id:
                 flash("Sound not found", "error")
@@ -96,7 +96,7 @@ def upload():
                 rec.title = filename_orig
             else:
                 rec.title = form.title.data
-            rec.public = form.public.data
+            rec.private = form.private.data
 
             db.session.add(rec)
             db.session.commit()
@@ -123,7 +123,7 @@ def edit(username, soundslug):
 
     if form.validate_on_submit():
         sound.title = form.title.data
-        sound.public = form.public.data
+        sound.private = form.private.data
         sound.description = form.description.data
 
         db.session.commit()

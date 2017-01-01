@@ -33,7 +33,7 @@
         {% endif %}
 
             <div class="col-lg-6">
-                {% if sound.public %}<i class="fa fa-music" aria-hidden="true"></i>{% else %}<i class="fa fa-lock" aria-hidden="true"></i>{% endif %}&nbsp;
+                {% if not sound.private %}<i class="fa fa-music" aria-hidden="true"></i>{% else %}<i class="fa fa-lock" aria-hidden="true"></i>{% endif %}&nbsp;
                 <a href="{{ url_for("bp_sound.show", username=user.name, songslug=sound.slug) }}">{{ sound.title }}</a>
                 <br />
                 <i class="fa fa-calendar" aria-hidden="true"></i> {{ duration_elapsed_human(sound.elapsed()) }} ago
