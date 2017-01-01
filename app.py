@@ -13,6 +13,7 @@ from flask_uploads import configure_uploads, UploadSet, AUDIO
 from flask.ext.babel import Babel
 
 from controllers.admin import bp_admin
+from controllers.albums import bp_albums
 from controllers.main import bp_main
 from controllers.sound import bp_sound
 from controllers.users import bp_users
@@ -103,6 +104,7 @@ def create_app(cfg=None):
     app.register_blueprint(bp_users)
     app.register_blueprint(bp_admin)
     app.register_blueprint(bp_sound)
+    app.register_blueprint(bp_albums)
 
     # Used in development
     @app.route('/uploads/<string:thing>/<path:stuff>', methods=['GET'])

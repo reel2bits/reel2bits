@@ -180,6 +180,10 @@ class Album(db.Model):
     user_id = db.Column(db.Integer(), db.ForeignKey('user.id'), nullable=False)
     sounds = db.relationship('Sound', backref='album', lazy='dynamic', cascade="delete")
 
+    def elapsed(self):
+        el = datetime.datetime.utcnow() - self.created
+        return el.total_seconds()
+
 
 @event.listens_for(User, 'after_update')
 @event.listens_for(User, 'after_insert')

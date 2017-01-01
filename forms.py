@@ -82,8 +82,8 @@ class SoundEditForm(Form):
 
 
 class AlbumForm(Form):
-    title = StringField(lazy_gettext('Title'), [Length(max=255)])
+    title = StringField(lazy_gettext('Title'), [Length(max=255), DataRequired()])
     description = TextAreaField(lazy_gettext('Description'))
     private = BooleanField(lazy_gettext('Private'), default=False)
 
-    submit = SubmitField(lazy_gettext('Upload'))
+    submit = SubmitField(lazy_gettext('Create'))

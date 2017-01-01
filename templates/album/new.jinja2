@@ -1,0 +1,26 @@
+{% extends "layout.jinja2" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-6">
+            <h3>{{ gettext("New album") }}</h3>
+        </div>
+    </div>
+<div class="row">
+    <div class="col-lg-6">
+        <form action="{{ url_for('bp_albums.new', username=current_user.name) }}" method="POST" class="form-horizontal" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+            {{ wtf.form_errors(form, hiddens=True) }}
+            {{ wtf.form_field(form.title, 'horizontal', placeholder=gettext("What's the title ?")) }}
+            {{ wtf.form_field(form.description, 'horizontal') }}
+            {{ wtf.form_field(form.private, 'horizontal') }}
+            {{ wtf.form_field(form.submit, button_map={'submit': 'success'}) }}
+        </form>
+    </div>
+
+    <div class="col-lg-6">
+    </div>
+
+</div>
+{% endblock %}

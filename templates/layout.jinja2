@@ -54,6 +54,7 @@
           <ul class="nav navbar-nav">
             {% if current_user.is_authenticated %}
                 <li><a href="{{ url_for('bp_sound.upload') }}">{{ gettext('Upload') }}</a></li>
+                <li><a href="{{ url_for('bp_albums.new', username=current_user.name) }}">{{ gettext('New album') }}</a></li>
                 <li><a href="{{ url_for('bp_users.profile', name=current_user.name) }}">{{ gettext('My Profile') }}</a></li>
             {% endif %}
           </ul>
