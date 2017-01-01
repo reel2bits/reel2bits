@@ -45,7 +45,7 @@
             </div>
             <div class="col-lg-6">
                 {% if waveform %}
-                <img src="{{ url_for('get_uploads_stuff', thing='sounds', stuff='{0}.png'.format(sound.filename)) }}"/>
+                <img src="{{ url_for('get_uploads_stuff', thing='waveforms', stuff='{0}.png'.format(sound.filename)) }}"/>
                 {% endif %}
             </div>
         </div>

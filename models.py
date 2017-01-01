@@ -108,6 +108,7 @@ class SoundInfo(db.Model):
     channels = db.Column(db.Integer, nullable=True)
     codec = db.Column(db.String(255), nullable=True)
     waveform = db.Column(db.Text, nullable=True)
+    waveform_error = db.Column(db.Boolean, default=False)
     bitrate = db.Column(db.Integer, nullable=True)
     bitrate_mode = db.Column(db.String(10), nullable=True)
     type = db.Column(db.String(20), nullable=True)

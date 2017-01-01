@@ -242,14 +242,14 @@ def get_waveform(filename):
     return json
 
 
-def create_png_waveform(filename):
+def create_png_waveform(fn_audio, fn_png):
     binary = current_app.config['AUDIOWAVEFORM_BIN']
-    if not os.path.exists(binary) or not os.path.exists(filename):
-        add_log("AUDIOWAVEFORM_PNG", "ERROR", "Filename {0} or binary {1} invalid".format(filename, binary))
+    if not os.path.exists(binary) or not os.path.exists(fn_audio):
+        add_log("AUDIOWAVEFORM_PNG", "ERROR", "Filename {0} or binary {1} invalid".format(fn_audio, binary))
         return None
 
-    pngwf = "{0}.png".format(filename)
-    cmd = [binary, '-i', filename, '--width', '384', '--height', '64', '--no-axis-labels', '-o', pngwf]
+    pngwf = "{0}.png".format(fn_png)
+    cmd = [binary, '-i', fn_audio, '--width', '384', '--height', '64', '--no-axis-labels', '-o', pngwf]
 
     try:
         process = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)

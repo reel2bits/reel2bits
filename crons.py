@@ -96,7 +96,6 @@ def get_basic_infos(fname):
 
 
 def get_waveform_infos(fname):
-    create_png_waveform(fname)
     return get_waveform(fname)
 
 
@@ -137,6 +136,13 @@ def cron_generate_sound_infos(dry_run=False, force=False):
                 waveform_infos = get_waveform_infos(fname)
                 print("- Our file got waveform infos: {0}".format(waveform_infos))
                 _infos.waveform = waveform_infos
+                if not waveform_infos:
+                    _infos.waveform_error = True
+                else:
+                    fname_wf = os.path.join(current_app.config['UPLOADS_DEFAULT_DEST'], 'waveforms' ,sound.filename)
+                    if not os.path.isdir(os.path.join(current_app.config['UPLOADS_DEFAULT_DEST'], 'waveforms')):
+                        os.makedirs(os.path.join(current_app.config['UPLOADS_DEFAULT_DEST'], 'waveforms'))
+                    create_png_waveform(fname, fname_wf)
                 _infos.done_waveform = True
 
             if not dry_run and is_new:
