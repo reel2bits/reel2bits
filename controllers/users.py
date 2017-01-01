@@ -17,10 +17,10 @@ def logs():
     if level:
         _logs = UserLogging.query.filter(UserLogging.level == level.upper(),
                                          UserLogging.user_id == current_user.id
-                                         ).order_by(UserLogging.timestamp.desc()).limit(100).all()
+                                         ).limit(100).all()
     else:
         _logs = UserLogging.query.filter(UserLogging.user_id == current_user.id
-                                         ).order_by(UserLogging.timestamp.desc()).limit(100).all()
+                                         ).limit(100).all()
     return render_template('users/user_logs.jinja2', pcfg=pcfg, logs=_logs)
 
 
@@ -47,9 +47,9 @@ def profile(name):
         return redirect(url_for("bp_main.home"))
 
     if current_user.is_authenticated and user.id == current_user.id:
-        sounds = Sound.query.filter(Sound.user_id == user.id).order_by(Sound.uploaded.desc())
+        sounds = Sound.query.filter(Sound.user_id == user.id)
     else:
-        sounds = Sound.query.filter(Sound.user_id == user.id, Sound.private.is_(False)).order_by(Sound.uploaded.desc())
+        sounds = Sound.query.filter(Sound.user_id == user.id, Sound.private.is_(False))
 
     return render_template('users/profile.jinja2', pcfg=pcfg, user=user, sounds=sounds)
 
@@ -64,9 +64,9 @@ def profile_albums(name):
         return redirect(url_for("bp_main.home"))
 
     if current_user.is_authenticated and user.id == current_user.id:
-        albums = Album.query.filter(Album.user_id == user.id).order_by(Album.created.desc())
+        albums = Album.query.filter(Album.user_id == user.id)
     else:
-        albums = Album.query.filter(Album.user_id == user.id, Album.private.is_(False)).order_by(Album.created.desc())
+        albums = Album.query.filter(Album.user_id == user.id, Album.private.is_(False))
 
     return render_template('users/profile_albums.jinja2', pcfg=pcfg, user=user, albums=albums)
 

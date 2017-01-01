@@ -15,7 +15,7 @@ def logs():
     if not is_admin():
         return redirect(url_for('bp_home.home'))
     pcfg = {"title": lazy_gettext("Application Logs")}
-    _logs = Logging.query.order_by(Logging.timestamp.desc()).limit(100).all()
+    _logs = Logging.query.limit(100).all()
     return render_template('admin/logs.jinja2', pcfg=pcfg, logs=_logs)
 
 

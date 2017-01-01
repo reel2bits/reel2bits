@@ -89,6 +89,8 @@ class Logging(db.Model):
 
     user_id = db.Column(db.Integer(), db.ForeignKey('user.id'), nullable=True)
 
+    __mapper_args__ = {"order_by": timestamp.desc()}
+
 
 class UserLogging(db.Model):
     __tablename__ = "user_logging"
@@ -101,6 +103,8 @@ class UserLogging(db.Model):
 
     sound_id = db.Column(db.Integer(), db.ForeignKey('sound.id'), nullable=False)
     user_id = db.Column(db.Integer(), db.ForeignKey('user.id'), nullable=False)
+
+    __mapper_args__ = {"order_by": timestamp.desc()}
 
 
 class SoundInfo(db.Model):
@@ -150,6 +154,8 @@ class Sound(db.Model):
     sound_infos = db.relationship('SoundInfo', backref='sound_info', lazy='dynamic', cascade="delete")
     user_loggings = db.relationship('UserLogging', backref='sound', lazy='dynamic', cascade="delete")
 
+    __mapper_args__ = {"order_by": uploaded.desc()}
+
     def elapsed(self):
         print("db: {0}, now: {1}".format(self.uploaded, datetime.datetime.utcnow()))
         el = datetime.datetime.utcnow() - self.uploaded
@@ -179,6 +185,8 @@ class Album(db.Model):
 
     user_id = db.Column(db.Integer(), db.ForeignKey('user.id'), nullable=False)
     sounds = db.relationship('Sound', backref='album', lazy='dynamic', cascade="delete")
+
+    __mapper_args__ = {"order_by": created.desc()}
 
     def elapsed(self):
         el = datetime.datetime.utcnow() - self.created
