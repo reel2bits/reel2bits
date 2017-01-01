@@ -47,9 +47,9 @@ def profile(name):
         return redirect(url_for("bp_main.home"))
 
     if current_user.is_authenticated and user.id == current_user.id:
-        sounds = Sound.query.filter(Sound.user_id == user.id)
+        sounds = Sound.query.filter(Sound.user_id == user.id).order_by(Sound.uploaded.desc())
     else:
-        sounds = Sound.query.filter(Sound.user_id == user.id, Sound.private.is_(False))
+        sounds = Sound.query.filter(Sound.user_id == user.id, Sound.private.is_(False)).order_by(Sound.uploaded.desc())
 
     return render_template('users/profile.jinja2', pcfg=pcfg, user=user, sounds=sounds)
 

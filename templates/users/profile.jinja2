@@ -18,7 +18,7 @@
 
     <hr>
 
-    {% for sound in sounds.order_by("uploaded desc") %}
+    {% for sound in sounds %}
         <div class="row">
 
         {% if sound.sound_infos.first() %}
