@@ -12,7 +12,6 @@ bp_albums = Blueprint('bp_albums', __name__)
 @login_required
 def new(username):
     pcfg = {"title": lazy_gettext("New album")}
-    user = User.query.filter(User.id == current_user.id).one()
 
     form = AlbumForm()
 

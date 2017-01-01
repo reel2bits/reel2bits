@@ -174,7 +174,7 @@ class Album(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255), nullable=True)
     created = db.Column(db.DateTime(timezone=False),
-                         default=datetime.datetime.utcnow)
+                        default=datetime.datetime.utcnow)
     updated = db.Column(db.DateTime(timezone=False),
                         default=datetime.datetime.utcnow,
                         onupdate=datetime.datetime.utcnow)
