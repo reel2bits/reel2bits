@@ -28,7 +28,8 @@ BOOTSTRAP_QUERYSTRING_REVVING = True
 DEBUG_TB_PROFILER_ENABLED = True
 DEBUG_TB_INTERCEPT_REDIRECTS = False
 
-# Paginations
+BABEL_DEFAULT_LOCALE = "en"
+BABEL_DEFAULT_TIMEZONE = "UTC"
 
 # UPLOADS_DEFAULT_DEST is ALWAYS the same as UPLOADED_SOUNDS_DEST but a directory lower
 # Because we use others directories inside UPLOADS_DEFAULT_DEST as organized tree depending

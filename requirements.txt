@@ -54,3 +54,4 @@ mutagen==1.36
 python-magic==0.4.12
 python-slugify==1.2.1
 raven==5.32.0
+Flask-Babel==0.11.1

@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, Response, json
 from flask_security import login_required
+from flask.ext.babel import lazy_gettext
 
 from forms import ConfigForm
 from models import db, Logging, Config
@@ -13,7 +14,7 @@ bp_admin = Blueprint('bp_admin', __name__)
 def logs():
     if not is_admin():
         return redirect(url_for('bp_home.home'))
-    pcfg = {"title": "Application Logs"}
+    pcfg = {"title": lazy_gettext("Application Logs")}
     _logs = Logging.query.order_by(Logging.timestamp.desc()).limit(100).all()
     return render_template('admin/logs.jinja2', pcfg=pcfg, logs=_logs)
 
@@ -40,11 +41,11 @@ def config():
     if not is_admin():
         return redirect(url_for('bp_main.home'))
 
-    pcfg = {"title": "Application Config"}
+    pcfg = {"title": lazy_gettext("Application Config")}
 
     _config = Config.query.one()
     if not _config:
-        flash("Config not found", 'error')
+        flash(lazy_gettext("Config not found"), 'error')
         return redirect(url_for("bp_main.home"))
 
     form = ConfigForm(request.form, _config)
@@ -53,7 +54,7 @@ def config():
         _config.app_name = form.app_name.data
 
         db.session.commit()
-        flash("Configuration updated", "info")
+        flash(lazy_gettext("Configuration updated"), "info")
         return redirect(url_for('bp_admin.config'))
 
     return render_template('admin/config.jinja2', pcfg=pcfg, form=form)

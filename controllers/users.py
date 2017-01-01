@@ -1,6 +1,7 @@
 import pytz
 from flask import Blueprint, render_template, request, redirect, url_for, flash, Response, json
 from flask_security import login_required, current_user
+from flask.ext.babel import lazy_gettext, gettext
 
 from forms import UserProfileForm
 from models import db, User, UserLogging, Sound
@@ -12,7 +13,7 @@ bp_users = Blueprint('bp_users', __name__)
 @login_required
 def logs():
     level = request.args.get('level')
-    pcfg = {"title": "User Logs"}
+    pcfg = {"title": lazy_gettext("User Logs")}
     if level:
         _logs = UserLogging.query.filter(UserLogging.level == level.upper(),
                                          UserLogging.user_id == current_user.id
@@ -38,11 +39,11 @@ def logs_delete(log_id):
 
 @bp_users.route('/user/<string:name>', methods=['GET'])
 def profile(name):
-    pcfg = {"title": "%s's profile" % name}
+    pcfg = {"title": gettext(u"%(value)s' profile", value=name)}
 
     user = User.query.filter(User.name == name).first()
     if not user:
-        flash("User not found", 'error')
+        flash(lazy_gettext("User not found"), 'error')
         return redirect(url_for("bp_main.home"))
 
     if current_user.is_authenticated and user.id == current_user.id:
@@ -56,11 +57,11 @@ def profile(name):
 @bp_users.route('/user/edit', methods=['GET', 'POST'])
 @login_required
 def edit():
-    pcfg = {"title": "Edit my profile"}
+    pcfg = {"title": lazy_gettext("Edit my profile")}
 
     user = User.query.filter(User.id == current_user.id).first()
     if not user:
-        flash("User not found", 'error')
+        flash(lazy_gettext("User not found"), 'error')
         return redirect(url_for("bp_main.home"))
 
     form = UserProfileForm(request.form, user)
@@ -70,6 +71,7 @@ def edit():
         user.lastname = form.lastname.data
         user.firstname = form.firstname.data
         user.timezone = form.timezone.data
+        user.locale = form.locale.data
 
         db.session.commit()
         return redirect(url_for('bp_users.profile', name=user.name))

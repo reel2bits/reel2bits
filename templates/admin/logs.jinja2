@@ -3,14 +3,14 @@
 {% block content %}
 <div class="row">
     <div class="col-xs-4">
-        <h3>Application logs (latest 100)</h3>
+        <h3>{{ gettext("Application logs (latest 100)") }}</h3>
     </div>
     <div class="col-lg-offset-5 col-xs-3" style="margin-top: 1.6em">
-        Show only:
-        <a href="{{ url_for('bp_admin.logs') }}" class="btn btn-xs btn-default">all</a>
-        <a href="{{ url_for('bp_admin.logs', level='info') }}" class="btn btn-xs btn-info">info</a>
-        <a href="{{ url_for('bp_admin.logs', level='warning') }}" class="btn btn-xs btn-warning">warning</a>
-        <a href="{{ url_for('bp_admin.logs', level='error') }}" class="btn btn-xs btn-danger">error</a>
+        {{ gettext("Show only:") }}
+        <a href="{{ url_for('bp_admin.logs') }}" class="btn btn-xs btn-default">{{ gettext("all") }}</a>
+        <a href="{{ url_for('bp_admin.logs', level='info') }}" class="btn btn-xs btn-info">{{ gettext("info") }}</a>
+        <a href="{{ url_for('bp_admin.logs', level='warning') }}" class="btn btn-xs btn-warning">{{ gettext("warning") }}</a>
+        <a href="{{ url_for('bp_admin.logs', level='error') }}" class="btn btn-xs btn-danger">{{ gettext("error") }}</a>
     </div>
 </div>
 
@@ -18,12 +18,12 @@
     <div class="col-lg-12">
         <table class="table table-condensed table-stripped table-bordered">
             <tr>
-                <th>Date</th>
-                <th>Category</th>
-                <th width="100px">Level</th>
-                <th>User</th>
-                <th>Message</th>
-                <th width="100px">Actions</th>
+                <th>{{ gettext("Date") }}</th>
+                <th>{{ gettext("Category") }}</th>
+                <th width="100px">{{ gettext("Level") }}</th>
+                <th>{{ gettext("User") }}</th>
+                <th>{{ gettext("Message") }}</th>
+                <th width="100px">{{ gettext("Actions") }}</th>
             </tr>
             {% for log in logs %}
                 <tr data-log-id="{{ log.id }}">
@@ -37,7 +37,7 @@
                     <td class="log-actions">
                         <a role="button" tabindex="0" class="btn btn-danger btn-xs" data-trigger="focus"
                            data-container="body" data-toggle="popover" data-placement="left" data-html="true"
-                           data-content="<a class='btn btn-success btn-xs delete_log_link' data-id='{{ log.id }}' data-href='{{ url_for('bp_admin.logs_delete', log_id=log.id) }}'>yes really</a>">delete</a>
+                           data-content="<a class='btn btn-success btn-xs delete_log_link' data-id='{{ log.id }}' data-href='{{ url_for('bp_admin.logs_delete', log_id=log.id) }}'>{{ gettext("yes really") }}</a>">{{ gettext("delete") }}</a>
                     </td>
                 </tr>
             {% endfor %}
@@ -61,7 +61,7 @@
                     if (data.status == "deleted") {
                         $('[data-log-id="' + data.id + '"]').remove();
                     } else {
-                        show_alert("danger", "Log deletion", "An error occured");
+                        show_alert("danger", {{ gettext("Log deletion") }}, {{ gettext("An error occured") }});
                     }
                 }).fail(function(data) {
                     console.log("fail" + data);

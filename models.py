@@ -40,6 +40,8 @@ class User(db.Model, UserMixin):
     firstname = db.Column(db.String(32))
     lastname = db.Column(db.String(32))
 
+    locale = db.Column(db.String(5), default="en")
+
     timezone = db.Column(db.String(255), nullable=False, default='UTC')  # Managed and fed by pytz
 
     slug = db.Column(db.String(255), unique=True, nullable=True)

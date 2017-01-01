@@ -9,7 +9,7 @@
         </div>
         <div class="col-lg-5">
             {% if not info or not info.done_basic %}
-                <span class="label label-info">Please wait, song metadatas are processing...</span>
+                <span class="label label-info">{{ gettext("Please wait, song metadatas are processing...") }}</span>
             {% endif %}
         </div>
     </div>
@@ -20,7 +20,7 @@
         </div>
 
         <div class="col-lg-3">
-            <h3><i class="fa fa-calendar" aria-hidden="true"></i> {{ duration_elapsed_human(sound.elapsed()) }} ago</h3>
+            <h3><i class="fa fa-calendar" aria-hidden="true"></i> {{ gettext("%(value)s ago", value=duration_elapsed_human(sound.elapsed())) }}</h3>
         </div>
     </div>
 
@@ -78,21 +78,21 @@
 
             {% if info %}
                 <tr><td>Duration</td><td colspan="2">{{ duration_song_human(info.duration) }}</td></tr>
-                {% if info.type_human %}<tr><td>Type</td><td colspan="2">{{ info.type_human }}</td></tr>{% endif %}
-                {% if info.codec %}<tr><td>Codec</td><td colspan="2">{{ info.codec }}</td></tr>{% endif %}
-                {% if info.format %}<tr><td>Format</td><td colspan="2">{{ info.format }} bits</td></tr>{% endif %}
-                {% if info.channels %}<tr><td>Channels</td><td colspan="2">{{ info.channels }}</td></tr>{% endif %}
-                {% if info.rate %}<tr><td>Rate</td><td colspan="2">{{ info.rate }} Hz</td></tr>{% endif %}
+                {% if info.type_human %}<tr><td>{{ gettext("Type") }}</td><td colspan="2">{{ info.type_human }}</td></tr>{% endif %}
+                {% if info.codec %}<tr><td>{{ gettext("Codec") }}</td><td colspan="2">{{ info.codec }}</td></tr>{% endif %}
+                {% if info.format %}<tr><td>{{ gettext("Format") }}</td><td colspan="2">{{ info.format }} bits</td></tr>{% endif %}
+                {% if info.channels %}<tr><td>{{ gettext("Channels") }}</td><td colspan="2">{{ info.channels }}</td></tr>{% endif %}
+                {% if info.rate %}<tr><td>{{ gettext("Rate") }}</td><td colspan="2">{{ info.rate }} Hz</td></tr>{% endif %}
 
                 {% if info.bitrate and info.bitrate_mode %}
-                    <tr><td>Bitrate</td><td colspan="2">{{ info.bitrate_mode }} {{ info.bitrate }} bps</td></tr>
+                    <tr><td>{{ gettext("Bitrate") }}</td><td colspan="2">{{ info.bitrate_mode }} {{ info.bitrate }} bps</td></tr>
                 {% else %}
                     {% if info.bitrate %}
-                        <tr><td>Bitrate</td><td colspan="2">{{ info.bitrate }} bps</td></tr>
+                        <tr><td>{{ gettext("Bitrate") }}</td><td colspan="2">{{ info.bitrate }} bps</td></tr>
                     {% endif %}
 
                     {% if info.bitrate_mode %}
-                        <tr><td>Bitrate mode</td><td colspan="2">{{ info.bitrate_mode }}</td></tr>
+                        <tr><td>{{ gettext("Bitrate mode") }}</td><td colspan="2">{{ info.bitrate_mode }}</td></tr>
                     {% endif %}
                 {% endif %}
 

@@ -1,0 +1,386 @@
+# French translations for PROJECT.
+# Copyright (C) 2017 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2017-01-01 16:26+0100\n"
+"PO-Revision-Date: 2017-01-01 16:32+0100\n"
+"Last-Translator: \n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.3.4\n"
+"X-Generator: Poedit 1.8.9\n"
+
+#: forms.py:41
+msgid "Username required"
+msgstr "Nom d'utilisateur requis"
+
+#: forms.py:45
+msgid "Username already taken"
+msgstr "Nom d'utilisateur déjà pris"
+
+#: forms.py:52
+msgid "Password"
+msgstr "Mot de passe"
+
+#: forms.py:53
+msgid "Name"
+msgstr "Nom"
+
+#: forms.py:54
+msgid "Email"
+msgstr "Email"
+
+#: forms.py:55
+msgid "Firstname"
+msgstr "Prénom"
+
+#: forms.py:56
+msgid "Lastname"
+msgstr "Nom"
+
+#: forms.py:57
+msgid "Timezone"
+msgstr "Fuseau horaire"
+
+#: forms.py:58
+msgid "Locale"
+msgstr "Langue"
+
+#: forms.py:59
+msgid "Update profile"
+msgstr "Mettre a jour le profil"
+
+#: forms.py:63
+msgid "App Name"
+msgstr "Nom de l'application"
+
+#: forms.py:65
+msgid "Update config"
+msgstr "Mettre à jour la configuration"
+
+#: forms.py:69 forms.py:77
+msgid "Title"
+msgstr "Titre"
+
+#: forms.py:70
+msgid "File"
+msgstr "Fichier"
+
+#: forms.py:71 forms.py:78
+msgid "Private"
+msgstr "Privé"
+
+#: forms.py:73 forms.py:81 templates/layout.jinja2:56
+msgid "Upload"
+msgstr "Uploader"
+
+#: forms.py:79
+msgid "Description"
+msgstr "Description"
+
+#: controllers/admin.py:17
+msgid "Application Logs"
+msgstr "Logs applicatifs"
+
+#: controllers/admin.py:44
+msgid "Application Config"
+msgstr "Configuration Applicative"
+
+#: controllers/admin.py:48 controllers/main.py:14 controllers/main.py:27
+msgid "Config not found"
+msgstr "Configuration non trouvée"
+
+#: controllers/admin.py:57
+msgid "Configuration updated"
+msgstr "Configuration mise-à-jour"
+
+#: controllers/main.py:17
+msgid "Home"
+msgstr "Accueuil"
+
+#: controllers/sound.py:19 controllers/sound.py:53 controllers/users.py:46
+#: controllers/users.py:64
+msgid "User not found"
+msgstr "Utilisateur non trouvé"
+
+#: controllers/sound.py:23 controllers/sound.py:29 controllers/sound.py:32
+#: controllers/sound.py:57 controllers/sound.py:63 controllers/sound.py:66
+#: controllers/sound.py:118 controllers/sound.py:141
+msgid "Sound not found"
+msgstr "Son non trouvé"
+
+#: controllers/sound.py:44
+msgid "No HTML5 player supported actually"
+msgstr "Aucun lecteur HTML5 actuellement supporté"
+
+#: controllers/sound.py:79 templates/sound/upload.jinja2:7
+msgid "New upload"
+msgstr "Nouvel upload"
+
+#: controllers/sound.py:104
+msgid "Uploaded !"
+msgstr "Envoyé !"
+
+#: controllers/sound.py:121
+#, python-format
+msgid "Edit %(value)s"
+msgstr "Éditer %(value)s"
+
+#: controllers/users.py:16
+msgid "User Logs"
+msgstr "Logs utilisateur"
+
+#: controllers/users.py:42 templates/users/profile.jinja2:5
+#, python-format
+msgid "%(value)s' profile"
+msgstr "Profil de %(value)s"
+
+#: controllers/users.py:60
+msgid "Edit my profile"
+msgstr "Éditer mon profile"
+
+#: templates/about.jinja2:7
+#, python-format
+msgid "reel2bits is developped by %(dashie)s and is available under MIT license."
+msgstr ""
+"reel2bits est développé par %(dashie)s et est disponible sous licence MIT."
+
+#: templates/about.jinja2:9
+#, python-format
+msgid "Source code is here: %(link)s"
+msgstr "Code source disponible: %(link)s"
+
+#: templates/about.jinja2:10
+#, python-format
+msgid "Issue tracker is here: %(link)s"
+msgstr "Gestionnaire de bugs ici: %(link)s"
+
+#: templates/error_page.jinja2:7
+#, python-format
+msgid "Maybe you can go back to the %(link)s."
+msgstr "Peut-être voulez-vous retourner à %(link)s."
+
+#: templates/error_page.jinja2:7
+msgid "index"
+msgstr "accueil"
+
+#: templates/layout.jinja2:46
+msgid "Toggle navigation"
+msgstr "Inverser la navigation"
+
+#: templates/layout.jinja2:57
+msgid "My Profile"
+msgstr "Mon profil"
+
+#: templates/layout.jinja2:62
+msgid "About"
+msgstr "À propos"
+
+#: templates/layout.jinja2:65
+#, python-format
+msgid "Logged as %(username)s"
+msgstr "Connecté sous %(username)s"
+
+#: templates/admin/logs.jinja2:24 templates/layout.jinja2:67
+msgid "User"
+msgstr "Utilisateur"
+
+#: templates/layout.jinja2:68
+msgid "Profile"
+msgstr "Profile"
+
+#: templates/layout.jinja2:69
+msgid "Logs"
+msgstr "Logs"
+
+#: templates/layout.jinja2:72
+msgid "Admin"
+msgstr "Administrateur"
+
+#: templates/layout.jinja2:73
+msgid "App config"
+msgstr "Configuration applicative"
+
+#: templates/layout.jinja2:74
+msgid "App logs"
+msgstr "Logs applicatifs"
+
+#: templates/layout.jinja2:77
+msgid "Change password"
+msgstr "Changer mot de passe"
+
+#: templates/layout.jinja2:78
+msgid "Logout"
+msgstr "Se déconnecter"
+
+#: templates/layout.jinja2:83
+msgid "Register"
+msgstr "S'enregistrer"
+
+#: templates/layout.jinja2:85
+msgid "Login"
+msgstr "Se connecter"
+
+#: templates/layout.jinja2:111
+#, python-format
+msgid ""
+"Use template for %(link1)s by %(link2)s and use %(link3)s, reel2bits %(link4)s"
+msgstr ""
+"Utilise une template pour %(link1)s par %(link2)s et utilise %(link3)s, "
+"reel2bits %(link4)s"
+
+#: templates/layout.jinja2:115
+msgid "source code"
+msgstr "code source"
+
+#: templates/layout.jinja2:117
+#, python-format
+msgid "Running version %(version)s"
+msgstr "Version en cours %(version)s"
+
+#: templates/layout.jinja2:119
+msgid "Back to top"
+msgstr "Retour en haut"
+
+#: templates/admin/config.jinja2:8
+msgid "Edit application config"
+msgstr "Éditer la configuration applicative"
+
+#: templates/admin/logs.jinja2:6
+msgid "Application logs (latest 100)"
+msgstr "Logs applicatifs (100 derniers)"
+
+#: templates/admin/logs.jinja2:9
+msgid "Show only:"
+msgstr "Voir:"
+
+#: templates/admin/logs.jinja2:10
+msgid "all"
+msgstr "tous"
+
+#: templates/admin/logs.jinja2:11
+msgid "info"
+msgstr "info"
+
+#: templates/admin/logs.jinja2:12
+msgid "warning"
+msgstr "attention"
+
+#: templates/admin/logs.jinja2:13
+msgid "error"
+msgstr "erreur"
+
+#: templates/admin/logs.jinja2:21
+msgid "Date"
+msgstr "Date"
+
+#: templates/admin/logs.jinja2:22
+msgid "Category"
+msgstr "Catégorie"
+
+#: templates/admin/logs.jinja2:23
+msgid "Level"
+msgstr "Niveau"
+
+#: templates/admin/logs.jinja2:25
+msgid "Message"
+msgstr "Message"
+
+#: templates/admin/logs.jinja2:26
+msgid "Actions"
+msgstr "Actions"
+
+#: templates/admin/logs.jinja2:40
+msgid "yes really"
+msgstr "oui vraiment"
+
+#: templates/admin/logs.jinja2:40
+msgid "delete"
+msgstr "supprimer"
+
+#: templates/admin/logs.jinja2:64
+msgid "Log deletion"
+msgstr "Suppression de logs"
+
+#: templates/admin/logs.jinja2:64
+msgid "An error occured"
+msgstr "Une erreur est survenue"
+
+#: templates/sound/edit.jinja2:7
+msgid "Edit upload"
+msgstr "Éditer l'upload"
+
+#: templates/sound/edit.jinja2:15 templates/sound/upload.jinja2:15
+msgid "What's the title ?"
+msgstr "Quel est le titre ?"
+
+#: templates/sound/edit.jinja2:16
+msgid "Add a nice description ?"
+msgstr "Une description sympathique ?"
+
+#: templates/sound/show.jinja2:12 templates/users/profile.jinja2:50
+msgid "Please wait, song metadatas are processing..."
+msgstr "Veuillez attendre, les métadonnés sont en cours de traitement..."
+
+#: templates/sound/show.jinja2:23
+#, python-format
+msgid "%(value)s ago"
+msgstr "il-y-à %(value)s"
+
+#: templates/sound/show.jinja2:81
+msgid "Type"
+msgstr "Type"
+
+#: templates/sound/show.jinja2:82
+msgid "Codec"
+msgstr "Encodeur"
+
+#: templates/sound/show.jinja2:83
+msgid "Format"
+msgstr "Format"
+
+#: templates/sound/show.jinja2:84
+msgid "Channels"
+msgstr "Cannaux"
+
+#: templates/sound/show.jinja2:85
+msgid "Rate"
+msgstr "Rate"
+
+#: templates/sound/show.jinja2:88 templates/sound/show.jinja2:91
+msgid "Bitrate"
+msgstr "Bitrate"
+
+#: templates/sound/show.jinja2:95
+msgid "Bitrate mode"
+msgstr "Bitrate mode"
+
+#: templates/users/edit.jinja2:8
+#, python-format
+msgid "Edit profile - %(username)s"
+msgstr "Éditer le profil - %(username)s"
+
+#: templates/users/edit.jinja2:27
+msgid "Cancel edit"
+msgstr "Annuler l'édition"
+
+#: templates/users/profile.jinja2:10
+msgid "all sounds"
+msgstr "tous les sons"
+
+#: templates/users/profile.jinja2:14
+msgid "Edit profile"
+msgstr "Éditer le profil"
+
+#: templates/users/profile.jinja2:59
+msgid "This user haven't uploaded any sound :( !"
+msgstr "Cet utilisateur n'a rien uploadé :( !"

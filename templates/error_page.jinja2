@@ -3,7 +3,9 @@
     <div class="row">
         <div class="col-md-4 col-md-offset-4" role="content">
             <h3>{{ pcfg['error'] }} - {{ pcfg['message'] }} :'(</h3>
-            Maybe you can go back to the <a href="{{ url_for('bp_main.home') }}">index</a>.
+            {% autoescape false %}
+            {{ gettext("Maybe you can go back to the %(link)s.", link='<a href="{{ %s }}">%s</a>' % (url_for('bp_main.home'), gettext('index'))) }}
+            {% endautoescape %}
         </div>
     </div>
 {% endblock %}

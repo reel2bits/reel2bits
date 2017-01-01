@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, flash, redirect, url_for
+from flask.ext.babel import lazy_gettext
 
 from models import User, Config
 
@@ -10,10 +11,10 @@ bp_main = Blueprint('bp_main', __name__)
 def home():
     _config = Config.query.one()
     if not _config:
-        flash("Config not found", 'error')
+        flash(lazy_gettext("Config not found"), 'error')
         return redirect(url_for("bp_main.home"))
 
-    pcfg = {"title": "Home", "app_name": _config.app_name}
+    pcfg = {"title": lazy_gettext("Home"), "app_name": _config.app_name}
     users = User.query.all()
 
     return render_template('home.jinja2', pcfg=pcfg, users=users)
@@ -23,7 +24,7 @@ def home():
 def about():
     _config = Config.query.one()
     if not _config:
-        flash("Config not found", 'error')
+        flash(lazy_gettext("Config not found"), 'error')
         return redirect(url_for("bp_main.home"))
 
     pcfg = {"title": _config.app_name}

@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, Response, abort, json
 from flask_security import login_required, current_user
 from flask_uploads import UploadSet, AUDIO
+from flask.ext.babel import lazy_gettext, gettext
 
 from forms import SoundUploadForm, SoundEditForm
 from models import db, User, Sound
@@ -15,20 +16,20 @@ sounds = UploadSet('sounds', AUDIO)
 def show(username, soundslug):
     user = User.query.filter(User.name == username).first()
     if not user:
-        flash("User not found", "error")
+        flash(lazy_gettext("User not found"), "error")
         return redirect(url_for("bp_main.home"))
     sound = Sound.query.filter(Sound.slug == soundslug, Sound.user_id == user.id).first()
     if not sound:
-        flash("Sound not found", "error")
+        flash(lazy_gettext("Sound not found"), "error")
         return redirect(url_for("bp_users.profile", name=user.name))
 
     if sound.private:
         if current_user.is_authenticated:
             if sound.user_id != current_user.id:
-                flash("Sound not found", "error")
+                flash(lazy_gettext("Sound not found"), "error")
                 return redirect(url_for("bp_users.profile", name=user.name))
         else:
-            flash("Sound not found", "error")
+            flash(lazy_gettext("Sound not found"), "error")
             return redirect(url_for("bp_users.profile", name=user.name))
 
     pcfg = {"title": sound.title}
@@ -40,7 +41,7 @@ def show(username, soundslug):
         si_w = None
 
     if si and si.type == "FLAC":
-        flash("No HTML5 player supported actually", 'info')
+        flash(lazy_gettext("No HTML5 player supported actually"), 'info')
 
     return render_template('sound/show.jinja2', pcfg=pcfg, user=user, sound=sound, waveform=si_w)
 
@@ -49,20 +50,20 @@ def show(username, soundslug):
 def waveform_json(username, soundslug):
     user = User.query.filter(User.name == username).first()
     if not user:
-        flash("User not found", "error")
+        flash(lazy_gettext("User not found"), "error")
         return redirect(url_for("bp_main.home"))
     sound = Sound.query.filter(Sound.slug == soundslug, Sound.user_id == user.id).first()
     if not sound:
-        flash("Sound not found", "error")
+        flash(lazy_gettext("Sound not found"), "error")
         return redirect(url_for("bp_users.profile", user=user.name))
 
     if sound.private:
         if current_user:
             if sound.user_id != current_user.id:
-                flash("Sound not found", "error")
+                flash(lazy_gettext("Sound not found"), "error")
                 return redirect(url_for("bp_users.profile", user=user.name))
         else:
-            flash("Sound not found", "error")
+            flash(lazy_gettext("Sound not found"), "error")
             return redirect(url_for("bp_users.profile", user=user.name))
 
     si = sound.sound_infos.first()
@@ -75,7 +76,7 @@ def waveform_json(username, soundslug):
 @bp_sound.route('/sound/upload', methods=['GET', 'POST'])
 @login_required
 def upload():
-    pcfg = {"title": "New upload"}
+    pcfg = {"title": lazy_gettext("New upload")}
     user = User.query.filter(User.id == current_user.id).one()
 
     form = SoundUploadForm()
@@ -100,7 +101,7 @@ def upload():
 
             db.session.add(rec)
             db.session.commit()
-            flash('Uploaded !', 'success')
+            flash(lazy_gettext('Uploaded !'), 'success')
         else:
             return render_template('sound/upload.jinja2', pcfg=pcfg, form=form, flash='Error with the file')
         return redirect(url_for('bp_sound.show', username=current_user.name, soundslug=rec.slug))
@@ -114,10 +115,10 @@ def upload():
 def edit(username, soundslug):
     sound = Sound.query.filter(Sound.user_id == current_user.id, Sound.slug == soundslug).first()
     if not sound:
-        flash("Sound not found", 'error')
+        flash(lazy_gettext("Sound not found"), 'error')
         return redirect(url_for('bp_users.profile', name=username))
 
-    pcfg = {"title": "Edit {0}".format(sound.title)}
+    pcfg = {"title": gettext(u'Edit %(value)s', value=sound.title)}
 
     form = SoundEditForm(request.form, sound)
 
@@ -137,7 +138,7 @@ def edit(username, soundslug):
 def delete(username, soundslug):
     sound = Sound.query.filter(Sound.user_id == current_user.id, Sound.slug == soundslug).first()
     if not sound:
-        flash("Sound not found", 'error')
+        flash(lazy_gettext("Sound not found"), 'error')
         return redirect(url_for('bp_users.profile', name=username))
 
     db.session.delete(sound)

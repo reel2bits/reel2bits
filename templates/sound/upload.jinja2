@@ -4,7 +4,7 @@
 {% block content %}
     <div class="row">
         <div class="col-lg-6">
-            <h3>New upload</h3>
+            <h3>{{ gettext("New upload") }}</h3>
         </div>
     </div>
 <div class="row">
@@ -12,7 +12,7 @@
         <form action="{{ url_for('bp_sound.upload') }}" method="POST" class="form-horizontal" enctype="multipart/form-data">
             {{ form.hidden_tag() }}
             {{ wtf.form_errors(form, hiddens=True) }}
-            {{ wtf.form_field(form.title, 'horizontal', placeholder="What's the title ?") }}
+            {{ wtf.form_field(form.title, 'horizontal', placeholder=gettext("What's the title ?")) }}
             {{ wtf.form_field(form.sound, 'horizontal', accept='.wav, .mp3, .aac, .ogg, .oga, .flac') }}
             {{ wtf.form_field(form.private, 'horizontal') }}
             {{ wtf.form_field(form.submit, button_map={'submit': 'success'}) }}

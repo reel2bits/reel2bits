@@ -1,0 +1,11 @@
+Parse translation strings:
+pybabel extract -F babel.cfg -k lazy_gettext -o messages.pot .
+
+create document:
+pybabel init -i messages.pot -d translations -l de
+
+update document:
+pybabel update -i messages.pot -d translations
+
+compile documents:
+pybabel compile -d translations

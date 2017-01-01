@@ -7,6 +7,7 @@ from wtforms import widgets
 from wtforms.fields.core import StringField
 from wtforms.validators import DataRequired, ValidationError, Length
 from wtforms_alchemy import model_form_factory
+from flask.ext.babel import lazy_gettext
 
 from models import db, User
 
@@ -37,43 +38,44 @@ class ExtendedRegisterForm(RegisterForm):
 
     def validate_name(form, field):
         if len(field.data) <= 0:
-            raise ValidationError("Username required")
+            raise ValidationError(lazy_gettext("Username required"))
 
         u = User.query.filter(User.name == field.data).first()
         if u:
-            raise ValidationError("Username already taken")
+            raise ValidationError(lazy_gettext("Username already taken"))
 
 
 class UserProfileForm(ModelForm):
     class Meta:
         model = User
 
-    password = PasswordField('Password', [Length(min=10, max=255)])
-    name = StringField('Name', [Length(max=255)])
-    email = StringField('Email', [Length(max=255)])
-    firstname = StringField('Firstname', [Length(max=32)])
-    lastname = StringField('Lastname', [Length(max=32)])
-    timezone = SelectField(coerce=str, label='Timezone', default='UTC')
-    submit = SubmitField('Update profile')
+    password = PasswordField(lazy_gettext('Password'), [Length(max=255)])
+    name = StringField(lazy_gettext('Name'), [Length(max=255)])
+    email = StringField(lazy_gettext('Email'), [Length(max=255)])
+    firstname = StringField(lazy_gettext('Firstname'), [Length(max=32)])
+    lastname = StringField(lazy_gettext('Lastname'), [Length(max=32)])
+    timezone = SelectField(coerce=str, label=lazy_gettext('Timezone'), default='UTC')
+    locale = SelectField(lazy_gettext('Locale'), default="en", choices=[['en', 'English'], ['fr', 'French']])
+    submit = SubmitField(lazy_gettext('Update profile'))
 
 
 class ConfigForm(Form):
-    app_name = StringField('App Name', [DataRequired(), Length(max=255)])
+    app_name = StringField(lazy_gettext('App Name'), [DataRequired(), Length(max=255)])
 
-    submit = SubmitField('Update config')
+    submit = SubmitField(lazy_gettext('Update config'))
 
 
 class SoundUploadForm(Form):
-    title = StringField('Title', [Length(max=255)])
-    sound = FileField('File', [FileRequired(), FileAllowed(AUDIO)])
-    private = BooleanField('Private', default=False)
+    title = StringField(lazy_gettext('Title'), [Length(max=255)])
+    sound = FileField(lazy_gettext('File'), [FileRequired(), FileAllowed(AUDIO)])
+    private = BooleanField(lazy_gettext('Private'), default=False)
 
-    submit = SubmitField('Upload')
+    submit = SubmitField(lazy_gettext('Upload'))
 
 
 class SoundEditForm(Form):
-    title = StringField('Title', [Length(max=255)])
-    private = BooleanField('Private', default=False)
-    description = TextAreaField('Description')
+    title = StringField(lazy_gettext('Title'), [Length(max=255)])
+    private = BooleanField(lazy_gettext('Private'), default=False)
+    description = TextAreaField(lazy_gettext('Description'))
 
-    submit = SubmitField('Upload')
+    submit = SubmitField(lazy_gettext('Upload'))

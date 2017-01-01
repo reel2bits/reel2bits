@@ -4,12 +4,13 @@ import os
 import subprocess
 from logging.handlers import RotatingFileHandler
 
-from flask import Flask, render_template, g, send_from_directory, jsonify, safe_join
+from flask import Flask, render_template, g, send_from_directory, jsonify, safe_join, request
 from flask_bootstrap import Bootstrap
 from flask_mail import Mail
 from flask_migrate import Migrate
 from flask_security import Security
 from flask_uploads import configure_uploads, UploadSet, AUDIO
+from flask.ext.babel import Babel
 
 from controllers.admin import bp_admin
 from controllers.main import bp_main
@@ -49,6 +50,7 @@ def create_app(cfg=None):
 
     mail = Mail(app)
     migrate = Migrate(app, db)
+    babel = Babel(app)
 
     db.init_app(app)
 
@@ -62,6 +64,23 @@ def create_app(cfg=None):
         git_version = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD'])
         if git_version:
             git_version = git_version.strip().decode('UTF-8')
+
+    @babel.localeselector
+    def get_locale():
+        # if a user is logged in, use the locale from the user settings
+        identity = getattr(g, 'identity', None)
+        if identity is not None and identity.id:
+            return identity.user.locale
+        # otherwise try to guess the language from the user accept
+        # header the browser transmits.  We support fr/en in this
+        # example.  The best match wins.
+        return request.accept_languages.best_match(['fr', 'en'])
+
+    @babel.timezoneselector
+    def get_timezone():
+        identity = getattr(g, 'identity', None)
+        if identity is not None and identity.id:
+            return identity.user.timezone
 
     @app.before_request
     def before_request():
