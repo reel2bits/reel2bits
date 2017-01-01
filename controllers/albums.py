@@ -52,7 +52,7 @@ def show(username, setslug):
 
     pcfg = {"title": album.title}
 
-    return render_template('album/show.jinja2', pcfg=pcfg, user=user, album=album)
+    return render_template('album/show.jinja2', pcfg=pcfg, user=user, album=album, sound=album.sounds.first())
 
 
 @bp_albums.route('/user/<string:username>/sets/<string:setslug>/edit', methods=['GET', 'POST'])

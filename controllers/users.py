@@ -4,7 +4,7 @@ from flask_security import login_required, current_user
 from flask.ext.babel import lazy_gettext, gettext
 
 from forms import UserProfileForm
-from models import db, User, UserLogging, Sound
+from models import db, User, UserLogging, Sound, Album
 
 bp_users = Blueprint('bp_users', __name__)
 
@@ -52,6 +52,23 @@ def profile(name):
         sounds = Sound.query.filter(Sound.user_id == user.id, Sound.private.is_(False)).order_by(Sound.uploaded.desc())
 
     return render_template('users/profile.jinja2', pcfg=pcfg, user=user, sounds=sounds)
+
+
+@bp_users.route('/user/<string:name>/sets', methods=['GET'])
+def profile_albums(name):
+    pcfg = {"title": gettext(u"%(value)s' profile", value=name)}
+
+    user = User.query.filter(User.name == name).first()
+    if not user:
+        flash(lazy_gettext("User not found"), 'error')
+        return redirect(url_for("bp_main.home"))
+
+    if current_user.is_authenticated and user.id == current_user.id:
+        albums = Album.query.filter(Album.user_id == user.id).order_by(Album.created.desc())
+    else:
+        albums = Album.query.filter(Album.user_id == user.id, Album.private.is_(False)).order_by(Album.created.desc())
+
+    return render_template('users/profile_albums.jinja2', pcfg=pcfg, user=user, albums=albums)
 
 
 @bp_users.route('/user/edit', methods=['GET', 'POST'])

@@ -70,7 +70,10 @@ def waveform_json(username, soundslug):
     if not si:
         return abort(404)
     wf = json.loads(si.waveform)
-    return Response(json.dumps(wf['data']), mimetype='application/json;charset=utf-8')
+    wf["filename"] = sound.path_sound()
+    wf["wf_png"] = sound.path_waveform()
+    wf["title"] = sound.title
+    return Response(json.dumps(wf), mimetype='application/json;charset=utf-8')
 
 
 @bp_sound.route('/sound/upload', methods=['GET', 'POST'])
@@ -91,6 +94,8 @@ def upload():
             rec = Sound()
             rec.filename = filename_hashed
             rec.filename_orig = filename_orig
+            if form.album:
+                rec.album_id = form.album.id
 
             rec.user_id = current_user.id
             if not form.title.data:
@@ -126,6 +131,8 @@ def edit(username, soundslug):
         sound.title = form.title.data
         sound.private = form.private.data
         sound.description = form.description.data
+        if form.album:
+            sound.album_id = form.album.data.id
 
         db.session.commit()
         return redirect(url_for('bp_sound.show', username=username, soundslug=sound.slug))

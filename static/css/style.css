@@ -89,3 +89,11 @@ div.ss-user-back h3 {
 td.log-actions {
     text-align: center;
 }
+
+tr.song-active {
+    background-color: #a2d4ed;
+}
+
+tr.play-song:hover {
+    background-color: #ebebeb;
+}

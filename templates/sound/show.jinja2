@@ -76,6 +76,10 @@
                     {% endif %}
                 </tr>
 
+            {% if sound.album %}
+                <tr><td colspan="3">{{ gettext("In album:") }} <a href="{{ url_for("bp_albums.show", username=sound.user.name, setslug=sound.album.slug) }}">{{ sound.album.title|truncate(15) }}</a></td></tr>
+            {% endif %}
+
             {% if info %}
                 <tr><td>Duration</td><td colspan="2">{{ duration_song_human(info.duration) }}</td></tr>
                 {% if info.type_human %}<tr><td>{{ gettext("Type") }}</td><td colspan="2">{{ info.type_human }}</td></tr>{% endif %}

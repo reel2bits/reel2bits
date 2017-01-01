@@ -28,6 +28,12 @@
         </div>
     {% endif %}
 
+    <div class="row">
+        <div class="col-lg-6 col-lg-offset-1">
+            <i class="fa fa-play" aria-hidden="true"></i> <span id="song-title">{{ sound.title|truncate(100) }}</span>
+        </div>
+    </div>
+
 <div class="row">
     <div class="col-lg-7 col-lg-offset-1">
         <div class="row"><div class="col-lg-12">
@@ -71,4 +77,88 @@
         </table>
     </div>
 </div>
+
+    <div class="row">
+        <div class="col-lg-7 col-lg-offset-1">
+            <table class="table table-condensed">
+                {% set first = true %}
+                {% for sound in album.sounds %}
+                <tr class="play-song {% if first %}song-active{% endif %}" data-id="{{ sound.id }}" data-href="{{ url_for('bp_sound.waveform_json', username=sound.user.name, soundslug=sound.slug) }}">
+                    <td width="20px"><a href="{{ url_for("bp_sound.show", username=album.user.name, soundslug=sound.slug) }}"><i class="fa fa-link" aria-hidden="true"></i></a></td>
+                    <td><a><i class="fa fa-play" aria-hidden="true"></i> {{ sound.title|truncate(100) }}</a></td>
+                </tr>
+                {% set first = false %}
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function switch_song(id, href, data) {
+        console.log("Switching to song ID " + id);
+        wavesurfer.empty();
+        load_wf("/uploads/sounds/" + data.filename, data.data);
+    }
+
+    $("tr.play-song").click(function() {
+        if ($(this).hasClass("song-active")) {
+            console.log("no, seriously ?");
+            return; // ignore self click
+        }
+        var element = $(this);
+
+        var dataset = this.dataset;
+        $.getJSON(dataset.href, function() {
+           console.log("success");
+        }).done(function(data) {
+            $('.song-active').removeClass('song-active');
+            switch_song(dataset.id, dataset.href, data);
+            $('#song-title').html(data.title.substring(0, 100));
+            element.addClass("song-active");
+            $('#player-time-cur').html("00:00");
+        }).fail(function(data) {
+            //show_alert("danger", '{{ gettext("Switch sound") }}', '{{ gettext("An error occured") }}')
+        });
+    });
+
+    opts = {
+        backend: 'MediaElement',
+        container: '#waveform',
+        waveColor: 'darkorange',
+        progressColor: 'purple',
+        splitChannels: false,
+        barWidth: 3,
+        height: 64
+    };
+    var wavesurfer = WaveSurfer.create(opts);
+
+    function load_wf(path_media, waveform) {
+        var max = Math.max.apply(Math, waveform);
+        wavesurfer.load(path_media, waveform.map(p => p / max));
+    }
+
+    $('#player-time-cur').html("00:00");
+    $('#player-time-tot').html(secondsTimeSpanToMS(wavesurfer.getDuration()));
+
+    wavesurfer.on('audioprocess', function() {
+        var current_time = wavesurfer.getCurrentTime();
+        $('#player-time-cur').html(secondsTimeSpanToMS(current_time));
+    });
+    wavesurfer.on('seek', function() {
+        var current_time = wavesurfer.getCurrentTime();
+        $('#player-time-cur').html(secondsTimeSpanToMS(current_time));
+    });
+    wavesurfer.on('ready', function() {
+        var duration_time = wavesurfer.getDuration();
+        $('#player-time-tot').html(secondsTimeSpanToMS(duration_time));
+    });
+
+    // Initial call
+    {% set first_sound = sound.sound_infos.first() %}
+    var wf_datas = {{ first_sound.waveform }};
+    load_wf("{{ url_for('get_uploads_stuff', thing='sounds', stuff=sound.path_sound()) }}", wf_datas.data)
+</script>
 {% endblock %}

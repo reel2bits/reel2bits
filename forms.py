@@ -1,4 +1,4 @@
-from flask_security import RegisterForm
+from flask_security import RegisterForm, current_user
 from flask_uploads import UploadSet, AUDIO
 from flask_wtf import Form
 from flask_wtf.file import FileField, FileAllowed, FileRequired
@@ -8,8 +8,9 @@ from wtforms.fields.core import StringField
 from wtforms.validators import DataRequired, ValidationError, Length
 from wtforms_alchemy import model_form_factory
 from flask.ext.babel import lazy_gettext
+from wtforms.ext.sqlalchemy.fields import QuerySelectField
 
-from models import db, User
+from models import db, User, Album
 
 BaseModelForm = model_form_factory(Form)
 
@@ -65,10 +66,18 @@ class ConfigForm(Form):
     submit = SubmitField(lazy_gettext('Update config'))
 
 
+def get_albums():
+    return Album.query.filter(Album.user_id == current_user.id).all()
+
+
 class SoundUploadForm(Form):
     title = StringField(lazy_gettext('Title'), [Length(max=255)])
     sound = FileField(lazy_gettext('File'), [FileRequired(), FileAllowed(AUDIO)])
     private = BooleanField(lazy_gettext('Private'), default=False)
+    album = QuerySelectField(query_factory=get_albums,
+                             allow_blank=True,
+                             label=lazy_gettext('Album'),
+                             get_label='title')
 
     submit = SubmitField(lazy_gettext('Upload'))
 
@@ -77,8 +86,12 @@ class SoundEditForm(Form):
     title = StringField(lazy_gettext('Title'), [Length(max=255)])
     private = BooleanField(lazy_gettext('Private'), default=False)
     description = TextAreaField(lazy_gettext('Description'))
+    album = QuerySelectField(query_factory=get_albums,
+                             allow_blank=True,
+                             label=lazy_gettext('Album'),
+                             get_label='title')
 
-    submit = SubmitField(lazy_gettext('Upload'))
+    submit = SubmitField(lazy_gettext('Edit sound'))
 
 
 class AlbumForm(Form):
@@ -86,4 +99,4 @@ class AlbumForm(Form):
     description = TextAreaField(lazy_gettext('Description'))
     private = BooleanField(lazy_gettext('Private'), default=False)
 
-    submit = SubmitField(lazy_gettext('Create'))
+    submit = SubmitField(lazy_gettext('Save'))
