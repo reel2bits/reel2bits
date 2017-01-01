@@ -1,8 +1,6 @@
 from flask import Blueprint, render_template, flash, redirect, url_for
-from flask_security import current_user
-from sqlalchemy import func
 
-from models import db, User, Config
+from models import User, Config
 
 bp_main = Blueprint('bp_main', __name__)
 

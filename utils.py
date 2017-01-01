@@ -1,18 +1,17 @@
+import datetime
+import hashlib
 import os
 import random
 import re
 import string
-from functools import wraps
 import subprocess
-import hashlib
 from os.path import splitext
-import datetime
 
 import pytz
-from flask import flash, current_app
+from flask import current_app
 from flask_security import current_user
-from markupsafe import Markup
 from unidecode import unidecode
+
 from models import db, Apitoken, Role, Logging, Config
 
 _punct_re = re.compile(r'[\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')
@@ -78,8 +77,6 @@ def generate_uniques_apitoken():
             continue
         else:
             return {"token": tmp_token, "secret": tmp_secret}
-
-    return None
 
 
 def f7(seq):
@@ -234,7 +231,6 @@ def get_waveform(filename):
         add_log("AUDIOWAVEFORM", "ERROR", "Process error: {0}".format(process.stderr))
         return None
 
-    json = None
     with open(tmpjson, 'r') as f:
         json = f.readlines()
 

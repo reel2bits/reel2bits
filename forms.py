@@ -1,15 +1,12 @@
-import datetime
-from libqth import is_valid_qth
-
-from flask_security import RegisterForm, current_user
+from flask_security import RegisterForm
 from flask_uploads import UploadSet, AUDIO
 from flask_wtf import Form
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 from wtforms import PasswordField, SubmitField, SelectField, BooleanField, TextAreaField
-from wtforms.validators import DataRequired, ValidationError
-from wtforms_alchemy import model_form_factory
 from wtforms import widgets
 from wtforms.fields.core import StringField
+from wtforms.validators import DataRequired, ValidationError
+from wtforms_alchemy import model_form_factory
 
 from models import db, User
 

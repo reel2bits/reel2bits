@@ -1,13 +1,10 @@
-import pytz
 from flask import Blueprint, render_template, request, redirect, url_for, flash, Response, abort, json
 from flask_security import login_required, current_user
-from sqlalchemy import func
-from werkzeug.utils import secure_filename
-from forms import SoundUploadForm, SoundEditForm
-from models import db, User, UserLogging, Sound
 from flask_uploads import UploadSet, AUDIO
-from utils import get_hashed_filename
 
+from forms import SoundUploadForm, SoundEditForm
+from models import db, User, Sound
+from utils import get_hashed_filename
 
 bp_sound = Blueprint('bp_sound', __name__)
 
@@ -88,7 +85,7 @@ def upload():
             filename_orig = request.files['sound'].filename
             filename_hashed = get_hashed_filename(filename_orig)
 
-            filename = sounds.save(request.files['sound'], folder=user.slug, name=filename_hashed)
+            sounds.save(request.files['sound'], folder=user.slug, name=filename_hashed)
 
             rec = Sound()
             rec.filename = filename_hashed
@@ -118,7 +115,7 @@ def edit(username, soundslug):
     sound = Sound.query.filter(Sound.user_id == current_user.id, Sound.slug == soundslug).first()
     if not sound:
         flash("Sound not found", 'error')
-        return redirect(url_for('bp_users.profile', name=current_user.name))
+        return redirect(url_for('bp_users.profile', name=username))
 
     pcfg = {"title": "Edit {0}".format(sound.title)}
 
@@ -130,7 +127,7 @@ def edit(username, soundslug):
         sound.description = form.description.data
 
         db.session.commit()
-        return redirect(url_for('bp_sound.show', username=current_user.name, songslug=sound.slug))
+        return redirect(url_for('bp_sound.show', username=username, songslug=sound.slug))
 
     return render_template('sound/edit.jinja2', pcfg=pcfg, form=form, sound=sound)
 
@@ -141,9 +138,9 @@ def delete(username, soundslug):
     sound = Sound.query.filter(Sound.user_id == current_user.id, Sound.slug == soundslug).first()
     if not sound:
         flash("Sound not found", 'error')
-        return redirect(url_for('bp_users.profile', name=current_user.name))
+        return redirect(url_for('bp_users.profile', name=username))
 
     db.session.delete(sound)
     db.session.commit()
 
-    return redirect(url_for('bp_users.profile', name=current_user.name))
+    return redirect(url_for('bp_users.profile', name=username))

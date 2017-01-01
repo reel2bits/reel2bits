@@ -1,7 +1,6 @@
 import pytz
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_security import login_required, current_user
-from sqlalchemy import func
 
 from forms import UserProfileForm
 from models import db, User, UserLogging, Sound

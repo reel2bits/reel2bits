@@ -13,8 +13,8 @@ from flask_uploads import configure_uploads, UploadSet, AUDIO
 
 from controllers.admin import bp_admin
 from controllers.main import bp_main
-from controllers.users import bp_users
 from controllers.sound import bp_sound
+from controllers.users import bp_users
 from forms import ExtendedRegisterForm
 from models import db, user_datastore
 from utils import InvalidUsage, is_admin, gcfg, duration_elapsed_human, duration_song_human
@@ -88,9 +88,9 @@ def create_app(cfg=None):
     # Used in development
     @app.route('/uploads/<string:thing>/<path:stuff>', methods=['GET'])
     def get_uploads_stuff(thing, stuff):
-        dir = safe_join(app.config['UPLOADS_DEFAULT_DEST'], thing)
-        print("Get {0} from {1}".format(stuff, dir))
-        return send_from_directory(dir, stuff, as_attachment=True)
+        directory = safe_join(app.config['UPLOADS_DEFAULT_DEST'], thing)
+        print("Get {0} from {1}".format(stuff, directory))
+        return send_from_directory(directory, stuff, as_attachment=True)
 
     @app.errorhandler(404)
     def page_not_found(msg):

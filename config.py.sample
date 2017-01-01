@@ -38,3 +38,9 @@ UPLOADS_DEFAULT_DEST = "/home/reel2bits/uploads"
 TEMP_DOWNLOAD_FOLDER = "/home/reel2bits/tmp"
 
 AUDIOWAVEFORM_BIN = "/usr/local/bin/audiowaveform"
+
+SENTRY_USER_ATTRS = ['name', 'email']
+# If using Sentry comment:
+SENTRY_DSN = ""
+# And uncomment and fill with appropriate Sentry informations
+#SENTRY_DSN = "https://user:pass@sentry.your.host/ID?ca_certs=/etc/ssl/certs/ca-certificates.crt"

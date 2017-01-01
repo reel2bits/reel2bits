@@ -1,14 +1,16 @@
 # encoding: utf-8
-from pprint import pprint as pp
 import datetime
 import os
+from pprint import pprint as pp
+
 import texttable
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_migrate import MigrateCommand
 from flask_script import Manager
+
+from crons import cron_generate_sound_infos
 from dbseed import make_db_seed
 from models import db
-from crons import cron_generate_sound_infos
 
 try:
     from raven.contrib.flask import Sentry

@@ -1,23 +1,14 @@
 from __future__ import print_function
 
-import gzip
+import contextlib
 import os
-import shutil
-import urllib.parse
-import urllib.error
-import urllib.request
-import xml.etree.ElementTree as ElementTree
-import re
-import datetime
-
-from dateutil import parser
-from flask import current_app
+import wave
 
 import magic
 import mutagen
-import wave
-import contextlib
-from models import db, User, Sound, SoundInfo
+from flask import current_app
+
+from models import db, User, SoundInfo
 from utils import get_waveform, create_png_waveform
 
 

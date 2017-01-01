@@ -1,11 +1,12 @@
+import datetime
+import os
+
 from flask_security import SQLAlchemyUserDatastore, UserMixin, RoleMixin
 from flask_sqlalchemy import SQLAlchemy, BaseQuery
+from slugify import slugify
+from sqlalchemy import event
 from sqlalchemy.sql import func
 from sqlalchemy_searchable import make_searchable, SearchQueryMixin
-from sqlalchemy import event
-from slugify import slugify
-import os
-import datetime
 
 db = SQLAlchemy()
 make_searchable()
@@ -95,7 +96,6 @@ class UserLogging(db.Model):
     message = db.Column(db.Text, nullable=False)
     timestamp = db.Column(db.DateTime(timezone=False), server_default=func.now(), onupdate=func.now())
 
-    #log_id = db.Column(db.Integer(), db.ForeignKey('log.id'), nullable=True)
     user_id = db.Column(db.Integer(), db.ForeignKey('user.id'), nullable=False)
 
 
@@ -130,8 +130,8 @@ class Sound(db.Model):
     uploaded = db.Column(db.DateTime(timezone=False),
                          default=datetime.datetime.utcnow)
     updated = db.Column(db.DateTime(timezone=False),
-                         default=datetime.datetime.utcnow,
-                         onupdate=datetime.datetime.utcnow)
+                        default=datetime.datetime.utcnow,
+                        onupdate=datetime.datetime.utcnow)
     # TODO genre
     # TODO tags
     # TODO picture ?
@@ -159,8 +159,8 @@ class Sound(db.Model):
 @event.listens_for(User, 'after_update')
 @event.listens_for(User, 'after_insert')
 def make_user_slug(mapper, connection, target):
-    #if target.slug != "":
-    #    return
+    if target.slug != "":
+        return
     title = "{0} {1}".format(target.id, target.name)
     slug = slugify(title)
     connection.execute(

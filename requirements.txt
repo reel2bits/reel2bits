@@ -50,6 +50,7 @@ mysqlclient==1.3.7
 beautifulsoup4==4.4.1
 flask-uploads
 python-slugify
-LatLon
-git+http://dev.sigpipe.me/DashieHam/pyHamQth.git#egg=pyhamqth
-git+https://github.com/ggramaize/libqth.git#egg=libqth
+mutagen==1.36
+python-magic==0.4.12
+python-slugify==1.2.1
+raven==5.32.0
