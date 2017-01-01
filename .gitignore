@@ -5,4 +5,5 @@ TODO.org
 *.db
 uploads/pictures/*
 uploads/sounds/*
+uploads/waveforms/
 tmp/cty.xml
