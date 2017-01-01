@@ -149,13 +149,13 @@ def duration_elapsed_human(seconds):
     years = int(years)
 
     if years > 0:
-        return '%d year' % years + 's' * (years != 1)
+        return '%d y' % years
     elif days > 0:
-        return '%d day' % days + 's' * (days != 1)
+        return '%d d' % days
     elif hours > 0:
-        return '%d hour' % hours + 's' * (hours != 1)
+        return '%d h' % hours + 's' * (hours != 1)
     elif minutes > 0:
-        return '%d minute' % minutes + 's' * (minutes != 1)
+        return '%d mn' % minutes + 's' * (minutes != 1)
     else:
         return 'right now'
 

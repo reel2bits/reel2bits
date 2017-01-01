@@ -45,7 +45,9 @@
             </div>
             <div class="col-lg-6">
                 {% if waveform %}
-                <img src="{{ url_for('get_uploads_stuff', thing='waveforms', stuff=sound.path_waveform()) }}"/>
+                    <img src="{{ url_for('get_uploads_stuff', thing='waveforms', stuff=sound.path_waveform()) }}"/>
+                {% else %}
+                    <span class="label label-info">Please wait, song metadatas are processing...</span>
                 {% endif %}
             </div>
         </div>

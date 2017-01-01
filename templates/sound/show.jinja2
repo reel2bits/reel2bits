@@ -1,10 +1,16 @@
 {% extends "layout.jinja2" %}
 {% import "bootstrap/wtf.html" as wtf %}
+{% set info = sound.sound_infos.first() %}
 
 {% block content %}
     <div class="row">
-        <div class="col-lg-7 col-lg-offset-1">
+        <div class="col-lg-3 col-lg-offset-1 ss-user-back">
             <h3><i class="fa fa-angle-double-left" aria-hidden="true"></i> <a href="{{ url_for("bp_users.profile", name=sound.user.name) }}">{{ sound.user.name }}</a></h3>
+        </div>
+        <div class="col-lg-5">
+            {% if not info or not info.done_basic %}
+                <span class="label label-info">Please wait, song metadatas are processing...</span>
+            {% endif %}
         </div>
     </div>
 
@@ -14,7 +20,7 @@
         </div>
 
         <div class="col-lg-3">
-            <h3><i class="fa fa-calendar" aria-hidden="true"></i> {{ duration_elapsed_human(sound.elapsed()) }}</h3>
+            <h3><i class="fa fa-calendar" aria-hidden="true"></i> {{ duration_elapsed_human(sound.elapsed()) }} ago</h3>
         </div>
     </div>
 
@@ -70,7 +76,6 @@
                     {% endif %}
                 </tr>
 
-            {% set info = sound.sound_infos.first() %}
             {% if info %}
                 <tr><td>Duration</td><td colspan="2">{{ duration_song_human(info.duration) }}</td></tr>
                 {% if info.type_human %}<tr><td>Type</td><td colspan="2">{{ info.type_human }}</td></tr>{% endif %}

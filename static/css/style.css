@@ -81,3 +81,7 @@ div.sound-description {
     font-size: 10px;
     word-wrap: break-word;
 }
+
+div.ss-user-back h3 {
+    margin-top: 0px;
+}
