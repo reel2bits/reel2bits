@@ -46,6 +46,9 @@ Number.prototype.toRealFixed = function(digits) {
 };
 
 function secondsTimeSpanToMS(s) {
+    if (isNaN(s)) {
+        return "00:00";
+    }
     var m = Math.floor(s / 60); //Get remaining minutes
     s -= m * 60;
     s = Math.floor(s);

@@ -105,6 +105,7 @@
         }).done(function(data) {
             $('.song-active').removeClass('song-active');
 
+            wavesurfer.stop();
             wavesurfer.empty();
             load_wf("/uploads/sounds/" + data.filename, data.data);
 
