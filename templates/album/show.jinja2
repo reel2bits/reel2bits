@@ -97,10 +97,32 @@
 
 {% block scripts %}
 <script>
-    function switch_song(id, href, data) {
-        console.log("Switching to song ID " + id);
-        wavesurfer.empty();
-        load_wf("/uploads/sounds/" + data.filename, data.data);
+    function switch_song(element, autoplay) {
+        console.log("Switching to song ID " + element.data().id);
+
+        $.getJSON(element.data().href, function() {
+           console.log("success");
+        }).done(function(data) {
+            $('.song-active').removeClass('song-active');
+
+            wavesurfer.empty();
+            load_wf("/uploads/sounds/" + data.filename, data.data);
+
+            $('#song-title').html(data.title.substring(0, 100));
+
+            element.addClass("song-active");
+
+            $('#player-time-cur').html("00:00");
+            $('#player-time-tot').html(secondsTimeSpanToMS(wavesurfer.getDuration()));
+
+            if (autoplay) {
+                wavesurfer.play();
+            }
+        }).fail(function(data) {
+            //show_alert("danger", '{{ gettext("Switch sound") }}', '{{ gettext("An error occured") }}')
+        });
+
+
     }
 
     $("tr.play-song").click(function() {
@@ -109,19 +131,7 @@
             return; // ignore self click
         }
         var element = $(this);
-
-        var dataset = this.dataset;
-        $.getJSON(dataset.href, function() {
-           console.log("success");
-        }).done(function(data) {
-            $('.song-active').removeClass('song-active');
-            switch_song(dataset.id, dataset.href, data);
-            $('#song-title').html(data.title.substring(0, 100));
-            element.addClass("song-active");
-            $('#player-time-cur').html("00:00");
-        }).fail(function(data) {
-            //show_alert("danger", '{{ gettext("Switch sound") }}', '{{ gettext("An error occured") }}')
-        });
+        switch_song(element, false);
     });
 
     opts = {
@@ -154,6 +164,15 @@
     wavesurfer.on('ready', function() {
         var duration_time = wavesurfer.getDuration();
         $('#player-time-tot').html(secondsTimeSpanToMS(duration_time));
+    });
+    wavesurfer.on('error', function(data) {
+        console.log(data);
+    });
+    wavesurfer.on('finish', function() {
+        let a = $('.song-active').next();
+        if (a.length > 0) {
+            switch_song(a, true);
+        }
     });
 
     // Initial call
