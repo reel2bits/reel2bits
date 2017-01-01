@@ -85,3 +85,7 @@ div.sound-description {
 div.ss-user-back h3 {
     margin-top: 0px;
 }
+
+td.log-actions {
+    text-align: center;
+}

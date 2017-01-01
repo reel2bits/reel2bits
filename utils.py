@@ -12,7 +12,7 @@ from flask import current_app
 from flask_security import current_user
 from unidecode import unidecode
 
-from models import db, Apitoken, Role, Logging, Config
+from models import db, Apitoken, Role, Logging, Config, UserLogging
 
 _punct_re = re.compile(r'[\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')
 
@@ -129,8 +129,17 @@ def is_admin():
 def add_log(category, level, message):
     if not category or not level or not message:
         print("!! Fatal error in add_log() one of three variables not set")
-    print("[LOG][{0}][{1}] {2}".format(level, category, message))
-    a = Logging(category=category, level=level, message=message)
+    print("[LOG][{0}][{1}] {2}".format(level.upper(), category, message))
+    a = Logging(category=category, level=level.upper(), message=message)
+    db.session.add(a)
+    db.session.commit()
+
+
+def add_user_log(item, user, category, level, message):
+    if not category or not level or not message or not item:
+        print("!! Fatal error in add_user_log() one of three variables not set")
+    print("[LOG][{0}][{1}][u:{2}i:{3}] {4}".format(level.upper(), category, user, item, message))
+    a = UserLogging(category=category, level=level.upper(), message=message, sound_id=item, user_id=user)
     db.session.add(a)
     db.session.commit()
 

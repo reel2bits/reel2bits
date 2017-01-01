@@ -1,5 +1,5 @@
 import pytz
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, Response, json
 from flask_security import login_required, current_user
 
 from forms import UserProfileForm
@@ -21,6 +21,19 @@ def logs():
         _logs = UserLogging.query.filter(UserLogging.user_id == current_user.id
                                          ).order_by(UserLogging.timestamp.desc()).limit(100).all()
     return render_template('users/user_logs.jinja2', pcfg=pcfg, logs=_logs)
+
+
+@bp_users.route('/user/logs/<int:log_id>/delete', methods=['GET', 'DELETE', 'PUT'])
+@login_required
+def logs_delete(log_id):
+    log = UserLogging.query.filter(UserLogging.id == log_id, UserLogging.user_id == current_user.id).first()
+    if not log:
+        _datas = {"status": "error", "id": log_id}
+    else:
+        db.session.delete(log)
+        db.session.commit()
+        _datas = {"status": "deleted", "id": log_id}
+    return Response(json.dumps(_datas), mimetype='application/json;charset=utf-8')
 
 
 @bp_users.route('/user/<string:name>', methods=['GET'])

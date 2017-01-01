@@ -20,29 +20,58 @@
             <tr>
                 <th>Date</th>
                 <th>Category</th>
-                <th>Level</th>
-                <th>Item</th>
+                <th width="100px">Level</th>
+                <th width="100px">Sound</th>
                 <th>Message</th>
-                <th>Actions</th>
+                <th width="100px"></th>
             </tr>
             {% for log in logs %}
-                <tr>
+                <tr data-log-id="{{ log.id }}">
                     <td width="13%">{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
                     <td>{{ log.category }}</td>
-                    <td>{{ log.level }}</td>
-                    <td>
-                        {% if log.item %}
-                        <a href="{{ url_for('bp_qsos.view', username=log.user.name, logbook_id=log.logbook.id, qso_id=log.log.id) }}">{{ log.log.id }}</a>
+                    <td>{{ log.level }}<td>
+                        {% if log.sound %}
+                            ID <a href="{{ url_for('bp_sound.show', username=log.user.name, songslug=log.sound.slug) }}">{{ log.sound.id }}</a>
                         {% else %}
                             None
                         {% endif %}
                     </td>
                     <td>{{ log.message | replace('\r\n', '<br>') }}</td>
-                    <td></td>
+                    <td class="log-actions">
+                        <a role="button" tabindex="0" class="btn btn-danger btn-xs" data-trigger="focus"
+                           data-container="body" data-toggle="popover" data-placement="left" data-html="true"
+                           data-content="<a class='btn btn-success btn-xs delete_log_link' data-id='{{ log.id }}' data-href='{{ url_for('bp_users.logs_delete', log_id=log.id) }}'>yes really</a>">delete</a>
+                    </td>
                 </tr>
             {% endfor %}
         </table>
 
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(function () {
+        $('[data-toggle="popover"]').popover().on('shown.bs.popover', function (eventShown) {
+            $("a.delete_log_link").click(function() {
+                console.log("Deleting log " + this.dataset.id + " on " + this.dataset.href);
+
+                $.getJSON(this.dataset.href, function() {
+                   console.log("success");
+                }).done(function(data) {
+                    console.log("Got status: " + data.status + " for ID " + data.id);
+                    if (data.status == "deleted") {
+                        $('[data-log-id="' + data.id + '"]').remove();
+                    } else {
+                        show_alert("danger", "Log deletion", "An error occured");
+                    }
+                }).fail(function(data) {
+                    console.log("fail" + data);
+                });
+
+            });
+        });
+    });
+</script>
 {% endblock %}
