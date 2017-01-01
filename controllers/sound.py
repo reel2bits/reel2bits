@@ -19,20 +19,20 @@ def show(username, songslug):
     user = User.query.filter(User.name == username).first()
     if not user:
         flash("User not found", "error")
-        redirect(url_for("bp_main.home"))
+        return redirect(url_for("bp_main.home"))
     sound = Sound.query.filter(Sound.slug == songslug, Sound.user_id == user.id).first()
     if not sound:
         flash("Sound not found", "error")
-        redirect(url_for("bp_users.profile", user=user.name))
+        return redirect(url_for("bp_users.profile", name=user.name))
 
     if not sound.public:
-        if current_user:
+        if current_user.is_authenticated:
             if sound.user_id != current_user.id:
                 flash("Sound not found", "error")
-                redirect(url_for("bp_users.profile", user=user.name))
+                return redirect(url_for("bp_users.profile", name=user.name))
         else:
             flash("Sound not found", "error")
-            redirect(url_for("bp_users.profile", user=user.name))
+            return redirect(url_for("bp_users.profile", name=user.name))
 
     pcfg = {"title": sound.title}
 
@@ -53,20 +53,20 @@ def waveform_json(username, songslug):
     user = User.query.filter(User.name == username).first()
     if not user:
         flash("User not found", "error")
-        redirect(url_for("bp_main.home"))
+        return redirect(url_for("bp_main.home"))
     sound = Sound.query.filter(Sound.slug == songslug, Sound.user_id == user.id).first()
     if not sound:
         flash("Sound not found", "error")
-        redirect(url_for("bp_users.profile", user=user.name))
+        return redirect(url_for("bp_users.profile", user=user.name))
 
     if not sound.public:
         if current_user:
             if sound.user_id != current_user.id:
                 flash("Sound not found", "error")
-                redirect(url_for("bp_users.profile", user=user.name))
+                return redirect(url_for("bp_users.profile", user=user.name))
         else:
             flash("Sound not found", "error")
-            redirect(url_for("bp_users.profile", user=user.name))
+            return redirect(url_for("bp_users.profile", user=user.name))
 
     si = sound.sound_infos.first()
     if not si:
