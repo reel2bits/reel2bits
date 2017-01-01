@@ -12,7 +12,7 @@ bp_sound = Blueprint('bp_sound', __name__)
 sounds = UploadSet('sounds', AUDIO)
 
 
-@bp_sound.route('/user/<string:username>/<string:soundslug>', methods=['GET'])
+@bp_sound.route('/user/<string:username>/track/<string:soundslug>', methods=['GET'])
 def show(username, soundslug):
     user = User.query.filter(User.name == username).first()
     if not user:
@@ -46,7 +46,7 @@ def show(username, soundslug):
     return render_template('sound/show.jinja2', pcfg=pcfg, user=user, sound=sound, waveform=si_w)
 
 
-@bp_sound.route('/user/<string:username>/<string:soundslug>/waveform.json', methods=['GET'])
+@bp_sound.route('/user/<string:username>/track/<string:soundslug>/waveform.json', methods=['GET'])
 def waveform_json(username, soundslug):
     user = User.query.filter(User.name == username).first()
     if not user:
@@ -110,7 +110,7 @@ def upload():
     return render_template('sound/upload.jinja2', pcfg=pcfg, form=form)
 
 
-@bp_sound.route('/user/<string:username>/<string:soundslug>/edit', methods=['GET', 'POST'])
+@bp_sound.route('/user/<string:username>/track/<string:soundslug>/edit', methods=['GET', 'POST'])
 @login_required
 def edit(username, soundslug):
     sound = Sound.query.filter(Sound.user_id == current_user.id, Sound.slug == soundslug).first()
@@ -133,7 +133,7 @@ def edit(username, soundslug):
     return render_template('sound/edit.jinja2', pcfg=pcfg, form=form, sound=sound)
 
 
-@bp_sound.route('/user/<string:username>/<string:soundslug>/delete', methods=['GET', 'DELETE', 'PUT'])
+@bp_sound.route('/user/<string:username>/track/<string:soundslug>/delete', methods=['GET', 'DELETE', 'PUT'])
 @login_required
 def delete(username, soundslug):
     sound = Sound.query.filter(Sound.user_id == current_user.id, Sound.slug == soundslug).first()
