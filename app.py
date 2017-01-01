@@ -4,7 +4,7 @@ import os
 import subprocess
 from logging.handlers import RotatingFileHandler
 
-from flask import Flask, render_template, g, send_from_directory, jsonify
+from flask import Flask, render_template, g, send_from_directory, jsonify, safe_join
 from flask_bootstrap import Bootstrap
 from flask_mail import Mail
 from flask_migrate import Migrate
@@ -88,9 +88,9 @@ def create_app(cfg=None):
     # Used in development
     @app.route('/uploads/<string:thing>/<path:stuff>', methods=['GET'])
     def get_uploads_stuff(thing, stuff):
-        dir = os.path.join(app.config['UPLOADS_DEFAULT_DEST'], thing)
+        dir = safe_join(app.config['UPLOADS_DEFAULT_DEST'], thing)
         print("Get {0} from {1}".format(stuff, dir))
-        return send_from_directory(dir, stuff, as_attachment=False)
+        return send_from_directory(dir, stuff, as_attachment=True)
 
     @app.errorhandler(404)
     def page_not_found(msg):

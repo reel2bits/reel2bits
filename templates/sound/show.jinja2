@@ -58,31 +58,36 @@
     </div>
     <div class="col-lg-3">
         <table class="table table-condensed table-hoverable">
-            {% if current_user.is_authenticated and sound.user_id == current_user.id  %}
                 <tr>
-                    <td class="si_btn_edit"><a class="btn btn-success btn-xs" href="{{ url_for('bp_sound.edit', username=sound.user.name, soundslug=sound.slug) }}">edit</a></td>
-                    <td class="si_btn_delete"><a class="btn btn-danger btn-xs delete_link" href="{{ url_for('bp_sound.delete', username=sound.user.name, soundslug=sound.slug) }}">delete</a></td>
+                    <td>
+                        <a class="btn btn-info btn-xs" href="{{ url_for('get_uploads_stuff', thing='sounds', stuff=sound.filename) }}">
+                            <i class="fa fa-download" aria-hidden="true"></i> download
+                        </a>
+                    </td>
+                    {% if current_user.is_authenticated and sound.user_id == current_user.id  %}
+                        <td class="si_btn_edit"><a class="btn btn-success btn-xs" href="{{ url_for('bp_sound.edit', username=sound.user.name, soundslug=sound.slug) }}">edit</a></td>
+                        <td class="si_btn_delete"><a class="btn btn-danger btn-xs delete_link" href="{{ url_for('bp_sound.delete', username=sound.user.name, soundslug=sound.slug) }}">delete</a></td>
+                    {% endif %}
                 </tr>
-            {% endif %}
 
             {% set info = sound.sound_infos.first() %}
             {% if info %}
-                <tr><td>Duration</td><td>{{ duration_song_human(info.duration) }}</td></tr>
-                {% if info.type_human %}<tr><td>Type</td><td>{{ info.type_human }}</td></tr>{% endif %}
-                {% if info.codec %}<tr><td>Codec</td><td>{{ info.codec }}</td></tr>{% endif %}
-                {% if info.format %}<tr><td>Format</td><td>{{ info.format }} bits</td></tr>{% endif %}
-                {% if info.channels %}<tr><td>Channels</td><td>{{ info.channels }}</td></tr>{% endif %}
-                {% if info.rate %}<tr><td>Rate</td><td>{{ info.rate }} Hz</td></tr>{% endif %}
+                <tr><td>Duration</td><td colspan="2">{{ duration_song_human(info.duration) }}</td></tr>
+                {% if info.type_human %}<tr><td>Type</td><td colspan="2">{{ info.type_human }}</td></tr>{% endif %}
+                {% if info.codec %}<tr><td>Codec</td><td colspan="2">{{ info.codec }}</td></tr>{% endif %}
+                {% if info.format %}<tr><td>Format</td><td colspan="2">{{ info.format }} bits</td></tr>{% endif %}
+                {% if info.channels %}<tr><td>Channels</td><td colspan="2">{{ info.channels }}</td></tr>{% endif %}
+                {% if info.rate %}<tr><td>Rate</td><td colspan="2">{{ info.rate }} Hz</td></tr>{% endif %}
 
                 {% if info.bitrate and info.bitrate_mode %}
-                    <tr><td>Bitrate</td><td>{{ info.bitrate_mode }} {{ info.bitrate }} bps</td></tr>
+                    <tr><td>Bitrate</td><td colspan="2">{{ info.bitrate_mode }} {{ info.bitrate }} bps</td></tr>
                 {% else %}
                     {% if info.bitrate %}
-                        <tr><td>Bitrate</td><td>{{ info.bitrate }} bps</td></tr>
+                        <tr><td>Bitrate</td><td colspan="2">{{ info.bitrate }} bps</td></tr>
                     {% endif %}
 
                     {% if info.bitrate_mode %}
-                        <tr><td>Bitrate mode</td><td>{{ info.bitrate_mode }}</td></tr>
+                        <tr><td>Bitrate mode</td><td colspan="2">{{ info.bitrate_mode }}</td></tr>
                     {% endif %}
                 {% endif %}
 
