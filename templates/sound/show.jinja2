@@ -10,7 +10,7 @@
 
     <div class="row">
         <div class="col-lg-7 col-lg-offset-1">
-            <h3>{% if not sound.private %}<i class="fa fa-music" aria-hidden="true"></i>{% else %}<i class="fa fa-lock" aria-hidden="true"></i>{% endif %} {{ sound.title }}</h3>
+            <h3>{% if not sound.private %}<i class="fa fa-music" aria-hidden="true"></i>{% else %}<i class="fa fa-lock" aria-hidden="true"></i>{% endif %} {{ sound.title|truncate(40) }}</h3>
         </div>
 
         <div class="col-lg-3">

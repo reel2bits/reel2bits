@@ -7,7 +7,7 @@
 
     <div class="row">
         <div class="col-lg-10">
-            See:&nbsp;<a href="{{ url_for('bp_users.profile', name=user.name) }}">all sounds ({{ sounds.count() }})</a>
+            See:&nbsp;<a href="{{ url_for('bp_users.profile', name=user.name) }}">all sounds <span class="badge">{{ sounds.count() }}</span></a>
         </div>
         <div class="col-lg-2">
             {% if current_user.is_authenticated and user == current_user %}
@@ -34,7 +34,7 @@
 
             <div class="col-lg-6">
                 {% if not sound.private %}<i class="fa fa-music" aria-hidden="true"></i>{% else %}<i class="fa fa-lock" aria-hidden="true"></i>{% endif %}&nbsp;
-                <a href="{{ url_for("bp_sound.show", username=user.name, songslug=sound.slug) }}">{{ sound.title }}</a>
+                <a href="{{ url_for("bp_sound.show", username=user.name, songslug=sound.slug) }}">{{ sound.title|truncate(60) }}</a>
                 <br />
                 <i class="fa fa-calendar" aria-hidden="true"></i> {{ duration_elapsed_human(sound.elapsed()) }} ago
 

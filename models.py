@@ -176,7 +176,7 @@ def make_sound_slug(mapper, connection, target):
             title = "{0} {1}".format(target.id, target.filename)
         else:
             title = "{0} {1}".format(target.id, target.title)
-        slug = slugify(title)
+        slug = slugify(title[:255])
         connection.execute(
             Sound.__table__.update().where(Sound.__table__.c.id == target.id).values(slug=slug)
         )

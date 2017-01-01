@@ -5,7 +5,7 @@ from flask_wtf.file import FileField, FileAllowed, FileRequired
 from wtforms import PasswordField, SubmitField, SelectField, BooleanField, TextAreaField
 from wtforms import widgets
 from wtforms.fields.core import StringField
-from wtforms.validators import DataRequired, ValidationError
+from wtforms.validators import DataRequired, ValidationError, Length
 from wtforms_alchemy import model_form_factory
 
 from models import db, User
@@ -48,23 +48,23 @@ class UserProfileForm(ModelForm):
     class Meta:
         model = User
 
-    password = PasswordField('Password')
-    name = StringField('Name')
-    email = StringField('Email')
-    firstname = StringField('Firstname')
-    lastname = StringField('Lastname')
+    password = PasswordField('Password', [Length(min=10, max=255)])
+    name = StringField('Name', [Length(max=255)])
+    email = StringField('Email', [Length(max=255)])
+    firstname = StringField('Firstname', [Length(max=32)])
+    lastname = StringField('Lastname', [Length(max=32)])
     timezone = SelectField(coerce=str, label='Timezone', default='UTC')
     submit = SubmitField('Update profile')
 
 
 class ConfigForm(Form):
-    app_name = StringField('App Name', [DataRequired()])
+    app_name = StringField('App Name', [DataRequired(), Length(max=255)])
 
     submit = SubmitField('Update config')
 
 
 class SoundUploadForm(Form):
-    title = StringField('Title')
+    title = StringField('Title', [Length(max=255)])
     sound = FileField('File', [FileRequired(), FileAllowed(AUDIO)])
     private = BooleanField('Private', default=False)
 
@@ -72,7 +72,7 @@ class SoundUploadForm(Form):
 
 
 class SoundEditForm(Form):
-    title = StringField('Title')
+    title = StringField('Title', [Length(max=255)])
     private = BooleanField('Private', default=False)
     description = TextAreaField('Description')
 
