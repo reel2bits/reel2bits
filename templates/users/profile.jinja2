@@ -10,7 +10,7 @@
             See:&nbsp;<a href="{{ url_for('bp_users.profile', name=user.name) }}">all sounds</a>
         </div>
         <div class="col-lg-2">
-            {% if current_user.is_authenticated %}
+            {% if current_user.is_authenticated and user == current_user %}
             <a class="btn btn-primary btn-xs" href="{{ url_for('bp_users.edit') }}">Edit profile</a>
             {% endif %}
         </div>
@@ -18,7 +18,7 @@
 
     <hr>
 
-    {% for sound in user.sounds %}
+    {% for sound in user.sounds.order_by("uploaded desc") %}
         <div class="row">
 
         {% if sound.sound_infos.first() %}

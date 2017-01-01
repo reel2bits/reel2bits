@@ -40,7 +40,7 @@ def show(username, songslug):
     else:
         si_w = None
 
-    if si.type == "FLAC":
+    if si and si.type == "FLAC":
         flash("No HTML5 player supported actually", 'info')
 
     return render_template('sound/show.jinja2', pcfg=pcfg, user=user, sound=sound, waveform=si_w)

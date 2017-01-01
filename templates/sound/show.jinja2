@@ -58,15 +58,15 @@
     </div>
     <div class="col-lg-3">
         <table class="table table-condensed table-hoverable">
+            {% if current_user.is_authenticated and sound.user_id == current_user.id  %}
+                <tr>
+                    <td class="si_btn_edit"><a class="btn btn-success btn-xs" href="{{ url_for('bp_sound.edit', username=sound.user.name, soundslug=sound.slug) }}">edit</a></td>
+                    <td class="si_btn_delete"><a class="btn btn-danger btn-xs delete_link" href="{{ url_for('bp_sound.delete', username=sound.user.name, soundslug=sound.slug) }}">delete</a></td>
+                </tr>
+            {% endif %}
+
             {% set info = sound.sound_infos.first() %}
             {% if info %}
-                {% if current_user.is_authenticated and sound.user_id == current_user.id%}
-                    <tr>
-                        <td class="si_btn_edit"><a class="btn btn-success btn-xs" href="{{ url_for('bp_sound.edit', username=sound.user.name, soundslug=sound.slug) }}">edit</a></td>
-                        <td class="si_btn_delete"><a class="btn btn-danger btn-xs delete_link" href="{{ url_for('bp_sound.delete', username=sound.user.name, soundslug=sound.slug) }}">delete</a></td>
-                    </tr>
-                {% endif %}
-
                 <tr><td>Duration</td><td>{{ duration_song_human(info.duration) }}</td></tr>
                 {% if info.type_human %}<tr><td>Type</td><td>{{ info.type_human }}</td></tr>{% endif %}
                 {% if info.codec %}<tr><td>Codec</td><td>{{ info.codec }}</td></tr>{% endif %}
