@@ -31,7 +31,7 @@
                     <td>{{ log.category }}</td>
                     <td>{{ log.level }}<td>
                         {% if log.sound %}
-                            ID <a href="{{ url_for('bp_sound.show', username=log.user.name, songslug=log.sound.slug) }}">{{ log.sound.id }}</a>
+                            ID <a href="{{ url_for('bp_sound.show', username=log.user.name, soundslug=log.sound.slug) }}">{{ log.sound.id }}</a>
                         {% else %}
                             None
                         {% endif %}

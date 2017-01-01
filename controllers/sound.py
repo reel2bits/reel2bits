@@ -11,13 +11,13 @@ bp_sound = Blueprint('bp_sound', __name__)
 sounds = UploadSet('sounds', AUDIO)
 
 
-@bp_sound.route('/user/<string:username>/<string:songslug>', methods=['GET'])
-def show(username, songslug):
+@bp_sound.route('/user/<string:username>/<string:soundslug>', methods=['GET'])
+def show(username, soundslug):
     user = User.query.filter(User.name == username).first()
     if not user:
         flash("User not found", "error")
         return redirect(url_for("bp_main.home"))
-    sound = Sound.query.filter(Sound.slug == songslug, Sound.user_id == user.id).first()
+    sound = Sound.query.filter(Sound.slug == soundslug, Sound.user_id == user.id).first()
     if not sound:
         flash("Sound not found", "error")
         return redirect(url_for("bp_users.profile", name=user.name))
@@ -45,13 +45,13 @@ def show(username, songslug):
     return render_template('sound/show.jinja2', pcfg=pcfg, user=user, sound=sound, waveform=si_w)
 
 
-@bp_sound.route('/user/<string:username>/<string:songslug>/waveform.json', methods=['GET'])
-def waveform_json(username, songslug):
+@bp_sound.route('/user/<string:username>/<string:soundslug>/waveform.json', methods=['GET'])
+def waveform_json(username, soundslug):
     user = User.query.filter(User.name == username).first()
     if not user:
         flash("User not found", "error")
         return redirect(url_for("bp_main.home"))
-    sound = Sound.query.filter(Sound.slug == songslug, Sound.user_id == user.id).first()
+    sound = Sound.query.filter(Sound.slug == soundslug, Sound.user_id == user.id).first()
     if not sound:
         flash("Sound not found", "error")
         return redirect(url_for("bp_users.profile", user=user.name))
@@ -103,7 +103,7 @@ def upload():
             flash('Uploaded !', 'success')
         else:
             return render_template('sound/upload.jinja2', pcfg=pcfg, form=form, flash='Error with the file')
-        return redirect(url_for('bp_sound.show', username=current_user.name, songslug=rec.slug))
+        return redirect(url_for('bp_sound.show', username=current_user.name, soundslug=rec.slug))
 
     # GET
     return render_template('sound/upload.jinja2', pcfg=pcfg, form=form)
@@ -127,7 +127,7 @@ def edit(username, soundslug):
         sound.description = form.description.data
 
         db.session.commit()
-        return redirect(url_for('bp_sound.show', username=username, songslug=sound.slug))
+        return redirect(url_for('bp_sound.show', username=username, soundslug=sound.slug))
 
     return render_template('sound/edit.jinja2', pcfg=pcfg, form=form, sound=sound)
 
