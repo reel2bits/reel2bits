@@ -148,6 +148,7 @@ class Sound(db.Model):
     slug = db.Column(db.String(255), unique=True, nullable=True)
     filename = db.Column(db.String(255), unique=False, nullable=True)
     filename_orig = db.Column(db.String(255), unique=False, nullable=True)
+    album_order = db.Column(db.Integer, nullable=True)
 
     user_id = db.Column(db.Integer(), db.ForeignKey('user.id'), nullable=False)
     album_id = db.Column(db.Integer(), db.ForeignKey('album.id'), nullable=True)
@@ -184,7 +185,7 @@ class Album(db.Model):
     slug = db.Column(db.String(255), unique=True, nullable=True)
 
     user_id = db.Column(db.Integer(), db.ForeignKey('user.id'), nullable=False)
-    sounds = db.relationship('Sound', backref='album', lazy='dynamic', cascade="delete")
+    sounds = db.relationship('Sound', backref='album', lazy='dynamic')
 
     __mapper_args__ = {"order_by": created.desc()}
 
