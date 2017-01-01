@@ -53,6 +53,7 @@ class User(db.Model, UserMixin):
     loggings = db.relationship('Logging', backref='user', lazy='dynamic', cascade="delete")
 
     sounds = db.relationship('Sound', backref='user', lazy='dynamic', cascade="delete")
+    albums = db.relationship('Album', backref='user', lazy='dynamic', cascade="delete")
 
     __mapper_args__ = {"order_by": name}
 
@@ -145,6 +146,7 @@ class Sound(db.Model):
     filename_orig = db.Column(db.String(255), unique=False, nullable=True)
 
     user_id = db.Column(db.Integer(), db.ForeignKey('user.id'), nullable=False)
+    album_id = db.Column(db.Integer(), db.ForeignKey('album.id'), nullable=True)
     sound_infos = db.relationship('SoundInfo', backref='sound_info', lazy='dynamic', cascade="delete")
     user_loggings = db.relationship('UserLogging', backref='sound', lazy='dynamic', cascade="delete")
 
@@ -158,6 +160,25 @@ class Sound(db.Model):
 
     def path_sound(self):
         return os.path.join(self.user.slug, self.filename)
+
+
+class Album(db.Model):
+    __tablename__ = "album"
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(255), nullable=True)
+    created = db.Column(db.DateTime(timezone=False),
+                         default=datetime.datetime.utcnow)
+    updated = db.Column(db.DateTime(timezone=False),
+                        default=datetime.datetime.utcnow,
+                        onupdate=datetime.datetime.utcnow)
+    # TODO tags
+    description = db.Column(db.UnicodeText(), nullable=True)
+    private = db.Column(db.Boolean(), default=False, nullable=True)
+    slug = db.Column(db.String(255), unique=True, nullable=True)
+
+    user_id = db.Column(db.Integer(), db.ForeignKey('user.id'), nullable=False)
+    sounds = db.relationship('Sound', backref='album', lazy='dynamic', cascade="delete")
 
 
 @event.listens_for(User, 'after_update')
@@ -183,4 +204,15 @@ def make_sound_slug(mapper, connection, target):
         slug = slugify(title[:255])
         connection.execute(
             Sound.__table__.update().where(Sound.__table__.c.id == target.id).values(slug=slug)
+        )
+
+
+@event.listens_for(Album, 'after_update')
+@event.listens_for(Album, 'after_insert')
+def make_album_slug(mapper, connection, target):
+    if not target.slug or target.slug == "":
+        title = "{0} {1}".format(target.id, target.title)
+        slug = slugify(title[:255])
+        connection.execute(
+            Album.__table__.update().where(Album.__table__.c.id == target.id).values(slug=slug)
         )
