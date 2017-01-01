@@ -10,7 +10,7 @@
 
     <div class="row">
         <div class="col-lg-7 col-lg-offset-1">
-            <h3>{% if sound.public %}<i class="fa fa-music" aria-hidden="true"></i>{% else %}<i class="fa fa-lock" aria-hidden="true"></i>{% endif %} {{ sound.title or sound.filename }}</h3>
+            <h3>{% if sound.public %}<i class="fa fa-music" aria-hidden="true"></i>{% else %}<i class="fa fa-lock" aria-hidden="true"></i>{% endif %} {{ sound.title }}</h3>
         </div>
 
         <div class="col-lg-3">
@@ -60,7 +60,7 @@
         <table class="table table-condensed table-hoverable">
                 <tr>
                     <td>
-                        <a class="btn btn-info btn-xs" href="{{ url_for('get_uploads_stuff', thing='sounds', stuff=sound.filename) }}">
+                        <a class="btn btn-info btn-xs" href="{{ url_for('get_uploads_stuff', thing='sounds', stuff=sound.path_sound()) }}">
                             <i class="fa fa-download" aria-hidden="true"></i> download
                         </a>
                     </td>
@@ -116,12 +116,12 @@
 
         var max = Math.max.apply(Math, waveform['data']);
 
-        wavesurfer.load("{{ url_for('get_uploads_stuff', thing='sounds', stuff=sound.filename) }}", waveform['data'].map(p => p / max));
+        wavesurfer.load("{{ url_for('get_uploads_stuff', thing='sounds', stuff=sound.path_sound()) }}", waveform['data'].map(p => p / max));
     {% else %}
         opts["normalize"] = true;
         var wavesurfer = WaveSurfer.create(opts);
 
-        wavesurfer.load("{{ url_for('get_uploads_stuff', thing='sounds', stuff=sound.filename) }}");
+        wavesurfer.load("{{ url_for('get_uploads_stuff', thing='sounds', stuff=sound.path_sound()) }}");
     {% endif %}
 
     $('#player-time-cur').html("00:00");

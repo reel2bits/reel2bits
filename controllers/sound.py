@@ -6,6 +6,8 @@ from werkzeug.utils import secure_filename
 from forms import SoundUploadForm, SoundEditForm
 from models import db, User, UserLogging, Sound
 from flask_uploads import UploadSet, AUDIO
+from utils import get_hashed_filename
+
 
 bp_sound = Blueprint('bp_sound', __name__)
 
@@ -32,7 +34,7 @@ def show(username, songslug):
             flash("Sound not found", "error")
             redirect(url_for("bp_users.profile", user=user.name))
 
-    pcfg = {"title": (sound.title or sound.filename)}
+    pcfg = {"title": sound.title}
 
     si = sound.sound_infos.first()
     if si:
@@ -77,16 +79,26 @@ def waveform_json(username, songslug):
 @login_required
 def upload():
     pcfg = {"title": "New upload"}
+    user = User.query.filter(User.id == current_user.id).one()
 
     form = SoundUploadForm()
 
     if request.method == 'POST' and 'sound' in request.files:
         if form.validate_on_submit():
-            filename = sounds.save(request.files['sound'])
+            filename_orig = request.files['sound'].filename
+            filename_hashed = get_hashed_filename(filename_orig)
+
+            filename = sounds.save(request.files['sound'], folder=user.slug, name=filename_hashed)
+
             rec = Sound()
-            rec.filename = filename
+            rec.filename = filename_hashed
+            rec.filename_orig = filename_orig
+
             rec.user_id = current_user.id
-            rec.title = form.title.data
+            if not form.title.data:
+                rec.title = filename_orig
+            else:
+                rec.title = form.title.data
             rec.public = form.public.data
 
             db.session.add(rec)
@@ -108,7 +120,7 @@ def edit(username, soundslug):
         flash("Sound not found", 'error')
         return redirect(url_for('bp_users.profile', name=current_user.name))
 
-    pcfg = {"title": "Edit {0}".format(sound.title or sound.filename)}
+    pcfg = {"title": "Edit {0}".format(sound.title)}
 
     form = SoundEditForm(request.form, sound)
 
@@ -121,6 +133,7 @@ def edit(username, soundslug):
         return redirect(url_for('bp_sound.show', username=current_user.name, songslug=sound.slug))
 
     return render_template('sound/edit.jinja2', pcfg=pcfg, form=form, sound=sound)
+
 
 @bp_sound.route('/user/<string:username>/<string:soundslug>/delete', methods=['GET', 'DELETE', 'PUT'])
 @login_required

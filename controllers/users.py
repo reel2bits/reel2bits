@@ -4,7 +4,7 @@ from flask_security import login_required, current_user
 from sqlalchemy import func
 
 from forms import UserProfileForm
-from models import db, User, UserLogging
+from models import db, User, UserLogging, Sound
 
 bp_users = Blueprint('bp_users', __name__)
 
@@ -33,7 +33,12 @@ def profile(name):
         flash("User not found", 'error')
         return redirect(url_for("bp_main.home"))
 
-    return render_template('users/profile.jinja2', pcfg=pcfg, user=user)
+    if current_user.is_authenticated and user.id == current_user.id:
+        sounds = Sound.query.filter(Sound.user_id == user.id)
+    else:
+        sounds = Sound.query.filter(Sound.user_id == user.id, Sound.public.is_(True))
+
+    return render_template('users/profile.jinja2', pcfg=pcfg, user=user, sounds=sounds)
 
 
 @bp_users.route('/user/edit', methods=['GET', 'POST'])
@@ -55,6 +60,6 @@ def edit():
         user.timezone = form.timezone.data
 
         db.session.commit()
-        return redirect(url_for('bp_users.profile'))
+        return redirect(url_for('bp_users.profile', name=user.name))
 
     return render_template('users/edit.jinja2', pcfg=pcfg, form=form, user=user)

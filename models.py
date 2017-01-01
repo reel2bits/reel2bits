@@ -4,6 +4,7 @@ from sqlalchemy.sql import func
 from sqlalchemy_searchable import make_searchable, SearchQueryMixin
 from sqlalchemy import event
 from slugify import slugify
+import os
 import datetime
 
 db = SQLAlchemy()
@@ -138,6 +139,7 @@ class Sound(db.Model):
     public = db.Column(db.Boolean(), default=True, nullable=False)
     slug = db.Column(db.String(255), unique=True, nullable=True)
     filename = db.Column(db.String(255), unique=False, nullable=True)
+    filename_orig = db.Column(db.String(255), unique=False, nullable=True)
 
     user_id = db.Column(db.Integer(), db.ForeignKey('user.id'), nullable=False)
     sound_infos = db.relationship('SoundInfo', backref='sound_info', lazy='dynamic', cascade="delete")
@@ -147,10 +149,18 @@ class Sound(db.Model):
         el = datetime.datetime.utcnow() - self.uploaded
         return el.total_seconds()
 
+    def path_waveform(self):
+        return os.path.join(self.user.slug, "{0}.png".format(self.filename))
+
+    def path_sound(self):
+        return os.path.join(self.user.slug, self.filename)
+
 
 @event.listens_for(User, 'after_update')
 @event.listens_for(User, 'after_insert')
-def make_slug(mapper, connection, target):
+def make_user_slug(mapper, connection, target):
+    #if target.slug != "":
+    #    return
     title = "{0} {1}".format(target.id, target.name)
     slug = slugify(title)
     connection.execute(
@@ -160,7 +170,7 @@ def make_slug(mapper, connection, target):
 
 @event.listens_for(Sound, 'after_update')
 @event.listens_for(Sound, 'after_insert')
-def make_slug(mapper, connection, target):
+def make_sound_slug(mapper, connection, target):
     if not target.slug or target.slug == "":
         if not target.title or target.title == "":
             title = "{0} {1}".format(target.id, target.filename)

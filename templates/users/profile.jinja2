@@ -7,7 +7,7 @@
 
     <div class="row">
         <div class="col-lg-10">
-            See:&nbsp;<a href="{{ url_for('bp_users.profile', name=user.name) }}">all sounds</a>
+            See:&nbsp;<a href="{{ url_for('bp_users.profile', name=user.name) }}">all sounds ({{ sounds.count() }})</a>
         </div>
         <div class="col-lg-2">
             {% if current_user.is_authenticated and user == current_user %}
@@ -18,7 +18,7 @@
 
     <hr>
 
-    {% for sound in user.sounds.order_by("uploaded desc") %}
+    {% for sound in sounds.order_by("uploaded desc") %}
         <div class="row">
 
         {% if sound.sound_infos.first() %}
@@ -34,7 +34,7 @@
 
             <div class="col-lg-6">
                 <i class="fa fa-play-circle" aria-hidden="true"></i>&nbsp;
-                <a href="{{ url_for("bp_sound.show", username=user.name, songslug=sound.slug) }}">{{ sound.title or sound.filename }}</a>
+                <a href="{{ url_for("bp_sound.show", username=user.name, songslug=sound.slug) }}">{{ sound.title }}</a>
                 <br />
                 <i class="fa fa-calendar" aria-hidden="true"></i> {{ duration_elapsed_human(sound.elapsed()) }} ago
 
@@ -45,12 +45,18 @@
             </div>
             <div class="col-lg-6">
                 {% if waveform %}
-                <img src="{{ url_for('get_uploads_stuff', thing='waveforms', stuff='{0}.png'.format(sound.filename)) }}"/>
+                <img src="{{ url_for('get_uploads_stuff', thing='waveforms', stuff=sound.path_waveform()) }}"/>
                 {% endif %}
             </div>
         </div>
 
         <hr>
+    {% else %}
+        <div class="row">
+            <div class="col-lg-6">
+                <h4>This user haven't uploaded any sound :( !</h4>
+            </div>
+        </div>
     {% endfor %}
 
 {% endblock %}

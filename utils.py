@@ -4,6 +4,9 @@ import re
 import string
 from functools import wraps
 import subprocess
+import hashlib
+from os.path import splitext
+import datetime
 
 import pytz
 from flask import flash, current_app
@@ -267,3 +270,14 @@ def create_png_waveform(fn_audio, fn_png):
         return None
 
     return True
+
+
+def get_hashed_filename(filename):
+    f_n, f_e = splitext(filename)
+
+    fs_fname = hashlib.sha256()
+    hashed_format = "%s-%s" % (f_n, datetime.datetime.now())
+    fs_fname.update(hashed_format.encode('utf-8'))
+    fs_fname = fs_fname.hexdigest()
+
+    return fs_fname + f_e
