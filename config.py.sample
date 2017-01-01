@@ -30,6 +30,9 @@ DEBUG_TB_INTERCEPT_REDIRECTS = False
 
 # Paginations
 
+# UPLOADS_DEFAULT_DEST is ALWAYS the same as UPLOADED_SOUNDS_DEST but a directory lower
+# Because we use others directories inside UPLOADS_DEFAULT_DEST as organized tree depending
+# On each other
 UPLOADED_SOUNDS_DEST = "/home/reel2bits/uploads/sounds"
 UPLOADS_DEFAULT_DEST = "/home/reel2bits/uploads"
 TEMP_DOWNLOAD_FOLDER = "/home/reel2bits/tmp"
