@@ -97,3 +97,7 @@ tr.song-active {
 tr.play-song:hover {
     background-color: #ebebeb;
 }
+
+td.ast-duration {
+    text-align: right;
+}

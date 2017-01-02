@@ -87,13 +87,18 @@
 
     <div class="row">
         <div class="col-lg-7 col-lg-offset-1">
-            <table class="table table-condensed">
-                {% for sound in album.sounds %}
-                <tr class="play-song {% if loop.index == 1 %}song-active{% endif %}" data-id="{{ sound.id }}" data-href="{{ url_for('bp_sound.waveform_json', username=sound.user.name, soundslug=sound.slug) }}">
+            <table class="table table-condensed table-album-sounds">
+            <thead><tr><th></th><th></th><th></th><th></th></tr></thead>
+                <tbody>
+                {% for sound in album.sounds.order_by('album_order asc') %}
+                <tr class="play-song {% if loop.first %}song-active{% endif %}" data-soundid="{{ sound.id }}" data-href="{{ url_for('bp_sound.waveform_json', username=sound.user.name, soundslug=sound.slug) }}" data-hrefreorder="{{ url_for('bp_albums.reorder_json', username=sound.user.name, setslug=album.slug) }}">
+                    <td width="10px">{{ sound.album_order }}</td>
                     <td width="20px"><a href="{{ url_for("bp_sound.show", username=album.user.name, soundslug=sound.slug) }}"><i class="fa fa-link" aria-hidden="true"></i></a></td>
-                    <td><a><i class="fa fa-{% if sound.private %}lock{% else %}play{% endif %}" aria-hidden="true"></i> {{ sound.title|truncate(70) }}</a></td>
+                    <td class="switch-song"><a><i class="fa fa-{% if sound.private %}lock{% else %}play{% endif %}" aria-hidden="true"></i> {{ sound.title|truncate(70) }}</a></td>
+                    <td class="ast-duration">{{ duration_song_human(sound.sound_infos.first().duration) }}</td>
                 </tr>
                 {% endfor %}
+                </tbody>
             </table>
         </div>
     </div>
@@ -103,18 +108,17 @@
     </div>
         <div class="col-lg-3">
         <table class="table table-condensed table-hoverable">
-                <tr>
-                    <td>
+            <tr></tr>
+            <tr>
+                {% if current_user.is_authenticated and album.user_id == current_user.id  %}
+                    <td class="si_btn_edit"><a class="btn btn-success btn-xs" href="{{ url_for('bp_albums.edit', username=album.user.name, setslug=album.slug) }}">{{ gettext('edit') }}</a></td>
+                    <td class="si_btn_delete">
+                    <a role="button" tabindex="0" class="btn btn-danger btn-xs" data-trigger="focus"
+                       data-container="body" data-toggle="popover" data-placement="top" data-html="true"
+                       data-content="<a class='btn btn-success btn-xs delete_log_link' href='{{ url_for('bp_albums.delete', username=album.user.name, setslug=album.slug) }}'>{{ gettext("yes really") }}</a>">{{ gettext("delete") }}</a>
                     </td>
-                    {% if current_user.is_authenticated and album.user_id == current_user.id  %}
-                        <td class="si_btn_edit"><a class="btn btn-success btn-xs" href="{{ url_for('bp_albums.edit', username=album.user.name, setslug=album.slug) }}">{{ gettext('edit') }}</a></td>
-                        <td class="si_btn_delete">
-                        <a role="button" tabindex="0" class="btn btn-danger btn-xs" data-trigger="focus"
-                           data-container="body" data-toggle="popover" data-placement="top" data-html="true"
-                           data-content="<a class='btn btn-success btn-xs delete_log_link' href='{{ url_for('bp_albums.delete', username=album.user.name, setslug=album.slug) }}'>{{ gettext("yes really") }}</a>">{{ gettext("delete") }}</a>
-                        </td>
-                    {% endif %}
-                </tr>
+                {% endif %}
+            </tr>
         </table>
     </div>
     <div class="row"><div class="col-lg-7 col-lg-offset-1">{{ gettext('This album is empty.') }}</div></div>
@@ -126,7 +130,7 @@
 <script>
     {% if sound %}
     function switch_song(element, autoplay) {
-        console.log("Switching to song ID " + element.data().id);
+        console.log("Switching to song ID " + element.data().soundid);
 
         $.getJSON(element.data().href, function() {
            console.log("success");
@@ -154,12 +158,12 @@
 
     }
 
-    $("tr.play-song").click(function() {
-        if ($(this).hasClass("song-active")) {
+    $("td.switch-song").click(function() {
+        if ($(this).parent().hasClass("song-active")) {
             console.log("no, seriously ?");
             return; // ignore self click
         }
-        var element = $(this);
+        var element = $(this).parent();
         switch_song(element, false);
     });
 
@@ -214,6 +218,48 @@
     $(function () {
         $('[data-toggle="popover"]').popover();
     });
+
+    let table = $('.table-album-sounds').DataTable( {
+        paging: false,
+        scrollY: 400,
+        searching: false,
+        rowReorder: {
+            update: false,
+        },
+
+        fnDrawCallback: function() {
+            $(".table-album-sounds thead").remove();
+        }
+    });
+
+    table.on( 'row-reorder', function ( e, diff, edit ) {
+        let href = diff[1].node.dataset.hrefreorder;
+
+        console.log('asked to move some rows');
+
+        let moved = [];
+
+        for ( let i=0, ien=diff.length ; i<ien ; i++ ) {
+            let rowData = table.row( diff[i].node ).data();
+            moved.push({'soundid': diff[i].node.dataset.soundid, 'oldPosition': diff[i].oldPosition + 1, 'newPosition': diff[i].newPosition + 1});
+        }
+
+        console.log("will be asking backend");
+
+        $.post({
+            url: href,
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            data: JSON.stringify({'data': moved}),
+        }).done(function( data ) {
+            console.log("position changed in database successfully. " + data);
+        }).fail(function(data) {
+            // nope
+            table.draw(false);
+        });
+
+    } );
+
 
 </script>
 {% endblock %}

@@ -5,7 +5,7 @@ from flask.ext.babel import lazy_gettext, gettext
 
 from forms import SoundUploadForm, SoundEditForm
 from models import db, User, Sound
-from utils import get_hashed_filename
+from utils import get_hashed_filename, InvalidUsage
 
 bp_sound = Blueprint('bp_sound', __name__)
 
@@ -50,21 +50,17 @@ def show(username, soundslug):
 def waveform_json(username, soundslug):
     user = User.query.filter(User.name == username).first()
     if not user:
-        flash(lazy_gettext("User not found"), "error")
-        return redirect(url_for("bp_main.home"))
+        raise InvalidUsage('User not found', status_code=404)
     sound = Sound.query.filter(Sound.slug == soundslug, Sound.user_id == user.id).first()
     if not sound:
-        flash(lazy_gettext("Sound not found"), "error")
-        return redirect(url_for("bp_users.profile", user=user.name))
+        raise InvalidUsage('Sound not found', status_code=404)
 
     if sound.private:
         if current_user:
             if sound.user_id != current_user.id:
-                flash(lazy_gettext("Sound not found"), "error")
-                return redirect(url_for("bp_users.profile", user=user.name))
+                raise InvalidUsage('Sound not found', status_code=404)
         else:
-            flash(lazy_gettext("Sound not found"), "error")
-            return redirect(url_for("bp_users.profile", user=user.name))
+            raise InvalidUsage('Sound not found', status_code=404)
 
     si = sound.sound_infos.first()
     if not si:
@@ -96,6 +92,10 @@ def upload():
             rec.filename_orig = filename_orig
             if form.album:
                 rec.album_id = form.album.id
+                if not form.album.data.sounds:
+                    rec.album_order = 0
+                else:
+                    rec.album_order = form.album.data.sounds.count() + 1
 
             rec.user_id = current_user.id
             if not form.title.data:
@@ -133,6 +133,11 @@ def edit(username, soundslug):
         sound.description = form.description.data
         if form.album:
             sound.album_id = form.album.data.id
+            if not sound.album_order:
+                if not form.album.data.sounds:
+                    sound.album_order = 0
+                else:
+                    sound.album_order = form.album.data.sounds.count() + 1
 
         db.session.commit()
         return redirect(url_for('bp_sound.show', username=username, soundslug=sound.slug))
