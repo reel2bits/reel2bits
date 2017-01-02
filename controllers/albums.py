@@ -20,6 +20,7 @@ def new(username):
         rec.user_id = current_user.id
         rec.title = form.title.data
         rec.private = form.private.data
+        rec.description = form.description.data
 
         db.session.add(rec)
         db.session.commit()
@@ -66,14 +67,22 @@ def edit(username, setslug):
 
     form = AlbumForm(request.form, album)
 
-    if form.validate_on_submit():
-        album.title = form.title.data
-        album.private = form.private.data
-        album.description = form.description.data
+    contains_private = False
+    if album.sounds and form.private.data is False:
+        for sound in album.sounds:
+            if form.private.data is False and sound.private is True:
+                contains_private = True
 
-        db.session.commit()
-        return redirect(url_for('bp_albums.show', username=username, setslug=album.slug))
+    if not contains_private:
+        if form.validate_on_submit():
+            album.title = form.title.data
+            album.private = form.private.data
+            album.description = form.description.data
 
+            db.session.commit()
+            return redirect(url_for('bp_albums.show', username=username, setslug=album.slug))
+    else:
+        flash(lazy_gettext("Public album cannot have private sounds"), "error")
     return render_template('album/edit.jinja2', pcfg=pcfg, form=form, album=album)
 
 

@@ -79,6 +79,10 @@ class SoundUploadForm(Form):
                              label=lazy_gettext('Album'),
                              get_label='title')
 
+    def validate_private(form, field):
+        if field.data is True and form.album.data.private is False:
+            raise ValidationError(lazy_gettext("Cannot put private sound in public album"))
+
     submit = SubmitField(lazy_gettext('Upload'))
 
 
@@ -90,6 +94,10 @@ class SoundEditForm(Form):
                              allow_blank=True,
                              label=lazy_gettext('Album'),
                              get_label='title')
+
+    def validate_private(form, field):
+        if field.data is True and form.album.data.private is False:
+            raise ValidationError(lazy_gettext("Cannot put private sound in public album"))
 
     submit = SubmitField(lazy_gettext('Edit sound'))
 

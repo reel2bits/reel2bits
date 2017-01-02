@@ -28,12 +28,15 @@
         </div>
     {% endif %}
 
+    {% if album.sounds.count() > 0 %}
     <div class="row">
         <div class="col-lg-6 col-lg-offset-1">
             <i class="fa fa-play" aria-hidden="true"></i> <span id="song-title">{{ sound.title|truncate(70) }}</span>
         </div>
     </div>
+    {% endif %}
 
+{% if album.sounds.count() > 0 %}
 <div class="row">
     <div class="col-lg-7 col-lg-offset-1">
         <div class="row"><div class="col-lg-12">
@@ -96,6 +99,9 @@
             </table>
         </div>
     </div>
+    {% else %}
+    <div class="row"><div class="col-lg-7 col-lg-offset-1">{{ gettext('This album is empty.') }}</div></div>
+    {% endif %}
 
 {% endblock %}
 
