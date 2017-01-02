@@ -4,7 +4,7 @@ import os
 import subprocess
 from logging.handlers import RotatingFileHandler
 from flask.ext.babel import lazy_gettext
-from flask import Flask, render_template, g, send_from_directory, jsonify, safe_join, request
+from flask import Flask, render_template, g, send_from_directory, jsonify, safe_join, request, flash
 from flask_bootstrap import Bootstrap
 from flask_mail import Mail
 from flask_migrate import Migrate
@@ -18,7 +18,7 @@ from controllers.main import bp_main
 from controllers.sound import bp_sound
 from controllers.users import bp_users
 from forms import ExtendedRegisterForm
-from models import db, user_datastore
+from models import db, user_datastore, Config
 from utils import InvalidUsage, is_admin, gcfg, duration_elapsed_human, duration_song_human
 
 __VERSION__ = "0.0.1"
@@ -84,11 +84,17 @@ def create_app(cfg=None):
 
     @app.before_request
     def before_request():
-        g.cfg = {
+        _config = Config.query.first()
+        if not _config:
+            flash(lazy_gettext("Config not found"), 'error')
+
+        cfg = {
             'REEL2BITS_VERSION_VER': __VERSION__,
             'REEL2BITS_VERSION_GIT': git_version,
             'REEL2BITS_VERSION': "{0} ({1})".format(__VERSION__, git_version),
-        }.update(gcfg())
+            "app_name": _config.app_name
+        }
+        g.cfg = cfg
 
     @app.errorhandler(InvalidUsage)
     def handle_invalid_usage(error):
