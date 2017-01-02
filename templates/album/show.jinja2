@@ -88,13 +88,11 @@
     <div class="row">
         <div class="col-lg-7 col-lg-offset-1">
             <table class="table table-condensed">
-                {% set first = true %}
                 {% for sound in album.sounds %}
-                <tr class="play-song {% if first %}song-active{% endif %}" data-id="{{ sound.id }}" data-href="{{ url_for('bp_sound.waveform_json', username=sound.user.name, soundslug=sound.slug) }}">
+                <tr class="play-song {% if loop.index == 1 %}song-active{% endif %}" data-id="{{ sound.id }}" data-href="{{ url_for('bp_sound.waveform_json', username=sound.user.name, soundslug=sound.slug) }}">
                     <td width="20px"><a href="{{ url_for("bp_sound.show", username=album.user.name, soundslug=sound.slug) }}"><i class="fa fa-link" aria-hidden="true"></i></a></td>
                     <td><a><i class="fa fa-{% if sound.private %}lock{% else %}play{% endif %}" aria-hidden="true"></i> {{ sound.title|truncate(70) }}</a></td>
                 </tr>
-                {% set first = false %}
                 {% endfor %}
             </table>
         </div>
