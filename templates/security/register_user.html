@@ -5,7 +5,7 @@
 <div class="container">
     <div class="row">
         <div class="col-md-6 col-md-offset-3">
-            <h3>Register user</h3>
+            <h3>{{ gettext('Register user') }}</h3>
             <form action="{{ url_for_security('register') }}" method="POST" name="register_user_form" role="form" class="form">
                 {{ register_user_form.hidden_tag() }}
                 {{ wtf.form_errors(register_user_form, hiddens="only") }}

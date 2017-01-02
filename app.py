@@ -3,7 +3,7 @@ import logging
 import os
 import subprocess
 from logging.handlers import RotatingFileHandler
-
+from flask.ext.babel import lazy_gettext
 from flask import Flask, render_template, g, send_from_directory, jsonify, safe_join, request
 from flask_bootstrap import Bootstrap
 from flask_mail import Mail
@@ -114,26 +114,27 @@ def create_app(cfg=None):
 
     @app.errorhandler(404)
     def page_not_found(msg):
-        pcfg = {"title": "Whoops, something failed.",
-                "error": 404, "message": "Page not found", "e": msg}
+        pcfg = {"title": lazy_gettext("Whoops, something failed."),
+                "error": 404, "message": lazy_gettext("Page not found"), "e": msg}
         return render_template('error_page.jinja2', pcfg=pcfg), 404
 
     @app.errorhandler(403)
     def err_forbidden(msg):
-        pcfg = {"title": "Whoops, something failed.",
-                "error": 403, "message": "Access forbidden", "e": msg}
+        pcfg = {"title": lazy_gettext("Whoops, something failed."),
+                "error": 403, "message": lazy_gettext("Access forbidden"), "e": msg}
         return render_template('error_page.jinja2', pcfg=pcfg), 403
 
     @app.errorhandler(410)
     def err_gone(msg):
-        pcfg = {"title": "Whoops, something failed.",
-                "error": 410, "message": "Gone", "e": msg}
+        pcfg = {"title": lazy_gettext("Whoops, something failed."),
+                "error": 410, "message": lazy_gettext("Gone"), "e": msg}
         return render_template('error_page.jinja2', pcfg=pcfg), 410
 
     if not app.debug:
         @app.errorhandler(500)
         def err_failed(msg):
-            pcfg = {"title": "Whoops, something failed.", "error": 500, "message": "Something is broken", "e": msg}
+            pcfg = {"title": lazy_gettext("Whoops, something failed."), "error": 500,
+                    "message": lazy_gettext("Something is broken"), "e": msg}
             return render_template('error_page.jinja2', pcfg=pcfg), 500
 
     return app
