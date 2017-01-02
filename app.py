@@ -37,7 +37,6 @@ def create_app(cfg=None):
     app.jinja_env.add_extension('jinja2.ext.with_')
     app.jinja_env.add_extension('jinja2.ext.do')
     app.jinja_env.globals.update(is_admin=is_admin)
-    app.jinja_env.globals.update(gcfg=gcfg)
     app.jinja_env.globals.update(duration_elapsed_human=duration_elapsed_human)
     app.jinja_env.globals.update(duration_song_human=duration_song_human)
 
@@ -89,7 +88,7 @@ def create_app(cfg=None):
             'REEL2BITS_VERSION_VER': __VERSION__,
             'REEL2BITS_VERSION_GIT': git_version,
             'REEL2BITS_VERSION': "{0} ({1})".format(__VERSION__, git_version),
-        }
+        }.update(gcfg())
 
     @app.errorhandler(InvalidUsage)
     def handle_invalid_usage(error):
