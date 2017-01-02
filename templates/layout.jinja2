@@ -108,6 +108,7 @@
     </div><!-- /.container -->
 
     <footer class="blog-footer">
+        {% autoescape false %}
         <p>
             {{ gettext("Use template for %(link1)s by %(link2)s and use %(link3)s, reel2bits %(link4)s",
             link1='<a href="http://getbootstrap.com">Bootstrap</a>',
@@ -119,6 +120,7 @@
       <p>
         <a href="#">{{ gettext('Back to top') }}</a>
       </p>
+        {% endautoescape %}
     </footer>
 
 
