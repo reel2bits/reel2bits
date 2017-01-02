@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-01-01 16:26+0100\n"
+"POT-Creation-Date: 2017-01-02 07:47+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,72 +17,88 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.3.4\n"
 
-#: forms.py:41
+#: forms.py:42
 msgid "Username required"
 msgstr ""
 
-#: forms.py:45
+#: forms.py:46
 msgid "Username already taken"
 msgstr ""
 
-#: forms.py:52
+#: forms.py:53
 msgid "Password"
 msgstr ""
 
-#: forms.py:53
+#: forms.py:54
 msgid "Name"
 msgstr ""
 
-#: forms.py:54
+#: forms.py:55
 msgid "Email"
 msgstr ""
 
-#: forms.py:55
+#: forms.py:56
 msgid "Firstname"
 msgstr ""
 
-#: forms.py:56
+#: forms.py:57
 msgid "Lastname"
 msgstr ""
 
-#: forms.py:57
+#: forms.py:58
 msgid "Timezone"
 msgstr ""
 
-#: forms.py:58
+#: forms.py:59
 msgid "Locale"
 msgstr ""
 
-#: forms.py:59
+#: forms.py:60
 msgid "Update profile"
 msgstr ""
 
-#: forms.py:63
+#: forms.py:64
 msgid "App Name"
 msgstr ""
 
-#: forms.py:65
+#: forms.py:66
 msgid "Update config"
 msgstr ""
 
-#: forms.py:69 forms.py:77
+#: forms.py:74 forms.py:90 forms.py:106
 msgid "Title"
 msgstr ""
 
-#: forms.py:70
+#: forms.py:75
 msgid "File"
 msgstr ""
 
-#: forms.py:71 forms.py:78
+#: forms.py:76 forms.py:91 forms.py:108
 msgid "Private"
 msgstr ""
 
-#: forms.py:73 forms.py:81 templates/layout.jinja2:56
+#: forms.py:79 forms.py:95
+msgid "Album"
+msgstr ""
+
+#: forms.py:84 forms.py:100
+msgid "Cannot put private sound in public album"
+msgstr ""
+
+#: forms.py:86 templates/layout.jinja2:56
 msgid "Upload"
 msgstr ""
 
-#: forms.py:79
+#: forms.py:92 forms.py:107
 msgid "Description"
+msgstr ""
+
+#: forms.py:102
+msgid "Edit sound"
+msgstr ""
+
+#: forms.py:110
+msgid "Save"
 msgstr ""
 
 #: controllers/admin.py:17
@@ -93,7 +109,7 @@ msgstr ""
 msgid "Application Config"
 msgstr ""
 
-#: controllers/admin.py:48 controllers/main.py:14 controllers/main.py:27
+#: controllers/admin.py:48
 msgid "Config not found"
 msgstr ""
 
@@ -101,18 +117,41 @@ msgstr ""
 msgid "Configuration updated"
 msgstr ""
 
-#: controllers/main.py:17
-msgid "Home"
+#: controllers/albums.py:14 templates/album/new.jinja2:7
+#: templates/layout.jinja2:57
+msgid "New album"
 msgstr ""
 
-#: controllers/sound.py:19 controllers/sound.py:53 controllers/users.py:46
-#: controllers/users.py:64
+#: controllers/albums.py:27
+msgid "Created !"
+msgstr ""
+
+#: controllers/albums.py:37 controllers/sound.py:19 controllers/sound.py:53
+#: controllers/users.py:46 controllers/users.py:63 controllers/users.py:81
 msgid "User not found"
+msgstr ""
+
+#: controllers/albums.py:41 controllers/albums.py:47 controllers/albums.py:50
+#: controllers/albums.py:63 controllers/albums.py:94
+msgid "Album not found"
+msgstr ""
+
+#: controllers/albums.py:66 controllers/sound.py:126
+#, python-format
+msgid "Edit %(value)s"
+msgstr ""
+
+#: controllers/albums.py:85
+msgid "Public album cannot have private sounds"
+msgstr ""
+
+#: controllers/main.py:12
+msgid "Home"
 msgstr ""
 
 #: controllers/sound.py:23 controllers/sound.py:29 controllers/sound.py:32
 #: controllers/sound.py:57 controllers/sound.py:63 controllers/sound.py:66
-#: controllers/sound.py:118 controllers/sound.py:141
+#: controllers/sound.py:123 controllers/sound.py:148
 msgid "Sound not found"
 msgstr ""
 
@@ -120,130 +159,102 @@ msgstr ""
 msgid "No HTML5 player supported actually"
 msgstr ""
 
-#: controllers/sound.py:79 templates/sound/upload.jinja2:7
+#: controllers/sound.py:82 templates/sound/upload.jinja2:7
 msgid "New upload"
 msgstr ""
 
-#: controllers/sound.py:104
+#: controllers/sound.py:109
 msgid "Uploaded !"
-msgstr ""
-
-#: controllers/sound.py:121
-#, python-format
-msgid "Edit %(value)s"
 msgstr ""
 
 #: controllers/users.py:16
 msgid "User Logs"
 msgstr ""
 
-#: controllers/users.py:42 templates/users/profile.jinja2:5
+#: controllers/users.py:42 controllers/users.py:59
+#: templates/users/profile.jinja2:5 templates/users/profile_albums.jinja2:5
 #, python-format
 msgid "%(value)s' profile"
 msgstr ""
 
-#: controllers/users.py:60
+#: controllers/users.py:77
 msgid "Edit my profile"
-msgstr ""
-
-#: templates/about.jinja2:7
-#, python-format
-msgid "reel2bits is developped by %(dashie)s and is available under MIT license."
-msgstr ""
-
-#: templates/about.jinja2:9
-#, python-format
-msgid "Source code is here: %(link)s"
-msgstr ""
-
-#: templates/about.jinja2:10
-#, python-format
-msgid "Issue tracker is here: %(link)s"
-msgstr ""
-
-#: templates/error_page.jinja2:7
-#, python-format
-msgid "Maybe you can go back to the %(link)s."
-msgstr ""
-
-#: templates/error_page.jinja2:7
-msgid "index"
 msgstr ""
 
 #: templates/layout.jinja2:46
 msgid "Toggle navigation"
 msgstr ""
 
-#: templates/layout.jinja2:57
+#: templates/layout.jinja2:58
 msgid "My Profile"
 msgstr ""
 
-#: templates/layout.jinja2:62
+#: templates/layout.jinja2:63
 msgid "About"
 msgstr ""
 
-#: templates/layout.jinja2:65
+#: templates/layout.jinja2:66
 #, python-format
 msgid "Logged as %(username)s"
 msgstr ""
 
-#: templates/admin/logs.jinja2:24 templates/layout.jinja2:67
+#: templates/admin/logs.jinja2:24 templates/layout.jinja2:68
 msgid "User"
 msgstr ""
 
-#: templates/layout.jinja2:68
+#: templates/layout.jinja2:69
 msgid "Profile"
 msgstr ""
 
-#: templates/layout.jinja2:69
+#: templates/layout.jinja2:70
 msgid "Logs"
 msgstr ""
 
-#: templates/layout.jinja2:72
+#: templates/layout.jinja2:73
 msgid "Admin"
 msgstr ""
 
-#: templates/layout.jinja2:73
+#: templates/layout.jinja2:74
 msgid "App config"
 msgstr ""
 
-#: templates/layout.jinja2:74
+#: templates/layout.jinja2:75
 msgid "App logs"
 msgstr ""
 
-#: templates/layout.jinja2:77
+#: templates/layout.jinja2:78
 msgid "Change password"
 msgstr ""
 
-#: templates/layout.jinja2:78
+#: templates/layout.jinja2:79
 msgid "Logout"
 msgstr ""
 
-#: templates/layout.jinja2:83
+#: templates/layout.jinja2:84
 msgid "Register"
 msgstr ""
 
-#: templates/layout.jinja2:85
+#: templates/layout.jinja2:86
 msgid "Login"
 msgstr ""
 
-#: templates/layout.jinja2:111
+#: templates/layout.jinja2:112
 #, python-format
 msgid ""
 "Use template for %(link1)s by %(link2)s and use %(link3)s, reel2bits "
 "%(link4)s"
 msgstr ""
 
-#: templates/layout.jinja2:115
+#: templates/layout.jinja2:116
 msgid "source code"
 msgstr ""
 
-#: templates/layout.jinja2:117
+#: templates/layout.jinja2:118
 #, python-format
 msgid "Running version %(version)s"
 msgstr ""
 
-#: templates/layout.jinja2:119
+#: templates/layout.jinja2:120
 msgid "Back to top"
 msgstr ""
 
@@ -255,39 +266,39 @@ msgstr ""
 msgid "Application logs (latest 100)"
 msgstr ""
 
-#: templates/admin/logs.jinja2:9
+#: templates/admin/logs.jinja2:9 templates/users/user_logs.jinja2:9
 msgid "Show only:"
 msgstr ""
 
-#: templates/admin/logs.jinja2:10
+#: templates/admin/logs.jinja2:10 templates/users/user_logs.jinja2:10
 msgid "all"
 msgstr ""
 
-#: templates/admin/logs.jinja2:11
+#: templates/admin/logs.jinja2:11 templates/users/user_logs.jinja2:11
 msgid "info"
 msgstr ""
 
-#: templates/admin/logs.jinja2:12
+#: templates/admin/logs.jinja2:12 templates/users/user_logs.jinja2:12
 msgid "warning"
 msgstr ""
 
-#: templates/admin/logs.jinja2:13
+#: templates/admin/logs.jinja2:13 templates/users/user_logs.jinja2:13
 msgid "error"
 msgstr ""
 
-#: templates/admin/logs.jinja2:21
+#: templates/admin/logs.jinja2:21 templates/users/user_logs.jinja2:21
 msgid "Date"
 msgstr ""
 
-#: templates/admin/logs.jinja2:22
+#: templates/admin/logs.jinja2:22 templates/users/user_logs.jinja2:22
 msgid "Category"
 msgstr ""
 
-#: templates/admin/logs.jinja2:23
+#: templates/admin/logs.jinja2:23 templates/users/user_logs.jinja2:23
 msgid "Level"
 msgstr ""
 
-#: templates/admin/logs.jinja2:25
+#: templates/admin/logs.jinja2:25 templates/users/user_logs.jinja2:25
 msgid "Message"
 msgstr ""
 
@@ -295,68 +306,120 @@ msgstr ""
 msgid "Actions"
 msgstr ""
 
-#: templates/admin/logs.jinja2:40
+#: templates/admin/logs.jinja2:40 templates/album/show.jinja2:80
+#: templates/album/show.jinja2:116 templates/sound/show.jinja2:78
+#: templates/users/user_logs.jinja2:43
 msgid "yes really"
 msgstr ""
 
-#: templates/admin/logs.jinja2:40
+#: templates/admin/logs.jinja2:40 templates/album/show.jinja2:80
+#: templates/album/show.jinja2:116 templates/sound/show.jinja2:78
+#: templates/users/user_logs.jinja2:43
 msgid "delete"
 msgstr ""
 
-#: templates/admin/logs.jinja2:64
+#: templates/admin/logs.jinja2:64 templates/users/user_logs.jinja2:67
 msgid "Log deletion"
 msgstr ""
 
-#: templates/admin/logs.jinja2:64
+#: templates/admin/logs.jinja2:64 templates/album/show.jinja2:153
+#: templates/users/user_logs.jinja2:67
 msgid "An error occured"
+msgstr ""
+
+#: templates/album/edit.jinja2:7
+msgid "Edit album"
+msgstr ""
+
+#: templates/album/edit.jinja2:15 templates/album/new.jinja2:15
+#: templates/sound/edit.jinja2:15 templates/sound/upload.jinja2:15
+msgid "What's the title ?"
+msgstr ""
+
+#: templates/album/edit.jinja2:16 templates/sound/edit.jinja2:16
+msgid "Add a nice description ?"
+msgstr ""
+
+#: templates/album/edit.jinja2:19 templates/sound/edit.jinja2:23
+#: templates/users/edit.jinja2:27
+msgid "Cancel edit"
+msgstr ""
+
+#: templates/album/show.jinja2:19 templates/sound/show.jinja2:23
+#: templates/users/profile.jinja2:40 templates/users/profile_albums.jinja2:29
+#, python-format
+msgid "%(value)s ago"
+msgstr ""
+
+#: templates/album/show.jinja2:112 templates/sound/show.jinja2:74
+msgid "edit"
+msgstr ""
+
+#: templates/album/show.jinja2:122
+msgid "This album is empty."
+msgstr ""
+
+#: templates/album/show.jinja2:153
+msgid "Switch sound"
+msgstr ""
+
+#: templates/security/change_password.html:9
+msgid "Set a new password"
+msgstr ""
+
+#: templates/security/forgot_password.html:8
+msgid "You lost your password ? :'("
+msgstr ""
+
+#: templates/security/login_user.html:9
+msgid "Please Sign In"
+msgstr ""
+
+#: templates/security/register_user.html:8
+msgid "Register user"
 msgstr ""
 
 #: templates/sound/edit.jinja2:7
 msgid "Edit upload"
 msgstr ""
 
-#: templates/sound/edit.jinja2:15 templates/sound/upload.jinja2:15
-msgid "What's the title ?"
+#: templates/sound/edit.jinja2:19 templates/sound/upload.jinja2:19
+msgid "If you want to add to a new album you need to create it separately."
 msgstr ""
 
-#: templates/sound/edit.jinja2:16
-msgid "Add a nice description ?"
-msgstr ""
-
-#: templates/sound/show.jinja2:12 templates/users/profile.jinja2:50
+#: templates/sound/show.jinja2:12 templates/users/profile.jinja2:57
 msgid "Please wait, song metadatas are processing..."
 msgstr ""
 
-#: templates/sound/show.jinja2:23
-#, python-format
-msgid "%(value)s ago"
+#: templates/sound/show.jinja2:84 templates/users/profile.jinja2:49
+msgid "In album:"
 msgstr ""
 
-#: templates/sound/show.jinja2:81
+#: templates/sound/show.jinja2:89
 msgid "Type"
 msgstr ""
 
-#: templates/sound/show.jinja2:82
+#: templates/sound/show.jinja2:90
 msgid "Codec"
 msgstr ""
 
-#: templates/sound/show.jinja2:83
+#: templates/sound/show.jinja2:91
 msgid "Format"
 msgstr ""
 
-#: templates/sound/show.jinja2:84
+#: templates/sound/show.jinja2:92
 msgid "Channels"
 msgstr ""
 
-#: templates/sound/show.jinja2:85
+#: templates/sound/show.jinja2:93
 msgid "Rate"
 msgstr ""
 
-#: templates/sound/show.jinja2:88 templates/sound/show.jinja2:91
+#: templates/sound/show.jinja2:96 templates/sound/show.jinja2:99
 msgid "Bitrate"
 msgstr ""
 
-#: templates/sound/show.jinja2:95
+#: templates/sound/show.jinja2:103
 msgid "Bitrate mode"
 msgstr ""
 
@@ -365,19 +428,37 @@ msgstr ""
 msgid "Edit profile - %(username)s"
 msgstr ""
 
-#: templates/users/edit.jinja2:27
-msgid "Cancel edit"
-msgstr ""
-
-#: templates/users/profile.jinja2:10
+#: templates/users/profile.jinja2:10 templates/users/profile_albums.jinja2:10
 msgid "all sounds"
 msgstr ""
 
-#: templates/users/profile.jinja2:14
+#: templates/users/profile.jinja2:11 templates/users/profile_albums.jinja2:11
+msgid "all albums"
+msgstr ""
+
+#: templates/users/profile.jinja2:15 templates/users/profile_albums.jinja2:15
 msgid "Edit profile"
 msgstr ""
 
-#: templates/users/profile.jinja2:59
+#: templates/users/profile.jinja2:66
 msgid "This user haven't uploaded any sound :( !"
+msgstr ""
+
+#: templates/users/profile_albums.jinja2:30
+#, python-format
+msgid "%(nb)s tracks"
+msgstr ""
+
+#: templates/users/profile_albums.jinja2:40
+msgid "This user haven't created any album !"
+msgstr ""
+
+#: templates/users/user_logs.jinja2:6
+#, python-format
+msgid "%(username)s's logs (latest 100)"
+msgstr ""
+
+#: templates/users/user_logs.jinja2:24
+msgid "Sound"
 msgstr ""
 
