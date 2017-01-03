@@ -94,7 +94,7 @@
                 <tr class="play-song {% if loop.first %}song-active{% endif %}" data-soundid="{{ sound.id }}" data-href="{{ url_for('bp_sound.waveform_json', username=sound.user.name, soundslug=sound.slug) }}" data-hrefreorder="{{ url_for('bp_albums.reorder_json', username=sound.user.name, setslug=album.slug) }}">
                     <td width="10px">{{ sound.album_order }}</td>
                     <td width="20px"><a href="{{ url_for("bp_sound.show", username=album.user.name, soundslug=sound.slug) }}"><i class="fa fa-link" aria-hidden="true"></i></a></td>
-                    <td class="switch-song"><a><i class="fa fa-{% if sound.private %}lock{% else %}play{% endif %}" aria-hidden="true"></i> {{ sound.title|truncate(70) }}</a></td>
+                    <td class="switch-song"><i class="fa fa-{% if sound.private %}lock{% else %}play{% endif %}" aria-hidden="true"></i> {{ sound.title|truncate(70) }}</td>
                     <td class="ast-duration">{{ duration_song_human(sound.sound_infos.first().duration) }}</td>
                 </tr>
                 {% endfor %}
