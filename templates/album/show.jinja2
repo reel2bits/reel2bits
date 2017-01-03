@@ -253,12 +253,15 @@
             data: JSON.stringify({'data': moved}),
         }).done(function( data ) {
             console.log("position changed in database successfully.");
+            return true;
         }).fail(function(data) {
             // nope
             console.log("Ajax fail");
             // table.draw(false);
+            e.stopPropagation();
         });
-
+        // default
+        e.stopPropagation();
     } );
 
 
