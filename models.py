@@ -2,18 +2,14 @@ import datetime
 import os
 
 from flask_security import SQLAlchemyUserDatastore, UserMixin, RoleMixin
-from flask_sqlalchemy import SQLAlchemy, BaseQuery
+from flask_sqlalchemy import SQLAlchemy
 from slugify import slugify
 from sqlalchemy import event
 from sqlalchemy.sql import func
-from sqlalchemy_searchable import make_searchable, SearchQueryMixin
+from sqlalchemy_searchable import make_searchable
 
 db = SQLAlchemy()
 make_searchable()
-
-
-class LogQuery(BaseQuery, SearchQueryMixin):
-    pass
 
 
 roles_users = db.Table('roles_users',
@@ -155,6 +151,8 @@ class Sound(db.Model):
     sound_infos = db.relationship('SoundInfo', backref='sound_info', lazy='dynamic', cascade="delete")
     user_loggings = db.relationship('UserLogging', backref='sound', lazy='dynamic', cascade="delete")
 
+    timeline = db.relationship("Timeline", uselist=False, back_populates="sound")
+
     __mapper_args__ = {"order_by": uploaded.desc()}
 
     def elapsed(self):
@@ -187,11 +185,30 @@ class Album(db.Model):
     user_id = db.Column(db.Integer(), db.ForeignKey('user.id'), nullable=False)
     sounds = db.relationship('Sound', backref='album', lazy='dynamic')
 
+    timeline = db.relationship("Timeline", uselist=False, back_populates="album")
+
     __mapper_args__ = {"order_by": created.desc()}
 
     def elapsed(self):
         el = datetime.datetime.utcnow() - self.created
         return el.total_seconds()
+
+
+class Timeline(db.Model):
+    __tablename__ = "timeline"
+
+    id = db.Column(db.Integer, primary_key=True)
+    timestamp = db.Column(db.DateTime(timezone=False), default=datetime.datetime.utcnow)
+    private = db.Column(db.Boolean, default=False)
+
+    sound_id = db.Column(db.Integer(), db.ForeignKey('user.id'), nullable=False)
+    album_id = db.Column(db.Integer(), db.ForeignKey('album.id'), nullable=False)
+    user_id = db.Column(db.Integer(), db.ForeignKey('sound.id'), nullable=False)
+
+    album = db.relationship("Album", back_populates="timeline")
+    sound = db.relationship("Sound", back_populates="timeline")
+
+    __mapper_args__ = {"order_by": timestamp.desc()}
 
 
 @event.listens_for(User, 'after_update')
