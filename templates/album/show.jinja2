@@ -224,7 +224,7 @@
         scrollY: 400,
         searching: false,
         rowReorder: {
-            update: false,
+            update: true,
         },
 
         fnDrawCallback: function() {
@@ -252,10 +252,11 @@
             dataType: 'json',
             data: JSON.stringify({'data': moved}),
         }).done(function( data ) {
-            console.log("position changed in database successfully. " + data);
+            console.log("position changed in database successfully.");
         }).fail(function(data) {
             // nope
-            table.draw(false);
+            console.log("Ajax fail");
+            // table.draw(false);
         });
 
     } );
