@@ -12,6 +12,7 @@ Reel2Bits
     git submodule init
     git submodule update
     pip3 install --requirement requirements.txt  # if present
+    # Install Pydub dependencies: https://github.com/jiaaro/pydub#dependencies
     cp config.py.sample config.py
     $EDITOR config.py
     python3 reel2bits.py db upgrade

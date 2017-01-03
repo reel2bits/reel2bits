@@ -10,6 +10,10 @@
         <div class="col-lg-5">
             {% if not info or not info.done_basic %}
                 <span class="label label-info">{{ gettext("Please wait, song metadatas are processing...") }}</span>
+                <br /><br />
+            {% endif %}
+            {% if not sound.transcode_state == 2 %}
+                <span class="label label-info">{{ gettext("Please wait, transcoding is on her way...") }}</span>
             {% endif %}
         </div>
     </div>
@@ -66,7 +70,7 @@
         <table class="table table-condensed table-hoverable">
                 <tr>
                     <td>
-                        <a class="btn btn-info btn-xs" href="{{ url_for('get_uploads_stuff', thing='sounds', stuff=sound.path_sound()) }}">
+                        <a class="btn btn-info btn-xs" href="{{ url_for('get_uploads_stuff', thing='sounds', stuff=sound.path_sound(orig=True)) }}">
                             <i class="fa fa-download" aria-hidden="true"></i> download
                         </a>
                     </td>

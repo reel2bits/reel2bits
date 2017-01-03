@@ -40,8 +40,8 @@ def show(username, soundslug):
     else:
         si_w = None
 
-    if si and si.type == "FLAC":
-        flash(lazy_gettext("No HTML5 player supported actually"), 'info')
+    #if si and si.type == "FLAC":
+    #    flash(lazy_gettext("No HTML5 player supported actually"), 'info')
 
     return render_template('sound/show.jinja2', pcfg=pcfg, user=user, sound=sound, waveform=si_w)
 
@@ -90,7 +90,7 @@ def upload():
             rec = Sound()
             rec.filename = filename_hashed
             rec.filename_orig = filename_orig
-            if form.album:
+            if form.album.data:
                 rec.album_id = form.album.id
                 if not form.album.data.sounds:
                     rec.album_order = 0
@@ -103,6 +103,10 @@ def upload():
             else:
                 rec.title = form.title.data
             rec.private = form.private.data
+
+            if "flac" in request.files['sound'].mimetype or "ogg" in request.files['sound'].mimetype:
+                rec.transcode_state = Sound.TRANSCODE_WAITING
+                rec.transcode_needed = True
 
             db.session.add(rec)
             db.session.commit()
@@ -131,7 +135,7 @@ def edit(username, soundslug):
         sound.title = form.title.data
         sound.private = form.private.data
         sound.description = form.description.data
-        if form.album:
+        if form.album.data:
             sound.album_id = form.album.data.id
             if not sound.album_order:
                 if not form.album.data.sounds:

@@ -128,6 +128,10 @@ class SoundInfo(db.Model):
 
 class Sound(db.Model):
     __tablename__ = "sound"
+    TRANSCODE_WAITING = 0
+    TRANSCODE_PROCESSING = 1
+    TRANSCODE_DONE = 2
+    TRANSCODE_ERROR = 3
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255), nullable=True)
@@ -143,8 +147,14 @@ class Sound(db.Model):
     private = db.Column(db.Boolean(), default=False, nullable=True)
     slug = db.Column(db.String(255), unique=True, nullable=True)
     filename = db.Column(db.String(255), unique=False, nullable=True)
+    filename_transcoded = db.Column(db.String(255), unique=False, nullable=True)
+
     filename_orig = db.Column(db.String(255), unique=False, nullable=True)
     album_order = db.Column(db.Integer, nullable=True)
+
+    transcode_needed = db.Column(db.Boolean(), default=False, nullable=True)
+    transcode_state = db.Column(db.Integer(), default=0, nullable=False)
+    # 0 nothing / default / waiting, 1 processing, 2 done, 3 error
 
     user_id = db.Column(db.Integer(), db.ForeignKey('user.id'), nullable=False)
     album_id = db.Column(db.Integer(), db.ForeignKey('album.id'), nullable=True)
@@ -163,8 +173,11 @@ class Sound(db.Model):
     def path_waveform(self):
         return os.path.join(self.user.slug, "{0}.png".format(self.filename))
 
-    def path_sound(self):
-        return os.path.join(self.user.slug, self.filename)
+    def path_sound(self, orig=False):
+        if self.transcode_state == self.TRANSCODE_DONE and not orig:
+            return os.path.join(self.user.slug, self.filename_transcoded)
+        else:
+            return os.path.join(self.user.slug, self.filename)
 
 
 class Album(db.Model):

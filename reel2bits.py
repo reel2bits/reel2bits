@@ -8,7 +8,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from flask_migrate import MigrateCommand
 from flask_script import Manager
 
-from crons import cron_generate_sound_infos
+from crons import cron_generate_sound_infos, cron_transcode
 from dbseed import make_db_seed
 from models import db
 
@@ -78,6 +78,18 @@ def generate_sound_infos(dry_run=False, force=False):
     """Generate Sound Infos """
     print("-- STARTED on {0}".format(datetime.datetime.now()))
     cron_generate_sound_infos(dry_run, force)
+    print("-- FINISHED on {0}".format(datetime.datetime.now()))
+
+
+@CronCommand.command
+@CronCommand.option('--dryrun', dest='dry_run', action='store_true', default=False,
+                    help="Dry run, doesn't commit anything")
+@CronCommand.option('--force', dest='force', action='store_true', default=False,
+                    help="Force re-generation")
+def transcode(dry_run=False, force=False):
+    """Transcode sounds needed """
+    print("-- STARTED on {0}".format(datetime.datetime.now()))
+    cron_transcode(dry_run, force)
     print("-- FINISHED on {0}".format(datetime.datetime.now()))
 
 
