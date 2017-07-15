@@ -3,9 +3,9 @@ package models
 import (
 	"crypto/sha256"
 	"crypto/subtle"
-	"dev.sigpipe.me/dashie/myapp/models/errors"
-	"dev.sigpipe.me/dashie/myapp/pkg/mailer"
-	"dev.sigpipe.me/dashie/myapp/pkg/tool"
+	"dev.sigpipe.me/dashie/reel2bits/models/errors"
+	"dev.sigpipe.me/dashie/reel2bits/pkg/mailer"
+	"dev.sigpipe.me/dashie/reel2bits/pkg/tool"
 	"encoding/hex"
 	"fmt"
 	"github.com/Unknwon/com"

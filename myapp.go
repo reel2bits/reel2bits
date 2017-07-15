@@ -3,8 +3,8 @@ package main
 import (
 	"os"
 	"github.com/urfave/cli"
-	"dev.sigpipe.me/dashie/myapp/cmd"
-	"dev.sigpipe.me/dashie/myapp/setting"
+	"dev.sigpipe.me/dashie/reel2bits/cmd"
+	"dev.sigpipe.me/dashie/reel2bits/setting"
 	"github.com/getsentry/raven-go"
 	"fmt"
 )
@@ -23,7 +23,7 @@ func init() {
 
 func main() {
 	app := cli.NewApp()
-	app.Name = "myapp"
+	app.Name = "reel2bits"
 	app.Usage = "paste stuff to the interweb with git backend"
 	app.Version = APP_VER
 	app.Commands = []cli.Command{

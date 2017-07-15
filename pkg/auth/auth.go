@@ -6,8 +6,8 @@ package auth
 
 import (
 	"strings"
-	"dev.sigpipe.me/dashie/myapp/models"
-	"dev.sigpipe.me/dashie/myapp/models/errors"
+	"dev.sigpipe.me/dashie/reel2bits/models"
+	"dev.sigpipe.me/dashie/reel2bits/models/errors"
 
 	"github.com/go-macaron/session"
 	log "gopkg.in/clog.v1"

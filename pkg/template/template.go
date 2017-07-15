@@ -2,9 +2,9 @@ package template
 
 import (
 	"container/list"
-	"dev.sigpipe.me/dashie/myapp/pkg/markup"
-	"dev.sigpipe.me/dashie/myapp/pkg/tool"
-	"dev.sigpipe.me/dashie/myapp/setting"
+	"dev.sigpipe.me/dashie/reel2bits/pkg/markup"
+	"dev.sigpipe.me/dashie/reel2bits/pkg/tool"
+	"dev.sigpipe.me/dashie/reel2bits/setting"
 	"fmt"
 	"github.com/microcosm-cc/bluemonday"
 	"html/template"

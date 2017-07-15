@@ -16,6 +16,6 @@ output*
 *.sublime-project
 *.sublime-workspace
 /release
-myapp
-myapp
-myapp.db
+reel2bits
+reel2bits
+reel2bits.db

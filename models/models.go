@@ -2,7 +2,7 @@ package models
 
 import (
 	"database/sql"
-	"dev.sigpipe.me/dashie/myapp/setting"
+	"dev.sigpipe.me/dashie/reel2bits/setting"
 	"errors"
 	"fmt"
 	_ "github.com/denisenkom/go-mssqldb"
@@ -81,7 +81,7 @@ func LoadConfigs() {
 		DbCfg.Passwd = sec.Key("PASSWD").String()
 	}
 	DbCfg.SSLMode = sec.Key("SSL_MODE").String()
-	DbCfg.Path = sec.Key("PATH").MustString("myapp.db")
+	DbCfg.Path = sec.Key("PATH").MustString("reel2bits.db")
 }
 
 // parsePostgreSQLHostPort parses given input in various forms defined in

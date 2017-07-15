@@ -201,7 +201,7 @@ func InitConfig() {
 	forcePathSeparator(LogRootPath)
 
 	sec := Cfg.Section("server")
-	AppName = Cfg.Section("").Key("APP_NAME").MustString("myapp")
+	AppName = Cfg.Section("").Key("APP_NAME").MustString("reel2bits")
 	AppURL = sec.Key("ROOT_URL").MustString("http://localhost:4000/")
 	if AppURL[len(AppURL)-1] != '/' {
 		AppURL += "/"

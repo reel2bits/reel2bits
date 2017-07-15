@@ -11,7 +11,7 @@ import (
 	"time"
 	"fmt"
 	"github.com/Unknwon/com"
-	"dev.sigpipe.me/dashie/myapp/setting"
+	"dev.sigpipe.me/dashie/reel2bits/setting"
 )
 
 const alphanum = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"

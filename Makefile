@@ -5,7 +5,7 @@ OS := $(shell uname)
 
 DATA_FILES := $(shell find conf | sed 's/ /\\ /g')
 
-BUILD_FLAGS:=-o myapp -v
+BUILD_FLAGS:=-o reel2bits -v
 TAGS=sqlite
 NOW=$(shell date -u '+%Y%m%d%I%M%S')
 GOVET=go tool vet -composites=false -methods=false -structtags=false
@@ -17,10 +17,10 @@ all: build
 check: test
 
 web: build
-	./myapp web
+	./reel2bits web
 
 govet:
-	$(GOVET) myapp.go
+	$(GOVET) reel2bits.go
 
 build:
 	go build $(BUILD_FLAGS) -ldflags '$(LDFLAGS)' -tags '$(TAGS)'

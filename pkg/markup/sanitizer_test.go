@@ -8,7 +8,7 @@ import (
 
 	. "github.com/smartystreets/goconvey/convey"
 
-	. "dev.sigpipe.me/dashie/myapp/pkg/markup"
+	. "dev.sigpipe.me/dashie/reel2bits/pkg/markup"
 )
 
 func Test_Sanitizer(t *testing.T) {

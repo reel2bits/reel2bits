@@ -1,10 +1,10 @@
 package admin
 
 import (
-	"dev.sigpipe.me/dashie/myapp/context"
+	"dev.sigpipe.me/dashie/reel2bits/context"
 	"time"
-	"dev.sigpipe.me/dashie/myapp/pkg/tool"
-	"dev.sigpipe.me/dashie/myapp/pkg/cron"
+	"dev.sigpipe.me/dashie/reel2bits/pkg/tool"
+	"dev.sigpipe.me/dashie/reel2bits/pkg/cron"
 	"runtime"
 	"fmt"
 )

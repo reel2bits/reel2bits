@@ -1,4 +1,4 @@
-package: dev.sigpipe.me/dashie/myapp
+package: dev.sigpipe.me/dashie/reel2bits
 import:
 - package: github.com/Unknwon/com
   version: master

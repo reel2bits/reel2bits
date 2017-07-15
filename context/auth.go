@@ -1,7 +1,7 @@
 package context
 
 import (
-	"dev.sigpipe.me/dashie/myapp/setting"
+	"dev.sigpipe.me/dashie/reel2bits/setting"
 	"github.com/go-macaron/csrf"
 	log "gopkg.in/clog.v1"
 	"gopkg.in/macaron.v1"

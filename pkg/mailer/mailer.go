@@ -18,7 +18,7 @@ import (
 	log "gopkg.in/clog.v1"
 	"gopkg.in/gomail.v2"
 
-	"dev.sigpipe.me/dashie/myapp/setting"
+	"dev.sigpipe.me/dashie/reel2bits/setting"
 )
 
 type Message struct {

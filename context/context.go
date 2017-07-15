@@ -1,10 +1,10 @@
 package context
 
 import (
-	"dev.sigpipe.me/dashie/myapp/models"
-	"dev.sigpipe.me/dashie/myapp/pkg/auth"
-	"dev.sigpipe.me/dashie/myapp/pkg/form"
-	"dev.sigpipe.me/dashie/myapp/setting"
+	"dev.sigpipe.me/dashie/reel2bits/models"
+	"dev.sigpipe.me/dashie/reel2bits/pkg/auth"
+	"dev.sigpipe.me/dashie/reel2bits/pkg/form"
+	"dev.sigpipe.me/dashie/reel2bits/setting"
 	"fmt"
 	"github.com/go-macaron/cache"
 	"github.com/go-macaron/csrf"

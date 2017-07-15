@@ -9,7 +9,7 @@ node('linux && x86_64 && go') {
     // Install the desired Go version
     def root = tool name: 'Go 1.8.3', type: 'go'
 
-    ws("${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}/src/dev.sigpipe.me/dashie/myapp") {
+    ws("${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}/src/dev.sigpipe.me/dashie/reel2bits") {
         // Export environment variables pointing to the directory where Go was installed
         env.GOROOT="${root}"
         env.GOPATH="${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}/"
@@ -24,13 +24,13 @@ node('linux && x86_64 && go') {
         }
 
         stage('Checkout') {
-        //    git url: 'https://dev.sigpipe.me/dashie/myapp.git'
+        //    git url: 'https://dev.sigpipe.me/dashie/reel2bits.git'
             checkout scm
         }
 
-        String applicationName = "myapp"
+        String applicationName = "reel2bits"
         String appVersion = sh (
-            script: "cat myapp.go | awk -F'\"' '/const APP_VER/ { print \$2 }'",
+            script: "cat reel2bits.go | awk -F'\"' '/const APP_VER/ { print \$2 }'",
             returnStdout: true
             ).trim()
         String buildNumber = "${appVersion}-${env.BUILD_NUMBER}"
@@ -78,22 +78,22 @@ node('linux && x86_64 && go') {
 
         stage('Archivate Artifacts') {
             // this doesn't works
-            //zip dir: '${env.WORKSPACE}/', zipFile: "${env.WORKSPACE}/myapp.linux-${buildNumber}.zip", glob: 'binaries/**,conf,LICENSE*,README*,lint.txt,tests.txt', archive: true
+            //zip dir: '${env.WORKSPACE}/', zipFile: "${env.WORKSPACE}/reel2bits.linux-${buildNumber}.zip", glob: 'binaries/**,conf,LICENSE*,README*,lint.txt,tests.txt', archive: true
             sh 'ls'
             sh """
-            mkdir myapp.linux-${buildNumber}
-            cp binaries/amd64/${buildNumber}/linux/${applicationName}-${buildNumber}.linux.amd64 myapp.linux-${buildNumber}
-            cp -r conf myapp.linux-${buildNumber}
-            cp LICENSE* myapp.linux-${buildNumber}
-            cp README.md myapp.linux-${buildNumber}
-            cp lint.txt tests.txt myapp.linux-${buildNumber}
-            zip -r myapp.linux-${buildNumber}.zip myapp.linux-${buildNumber}
-            rm -rf myapp.linux-${buildNumber}
+            mkdir reel2bits.linux-${buildNumber}
+            cp binaries/amd64/${buildNumber}/linux/${applicationName}-${buildNumber}.linux.amd64 reel2bits.linux-${buildNumber}
+            cp -r conf reel2bits.linux-${buildNumber}
+            cp LICENSE* reel2bits.linux-${buildNumber}
+            cp README.md reel2bits.linux-${buildNumber}
+            cp lint.txt tests.txt reel2bits.linux-${buildNumber}
+            zip -r reel2bits.linux-${buildNumber}.zip reel2bits.linux-${buildNumber}
+            rm -rf reel2bits.linux-${buildNumber}
             """
 
             archiveArtifacts artifacts: 'binaries/**,conf,LICENSE*,README*', fingerprint: true
             archiveArtifacts artifacts: 'lint.txt,tests.txt', fingerprint: true
-            archiveArtifacts artifacts: "myapp.linux-${buildNumber}.zip", fingerprint: true
+            archiveArtifacts artifacts: "reel2bits.linux-${buildNumber}.zip", fingerprint: true
         }
     } // ws
 } // node

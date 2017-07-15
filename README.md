@@ -1,4 +1,4 @@
-myapp
+reel2bits
 =====
 
 Basic / Base app template of dashie.

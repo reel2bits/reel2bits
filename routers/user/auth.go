@@ -1,13 +1,13 @@
 package user
 
 import (
-	"dev.sigpipe.me/dashie/myapp/context"
-	"dev.sigpipe.me/dashie/myapp/setting"
-	"dev.sigpipe.me/dashie/myapp/pkg/form"
-	"dev.sigpipe.me/dashie/myapp/models"
-	"dev.sigpipe.me/dashie/myapp/pkg/mailer"
+	"dev.sigpipe.me/dashie/reel2bits/context"
+	"dev.sigpipe.me/dashie/reel2bits/setting"
+	"dev.sigpipe.me/dashie/reel2bits/pkg/form"
+	"dev.sigpipe.me/dashie/reel2bits/models"
+	"dev.sigpipe.me/dashie/reel2bits/pkg/mailer"
 	log "gopkg.in/clog.v1"
-	"dev.sigpipe.me/dashie/myapp/models/errors"
+	"dev.sigpipe.me/dashie/reel2bits/models/errors"
 	"net/url"
 	"fmt"
 )

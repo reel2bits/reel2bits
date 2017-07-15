@@ -12,7 +12,7 @@ import (
 
 	"github.com/russross/blackfriday"
 
-	"dev.sigpipe.me/dashie/myapp/setting"
+	"dev.sigpipe.me/dashie/reel2bits/setting"
 )
 
 // IsMarkdownFile reports whether name looks like a Markdown file based on its extension.

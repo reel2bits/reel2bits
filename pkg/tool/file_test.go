@@ -6,7 +6,7 @@ package tool_test
 import (
 	. "github.com/smartystreets/goconvey/convey"
 
-	. "dev.sigpipe.me/dashie/myapp/pkg/tool"
+	. "dev.sigpipe.me/dashie/reel2bits/pkg/tool"
 	"testing"
 )
 

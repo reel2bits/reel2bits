@@ -1,8 +1,8 @@
 package context
 
 import (
-	"dev.sigpipe.me/dashie/myapp/models"
-	"dev.sigpipe.me/dashie/myapp/models/errors"
+	"dev.sigpipe.me/dashie/reel2bits/models"
+	"dev.sigpipe.me/dashie/reel2bits/models/errors"
 	"gopkg.in/macaron.v1"
 )
 

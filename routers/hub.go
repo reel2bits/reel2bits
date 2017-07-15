@@ -1,6 +1,6 @@
 package routers
 
-import "dev.sigpipe.me/dashie/myapp/context"
+import "dev.sigpipe.me/dashie/reel2bits/context"
 
 func NotFound(ctx *context.Context) {
 	ctx.Title(ctx.Tr("error.page_not_found"))

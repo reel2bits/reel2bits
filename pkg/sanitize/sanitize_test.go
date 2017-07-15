@@ -8,7 +8,7 @@ import (
 
 	. "github.com/smartystreets/goconvey/convey"
 
-	. "dev.sigpipe.me/dashie/myapp/pkg/sanitize"
+	. "dev.sigpipe.me/dashie/reel2bits/pkg/sanitize"
 )
 
 func Test_Accents(t *testing.T) {

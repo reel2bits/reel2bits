@@ -41,7 +41,7 @@ func InitMailRender(dir string, funcMap []template.FuncMap) {
 }
 
 func SendTestMail(email string) error {
-	return gomail.Send(&Sender{}, NewMessage([]string{email}, "myapp Test Email!", "myapp Test Email!").Message)
+	return gomail.Send(&Sender{}, NewMessage([]string{email}, "reel2bits Test Email!", "reel2bits Test Email!").Message)
 }
 
 /*

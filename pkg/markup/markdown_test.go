@@ -9,8 +9,8 @@ import (
 
 	. "github.com/smartystreets/goconvey/convey"
 
-	. "dev.sigpipe.me/dashie/myapp/pkg/markup"
-	"dev.sigpipe.me/dashie/myapp/setting"
+	. "dev.sigpipe.me/dashie/reel2bits/pkg/markup"
+	"dev.sigpipe.me/dashie/reel2bits/setting"
 )
 
 func Test_IsMarkdownFile(t *testing.T) {

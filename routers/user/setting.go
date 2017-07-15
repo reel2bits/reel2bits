@@ -1,9 +1,9 @@
 package user
 
 import (
-	"dev.sigpipe.me/dashie/myapp/context"
-	"dev.sigpipe.me/dashie/myapp/pkg/form"
-	"dev.sigpipe.me/dashie/myapp/models"
+	"dev.sigpipe.me/dashie/reel2bits/context"
+	"dev.sigpipe.me/dashie/reel2bits/pkg/form"
+	"dev.sigpipe.me/dashie/reel2bits/models"
 )
 
 const (
