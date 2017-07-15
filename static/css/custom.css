@@ -1,0 +1,354 @@
+/* Move down content because we have a fixed navbar that is 50px tall plus 20px to center with bottom */
+body {
+    padding-top: 70px;
+    padding-bottom: 20px;
+    clear: both;
+
+    font-family: "PingFang SC", "Helvetica Neue", "Microsoft YaHei", Arial, Helvetica, sans-serif !important;
+}
+
+footer {
+    font-family: "PingFang SC", "Helvetica Neue", "Microsoft YaHei", Arial, Helvetica, sans-serif !important;
+    margin-top: 54px !important;
+    padding-top: 10px;
+    border-top: 1px solid #d6d6d6;
+    color: #888888;
+}
+
+footer .left {
+    float: left;
+}
+
+footer .right {
+    float: right;
+}
+
+.clear {
+    clear: both;
+}
+.left {
+    float: left;
+}
+.right {
+    float: right;
+}
+
+.form-signin {
+    max-width: 330px;
+    padding: 15px;
+    margin: 0 auto;
+}
+.form-signin .form-signin-heading,
+.form-signin .checkbox {
+    margin-bottom: 10px;
+}
+.form-signin .checkbox {
+    font-weight: normal;
+}
+.form-signin .form-control {
+    position: relative;
+    height: auto;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    padding: 10px;
+    font-size: 16px;
+}
+.form-signin .form-control:focus {
+    z-index: 2;
+}
+.form-signin input[id="user_name"] {
+    margin-bottom: -15px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+.form-signin input[id="email"] {
+    margin-bottom: -15px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+.form-signin input[id="password"] {
+    margin-bottom: -15px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+.form-signin input[id="repeat"] {
+    margin-bottom: 10px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+/* Profile sidebar */
+div.settings_sidebar {
+    display: block;
+    background: #FFF;
+    border: 1px solid rgba(34, 36, 38, .15);
+    border-radius: .28571429rem;
+    box-shadow: 0 1px 2px 0 rgba(34, 36, 38, .15);
+    text-decoration: none;
+    text-transform: none;
+}
+
+div.settings_sidebar a {
+    text-decoration: none;
+    text-transform: none;
+}
+
+div.settings_sidebar .header.item {
+    font-size: 1.1em;
+    background: #f0f0f0;
+}
+
+div.settings_sidebar > .item:first-child {
+    border-radius: .28571429rem .28571429rem 0 0;
+}
+
+div.settings_sidebar .item:not(:first-child) {
+    border-top: 1px solid #eaeaea;
+}
+
+div.settings_sidebar .item.active {
+    background: rgba(0, 0, 0, .05);
+}
+
+div.settings_sidebar .item {
+    display: block;
+    border-top: none;
+    border-right: none;
+    padding: .5em 1em;
+    position: relative;
+    vertical-align: middle;
+    border-radius: 0;
+    box-shadow: none;
+    transition: background .1s ease, box-shadow .1s ease, color .1s ease;
+}
+
+div.settings_sidebar .item:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: rgba(0, 0, 0, 0.8);
+}
+
+/* "Modal" type content */
+div.page_modal {
+    display: block;
+    background: #fff;
+    border: 1px solid rgba(34, 36, 38, .15);
+    border-radius: .28571429rem;
+    box-shadow: 0 1px 2px 0 rgba(34, 36, 38, .15);
+}
+
+div.page_modal .header {
+    background: #f0f0f0;
+    padding: .5em 1em;
+    margin: 0 0 1em;
+}
+
+div.page_modal .content {
+    padding: 1em;
+}
+
+
+/* Gitxt views */
+div.gitxt_description {
+    font-size: 16px;
+    word-wrap: break-word;
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+div.gitxt_file {
+    margin-top: 1em;
+    display: block;
+    background: #fff;
+    border: 1px solid rgba(34, 36, 38, .15);
+    border-radius: .28571429rem;
+    box-shadow: 0 1px 2px 0 rgba(34, 36, 38, .15);
+}
+
+div.gitxt_file .header {
+    background: #f0f0f0;
+    padding: .5em 1em;
+}
+
+div.gitxt_file .gitxt_content {
+    overflow: auto;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+pre code {
+    white-space: inherit;
+}
+
+div.gitxt_file table * {
+    font-size: 12px;
+    font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    line-height: 20px;
+}
+
+div.gitxt_file .lines-num {
+    vertical-align: top;
+    text-align: right;
+    color: #999;
+    background: #f5f5f5;
+    width: 1%;
+}
+
+div.gitxt_file .lines-num span {
+    line-height: 20px;
+    padding: 0 10px;
+    cursor: pointer;
+    display: block;
+}
+
+div.gitxt_file .lines-num, div.gitxt_file .lines-code {
+    padding: 0;
+}
+
+div.gitxt_file .lines-num pre,
+div.gitxt_file .lines-num ol,
+div.gitxt_file .lines-num .hljs,
+div.gitxt_file .lines-code pre,
+div.gitxt_file .lines-code ol,
+div.gitxt_file .lines-code .hljs {
+    background-color: white;
+    margin: 0;
+    padding: 0 !important;
+}
+
+div.gitxt_file .lines-num pre li,
+div.gitxt_file .lines-num ol li,
+div.gitxt_file .lines-num .hljs li,
+div.gitxt_file .lines-code pre li,
+div.gitxt_file .lines-code ol li,
+div.gitxt_file .lines-code .hljs li {
+    display: inline-block;
+    width: 100%;
+}
+
+div.gitxt_file .lines-num pre li:before,
+div.gitxt_file .lines-num ol li:before,
+div.gitxt_file .lines-num .hljs li:before,
+div.gitxt_file .lines-code pre li:before,
+div.gitxt_file .lines-code ol li:before,
+div.gitxt_file .lines-code .hljs li:before {
+    content: ' ';
+}
+
+
+
+/* Gitxt new file modal */
+div.gitxt_new_file {
+    margin-top: 1em;
+    display: block;
+    background: #fff;
+    border: 1px solid rgba(34, 36, 38, .15);
+    border-radius: .28571429rem;
+    box-shadow: 0 1px 2px 0 rgba(34, 36, 38, .15);
+    margin-bottom: 2em;
+}
+
+div.gitxt_new_file .filename {
+    background: #f0f0f0;
+    padding: .5em 1em;
+}
+
+div.gitxt_new_file .filename .input-group {
+    width: 25em;
+}
+
+div.gitxt_new_file .content {
+    padding: 1em;
+
+    display: block;
+    margin: 0 0;
+}
+
+div.gitxt_new_file .content textarea {
+    font-family: monospace;
+    white-space: pre;
+    resize: vertical;
+    min-height: 10em;
+}
+
+div.gitxt_new_form_actions {
+    border-top: solid rgba(34, 36, 38, .15) 1px;
+    padding-top: 1em;
+}
+
+div.gitxts_list {
+
+}
+
+div.gitxts_list div.gitxts_single_list {
+    margin-top: 1em;
+    display: block;
+    background: #fff;
+    border: 1px solid rgba(34, 36, 38, .15);
+    border-radius: .28571429rem;
+    box-shadow: 0 1px 2px 0 rgba(34, 36, 38, .15);
+    margin-bottom: 2em;
+}
+
+div.gitxts_list div.gitxts_single_list .icon-privacy {
+    width: 1em;
+    display: inline-block;
+}
+
+div.gitxts_list div.gitxts_single_list .header {
+    background: #f0f0f0;
+    padding: .5em 1em;
+}
+
+div.gitxts_list div.gitxts_single_list .content {
+    padding: 1em;
+    display: block;
+    margin: 0 0;
+}
+
+/* Revert bootstrap behavior */
+pre {
+    border: none;
+    background-color: transparent;
+}
+
+div.non-raw-text {
+    padding: 1em;
+}
+
+div.non-raw-text img {
+    max-width: 100%;
+}
+
+/* Admin dashboard */
+div.admin-dashboard {
+    font-size: 13px;
+    margin-bottom: 2em;
+}
+
+div.admin-dashboard div.content dl {
+    padding: 20px;
+    margin: 0;
+}
+
+div.admin-dashboard div.content dl dd {
+    margin-left: 240px;
+}
+div.admin-dashboard div.content dl dt {
+    font-weight: bolder;
+    float: left;
+    width: 250px;
+    clear: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+div.admin-dashboard div.divider {
+    border-top: 1px solid rgba(34,36,38,.15);
+    border-bottom: 1px solid rgba(255,255,255,.1);
+    margin: 1rem 0;
+}

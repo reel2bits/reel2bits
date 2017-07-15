@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <meta name="_csrf" content="{{.CSRFToken}}" />
+    <meta name="_suburl" content="{{AppSubURL}}" />
+
+    <link rel="icon" href="{{AppSubURL}}/favicon.ico">
+
+    <title>{{ .Title }}</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{{AppSubURL}}/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{AppSubURL}}/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+    {{if .PageIsGitxtView}}
+    <link href="{{AppSubURL}}/highlight/github-gist.css" rel="stylesheet">
+    {{end}}
+
+    <!-- Custom styles for this template -->
+    <link href="{{AppSubURL}}/css/custom.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+
+    {{if .PageIsGitxtView}}
+        <meta content="{{AppName}}" property="og:site_name" />
+        <meta content="object" property="og:type" />
+        {{if .repoDescription}}
+        <meta content="{{.repoDescription}}" property="og:title" />
+        <meta content="{{.repoDescription}}" property="og:description" />
+        {{else}}
+        <meta content="Repository {{.repoHash}} or {{.repoOwnerUsername}}" property="og:title" />
+        <meta content="Repository {{.repoHash}} or {{.repoOwnerUsername}}" property="og:description" />
+        {{end}}
+        <meta content="{{AppURL}}{{.repoOwnerUsername}}/{{.repoHash}}" property="og:url" />
+    {{else if .PageIsGitxtListUser}}
+        <meta property="og:url" content="{{AppURL}}{{.RepoOwnerUsername}}">
+        <meta property="og:type" content="profile">
+        <meta property="og:site_name" content="{{AppName}}">
+        <meta property="og:title" content="List of snippets for {{.RepoOwnerUsername}} - {{AppName}}">
+        <meta property="og:description" content="List of snippets for {{.RepoOwnerUsername}} - {{AppName}}">
+    {{else}}
+        <meta property="og:url" content="{{AppURL}}">
+        <meta property="og:site_name" content="{{AppName}}">
+        <meta property="og:title" content="{{AppName}} - Git backed snippets">
+        <meta property="og:description" content="Create snippets hosted in git repositories">
+    {{end}}
+</head>
+
+<body>
+
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">{{.i18n.Tr "header.toggle_nav"}}</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{{AppSubURL}}/">{{AppName}}</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                {{if .IsLogged}}
+                    <li><a href="{{AppSubURL}}/{{.LoggedUserName}}">{{.i18n.Tr "header.my_whatever"}}</a></li>
+                    <li><a href="{{AppSubURL}}/user/settings">{{.i18n.Tr "header.settings"}}</a></li>
+                    {{if .UserIsAdmin}}
+                        <li><a href="{{AppSubURL}}/admin">{{.i18n.Tr "header.admin"}}</a></li>
+                    {{end}}
+                    <li><a href="{{AppSubURL}}/user/logout">{{.i18n.Tr "header.logout"}}</a></li>
+                {{else}}
+                    {{if CanRegister}}
+                        <li><a href="{{AppSubURL}}/user/register">{{.i18n.Tr "header.register"}}</a></li>
+                    {{end}}
+                    <li><a href="{{AppSubURL}}/user/login">{{.i18n.Tr "header.login"}}</a></li>
+                {{end}}
+            </ul>
+        </div><!--/.nav-collapse -->
+    </div>
+</nav>
+
+<div class="container">
+    {{template "base/alert" .}}
+{{/*
+</div>
+</body>
+</html>
+*/}}

@@ -1,0 +1,43 @@
+{{/*
+<html>
+<body>
+<div>
+    */}}
+<footer>
+    <div>
+        <div class="left">
+            © 2017 myapp - {{.i18n.Tr "footer.version"}}: {{AppVer}} - {{.i18n.Tr "footer.page"}}: <strong>{{LoadTimes .PageStartTime}}</strong> - {{.i18n.Tr "footer.template"}}: <strong>{{call .TmplLoadTimes}}</strong>
+        </div>
+        <div class="right">
+            <a target="_blank" href="https://dev.sigpipe.me/dashie/myapp">{{.i18n.Tr "footer.sources"}}</a>
+            -
+            <span class="version">{{GoVer}}</span>
+        </div>
+    </div>
+</footer>
+</div> <!-- /container -->
+
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="{{AppSubURL}}/js/jquery-3.2.1.min.js"></script>
+<script src="{{AppSubURL}}/js/bootstrap.min.js"></script>
+
+<script>
+    var csrf;
+    var suburl;
+    csrf = $('meta[name=_csrf]').attr("content");
+    suburl = $('meta[name=_suburl]').attr("content");
+</script>
+
+{{if (or .PageIsGitxtNewPost .PageIsGitxtNew .PageIsGitxtEdit .PageIsGitxtEditPost)}}
+<script src="{{AppSubURL}}/js/GitxtNewPost.js"></script>
+{{end}}
+
+{{if .PageIsGitxtView}}
+<script src="{{AppSubURL}}/js/highlight.pack.js"></script>
+<script src="{{AppSubURL}}/js/GitxtView.js"></script>
+{{end}}
+</body>
+</html>

@@ -1,0 +1,33 @@
+{{template "base/head" .}}
+
+<div class="row">
+    <div class="col-lg-2">
+        {{template "user/settings/sidebar" .}}
+    </div>
+    <div class="col-lg-9 col-lg-offset-1">
+        <div class="page_modal">
+            <form class="form" action="{{.Link}}" method="post">
+                {{.CSRFTokenHTML}}
+                <h4 class="header">{{.i18n.Tr "settings_profile.title"}}</h4>
+
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="content">
+                            {{if .UserIsAdmin}}
+                            {{.i18n.Tr "settings_profile.you_are_admin"}} <i class="fa fa-thumbs-up" aria-hidden="true"></i><br/><br/>
+                            {{end}}
+                            <div class="email form-group {{if .Err_Email}}has-error{{end}}">
+                                <label for="email" class="sr-only">{{.i18n.Tr "login.email"}}</label>
+                                <input type="email" name="email" id="email" class="form-control" value="{{.email}}" placeholder='{{.i18n.Tr "login.email_placeholder"}}' required>
+                            </div>
+
+                            <button class="btn btn-sm btn-success" type="submit">{{.i18n.Tr "form.save"}}</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{{template "base/footer" .}}

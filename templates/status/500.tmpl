@@ -1,0 +1,9 @@
+{{template "base/head" .}}
+<div class="ui container center">
+	<h3>{{.i18n.Tr "error.error_occured"}}</h3>
+	<div class="ui divider"></div>
+	<br>
+	{{if .ErrorMsg}}<p>{{.i18n.Tr "error.error_msg" .ErrorMsg}}</p>{{end}}
+	<p>{{.i18n.Tr "error.app_version" AppVer}}</p>
+</div>
+{{template "base/footer" .}}

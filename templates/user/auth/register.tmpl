@@ -1,0 +1,30 @@
+{{template "base/head" .}}
+
+<form class="form-signin" action="{{.Link}}" method="post">
+    {{.CSRFTokenHTML}}
+    <h2 class="form-signin-heading">{{.i18n.Tr "register.register"}}</h2>
+
+    <div class="user_name form-group {{if .Err_UserName}}has-error{{end}}">
+    <label for="user_name" class="sr-only">{{.i18n.Tr "login.username"}}</label>
+    <input type="text" name="user_name" id="user_name" class="form-control" value="{{.user_name}}" placeholder='{{.i18n.Tr "login.username_placeholder"}}' required autofocus>
+    </div>
+
+    <div class="email form-group {{if .Err_Email}}has-error{{end}}">
+    <label for="email" class="sr-only">{{.i18n.Tr "login.email"}}</label>
+    <input type="email" name="email" id="email" class="form-control" value="{{.email}}" placeholder='{{.i18n.Tr "login.email_placeholder"}}' required autofocus>
+    </div>
+
+    <div class="password form-group {{if .Err_Password}}has-error{{end}}">
+    <label for="password" class="sr-only">{{.i18n.Tr "register.password"}}</label>
+    <input type="password" name="password" id="password" class="form-control" value="{{.password}}" placeholder='{{.i18n.Tr "register.password_placeholder"}}' required>
+    </div>
+
+    <div class="repeat form-group {{if .Err_Repeat}}has-error{{end}}">
+    <label for="repeat" class="sr-only">{{.i18n.Tr "login.password"}}</label>
+    <input type="password" name="repeat" id="repeat" class="form-control" value="{{.repeat}}" placeholder='{{.i18n.Tr "login.repeat_password_placeholder"}}' required>
+    </div>
+
+    <button class="btn btn-lg btn-primary btn-block" type="submit">{{.i18n.Tr "login.sign_in"}}</button>
+</form>
+
+{{template "base/footer" .}}

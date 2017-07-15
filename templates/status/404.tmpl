@@ -1,0 +1,9 @@
+{{template "base/head" .}}
+<div class="ui container center">
+	<h3>{{.i18n.Tr "error.error_404_not_found"}}</h3>
+	<div class="ui divider"></div>
+	<br>
+	<p>{{.i18n.Tr "error.app_version" AppVer}}</p>
+	<p>{{.i18n.Tr "error.if_error_app"}}</p>
+</div>
+{{template "base/footer" .}}

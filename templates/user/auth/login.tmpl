@@ -1,0 +1,27 @@
+{{template "base/head" .}}
+
+<form class="form-signin" action="{{.Link}}" method="post">
+    {{.CSRFTokenHTML}}
+    <h2 class="form-signin-heading">{{.i18n.Tr "login.sign_in"}}</h2>
+
+    <div class="user_name form-group {{if .Err_UserName}}has-error{{end}}">
+    <label for="user_name" class="sr-only">{{.i18n.Tr "login.username"}}</label>
+    <input type="string" name="user_name" id="user_name" class="form-control" placeholder='{{.i18n.Tr "login.username_placeholder"}}' required autofocus>
+    </div>
+
+    <div class="password form-group {{if .Err_Password}}has-error{{end}}">
+    <label for="password" class="sr-only">{{.i18n.Tr "login.password"}}</label>
+    <input type="password" name="password" id="password" class="form-control" placeholder='{{.i18n.Tr "login.password_placeholder"}}' required>
+    </div>
+
+    <div class="checkbox">
+        <label>
+            <input type="checkbox" value="remember-me"> {{.i18n.Tr "login.remember_me"}}
+        </label>
+    </div>
+    <button class="btn btn-lg btn-primary btn-block" type="submit">{{.i18n.Tr "login.sign_in"}}</button>
+    <br/>
+    <a class="" href="/user/forget_password">{{.i18n.Tr "auth.needs_password_reset"}}</a>
+</form>
+
+{{template "base/footer" .}}
