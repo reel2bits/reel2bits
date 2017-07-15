@@ -8,7 +8,7 @@ watch_dirs = [
 	"$WORKDIR/cmd",
 	"$WORKDIR/routers",
     "$WORKDIR/context",
-    "$WORKDIR/stuff",
+    "$WORKDIR/pkg",
     "$WORKDIR/models",
     "$WORKDIR/conf/locale",
 ]
