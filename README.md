@@ -1,12 +1,13 @@
 reel2bits
 =====
 
-Basic / Base app template of dashie.
+Like Soundcloud but lighter, really lighter.
 
-- Extracted from git.txt
-- User auth/register/login/logout/profile edit
-- Basic admin page with Go stats
-- ini settings
-- i18n support
-- Base template from git.txt (bootstrap + jQuery)
+Transcode Flac and Ogg to Mp3, generate some waveforms png.
 
+HTML5 audio player.
+
+KISS, that's all.
+
+# Licensing
+- MIT License
