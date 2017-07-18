@@ -243,6 +243,12 @@ func generateTranscode(trackID int64) (err error) {
 func TranscodeAndFetchInfos(trackID int64) error {
 	log.Trace("Starting processing track %d", trackID)
 
+	_, err := models.GetTrackByID(trackID)
+	if err != nil {
+		log.Trace("Track deleted before we run the job, exiting this job.")
+		return nil
+	}
+
 	// Fetch metadatas
 	trackInfoID, err := fetchMetadatasAndCommit(trackID)
 	if err != nil {

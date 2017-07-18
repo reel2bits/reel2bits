@@ -304,3 +304,60 @@ func ListUserTracks(ctx *context.Context) {
 
 	ctx.Success(tmplTracksList)
 }
+
+func DeleteTrack(ctx *context.Context, f form.TrackDelete) {
+	if ctx.HasError() {
+		ctx.JSONSuccess(map[string]interface{}{
+			"error": ctx.Data["ErrorMsg"],
+			"redirect": false,
+		})
+		return
+	}
+
+	if ctx.Params(":userSlug") == "" || ctx.Params(":trackSlug") == "" {
+		ctx.JSONSuccess(map[string]interface{}{
+			"error": "what about no ?",
+			"redirect": false,
+		})
+		return
+	}
+
+	// Get user and track
+	user, err := models.GetUserBySlug(ctx.Params(":userSlug"))
+	if err != nil {
+		log.Error(2, "Cannot get User from slug %s: %s", ctx.Params(":userSlug"), err)
+		ctx.ServerError("Unknown user.", err)
+		return
+	}
+
+	track, err := models.GetTrackBySlugAndUserID(user.ID, ctx.Params(":trackSlug"))
+	if err != nil {
+		log.Error(2, "Cannot get Track from slug %s and user %d: %s",ctx.Params(":trackSlug"), user.ID, err)
+		ctx.ServerError("Unknown track.", err)
+		return
+	}
+
+	if ctx.Data["LoggedUserID"] != track.UserID {
+		ctx.JSONSuccess(map[string]interface{}{
+			"error": ctx.Tr("user.unauthorized"),
+			"redirect": false,
+		})
+	}
+
+	err = models.DeleteTrack(track.ID, track.UserID)
+	if err != nil {
+		ctx.Flash.Error(ctx.Tr("track_delete.error_deleting"))
+		log.Warn("DeleteTrack.Delete: %v", err)
+		ctx.JSONSuccess(map[string]interface{}{
+			"error": ctx.Tr("track_delete.error_deleting"),
+			"redirect": false,
+		})
+		return
+	}
+
+	ctx.JSONSuccess(map[string]interface{}{
+		"error": nil,
+		"redirect": setting.AppSubURL + "/u/" + user.Slug,
+	})
+	return
+}

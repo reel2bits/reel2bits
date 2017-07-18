@@ -174,7 +174,7 @@ func runWeb(ctx *cli.Context) error {
 	m.Get("/u/:userSlug", track.ListUserTracks)
 	m.Get("/u/:userSlug/:trackSlug", track.Show)
 	m.Get("/u/:userSlug/:trackSlug/edit")
-	m.Get("/u/:userSlug/:trackSlug/delete")
+	m.Post("/u/:userSlug/:trackSlug/delete", csrf.Validate, bindIgnErr(form.TrackDelete{}), track.DeleteTrack)
 	// END TRACK
 
 	// In prod this should be served by Nginx or another reverse proxy for a lot of performances reasons

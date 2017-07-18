@@ -16,6 +16,7 @@ import (
 	"io/ioutil"
 	"dev.sigpipe.me/dashie/reel2bits/pkg/tool"
 	"dev.sigpipe.me/dashie/reel2bits/models/errors"
+	"strings"
 )
 
 // Also used in TrackInfo, it's a generic state list
@@ -321,4 +322,108 @@ func GetTracks(opts *TrackOptions) (tracks []*TrackWithInfo, _ int64, _ error) {
 		"LEFT", "user", "user.id = track.user_id"	)
 
 	return tracks, count, sess.Limit(opts.PageSize, (opts.Page-1)*opts.PageSize).Find(&tracks)
+}
+
+func removeTrackFiles(transcode bool, trackFilename string, userSlug string) error {
+	storDir := filepath.Join(setting.Storage.Path, "tracks", userSlug)
+	fName := filepath.Join(storDir, trackFilename)
+	fJSON := filepath.Join(storDir, trackFilename + ".json")
+	fPNG := filepath.Join(storDir, trackFilename + ".png")
+
+	err := os.RemoveAll(fName)
+	if err != nil {
+		log.Error(2, "Cannot remove orig file '%s': %s", fName, err)
+	} else {
+		log.Info("File removed: %s", fName)
+	}
+
+	err = os.RemoveAll(fJSON)
+	if err != nil {
+		log.Error(2, "Cannot remove json file '%s': %s", fJSON, err)
+	} else {
+		log.Info("File removed: %s", fJSON)
+	}
+
+	err = os.RemoveAll(fPNG)
+	if err != nil {
+		log.Error(2, "Cannot remove png file '%s': %s", fPNG, err)
+	} else {
+		log.Info("File removed: %s", fPNG)
+	}
+
+	if transcode {
+		fTranscode := fmt.Sprintf("%s.mp3", strings.TrimSuffix(fName, filepath.Ext(fName)))
+
+		err = os.RemoveAll(fTranscode)
+		if err != nil {
+			log.Error(2, "Cannot remove transcode file '%s': %s", fTranscode, err)
+		} else {
+			log.Info("File removed: %s", fTranscode)
+		}
+	}
+
+	return nil
+}
+
+func DeleteTrack(trackID int64, userID int64) error {
+
+	// With session
+
+	// Delete TrackInfo
+
+	// Future: Delete stats record
+
+	// Delete Track
+
+	// Commit
+
+	// Get track
+	track := &Track{ID: trackID, UserID: userID}
+	hasTrack, err := x.Get(track)
+	if err != nil {
+		return err
+	} else if !hasTrack {
+		return errors.TrackNotExist{trackID, ""}
+	}
+	trackFilename := track.Filename
+	trackTranscoded := track.TranscodeState != ProcessingNotNeeded
+
+	// Get track info
+	trackInfo := &TrackInfo{TrackID: track.ID}
+	hasTrackInfo, err := x.Get(trackInfo)
+	if err != nil {
+		return err
+	}
+	// We don't care if the trackInfo does not exists
+
+	trackUser, err := GetUserByID(userID)
+	if err != nil {
+		return fmt.Errorf("GetUserByID: %v", err)
+	}
+
+	sess := x.NewSession()
+	defer sessionRelease(sess)
+	if err = sess.Begin(); err != nil {
+		return err
+	}
+
+	if _, err = sess.Delete(&Track{ID: trackID}); err != nil {
+		return fmt.Errorf("sess.Delete Track: %v", err)
+	}
+
+	if hasTrackInfo {
+		if _, err = sess.Delete(&TrackInfo{ID: trackInfo.ID}); err != nil {
+			return fmt.Errorf("sess.Delete TrackInfo: %v", err)
+		}
+	}
+
+	if err = sess.Commit(); err != nil {
+		return fmt.Errorf("Commit: %v", err)
+	}
+
+	log.Info("Deleted track record for %d/%s", track.ID, track.Title)
+
+	removeTrackFiles(trackTranscoded, trackFilename, trackUser.Slug)
+
+	return nil
 }

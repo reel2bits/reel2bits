@@ -36,10 +36,6 @@ $(document).ajaxError(function (event, request, settings) {
     show_alert("danger", "Ajax query failed", "Unknown error");
 });
 
-$("a.delete_link").click(function() {
-    return confirm("Are you sure you want to delete this item ?");
-});
-
 // http://stackoverflow.com/a/39595321
 Number.prototype.toRealFixed = function(digits) {
     return Math.floor(this.valueOf() * Math.pow(10, digits)) / Math.pow(10, digits);

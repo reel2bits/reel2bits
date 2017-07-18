@@ -66,7 +66,7 @@
                 </td>
                 {{ if (eq .IsLogged true) and (eq .track.Track.UserID .LoggedUserID) }}
                 <td class="si_btn_edit"><a class="btn btn-success btn-xs" href="{{AppSubURL}}/u/{{.user.Slug}}/{{.track.Track.Slug}}/edit">edit</a></td>
-                <td class="si_btn_delete"><a class="btn btn-danger btn-xs" href="{{AppSubURL}}/u/{{.user.Slug}}/{{.track.Track.Slug}}/delete">delete</a></td>
+                <td class="si_btn_delete"><a class="btn btn-danger btn-xs delete_link" data-url="{{AppSubURL}}/u/{{.user.Slug}}/{{.track.Track.Slug}}/delete" data-user="{{.user.Slug}}" data-track="{{.track.Track.Slug}}">delete</a></td>
                 {{ end }}
             </tr>
 

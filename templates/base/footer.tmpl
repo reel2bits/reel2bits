@@ -29,6 +29,11 @@
 <script src="{{AppSubURL}}/js/jquery.bootstrap-growl.min.js"></script>
 <script src="{{AppSubURL}}/js/datatables.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/1.4.0/wavesurfer.min.js"></script>
+
+{{ if (or .PageIsTrackShow .PageIsTrackShowWait) }}
+<script src="{{AppSubURL}}/js/trackShow.js"></script>
+{{ end }}
+
 <script>
     var csrf;
     var suburl;

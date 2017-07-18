@@ -19,3 +19,12 @@ type TrackUpload struct {
 func (f *TrackUpload) Validate(ctx *macaron.Context, errs binding.Errors) binding.Errors {
 	return validate(errs, ctx.Data, f, ctx.Locale)
 }
+
+type TrackDelete struct {
+	Track    string   `binding:"Required"`
+	User    string   `binding:"Required"`
+}
+
+func (f *TrackDelete) Validate(ctx *macaron.Context, errs binding.Errors) binding.Errors {
+	return validate(errs, ctx.Data, f, ctx.Locale)
+}

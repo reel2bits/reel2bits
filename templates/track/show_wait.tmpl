@@ -4,11 +4,16 @@
     <div class="col-lg-3 col-lg-offset-1 ss-user-back">
         <h3><i class="fa fa-angle-double-left" aria-hidden="true"></i> <a href="{{AppSubURL}}/u/{{.user.Slug}}">{{.user.UserName}}</a></h3>
     </div>
+    <div class="col-lg-2 col-lg-offset-4">
+        {{ if (eq .IsLogged true) and (eq .track.UserID .LoggedUserID) }}
+        <td class="si_btn_delete"><a class="btn btn-danger btn-xs delete_link" data-url="{{AppSubURL}}/u/{{.user.Slug}}/{{.track.Slug}}/delete" data-user="{{.user.Slug}}" data-track="{{.track.Slug}}">delete</a></td>
+        {{ end }}
+    </div>
 </div>
 
 <div class="row">
     <div class="col-lg-7 col-lg-offset-1">
-        <h3>{{ if not .trackObj.IsPrivate }}<i class="fa fa-music" aria-hidden="true"></i>{{ else }}<i class="fa fa-lock" aria-hidden="true"></i>{{ end }} {{ SubStr .track.Title 0 40 }}</h3>
+        <h3>{{ if not .track.IsPrivate }}<i class="fa fa-music" aria-hidden="true"></i>{{ else }}<i class="fa fa-lock" aria-hidden="true"></i>{{ end }} {{ SubStr .track.Title 0 40 }}</h3>
     </div>
 
     <div class="col-lg-3">
