@@ -38,5 +38,5 @@ clean-mac: clean
 	find . -name ".DS_Store" -delete
 
 test:
-	go test -cover -race ./...
+	go test -cover -race -v $(go list ./... | grep -v /vendor/)
 
