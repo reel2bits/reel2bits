@@ -16,15 +16,17 @@ import (
 	"strings"
 )
 
+// Scheme of type HTTP, HTTPS, etc.
 type Scheme string
 
 const (
-	SCHEME_HTTP        Scheme = "http"
-	SCHEME_HTTPS       Scheme = "https"
-	SCHEME_FCGI        Scheme = "fcgi"
-	SCHEME_UNIX_SOCKET Scheme = "unix"
+	SchemeHTTP       Scheme = "http"
+	SchemeHTTPS      Scheme = "https"
+	SchemeFcgi       Scheme = "fcgi"
+	SchemeUnixSocket Scheme = "unix"
 )
 
+// blah
 var (
 	// Build infos added by -ldflags
 	BuildTime    string
@@ -43,6 +45,20 @@ var (
 	// Cron tasks
 	Cron struct {
 	}
+
+	// Worker configuration
+	Worker struct {
+		RedisHost string
+		RedisDb   string
+		RedisPort string
+	}
+
+	// Storage configuration
+	Storage struct {
+		Path string
+	}
+
+	AudiowaveformBin string
 
 	// Server settings
 	Protocol             Scheme
@@ -94,7 +110,7 @@ var (
 	CacheInterval int
 	CacheConn     string
 
-	// I18n settings
+	// i18n settings
 	Langs     []string
 	Names     []string
 	dateLangs map[string]string
@@ -115,7 +131,7 @@ var (
 		AngledQuotes bool
 	}
 
-	// Static settings
+	// Bloby manages Static settings
 	Bloby struct {
 		MaxSizeDisplay int64
 		MaxPageDisplay int64
@@ -175,6 +191,7 @@ func forcePathSeparator(path string) {
 	}
 }
 
+// InitConfig to init config from ini file
 func InitConfig() {
 	workDir, err := WorkDir()
 	if err != nil {
@@ -208,26 +225,26 @@ func InitConfig() {
 	}
 
 	// Check if has app suburl.
-	appUrl, err := url.Parse(AppURL)
+	appURL, err := url.Parse(AppURL)
 	if err != nil {
 		log.Fatal(2, "Invalid ROOT_URL '%s': %s", AppURL, err)
 	}
 	// Suburl should start with '/' and end without '/', such as '/{subpath}'.
 	// This value is empty if site does not have sub-url.
-	AppSubURL = strings.TrimSuffix(appUrl.Path, "/")
+	AppSubURL = strings.TrimSuffix(appURL.Path, "/")
 	AppSubURLDepth = strings.Count(AppSubURL, "/")
 
 	CanRegister = Cfg.Section("").Key("CAN_REGISTER").MustBool(true)
 
-	Protocol = SCHEME_HTTP
+	Protocol = SchemeHTTP
 	if sec.Key("PROTOCOL").String() == "https" {
-		Protocol = SCHEME_HTTPS
+		Protocol = SchemeHTTPS
 		log.Warn("https not supported")
 	} else if sec.Key("PROTOCOL").String() == "fcgi" {
-		Protocol = SCHEME_FCGI
+		Protocol = SchemeFcgi
 		log.Warn("fcgi not supported")
 	} else if sec.Key("PROTOCOL").String() == "unix" {
-		Protocol = SCHEME_UNIX_SOCKET
+		Protocol = SchemeUnixSocket
 		log.Warn("socket not supported")
 		UnixSocketPermissionRaw := sec.Key("UNIX_SOCKET_PERMISSION").MustString("666")
 		UnixSocketPermissionParsed, err := strconv.ParseUint(UnixSocketPermissionRaw, 8, 32)
@@ -244,6 +261,12 @@ func InitConfig() {
 
 	sec = Cfg.Section("security")
 	SecretKey = sec.Key("SECRET_KEY").String()
+
+	sec = Cfg.Section("storage")
+	Storage.Path = sec.Key("PATH").MustString(path.Join(workDir, "/uploads"))
+
+	sec = Cfg.Section("audio")
+	AudiowaveformBin = sec.Key("AUDIOWAVEFORM_BIN").MustString("/usr/bin/audiowaveform")
 
 	HasRobotsTxt = com.IsFile(path.Join(workDir, "robots.txt"))
 	if HasRobotsTxt {
@@ -270,10 +293,15 @@ func InitConfig() {
 
 	if err = Cfg.Section("cron").MapTo(&Cron); err != nil {
 		log.Fatal(2, "Fail to map Cron settings: %v", err)
-	} else if err = Cfg.Section("markdown").MapTo(&Markdown); err != nil {
+	}
+	if err = Cfg.Section("markdown").MapTo(&Markdown); err != nil {
 		log.Fatal(2, "Fail to map Markdown settings: %v", err)
-	} else if err = Cfg.Section("smartypants").MapTo(&Smartypants); err != nil {
+	}
+	if err = Cfg.Section("smartypants").MapTo(&Smartypants); err != nil {
 		log.Fatal(2, "Fail to map Smartypants settings: %v", err)
+	}
+	if err = Cfg.Section("worker").MapTo(&Worker); err != nil {
+		log.Fatal(2, "Fail to map Worker settings: %v", err)
 	}
 
 	// Static
@@ -418,6 +446,7 @@ type Mailer struct {
 }
 
 var (
+	// MailService for sending mails
 	MailService *Mailer
 )
 

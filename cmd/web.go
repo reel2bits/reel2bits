@@ -10,6 +10,7 @@ import (
 	"dev.sigpipe.me/dashie/reel2bits/routers"
 	"dev.sigpipe.me/dashie/reel2bits/routers/admin"
 	"dev.sigpipe.me/dashie/reel2bits/routers/user"
+	"dev.sigpipe.me/dashie/reel2bits/routers/track"
 	"dev.sigpipe.me/dashie/reel2bits/setting"
 	"fmt"
 	"github.com/go-macaron/binding"
@@ -29,6 +30,7 @@ import (
 	"strings"
 )
 
+// Web cli target
 var Web = cli.Command{
 	Name:        "web",
 	Usage:       "Start web server",
@@ -48,7 +50,7 @@ func newMacaron() *macaron.Macaron {
 
 	m.Use(macaron.Recovery())
 
-	if setting.Protocol == setting.SCHEME_FCGI {
+	if setting.Protocol == setting.SchemeFcgi {
 		m.SetURLPrefix(setting.AppSubURL)
 	}
 
@@ -163,6 +165,25 @@ func runWeb(ctx *cli.Context) error {
 	})
 	// END USER
 
+	// START TRACK
+	m.Group("/track/upload", func() {
+		m.Get("", track.Upload)
+		m.Post("", csrf.Validate, bindIgnErr(form.TrackUpload{}), track.UploadPost)
+	}, reqSignIn)
+
+	m.Get("/u/:userSlug", track.ListUserTracks)
+	m.Get("/u/:userSlug/:trackSlug", track.Show)
+	m.Get("/u/:userSlug/:trackSlug/edit")
+	m.Get("/u/:userSlug/:trackSlug/delete")
+	// END TRACK
+
+	// In prod this should be served by Nginx or another reverse proxy for a lot of performances reasons
+	if macaron.Env == macaron.DEV {
+		m.Get("/medias/track/stream/:userSlug/:trackSlug", track.DevGetMediaTrack)
+		m.Get("/medias/track/download/:userSlug/:trackSlug")
+		m.Get("/medias/track/waveform/:userSlug/:trackSlug", track.DevGetMediaPngWf)
+	}
+
 	/* Admin part */
 
 	m.Group("/admin", func() {
@@ -186,7 +207,7 @@ func runWeb(ctx *cli.Context) error {
 	}
 
 	var listenAddr string
-	if setting.Protocol == setting.SCHEME_UNIX_SOCKET {
+	if setting.Protocol == setting.SchemeUnixSocket {
 		listenAddr = fmt.Sprintf("%s", setting.HTTPAddr)
 	} else {
 		listenAddr = fmt.Sprintf("%s:%s", setting.HTTPAddr, setting.HTTPPort)
@@ -195,13 +216,13 @@ func runWeb(ctx *cli.Context) error {
 
 	var err error
 	switch setting.Protocol {
-	case setting.SCHEME_HTTP:
+	case setting.SchemeHTTP:
 		err = http.ListenAndServe(listenAddr, m)
-	case setting.SCHEME_HTTPS:
+	case setting.SchemeHTTPS:
 		log.Fatal(2, "https not supported")
-	case setting.SCHEME_FCGI:
+	case setting.SchemeFcgi:
 		err = fcgi.Serve(nil, m)
-	case setting.SCHEME_UNIX_SOCKET:
+	case setting.SchemeUnixSocket:
 		os.Remove(listenAddr)
 
 		var listener *net.UnixListener

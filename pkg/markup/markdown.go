@@ -62,7 +62,7 @@ func (r *MarkdownRenderer) AutoLink(out *bytes.Buffer, link []byte, kind int) {
 }
 
 // ListItem defines how list items should be processed to produce corresponding HTML elements.
-func (options *MarkdownRenderer) ListItem(out *bytes.Buffer, text []byte, flags int) {
+func (r *MarkdownRenderer) ListItem(out *bytes.Buffer, text []byte, flags int) {
 	// Detect procedures to draw checkboxes.
 	switch {
 	case bytes.HasPrefix(text, []byte("[ ] ")):
@@ -70,7 +70,7 @@ func (options *MarkdownRenderer) ListItem(out *bytes.Buffer, text []byte, flags 
 	case bytes.HasPrefix(text, []byte("[x] ")):
 		text = append([]byte(`<input type="checkbox" disabled="" checked="" />`), text[3:]...)
 	}
-	options.Renderer.ListItem(out, text, flags)
+	r.Renderer.ListItem(out, text, flags)
 }
 
 // RawMarkdown renders Markdown to HTML without handling special links.
@@ -120,5 +120,5 @@ func RawMarkdown(body []byte, urlPrefix string) []byte {
 
 // Markdown takes a string or []byte and renders to HTML in Markdown syntax with special links.
 func Markdown(input interface{}, urlPrefix string) []byte {
-	return Render(MARKDOWN, input, urlPrefix)
+	return Render(typeMarkdown, input, urlPrefix)
 }

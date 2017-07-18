@@ -43,7 +43,7 @@ func Test_SanitizeFilename(t *testing.T) {
 		}
 
 		for _, tc := range testCases {
-			So(SanitizeFilename(tc.src), ShouldEqual, tc.new)
+			So(Filename(tc.src), ShouldEqual, tc.new)
 		}
 	})
 }

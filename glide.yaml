@@ -41,9 +41,17 @@ import:
   version: master
 - package: gopkg.in/ini.v1
   version: master
-- package: gopkg.in/libgit2/git2go.v25
 - package: gopkg.in/macaron.v1
   version: master
+- package: github.com/gosimple/slug
+  version: ^1.0.3
+- package: github.com/RichardKnop/machinery
+  subpackages:
+  - v1
+- package: github.com/dhowden/tag
+- package: github.com/wtolson/go-taglib
+- package: github.com/krig/go-sox
+- package: github.com/dustin/go-humanize
 testImport:
 - package: github.com/smartystreets/goconvey
   version: ^1.6.2

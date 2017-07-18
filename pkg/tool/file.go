@@ -7,8 +7,10 @@ package tool
 import (
 	"fmt"
 	"math"
+	"github.com/rakyll/magicmime"
 )
 
+// Sizes definitions
 const (
 	Byte  = 1
 	KByte = Byte * 1024
@@ -18,6 +20,8 @@ const (
 	PByte = TByte * 1024
 	EByte = PByte * 1024
 )
+
+const rawContentCheckSize = 5000
 
 var bytesSizeTable = map[string]uint64{
 	"b":  Byte,
@@ -52,4 +56,19 @@ func humanateBytes(s uint64, base float64, sizes []string) string {
 func FileSize(s int64) string {
 	sizes := []string{"B", "KB", "MB", "GB", "TB", "PB", "EB"}
 	return humanateBytes(uint64(s), 1024, sizes)
+}
+
+// GetBlobMimeType get mimetype of determined blob
+func GetBlobMimeType(blob []byte) (string, error) {
+	err := magicmime.Open(magicmime.MAGIC_MIME_TYPE | magicmime.MAGIC_ERROR)
+	if err != nil {
+		return "", fmt.Errorf("Cannot open magicmime library: %s", err)
+	}
+	defer magicmime.Close()
+
+	if len(blob) > rawContentCheckSize {
+		return magicmime.TypeByBuffer(blob[:rawContentCheckSize])
+	}
+
+	return magicmime.TypeByBuffer(blob[:])
 }

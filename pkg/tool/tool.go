@@ -62,12 +62,12 @@ func RandomString(n int) (string, error) {
 }
 
 func randomInt(max *big.Int) (int, error) {
-	rand, err := rand.Int(rand.Reader, max)
+	randNum, err := rand.Int(rand.Reader, max)
 	if err != nil {
 		return 0, err
 	}
 
-	return int(rand.Int64()), nil
+	return int(randNum.Int64()), nil
 }
 
 // BasicAuthDecode decodes username and password portions of HTTP Basic Authentication
@@ -174,7 +174,7 @@ func TimeSincePro(then time.Time) string {
 	return strings.TrimPrefix(timeStr, ", ")
 }
 
-// verify time limit code
+// VerifyTimeLimitCode verify time limit code
 func VerifyTimeLimitCode(data string, minutes int, code string) bool {
 	if len(code) <= 18 {
 		return false
@@ -201,9 +201,10 @@ func VerifyTimeLimitCode(data string, minutes int, code string) bool {
 	return false
 }
 
-const TIME_LIMIT_CODE_LENGTH = 12 + 6 + 40
+// TimeLimitCodeLength in time
+const TimeLimitCodeLength = 12 + 6 + 40
 
-// create a time limit code
+// CreateTimeLimitCode : time limited code
 // code format: 12 length date time string + 6 minutes string + 40 sha1 encoded string
 func CreateTimeLimitCode(data string, minutes int, startInf interface{}) string {
 	format := "200601021504"

@@ -1,12 +1,25 @@
-hash: 5679f4c213ae5ac73bd7dfc86f1f5efe8a2979e67e34d8086275d5824ef3ea8b
-updated: 2017-06-03T22:47:39.021162572+02:00
+hash: da694cce0828e3ac1cf861ccfb367e4a8673f1a382fa7702d82655afb2849010
+updated: 2017-07-16T23:12:49.564729472+02:00
 imports:
+- name: github.com/bradfitz/gomemcache
+  version: 1952afaa557dc08e8e0d89eafab110fb501c1a2b
+  subpackages:
+  - memcache
 - name: github.com/certifi/gocertifi
   version: a9c833d2837d3b16888d55d5aafa9ffe9afb22b0
 - name: github.com/denisenkom/go-mssqldb
   version: f77039e4e9bc788cb0406a666f410abee0ca1580
+- name: github.com/dhowden/tag
+  version: 9edd38ca5d10eb571b767a3b07d80087086b61ed
+- name: github.com/dustin/go-humanize
+  version: 259d2a102b871d17f30e3cd9881a642961a1e486
 - name: github.com/fatih/color
   version: 62e9147c64a1ed519147b62a56a14e83e2be02c1
+- name: github.com/garyburd/redigo
+  version: 95d11dba2d44531bdb8022752b98912baafae03a
+  subpackages:
+  - internal
+  - redis
 - name: github.com/getsentry/raven-go
   version: 4fa2ac0d29f801e79a063c0da82d37b5ff2873b2
 - name: github.com/go-macaron/binding
@@ -33,8 +46,14 @@ imports:
   version: 3c8314e91603f0bfa6a228c1a0fea8a9e298f6d9
 - name: github.com/gogits/cron
   version: c803a08f3bd6f5d5f0281e5ef6a5e09b28488ed7
+- name: github.com/gosimple/slug
+  version: 32efb997950eba210b1880d8cf52b601c1b5abe3
 - name: github.com/jaytaylor/html2text
   version: 7c7a33a7a158a5ce395c803d2b6a209b2bbc14c8
+- name: github.com/kelseyhightower/envconfig
+  version: 70f0258d44cbaa3b6a2581d82f58da01a38e4de4
+- name: github.com/krig/go-sox
+  version: 875901c9b7fa706bc17c59afd07681edfe32ca6e
 - name: github.com/lib/pq
   version: 91f10e40ba0dd2d0bf9f93ec1d4077711a78df88
   subpackages:
@@ -53,14 +72,33 @@ imports:
   version: e79763773ab6222ca1d5a7cbd9d62d83c1f77081
 - name: github.com/olekukonko/tablewriter
   version: febf2d34b54a69ce7530036c7503b1c9fbfdf0bb
+- name: github.com/rainycape/unidecode
+  version: cb7f23ec59bec0d61b19c56cd88cee3d0cc1870c
 - name: github.com/rakyll/magicmime
   version: 9b99294d6b2216897632b9734769d8ce4568681e
+- name: github.com/RichardKnop/logging
+  version: 0745ebe7cc826d7d0453c7c9f08ea75a7fe86f7b
+- name: github.com/RichardKnop/machinery
+  version: c42d92ff7e860f492d8e62c11cb96911942cece8
+  subpackages:
+  - v1
+  - v1/backends
+  - v1/brokers
+  - v1/common
+  - v1/config
+  - v1/log
+  - v1/retry
+  - v1/tasks
 - name: github.com/russross/blackfriday
   version: 0b647d0506a698cca42caca173e55559b12a69f2
+- name: github.com/satori/go.uuid
+  version: 5bf94b69c6b68ee1b541973bb8e1144db23a194b
 - name: github.com/shurcooL/sanitized_anchor_name
   version: 541ff5ee47f1dddf6a5281af78307d921524bcb5
 - name: github.com/ssor/bom
   version: 6ed919a936d5ab554e4b40bc51f7c522488122c6
+- name: github.com/streadway/amqp
+  version: dfe15e36048539f4cda41f240b27a5ca25b9cd46
 - name: github.com/Unknwon/com
   version: 0db4a625e949e956314d7d1adea9bf82384cc10c
 - name: github.com/Unknwon/i18n
@@ -69,6 +107,8 @@ imports:
   version: 45e5d631308ea359946e761484147982c978d0df
 - name: github.com/urfave/cli
   version: 0bdeddeeb0f650497d603c4ad7b20cfe685682f6
+- name: github.com/wtolson/go-taglib
+  version: 6e68349ff94ecea412de7e748cb5eaa26f472777
 - name: golang.org/x/crypto
   version: e1a4589e7d3ea14a3352255d04b6f1a418845e5e
   subpackages:
@@ -98,10 +138,19 @@ imports:
   version: 81ebce5c23dfd25c6c67194b37d3dd3f338c98b1
 - name: gopkg.in/ini.v1
   version: d3de07a94d22b4a0972deb4b96d790c2c0ce8333
-- name: gopkg.in/libgit2/git2go.v25
-  version: 334260d743d713a55ff3c097ec6707f2bb39e9d5
 - name: gopkg.in/macaron.v1
   version: a325110f8b392bce3e5cdeb8c44bf98078ada3be
+- name: gopkg.in/mgo.v2
+  version: 3f83fa5005286a7fe593b055f0d7771a7dce4655
+  subpackages:
+  - bson
+  - internal/json
+  - internal/sasl
+  - internal/scram
+- name: gopkg.in/redsync.v1
+  version: 98dabdf1c8574561bf976911c14ff652c47b1ddf
+- name: gopkg.in/yaml.v2
+  version: cd8b52f8269e0feb286dfeef29f8fe4d5b397e0b
 testImports:
 - name: github.com/gopherjs/gopherjs
   version: 7cde3d36aea3e1b3be7827c4dcbe6bbae73d012e

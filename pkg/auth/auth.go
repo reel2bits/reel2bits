@@ -14,6 +14,7 @@ import (
 	"gopkg.in/macaron.v1"
 )
 
+// IsAPIPath bool if url is API path /api/
 func IsAPIPath(url string) bool {
 	return strings.HasPrefix(url, "/api/")
 }

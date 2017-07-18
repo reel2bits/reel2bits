@@ -11,3 +11,8 @@ KISS, that's all.
 
 # Licensing
 - MIT License
+
+# TODO
+- Replace transcoding by something else than sox maybe
+- Show error when mp3 file don't load
+

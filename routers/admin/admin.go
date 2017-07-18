@@ -7,10 +7,11 @@ import (
 	"dev.sigpipe.me/dashie/reel2bits/pkg/cron"
 	"runtime"
 	"fmt"
+	"dev.sigpipe.me/dashie/reel2bits/workers"
 )
 
 const (
-	DASHBOARD = "admin/dashboard"
+	tmplDashboard = "admin/dashboard"
 )
 
 var (
@@ -96,14 +97,22 @@ func updateSystemStatus() {
 	sysStatus.NumGC = m.NumGC
 }
 
+// Dashboard [GET]
 func Dashboard(ctx *context.Context) {
 	ctx.Title("admin.dashboard.title")
 	ctx.PageIs("AdminDashboard")
 
 	// TODO model stats
 
+	server, err := workers.CreateServer()
+	if err != nil {
+		ctx.Flash.Error("Cannot initiate the worker connection, please retry again.")
+	}
+
+	ctx.Data["queue_transcoding_infos"], _ = server.GetBroker().GetPendingTasks("reel2bits_queue")
+
 	updateSystemStatus()
 	ctx.Data["SysStatus"] = sysStatus
 	ctx.Data["Entries"] = cron.ListTasks()
-	ctx.HTML(200, DASHBOARD)
+	ctx.HTML(200, tmplDashboard)
 }

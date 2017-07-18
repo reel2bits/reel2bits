@@ -14,13 +14,17 @@ import (
 	"strings"
 	"time"
 	"unicode/utf8"
+	"github.com/gosimple/slug"
 )
 
+// User database structure
 type User struct {
 	ID        int64  `xorm:"pk autoincr"`
 	UserName  string `xorm:"UNIQUE NOT NULL"`
 	LowerName string `xorm:"UNIQUE NOT NULL"`
 	Email     string `xorm:"NOT NULL"`
+
+	Slug	  string `xorm:"UNIQUE"`
 
 	Password string `xorm:"NOT NULL"`
 	Rands    string `xorm:"VARCHAR(10)"`
@@ -36,17 +40,20 @@ type User struct {
 	UpdatedUnix int64
 
 	// Relations
-	// 	Gitxts
-	// 	SshKeys
+	// 	Track
 }
 
+// BeforeInsert set times and slug
 func (user *User) BeforeInsert() {
 	user.CreatedUnix = time.Now().Unix()
 	user.UpdatedUnix = user.CreatedUnix
+	user.Slug = slug.Make(user.UserName)
 }
 
+// BeforeUpdate set times
 func (user *User) BeforeUpdate() {
 	user.UpdatedUnix = time.Now().Unix()
+	user.Slug = slug.Make(user.UserName)
 }
 
 func countUsers(e Engine) int64 {
@@ -109,6 +116,24 @@ func GetUserByEmail(email string) (*User, error) {
 	return nil, errors.UserNotExist{0, email}
 }
 
+// GetUserBySlug or error
+func GetUserBySlug(slug string) (*User, error) {
+	if len(slug) == 0 {
+		return nil, errors.UserNotExist{0, "slug"}
+	}
+
+	user := &User{Slug: slug}
+	has, err := x.Get(user)
+	if err != nil {
+		return nil, err
+	}
+	if has {
+		return user, nil
+	}
+
+	return nil, errors.UserNotExist{0, slug}
+}
+
 // IsUserExist checks if given user name exist,
 // the user name should be noncased unique.
 // If uid is presented, then check will rule out that one,
@@ -121,7 +146,10 @@ func IsUserExist(uid int64, name string) (bool, error) {
 }
 
 var (
-	reservedUsernames    = []string{"anon", "anonymous", "private", "assets", "css", "img", "js", "less", "plugins", "debug", "raw", "install", "api", "avatar", "user", "org", "help", "stars", "issues", "pulls", "commits", "repo", "template", "admin", "new", ".", ".."}
+	reservedUsernames    = []string{"anon", "anonymous", "private", "assets", "css", "img", "js", "less",
+		"plugins", "debug", "raw", "install", "api", "avatar", "user", "org", "help", "stars", "issues",
+		"pulls", "commits", "repo", "template", "admin", "new", "track", "album", "set", "upload",
+		".", ".."}
 	reservedUserPatterns = []string{"*.keys"}
 )
 
@@ -150,21 +178,22 @@ func isUsableName(names, patterns []string, name string) error {
 	return nil
 }
 
+// IsUsableUsername or not
 func IsUsableUsername(name string) error {
 	return isUsableName(reservedUsernames, reservedUserPatterns, name)
 }
 
 // EncodePasswd encodes password to safe format.
-func (u *User) EncodePasswd() {
-	newPasswd := pbkdf2.Key([]byte(u.Password), []byte(u.Salt), 10000, 50, sha256.New)
-	u.Password = fmt.Sprintf("%x", newPasswd)
+func (user *User) EncodePasswd() {
+	newPasswd := pbkdf2.Key([]byte(user.Password), []byte(user.Salt), 10000, 50, sha256.New)
+	user.Password = fmt.Sprintf("%x", newPasswd)
 }
 
 // ValidatePassword checks if given password matches the one belongs to the user.
-func (u *User) ValidatePassword(passwd string) bool {
-	newUser := &User{Password: passwd, Salt: u.Salt}
+func (user *User) ValidatePassword(passwd string) bool {
+	newUser := &User{Password: passwd, Salt: user.Salt}
 	newUser.EncodePasswd()
-	return subtle.ConstantTimeCompare([]byte(u.Password), []byte(newUser.Password)) == 1
+	return subtle.ConstantTimeCompare([]byte(user.Password), []byte(newUser.Password)) == 1
 }
 
 // GetUserSalt returns a ramdom user salt token.
@@ -172,7 +201,7 @@ func GetUserSalt() (string, error) {
 	return tool.RandomString(10)
 }
 
-// Create a new user and do some validation
+// CreateUser a new user and do some validation
 func CreateUser(u *User) (err error) {
 	if err = IsUsableUsername(u.UserName); err != nil {
 		return err
@@ -209,7 +238,6 @@ func CreateUser(u *User) (err error) {
 	return sess.Commit()
 }
 
-// Update an user
 func updateUser(e Engine, u *User) error {
 	u.LowerName = strings.ToLower(u.UserName)
 	u.Email = strings.ToLower(u.Email)
@@ -217,11 +245,12 @@ func updateUser(e Engine, u *User) error {
 	return err
 }
 
+// UpdateUser an user
 func UpdateUser(u *User) error {
 	return updateUser(x, u)
 }
 
-// Login validates user name and password.
+// UserLogin validates user name and password.
 func UserLogin(username, password string) (*User, error) {
 	var user *User
 	if strings.Contains(username, "@") {
@@ -248,12 +277,12 @@ func UserLogin(username, password string) (*User, error) {
 
 // get user by verify code
 func getVerifyUser(code string) (user *User) {
-	if len(code) <= tool.TIME_LIMIT_CODE_LENGTH {
+	if len(code) <= tool.TimeLimitCodeLength {
 		return nil
 	}
 
 	// use tail hex username query user
-	hexStr := code[tool.TIME_LIMIT_CODE_LENGTH:]
+	hexStr := code[tool.TimeLimitCodeLength:]
 	if b, err := hex.DecodeString(hexStr); err == nil {
 		if user, err = GetUserByName(string(b)); user != nil {
 			return user
@@ -265,14 +294,14 @@ func getVerifyUser(code string) (user *User) {
 	return nil
 }
 
-// verify active code when active account
+// VerifyUserActiveCode when active account
 func VerifyUserActiveCode(code string) (user *User) {
 	// HARDCODED
 	minutes := 180
 
 	if user = getVerifyUser(code); user != nil {
 		// time limit code
-		prefix := code[:tool.TIME_LIMIT_CODE_LENGTH]
+		prefix := code[:tool.TimeLimitCodeLength]
 		data := com.ToStr(user.ID) + user.Email + user.LowerName + user.Password + user.Rands
 
 		if tool.VerifyTimeLimitCode(data, minutes, prefix) {
@@ -283,18 +312,18 @@ func VerifyUserActiveCode(code string) (user *User) {
 }
 
 // GenerateEmailActivateCode generates an activate code based on user information and given e-mail.
-func (u *User) GenerateEmailActivateCode(email string) string {
+func (user *User) GenerateEmailActivateCode(email string) string {
 	code := tool.CreateTimeLimitCode(
-		com.ToStr(u.ID)+email+u.LowerName+u.Password+u.Rands, 180, nil)
+		com.ToStr(user.ID)+email+user.LowerName+user.Password+user.Rands, 180, nil)
 
 	// Add tail hex username
-	code += hex.EncodeToString([]byte(u.LowerName))
+	code += hex.EncodeToString([]byte(user.LowerName))
 	return code
 }
 
 // GenerateActivateCode generates an activate code based on user information.
-func (u *User) GenerateActivateCode() string {
-	return u.GenerateEmailActivateCode(u.Email)
+func (user *User) GenerateActivateCode() string {
+	return user.GenerateEmailActivateCode(user.Email)
 }
 
 // mailerUser is a wrapper for satisfying mailer.User interface.
@@ -302,26 +331,27 @@ type mailerUser struct {
 	user *User
 }
 
-func (this mailerUser) ID() int64 {
-	return this.user.ID
+func (mu mailerUser) ID() int64 {
+	return mu.user.ID
 }
 
-func (this mailerUser) Email() string {
-	return this.user.Email
+func (mu mailerUser) Email() string {
+	return mu.user.Email
 }
 
-func (this mailerUser) DisplayName() string {
-	return this.user.UserName
+func (mu mailerUser) DisplayName() string {
+	return mu.user.UserName
 }
 
-func (this mailerUser) GenerateActivateCode() string {
-	return this.user.GenerateActivateCode()
+func (mu mailerUser) GenerateActivateCode() string {
+	return mu.user.GenerateActivateCode()
 }
 
-func (this mailerUser) GenerateEmailActivateCode(email string) string {
-	return this.user.GenerateEmailActivateCode(email)
+func (mu mailerUser) GenerateEmailActivateCode(email string) string {
+	return mu.user.GenerateEmailActivateCode(email)
 }
 
+// NewMailerUser initiate a new mailer for the user
 func NewMailerUser(u *User) mailer.User {
 	return mailerUser{u}
 }

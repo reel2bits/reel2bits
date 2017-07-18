@@ -17,7 +17,7 @@ RES = {
 }
 INI_PARSE = [
     "conf/locale/locale_en-US.ini",
-    "conf/locale/locale_fr-FR.ini",
+#    "conf/locale/locale_fr-FR.ini",
 ]
 DIRS_SEARCH = [
     "cmd",

@@ -13,8 +13,10 @@ import (
 	"runtime"
 	"strings"
 	"time"
+	"github.com/dustin/go-humanize"
 )
 
+// NewFuncMap because you don't want an older
 func NewFuncMap() []template.FuncMap {
 	return []template.FuncMap{map[string]interface{}{
 		"GoVer": func() string {
@@ -45,6 +47,10 @@ func NewFuncMap() []template.FuncMap {
 		"Safe":     Safe,
 		"Sanitize": bluemonday.UGCPolicy().Sanitize,
 		"Str2html": Str2html,
+		"Unescape": func(str string) template.JS {
+			str = strings.Replace(str, "\n","",-1)
+			return template.JS(str)
+		},
 		"Add": func(a, b int) int {
 			return a + b
 		},
@@ -80,13 +86,17 @@ func NewFuncMap() []template.FuncMap {
 		"IsPdf": func(mime string) bool {
 			return strings.EqualFold(mime, "application/pdf")
 		},
+		"DurationToHuman": DurationToHuman,
+		"ElapsedToHuman": ElapsedToHuman,
 	}}
 }
 
+// Safe safe
 func Safe(raw string) template.HTML {
 	return template.HTML(raw)
 }
 
+// List list
 func List(l *list.List) chan interface{} {
 	e := l.Front()
 	c := make(chan interface{})
@@ -100,14 +110,74 @@ func List(l *list.List) chan interface{} {
 	return c
 }
 
+// Sha1 sha one
 func Sha1(str string) string {
 	return tool.SHA1(str)
 }
 
+// EscapePound escape the pound
 func EscapePound(str string) string {
 	return strings.NewReplacer("%", "%25", "#", "%23", " ", "%20", "?", "%3F").Replace(str)
 }
 
+// Str2html String to HTML
 func Str2html(raw string) template.HTML {
 	return template.HTML(markup.Sanitize(raw))
+}
+
+// ElapsedToHuman to get "xx days ago"
+func ElapsedToHuman(dateUnix int64) string {
+	date := time.Unix(dateUnix, 0).Local()
+	return humanize.Time(date)
+}
+
+// No float32 or float64 possible :(
+func divmod(m, n int) (q, r int) {
+	q = m / n
+	r = m % n
+	return
+}
+
+// DurationToHuman transforms "125" in "2 minutes"
+func DurationToHuman(duration float64) string {
+	if duration < 0 {
+		return "error"
+	}
+
+	minutes, seconds := divmod(int(duration), 60)
+	hours, minutes := divmod(minutes, 60)
+	days, hours := divmod(hours, 24)
+	years, days := divmod(days, 365) // orig: 365.242199
+
+	minutes = int(minutes)
+	hours = int(hours)
+	days = int(days)
+	years = int(years)
+
+	if years > 0 {
+		if years != 1 {
+			return fmt.Sprintf("%d years", years)
+		}
+		return fmt.Sprintf("%d year", years)
+	} else if days > 0 {
+		if days != 1 {
+			return fmt.Sprintf("%d days", days)
+		}
+		return fmt.Sprintf("%d day", days)
+	} else if hours > 0 {
+		if hours != 1 {
+			return fmt.Sprintf("%d hours", hours)
+		}
+		return fmt.Sprintf("%d hour", hours)
+	} else if minutes > 0 {
+		if minutes != 1 {
+			return fmt.Sprintf("%d minutes", minutes)
+		}
+		return fmt.Sprintf("%d minute", minutes)
+	} else {
+		if minutes != 1 {
+			return fmt.Sprintf("%.2d secs", seconds)
+		}
+		return fmt.Sprintf("%.2d sec", seconds)
+	}
 }

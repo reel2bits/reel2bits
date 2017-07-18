@@ -40,6 +40,42 @@
     <div class="col-lg-11 col-lg-offset-1">
         <div class="page_modal admin-dashboard">
             <div class="header">
+                <h4>{{.i18n.Tr "admin.worker.queue_transcoding_infos"}}</h4>
+            </div>
+
+            <div class="content">
+                <table class="table table-stripped table-compact">
+                    <thead>
+                    <tr>
+                        <th>{{.i18n.Tr "admin.worker.uuid"}}</th>
+                        <th>{{.i18n.Tr "admin.worker.name"}}</th>
+                        <th>{{.i18n.Tr "admin.worker.eta"}}</th>
+                        <th>{{.i18n.Tr "admin.worker.retry_count"}}</th>
+                        <th>{{.i18n.Tr "admin.worker.args"}}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {{range .queue_transcoding_infos}}
+                    <tr>
+                        <td>{{.UUID}}</td>
+                        <td>{{.Name}}</td>
+                        <td>{{.ETA}}</td>
+                        <td>{{.RetryCount}}</td>
+                        <td>{{.Args}}</td>
+                    </tr>
+                    {{end}}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-11 col-lg-offset-1">
+        <div class="page_modal admin-dashboard">
+            <div class="header">
                 <h4>{{.i18n.Tr "admin.dashboard.system_status"}}</h4>
             </div>
 

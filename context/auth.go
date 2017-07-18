@@ -8,6 +8,7 @@ import (
 	"net/url"
 )
 
+// ToggleOptions struct used with Toggle
 type ToggleOptions struct {
 	SignInRequired  bool
 	SignOutRequired bool
@@ -15,6 +16,7 @@ type ToggleOptions struct {
 	DisableCSRF     bool
 }
 
+// Toggle is used to switch some options before the request arrives in the router
 func Toggle(options *ToggleOptions) macaron.Handler {
 	return func(ctx *Context) {
 		// Redirect non-login pages from logged in user

@@ -1,0 +1,151 @@
+{{template "base/head" .}}
+
+<div class="row">
+    <div class="col-lg-3 col-lg-offset-1 ss-user-back">
+        <h3><i class="fa fa-angle-double-left" aria-hidden="true"></i> <a href="{{AppSubURL}}/u/{{.user.Slug}}">{{.user.UserName}}</a></h3>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-7 col-lg-offset-1">
+        <h3>{{ if not .track.Track.IsPrivate }}<i class="fa fa-music" aria-hidden="true"></i>{{ else }}<i class="fa fa-lock" aria-hidden="true"></i>{{ end }} {{ SubStr .track.Track.Title 0 40 }}</h3>
+    </div>
+
+    <div class="col-lg-3">
+        <h3><i class="fa fa-clock-o" aria-hidden="true"></i> {{ ElapsedToHuman .track.Track.CreatedUnix }}</h3>
+    </div>
+</div>
+
+{{ if .track.Track.Description }}
+<div class="row sound-description">
+    <div class="col-lg-6 col-lg-offset-1">
+        {{ .track.Track.Description }}
+    </div>
+</div>
+{{ end }}
+
+<div class="row">
+    <div class="col-lg-7 col-lg-offset-1">
+        <div class="row"><div class="col-lg-12">
+            <div id="waveform"></div>
+            <hr>
+        </div></div>
+        <div class="row">
+            <div class="col-lg-3">
+                <span id="player-time-cur"></span> / <span id="player-time-tot"></span>
+            </div>
+            <div class="col-lg-7">
+                <p align="center">
+                    <button class="btn btn-primary" onclick="wavesurfer.skipBackward()">
+                        <i class="fa fa-step-backward" aria-hidden="true"></i>
+                    </button>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <button class="btn btn-primary" onclick="wavesurfer.playPause()">
+                        <i class="fa fa-play" aria-hidden="true"></i> / <i class="fa fa-pause" aria-hidden="true"></i>
+                    </button>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <button class="btn btn-primary" onclick="wavesurfer.skipForward()">
+                        <i class="fa fa-step-forward" aria-hidden="true"></i>
+                    </button>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <button class="btn btn-primary" onclick="wavesurfer.toggleMute()">
+                        <i class="fa fa-volume-off" aria-hidden="true"></i>
+                    </button>
+                </p>
+            </div></div>
+    </div>
+    <div class="col-lg-3">
+        <table class="table table-condensed table-hoverable">
+            <tr>
+                <td>
+                    {{ if .track.Track.ShowDlLink }}
+                    <a class="btn btn-info btn-xs" href="{{AppSubURL}}/download/track/{{.user.Slug}}/{{.track.Track.Slug}}">
+                        <i class="fa fa-download" aria-hidden="true"></i> download
+                    </a>
+                    {{ end }}
+                </td>
+                {{ if (eq .IsLogged true) and (eq .track.Track.UserID .LoggedUserID) }}
+                <td class="si_btn_edit"><a class="btn btn-success btn-xs" href="{{AppSubURL}}/u/{{.user.Slug}}/{{.track.Track.Slug}}/edit">edit</a></td>
+                <td class="si_btn_delete"><a class="btn btn-danger btn-xs" href="{{AppSubURL}}/u/{{.user.Slug}}/{{.track.Track.Slug}}/delete">delete</a></td>
+                {{ end }}
+            </tr>
+
+            {{ if false }}
+            <tr><td colspan="3">In album: <a href="FIXME">fixme album name</a></td></tr>
+            {{ end }}
+
+            <tr><td>Duration</td><td colspan="2">{{ DurationToHuman .track.TrackInfo.Duration }}</td></tr>
+            {{ if .track.TrackInfo.TypeHuman }}<tr><td>Type</td><td colspan="2">{{ .track.TrackInfo.TypeHuman }}</td></tr>{{ end }}
+            {{ if .track.TrackInfo.Codec }}<tr><td>Codec</td><td colspan="2">{{ .track.TrackInfo.Codec }}</td></tr>{{ end }}
+            {{ if .track.TrackInfo.Format }}<tr><td>Format</td><td colspan="2">{{ .track.TrackInfo.Format }} bits</td></tr>{{ end }}
+            {{ if .track.TrackInfo.Channels }}<tr><td>Channels</td><td colspan="2">{{ .track.TrackInfo.Channels }}</td></tr>{{ end }}
+            {{ if .track.TrackInfo.Rate }}<tr><td>Rate</td><td colspan="2">{{ .track.TrackInfo.Rate }} Hz</td></tr>{{ end }}
+
+            {{ if (.track.TrackInfo.Bitrate) and .track.TrackInfo.BitrateMode }}
+                <tr><td>Bitrate</td><td colspan="2">{{ .track.TrackInfo.BitrateMode }} {{ .track.TrackInfo.Bitrate }} bps</td></tr>
+            {{ else }}
+                {{ if .track.TrackInfo.Bitrate }}
+                    <tr><td>Bitrate</td><td colspan="2">{{ .track.TrackInfo.Bitrate }} bps</td></tr>
+                {{ end }}
+
+                {{ if .track.TrackInfo.BitrateMode }}
+                    <tr><td>Bitrate mode</td><td colspan="2">{{ .track.TrackInfo.BitrateMode }}</td></tr>
+                {{ end }}
+            {{ end }}
+            <tr><td>Processed Basic</td><td colspan="2">{{ .track.TrackInfo.ProcessedBasic }}</td></tr>
+            <tr><td>Processed Waveform</td><td colspan="2">{{ .track.TrackInfo.ProcessedWaveform }}</td></tr>
+        </table>
+    </div>
+</div>
+
+{{ define "scripts" }}
+<script type="application/javascript">
+    opts = {
+        backend: 'MediaElement',
+        container: '#waveform',
+        waveColor: 'darkorange',
+        progressColor: 'purple',
+        splitChannels: false,
+        barWidth: 3,
+        height: 64
+    };
+
+    var wavesurfer = WaveSurfer.create(opts);
+
+    {{ if .track.TrackInfo.Waveform }}
+    var waveform = {{ Unescape .track.TrackInfo.Waveform }};
+
+    var max = Math.max.apply(Math, waveform['data']);
+
+    wavesurfer.load("{{AppSubURL}}/medias/track/stream/{{.user.Slug}}/{{.track.Track.Slug}}", waveform['data'].map(p => p / max));
+    {{ else }}
+    // If no waveform
+    opts["normalize"] = true;
+    var wavesurfer = WaveSurfer.create(opts);
+    wavesurfer.load("{{AppSubURL}}/medias/track/stream/{{.user.Slug}}/{{.track.Track.Slug}}");
+    {{ end }}
+
+    $('#player-time-cur').html("00:00");
+    $('#player-time-tot').html(secondsTimeSpanToMS(wavesurfer.getDuration()));
+
+    wavesurfer.on('audioprocess', function() {
+        var current_time = wavesurfer.getCurrentTime();
+        $('#player-time-cur').html(secondsTimeSpanToMS(current_time));
+    });
+    wavesurfer.on('seek', function() {
+        var current_time = wavesurfer.getCurrentTime();
+        $('#player-time-cur').html(secondsTimeSpanToMS(current_time));
+    });
+
+    wavesurfer.on('ready', function() {
+        var duration_time = wavesurfer.getDuration();
+        $('#player-time-tot').html(secondsTimeSpanToMS(duration_time));
+    });
+
+    $(function () {
+        $('[data-toggle="popover"]').popover();
+    });
+</script>
+{{ end }}
+
+{{template "base/footer" .}}

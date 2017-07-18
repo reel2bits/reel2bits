@@ -44,9 +44,9 @@ func (c *Context) PageIs(name string) {
 }
 
 // HTML responses template with given status.
-func (ctx *Context) HTML(status int, name string) {
+func (c *Context) HTML(status int, name string) {
 	log.Trace("Template: %s", name)
-	ctx.Context.HTML(status, name)
+	c.Context.HTML(status, name)
 }
 
 // Success responses template with status http.StatusOK.
@@ -60,45 +60,46 @@ func (c *Context) JSONSuccess(data interface{}) {
 }
 
 // HasError returns true if error occurs in form validation.
-func (ctx *Context) HasError() bool {
-	hasErr, ok := ctx.Data["HasError"]
+func (c *Context) HasError() bool {
+	hasErr, ok := c.Data["HasError"]
 	if !ok {
 		return false
 	}
-	ctx.Flash.ErrorMsg = ctx.Data["ErrorMsg"].(string)
-	ctx.Data["Flash"] = ctx.Flash
+	c.Flash.ErrorMsg = c.Data["ErrorMsg"].(string)
+	c.Data["Flash"] = c.Flash
 	return hasErr.(bool)
 }
 
 // RenderWithErr used for page has form validation but need to prompt error to users.
-func (ctx *Context) RenderWithErr(msg, tpl string, f interface{}) {
+func (c *Context) RenderWithErr(msg, tpl string, f interface{}) {
 	if f != nil {
-		form.Assign(f, ctx.Data)
+		form.Assign(f, c.Data)
 	}
-	ctx.Flash.ErrorMsg = msg
-	ctx.Data["Flash"] = ctx.Flash
-	ctx.HTML(http.StatusOK, tpl)
+	c.Flash.ErrorMsg = msg
+	c.Data["Flash"] = c.Flash
+	c.HTML(http.StatusOK, tpl)
 }
 
 // Handle handles and logs error by given status.
-func (ctx *Context) Handle(status int, title string, err error) {
+func (c *Context) Handle(status int, title string, err error) {
 	switch status {
 	case http.StatusNotFound:
-		ctx.Data["Title"] = ctx.Tr("error.page_not_found")
+		c.Data["Title"] = c.Tr("error.page_not_found")
 	case http.StatusInternalServerError:
-		ctx.Data["Title"] = ctx.Tr("internal_server_error")
+		c.Data["Title"] = c.Tr("internal_server_error")
 		log.Error(2, "%s: %v", title, err)
 	}
-	ctx.HTML(status, fmt.Sprintf("status/%d", status))
+	c.HTML(status, fmt.Sprintf("status/%d", status))
 }
 
-func (ctx *Context) HandleText(status int, title string) {
-	ctx.PlainText(status, []byte(title))
+// HandleText and not unicorns
+func (c *Context) HandleText(status int, title string) {
+	c.PlainText(status, []byte(title))
 }
 
 // NotFound renders the 404 page.
-func (ctx *Context) NotFound() {
-	ctx.Handle(http.StatusNotFound, "", nil)
+func (c *Context) NotFound() {
+	c.Handle(http.StatusNotFound, "", nil)
 }
 
 // ServerError renders the 500 page.
@@ -123,7 +124,8 @@ func (c *Context) NotFoundOrServerError(title string, errck func(error) bool, er
 	c.ServerError(title, err)
 }
 
-func (ctx *Context) ServeContent(name string, r io.ReadSeeker, params ...interface{}) {
+// ServeContent serve contents, right
+func (c *Context) ServeContent(name string, r io.ReadSeeker, params ...interface{}) {
 	modtime := time.Now()
 	for _, p := range params {
 		switch v := p.(type) {
@@ -131,17 +133,18 @@ func (ctx *Context) ServeContent(name string, r io.ReadSeeker, params ...interfa
 			modtime = v
 		}
 	}
-	ctx.Resp.Header().Set("Content-Description", "File Transfer")
-	ctx.Resp.Header().Set("Content-Type", "application/octet-stream")
-	ctx.Resp.Header().Set("Content-Disposition", "attachment; filename="+name)
-	ctx.Resp.Header().Set("Content-Transfer-Encoding", "binary")
-	ctx.Resp.Header().Set("Expires", "0")
-	ctx.Resp.Header().Set("Cache-Control", "must-revalidate")
-	ctx.Resp.Header().Set("Pragma", "public")
-	http.ServeContent(ctx.Resp, ctx.Req.Request, name, modtime, r)
+	c.Resp.Header().Set("Content-Description", "File Transfer")
+	c.Resp.Header().Set("Content-Type", "application/octet-stream")
+	c.Resp.Header().Set("Content-Disposition", "attachment; filename="+name)
+	c.Resp.Header().Set("Content-Transfer-Encoding", "binary")
+	c.Resp.Header().Set("Expires", "0")
+	c.Resp.Header().Set("Cache-Control", "must-revalidate")
+	c.Resp.Header().Set("Pragma", "public")
+	http.ServeContent(c.Resp, c.Req.Request, name, modtime, r)
 }
 
-func (ctx *Context) ServeContentNoDownload(name string, mime string, r io.ReadSeeker, params ...interface{}) {
+// ServeContentNoDownload no download requested from browser
+func (c *Context) ServeContentNoDownload(name string, mime string, r io.ReadSeeker, params ...interface{}) {
 	modtime := time.Now()
 	for _, p := range params {
 		switch v := p.(type) {
@@ -149,12 +152,12 @@ func (ctx *Context) ServeContentNoDownload(name string, mime string, r io.ReadSe
 			modtime = v
 		}
 	}
-	ctx.Resp.Header().Set("Content-Description", "File Content")
-	ctx.Resp.Header().Set("Content-Type", mime)
-	ctx.Resp.Header().Set("Expires", "0")
-	ctx.Resp.Header().Set("Cache-Control", "must-revalidate")
-	ctx.Resp.Header().Set("Pragma", "public")
-	http.ServeContent(ctx.Resp, ctx.Req.Request, name, modtime, r)
+	c.Resp.Header().Set("Content-Description", "File Content")
+	c.Resp.Header().Set("Content-Type", mime)
+	c.Resp.Header().Set("Expires", "0")
+	c.Resp.Header().Set("Cache-Control", "must-revalidate")
+	c.Resp.Header().Set("Pragma", "public")
+	http.ServeContent(c.Resp, c.Req.Request, name, modtime, r)
 }
 
 // Contexter initializes a classic context for a request.

@@ -1,0 +1,33 @@
+{{template "base/head" .}}
+
+<div class="row">
+    <div class="col-lg-3 col-lg-offset-1 ss-user-back">
+        <h3><i class="fa fa-angle-double-left" aria-hidden="true"></i> <a href="{{AppSubURL}}/u/{{.user.Slug}}">{{.user.UserName}}</a></h3>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-7 col-lg-offset-1">
+        <h3>{{ if not .trackObj.IsPrivate }}<i class="fa fa-music" aria-hidden="true"></i>{{ else }}<i class="fa fa-lock" aria-hidden="true"></i>{{ end }} {{ SubStr .track.Title 0 40 }}</h3>
+    </div>
+
+    <div class="col-lg-3">
+        <h3><i class="fa fa-clock-o" aria-hidden="true"></i> {{ ElapsedToHuman .track.CreatedUnix }}</h3>
+    </div>
+</div>
+
+{{ if .trackObj.Description }}
+<div class="row sound-description">
+    <div class="col-lg-6 col-lg-offset-1">
+        {{ .track.Description }}
+    </div>
+</div>
+{{ end }}
+
+<div class="row">
+    <div class="col-lg-7 col-lg-offset-1">
+        The processing of the file is not done yet. Please come back later.
+    </div>
+</div>
+
+{{template "base/footer" .}}

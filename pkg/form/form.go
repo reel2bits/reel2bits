@@ -9,11 +9,15 @@ import (
 	"regexp"
 	"fmt"
 	log "gopkg.in/clog.v1"
+	"io/ioutil"
+	"dev.sigpipe.me/dashie/reel2bits/pkg/tool"
+	"mime/multipart"
 )
 
-const ERR_ALPHA_DASH_DOT_SLASH = "AlphaDashDotSlashError"
+const errAlphaDashDotSlash = "AlphaDashDotSlashError"
+const errOnlyAudioFile = "OnlyAudioFileError"
 
-var AlphaDashDotSlashPattern = regexp.MustCompile("[^\\d\\w-_\\./]")
+var alphaDashDotSlashPattern = regexp.MustCompile("[^\\d\\w-_\\./]")
 
 func init() {
 	binding.SetNameMapper(com.ToSnakeCase)
@@ -22,15 +26,53 @@ func init() {
 			return rule == "AlphaDashDotSlash"
 		},
 		IsValid: func(errs binding.Errors, name string, v interface{}) (bool, binding.Errors) {
-			if AlphaDashDotSlashPattern.MatchString(fmt.Sprintf("%v", v)) {
-				errs.Add([]string{name}, ERR_ALPHA_DASH_DOT_SLASH, "AlphaDashDotSlash")
+			if alphaDashDotSlashPattern.MatchString(fmt.Sprintf("%v", v)) {
+				errs.Add([]string{name}, errAlphaDashDotSlash, "AlphaDashDotSlash")
 				return false, errs
 			}
 			return true, errs
 		},
 	})
+
+	binding.AddRule(&binding.Rule{
+		IsMatch: func(rule string) bool {
+			return rule == "OnlyAudioFile"
+		},
+		IsValid: func(errs binding.Errors, name string, v interface{}) (bool, binding.Errors) {
+			fr, err := v.(*multipart.FileHeader).Open()
+			if err != nil {
+				log.Error(2, "Error opening temp uploaded file to read content: %s", err)
+				errs.Add([]string{name}, errOnlyAudioFile, "OnlyAudioFile")
+				return false, errs
+			}
+			defer fr.Close()
+
+			data, err := ioutil.ReadAll(fr)
+			if err != nil {
+				log.Error(2, "Error reading temp uploaded file: %s", err)
+				errs.Add([]string{name}, errOnlyAudioFile, "OnlyAudioFile")
+				return false, errs
+			}
+
+			mimetype, err := tool.GetBlobMimeType(data)
+			if err != nil {
+				log.Error(2, "Error reading temp uploaded file: %s", err)
+				errs.Add([]string{name}, errOnlyAudioFile, "OnlyAudioFile")
+				return false, errs
+			}
+			log.Trace("Got mimetype %s for file %s", mimetype, v.(*multipart.FileHeader).Filename)
+
+			if mimetype != "audio/mpeg" && mimetype != "audio/x-wav" && mimetype != "audio/ogg" && mimetype != "audio/x-flac" {
+				errs.Add([]string{name}, errOnlyAudioFile, "OnlyAudioFile")
+				return false, errs
+			}
+
+			return true, errs
+		},
+	})
 }
 
+// Form interface for binding validator
 type Form interface {
 	binding.Validator
 }
@@ -133,8 +175,10 @@ func validate(errs binding.Errors, data map[string]interface{}, f Form, l macaro
 				data["ErrorMsg"] = trName + l.Tr("form.alpha_dash_error")
 			case binding.ERR_ALPHA_DASH_DOT:
 				data["ErrorMsg"] = trName + l.Tr("form.alpha_dash_dot_error")
-			case ERR_ALPHA_DASH_DOT_SLASH:
+			case errAlphaDashDotSlash:
 				data["ErrorMsg"] = trName + l.Tr("form.alpha_dash_dot_slash_error")
+			case errOnlyAudioFile:
+				data["ErrorMsg"] = trName + l.Tr("form.audio_not_supported")
 			case binding.ERR_SIZE:
 				data["ErrorMsg"] = trName + l.Tr("form.size_error", getSize(field))
 			case binding.ERR_MIN_SIZE:

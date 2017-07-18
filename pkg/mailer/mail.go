@@ -14,17 +14,19 @@ import (
 )
 
 const (
-	MAIL_AUTH_ACTIVATE        = "auth/activate"
-	MAIL_AUTH_ACTIVATE_EMAIL  = "auth/activate_email"
-	MAIL_AUTH_RESET_PASSWORD  = "auth/reset_passwd"
+	tmplMailAuthActivate      = "auth/activate"
+	tmplMailAuthActivateEmail = "auth/activate_email"
+	tmplMailAuthResetPassword = "auth/reset_passwd"
 )
 
+// MailRender the template
 type MailRender interface {
 	HTMLString(string, interface{}, ...macaron.HTMLOptions) (string, error)
 }
 
 var mailRender MailRender
 
+// InitMailRender templating system
 func InitMailRender(dir string, funcMap []template.FuncMap) {
 	opt := &macaron.RenderOptions{
 		Directory:         dir,
@@ -40,6 +42,7 @@ func InitMailRender(dir string, funcMap []template.FuncMap) {
 	}
 }
 
+// SendTestMail as indicated
 func SendTestMail(email string) error {
 	return gomail.Send(&Sender{}, NewMessage([]string{email}, "reel2bits Test Email!", "reel2bits Test Email!").Message)
 }
@@ -48,6 +51,7 @@ func SendTestMail(email string) error {
 	Setup interfaces of used methods in mail to avoid cycle import.
 */
 
+// User is email user
 type User interface {
 	ID() int64
 	DisplayName() string
@@ -56,6 +60,7 @@ type User interface {
 	GenerateEmailActivateCode(string) string
 }
 
+// SendUserMail to the User
 func SendUserMail(c *macaron.Context, u User, tpl, code, subject, info string) {
 	data := map[string]interface{}{
 		"Username":          u.DisplayName(),
@@ -75,15 +80,17 @@ func SendUserMail(c *macaron.Context, u User, tpl, code, subject, info string) {
 	SendAsync(msg)
 }
 
+// SendActivateAccountMail when activating account
 func SendActivateAccountMail(c *macaron.Context, u User) {
-	SendUserMail(c, u, MAIL_AUTH_ACTIVATE, u.GenerateActivateCode(), c.Tr("mail.activate_account"), "activate account")
+	SendUserMail(c, u, tmplMailAuthActivate, u.GenerateActivateCode(), c.Tr("mail.activate_account"), "activate account")
 }
 
+// SendResetPasswordMail when resetting password
 func SendResetPasswordMail(c *macaron.Context, u User) {
-	SendUserMail(c, u, MAIL_AUTH_RESET_PASSWORD, u.GenerateActivateCode(), c.Tr("mail.reset_password"), "reset password")
+	SendUserMail(c, u, tmplMailAuthResetPassword, u.GenerateActivateCode(), c.Tr("mail.reset_password"), "reset password")
 }
 
-// SendActivateAccountMail sends confirmation email.
+// SendActivateEmailMail sends confirmation email.
 func SendActivateEmailMail(c *macaron.Context, u User, email string) {
 	data := map[string]interface{}{
 		"Username":        u.DisplayName(),
@@ -91,7 +98,7 @@ func SendActivateEmailMail(c *macaron.Context, u User, email string) {
 		"Code":            u.GenerateEmailActivateCode(email),
 		"Email":           email,
 	}
-	body, err := mailRender.HTMLString(string(MAIL_AUTH_ACTIVATE_EMAIL), data)
+	body, err := mailRender.HTMLString(string(tmplMailAuthActivateEmail), data)
 	if err != nil {
 		log.Error(3, "HTMLString: %v", err)
 		return

@@ -13,11 +13,18 @@
                 <div class="row">
                     <div class="col-lg-6">
                         <div class="content">
+                            <div class="form-group">
+                                <label for="email" class="">{{.i18n.Tr "login.username"}}</label>
+                                <p class="form-control-static">{{.LoggedUserName}}</p>
+                            </div>
                             {{if .UserIsAdmin}}
-                            {{.i18n.Tr "settings_profile.you_are_admin"}} <i class="fa fa-thumbs-up" aria-hidden="true"></i><br/><br/>
+                            <div class="form-group">
+                                <label for="email" class="">Role</label>
+                                <p class="form-control-static">Admin <i class="fa fa-thumbs-up" aria-hidden="true"></i></p>
+                            </div>
                             {{end}}
-                            <div class="email form-group {{if .Err_Email}}has-error{{end}}">
-                                <label for="email" class="sr-only">{{.i18n.Tr "login.email"}}</label>
+                            <div class="form-group {{if .Err_Email}}has-error{{end}}">
+                                <label for="email" class="">{{.i18n.Tr "login.email"}}</label>
                                 <input type="email" name="email" id="email" class="form-control" value="{{.email}}" placeholder='{{.i18n.Tr "login.email_placeholder"}}' required>
                             </div>
 

@@ -1,0 +1,47 @@
+{{template "base/head" .}}
+
+<div class="row">
+    <div class="col-lg-9 col-lg-offset-1">
+        <form class="form" action="{{.Link}}" method="post" enctype="multipart/form-data">
+            {{.CSRFTokenHTML}}
+            <h4 class="header">{{.i18n.Tr "track.title_upload"}}</h4>
+
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="content">
+                        <div class="form-group {{if .Err_Title}}has-error{{end}}">
+                            <label for="title" class="">{{.i18n.Tr "track.form_title"}}</label>
+                            <input type="title" name="title" id="title" class="form-control" value="{{.title}}" placeholder='{{.i18n.Tr "track.form_ph_title"}}' required>
+                        </div>
+
+                        <div class="form-group {{if .Err_Description}}has-error{{end}}">
+                            <label for="description" class="">{{.i18n.Tr "track.form_description"}}</label>
+                            <textarea name="description" id="description" class="form-control" placeholder='{{.i18n.Tr "track.form_ph_description"}}'>{{.description}}</textarea>
+                        </div>
+
+                        <div class="form-group {{if .Err_File}}has-error{{end}}">
+                            <label for="file" class="">{{.i18n.Tr "track.form_file"}}</label>
+                            <input type="file" name="file" id="file" class="" value="{{.file}}" placeholder='{{.i18n.Tr "track.form_ph_file"}}' required>
+                        </div>
+
+                        <div class="checkbox {{if .Err_IsPrivate}}has-error{{end}}">
+                            <label>
+                                <input type="checkbox" name="is_private" id="is_private" class="" value="true">{{.i18n.Tr "track.form_is_private"}}
+                            </label>
+                        </div>
+
+                        <div class="checkbox {{if .Err_ShowDlLink}}has-error{{end}}">
+                            <label>
+                            <input type="checkbox" name="show_dl_link" id="show_dl_link" class="" value="true">{{.i18n.Tr "track.form_show_dl_link"}}
+                            </label>
+                        </div>
+
+                        <button class="btn btn-sm btn-success" type="submit">{{.i18n.Tr "form.upload"}}</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{template "base/footer" .}}

@@ -23,7 +23,12 @@
 <!-- Placed at the end of the document so the pages load faster -->
 <script src="{{AppSubURL}}/js/jquery-3.2.1.min.js"></script>
 <script src="{{AppSubURL}}/js/bootstrap.min.js"></script>
-
+<script src="{{AppSubURL}}/js/global.js"></script>
+<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+<script src="{{AppSubURL}}/js/ie10-viewport-bug-workaround.js"></script>
+<script src="{{AppSubURL}}/js/jquery.bootstrap-growl.min.js"></script>
+<script src="{{AppSubURL}}/js/datatables.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/1.4.0/wavesurfer.min.js"></script>
 <script>
     var csrf;
     var suburl;
@@ -31,13 +36,9 @@
     suburl = $('meta[name=_suburl]').attr("content");
 </script>
 
-{{if (or .PageIsGitxtNewPost .PageIsGitxtNew .PageIsGitxtEdit .PageIsGitxtEditPost)}}
-<script src="{{AppSubURL}}/js/GitxtNewPost.js"></script>
-{{end}}
+{{ if .PageIsTrackShow }}
+{{template "scripts" .}}
+{{ end }}
 
-{{if .PageIsGitxtView}}
-<script src="{{AppSubURL}}/js/highlight.pack.js"></script>
-<script src="{{AppSubURL}}/js/GitxtView.js"></script>
-{{end}}
 </body>
 </html>

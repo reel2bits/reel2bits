@@ -23,11 +23,6 @@ func IsReadmeFile(name string) bool {
 	return strings.HasPrefix(strings.ToLower(name), "readme")
 }
 
-const (
-	ISSUE_NAME_STYLE_NUMERIC      = "numeric"
-	ISSUE_NAME_STYLE_ALPHANUMERIC = "alphanumeric"
-)
-
 var (
 	// MentionPattern matches string that mentions someone, e.g. @Unknwon
 	MentionPattern = regexp.MustCompile(`(\s|^|\W)@[0-9a-zA-Z-_\.]+`)
@@ -249,12 +244,13 @@ OUTER_LOOP:
 	return rawHTML
 }
 
+// Type of special text
 type Type string
 
 const (
-	UNRECOGNIZED Type = "unrecognized"
-	MARKDOWN     Type = "markdown"
-	ORG_MODE     Type = "orgmode"
+	typeUnrecognized Type = "unrecognized"
+	typeMarkdown     Type = "markdown"
+	typeOrgMode      Type = "orgmode"
 )
 
 // Render takes a string or []byte and renders to HTML in given type of syntax with special links.
@@ -272,9 +268,9 @@ func Render(typ Type, input interface{}, urlPrefix string) []byte {
 	urlPrefix = strings.Replace(urlPrefix, " ", "%20", -1)
 	var rawHTML []byte
 	switch typ {
-	case MARKDOWN:
+	case typeMarkdown:
 		rawHTML = RawMarkdown(rawBytes, urlPrefix)
-	case ORG_MODE:
+	case typeOrgMode:
 	default:
 		return rawBytes // Do nothing if syntax type is not recognized
 	}

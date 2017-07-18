@@ -1,0 +1,21 @@
+{{with .Page}}
+    {{if gt .TotalPages 1}}
+        <div class="page_pagination">
+            <ul class="pagination">
+            <li class="{{if not .HasPrevious}}disabled{{end}}"><a {{if .HasPrevious}}href="{{$.Link}}?page={{.Previous}}&q={{$.Keyword}}"{{end}}>
+                    <i class="left arrow icon"></i> {{$.i18n.Tr "page.previous"}}
+                </a></li>
+                {{range .Pages}}
+                {{if eq .Num -1}}
+                <li class="disabled"><a>...</a></li>
+                {{else}}
+                <li class="{{if .IsCurrent}}active{{end}}"><a {{if not .IsCurrent}}href="{{$.Link}}?page={{.Num}}&q={{$.Keyword}}"{{end}}>{{.Num}}</a></li>
+                {{end}}
+                {{end}}
+                <li class="{{if not .HasNext}}disabled{{end}}"><a {{if .HasNext}}href="{{$.Link}}?page={{.Next}}&q={{$.Keyword}}"{{end}}>
+                    {{$.i18n.Tr "page.next"}} <i class="icon right arrow"></i>
+                </a></li>
+            </ul>
+        </div>
+    {{end}}
+{{end}}
