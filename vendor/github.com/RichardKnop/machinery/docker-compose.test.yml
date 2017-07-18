@@ -1,0 +1,45 @@
+version: "2"
+
+services:
+  sut:
+    container_name: machinery_sut
+    image: machinery_sut:latest
+    volumes:
+      - "./:/go/src/github.com/RichardKnop/machinery"
+    depends_on:
+      - rabbitmq
+      - redis
+      - memcached
+      - mongo
+    links:
+      - rabbitmq
+      - redis
+      - memcached
+      - mongo
+    build:
+      context: .
+      dockerfile: ./Dockerfile.test
+    environment:
+      AMQP_URL: 'amqp://guest:guest@rabbitmq:5672/'
+      REDIS_URL: 'redis:6379'
+      MEMCACHE_URL: 'memcached:11211'
+      MONGODB_URL: 'mongo:27017'
+
+  rabbitmq:
+    container_name: machinery_sut_rabbitmq
+    image: rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+
+  redis:
+    container_name: machinery_sut_redis
+    image: redis
+
+  memcached:
+    container_name: machinery_sut_memcached
+    image: memcached
+
+  mongo:
+    container_name: machinery_sut_mongo
+    image: mongo
