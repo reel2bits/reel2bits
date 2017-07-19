@@ -45,7 +45,6 @@ def sendNotifications(String buildStatus = 'STARTED') {
     )
 }
 
-
 node('linux && x86_64 && go') {
     // Install the desired Go version
     def root = tool name: 'Go 1.8.3', type: 'go'
