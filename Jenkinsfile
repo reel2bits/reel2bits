@@ -18,8 +18,8 @@ def sendNotifications(String buildStatus = 'STARTED') {
   def colorCode = '#FF0000'
   def subject = "${buildStatus}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'"
   def summary = "${subject} (${env.BUILD_URL})"
-  def details = """<p>${buildStatus}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':</p>
-    <p>Check console output at &QUOT;<a href='${env.BUILD_URL}'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a>&QUOT;</p>"""
+  def details = """${buildStatus}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':
+    Check console output at <a href='${env.BUILD_URL}'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a>"""
 
   // Override default values based on build status
   if (buildStatus == 'STARTED') {
@@ -140,9 +140,7 @@ node('linux && x86_64 && go') {
             archiveArtifacts artifacts: "reel2bits.linux-${buildNumber}.zip", fingerprint: true
         }
     } // ws
-    post {
-        always {
-            sendNotifications currentBuild.result
-        }
-    }
+
+    sendNotifications currentBuild.result
+
 } // node
