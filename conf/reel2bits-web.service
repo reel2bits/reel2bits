@@ -1,0 +1,14 @@
+[Unit]
+Description=reel2bits-web
+After=network.target
+
+[Service]
+Type=simple
+User=reel2bits
+WorkingDirectory=/home/reel2bits/go/src/dev.sigpipe.me/dashie/reel2bits
+ExecStart=/home/reel2bits/go/src/dev.sigpipe.me/dashie/reel2bits/reel2bits web
+TimeoutSec=15
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
