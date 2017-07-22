@@ -135,79 +135,69 @@ func runWeb(ctx *cli.Context) error {
 	bindIgnErr := binding.BindIgnErr
 
 	// HOME PAGE
-	m.Get("/", routers.Home)
+	m.Get("/", routers.Home).Name("home")
 
 	// START USER
 	m.Group("/user", func() {
-		m.Group("/login", func() {
-			m.Combo("").Get(user.Login).Post(bindIgnErr(form.Login{}), user.LoginPost)
-		})
-		m.Get("/register", user.Register)
-		m.Post("/register", csrf.Validate, bindIgnErr(form.Register{}), user.RegisterPost)
-		m.Get("/reset_password", user.ResetPasswd)
-		m.Post("/reset_password", user.ResetPasswdPost)
+		m.Combo("/login").Get(user.Login).Post(bindIgnErr(form.Login{}), user.LoginPost).Name("user_login")
+		m.Combo("/register").Get(user.Register).Post(csrf.Validate, bindIgnErr(form.Register{}), user.RegisterPost).Name("user_register")
+		m.Combo("/reset_password").Get(user.ResetPasswd).Post(user.ResetPasswdPost).Name("user_reset_passwd")
 	}, reqSignOut)
 
 	m.Group("/user/settings", func() {
-		m.Get("", user.Settings)
-		m.Post("", csrf.Validate, bindIgnErr(form.UpdateSettingsProfile{}), user.SettingsPost)
+		m.Combo("").Get(user.Settings).Post(csrf.Validate, bindIgnErr(form.UpdateSettingsProfile{}), user.SettingsPost).Name("user_settings")
 	}, reqSignIn, func(ctx *context.Context) {
 		ctx.Data["PageIsUserSettings"] = true
 	})
 
 	m.Group("/user", func() {
-		m.Get("/logout", user.Logout)
+		m.Get("/logout", user.Logout).Name("user_logout")
 	}, reqSignIn)
 
 	m.Group("/user", func() {
-		m.Get("/forget_password", user.ForgotPasswd)
-		m.Post("/forget_password", user.ForgotPasswdPost)
+		m.Combo("/forget_password").Get(user.ForgotPasswd).Post(user.ForgotPasswdPost).Name("user_forget_password")
 	})
 	// END USER
 
 	// START TRACK
 	m.Group("/track/upload", func() {
-		m.Get("", track.Upload)
-		m.Post("", csrf.Validate, bindIgnErr(form.TrackUpload{}), track.UploadPost)
+		m.Combo("").Get(track.Upload).Post(csrf.Validate, bindIgnErr(form.TrackUpload{}), track.UploadPost).Name("track_upload")
 	}, reqSignIn)
 
-	m.Get("/u/:userSlug", track.ListUserTracks)
-	m.Get("/u/:userSlug/:trackSlug", track.Show)
+	m.Get("/u/:userSlug", track.ListUserTracks).Name("track_list")
+	m.Get("/u/:userSlug/:trackSlug", track.Show).Name("track_show")
 
 	m.Group("/u/:userSlug/:trackSlug/edit", func() {
-		m.Get("", track.Edit)
-		m.Post("", csrf.Validate, bindIgnErr(form.TrackEdit{}), track.EditPost)
+		m.Combo("").Get(track.Edit).Post(csrf.Validate, bindIgnErr(form.TrackEdit{}), track.EditPost).Name("track_edit")
 	}, reqSignIn)
 
-	m.Post("/u/:userSlug/:trackSlug/delete", reqSignIn, csrf.Validate, bindIgnErr(form.TrackDelete{}), track.DeleteTrack)
+	m.Post("/u/:userSlug/:trackSlug/delete", reqSignIn, csrf.Validate, bindIgnErr(form.TrackDelete{}), track.DeleteTrack).Name("track_delete")
 	// END TRACK
 
 	// START ALBUM
-	m.Get("/albums")
+	m.Get("/albums").Name("album_list")
 	m.Group("/albums/new", func() {
-		m.Get("")
-		m.Post("")
+		m.Combo("").Get().Post().Name("album_new")
 	}, reqSignIn)
 
-	m.Get("/a/:userSlug/:albumSlug")
+	m.Get("/a/:userSlug/:albumSlug").Name("album_show")
 	m.Group("/a/:userSlug/:albumSlug/edit", func() {
-		m.Get("")
-		m.Post("")
+		m.Combo("").Get().Post().Name("album_edit")
 	}, reqSignIn)
-	m.Post("/a/:userSlug/:albumSlug", reqSignIn)
+	m.Post("/a/:userSlug/:albumSlug/delete", reqSignIn).Name("album_delete")
 	// END ALBUM
 
 	// In prod this should be served by Nginx or another reverse proxy for a lot of performances reasons
 	if macaron.Env == macaron.DEV {
-		m.Get("/medias/track/stream/:type/:userSlug/:trackSlug", track.DevGetMediaTrack)
-		m.Get("/medias/track/download/:type/:userSlug/:trackSlug", track.DevGetMediaDownload)
-		m.Get("/medias/track/waveform/:userSlug/:trackSlug", track.DevGetMediaPngWf)
+		m.Get("/medias/track/stream/:type/:userSlug/:trackSlug", track.DevGetMediaTrack).Name("media_track_stream")
+		m.Get("/medias/track/download/:type/:userSlug/:trackSlug", track.DevGetMediaDownload).Name("media_track_download")
+		m.Get("/medias/track/waveform/:userSlug/:trackSlug", track.DevGetMediaPngWf).Name("media_track_waveform")
 	}
 
 	/* Admin part */
 
 	m.Group("/admin", func() {
-		m.Get("", adminReq, admin.Dashboard)
+		m.Get("", adminReq, admin.Dashboard).Name("admin_dashboard")
 	}, adminReq)
 
 	// robots.txt
