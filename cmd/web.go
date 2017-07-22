@@ -164,35 +164,34 @@ func runWeb(ctx *cli.Context) error {
 		m.Combo("").Get(track.Upload).Post(csrf.Validate, bindIgnErr(form.TrackUpload{}), track.UploadPost).Name("track_upload")
 	}, reqSignIn)
 
-	m.Get("/u/:userSlug", track.ListUserTracks).Name("track_list")
-	m.Get("/u/:userSlug/:trackSlug", track.Show).Name("track_show")
+	m.Get("/t/:userSlug", track.ListUserTracks).Name("track_list")
 
-	m.Group("/u/:userSlug/:trackSlug/edit", func() {
-		m.Combo("").Get(track.Edit).Post(csrf.Validate, bindIgnErr(form.TrackEdit{}), track.EditPost).Name("track_edit")
-	}, reqSignIn)
-
-	m.Post("/u/:userSlug/:trackSlug/delete", reqSignIn, csrf.Validate, bindIgnErr(form.TrackDelete{}), track.DeleteTrack).Name("track_delete")
+	m.Group("/t/:userSlug/:trackSlug", func() {
+		m.Get("", track.Show).Name("track_show")
+		m.Combo("/edit", reqSignIn).Get(track.Edit).Post(csrf.Validate, bindIgnErr(form.TrackEdit{}), track.EditPost).Name("track_edit")
+		m.Post("/delete", reqSignIn, csrf.Validate, bindIgnErr(form.TrackDelete{}), track.DeleteTrack).Name("track_delete")
+	})
 	// END TRACK
 
 	// START ALBUM
-	m.Get("/albums").Name("album_list")
-	m.Group("/albums/new", func() {
-		m.Combo("").Get().Post().Name("album_new")
-	}, reqSignIn)
+	m.Group("/albums", func() {
+		m.Get("").Name("album_list")
+		m.Combo("/new", reqSignIn).Get().Post().Name("album_new")
+	})
 
-	m.Get("/a/:userSlug/:albumSlug").Name("album_show")
-	m.Group("/a/:userSlug/:albumSlug/edit", func() {
-		m.Combo("").Get().Post().Name("album_edit")
-	}, reqSignIn)
-	m.Post("/a/:userSlug/:albumSlug/delete", reqSignIn).Name("album_delete")
+	m.Group("/a/:userSlug/:albumSlug", func() {
+		m.Get("").Name("album_show")
+		m.Combo("/edit", reqSignIn).Get().Post().Name("album_edit")
+		m.Post("/delete", reqSignIn).Name("album_delete")
+	})
 	// END ALBUM
 
 	// In prod this should be served by Nginx or another reverse proxy for a lot of performances reasons
-	if macaron.Env == macaron.DEV {
-		m.Get("/medias/track/stream/:type/:userSlug/:trackSlug", track.DevGetMediaTrack).Name("media_track_stream")
-		m.Get("/medias/track/download/:type/:userSlug/:trackSlug", track.DevGetMediaDownload).Name("media_track_download")
-		m.Get("/medias/track/waveform/:userSlug/:trackSlug", track.DevGetMediaPngWf).Name("media_track_waveform")
-	}
+	m.Group("/medias/track/:userSlug/:trackSlug", func() {
+		m.Get("/stream/:type", track.DevGetMediaTrack).Name("media_track_stream")
+		m.Get("/download/:type", track.DevGetMediaDownload).Name("media_track_download")
+		m.Get("/waveform", track.DevGetMediaPngWf).Name("media_track_waveform")
+	})
 
 	/* Admin part */
 
