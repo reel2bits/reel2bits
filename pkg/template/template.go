@@ -14,10 +14,11 @@ import (
 	"strings"
 	"time"
 	"github.com/dustin/go-humanize"
+	"gopkg.in/macaron.v1"
 )
 
 // NewFuncMap because you don't want an older
-func NewFuncMap() []template.FuncMap {
+func NewFuncMap(m *macaron.Macaron) []template.FuncMap {
 	return []template.FuncMap{map[string]interface{}{
 		"GoVer": func() string {
 			return strings.Title(runtime.Version())
@@ -88,6 +89,7 @@ func NewFuncMap() []template.FuncMap {
 		},
 		"DurationToHuman": DurationToHuman,
 		"ElapsedToHuman": ElapsedToHuman,
+		"URLFor": m.URLFor,
 	}}
 }
 

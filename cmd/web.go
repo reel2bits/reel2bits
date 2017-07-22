@@ -61,7 +61,7 @@ func newMacaron() *macaron.Macaron {
 		},
 	))
 
-	funcMap := template.NewFuncMap()
+	funcMap := template.NewFuncMap(m)
 	m.Use(macaron.Renderer(macaron.RenderOptions{
 		Directory:  path.Join(setting.StaticRootPath, "templates"),
 		Funcs:      funcMap,
