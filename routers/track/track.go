@@ -341,6 +341,7 @@ func ListUserTracks(ctx *context.Context) {
 		return
 	}
 
+	ctx.Data["user"] = user
 	ctx.Data["tracks"] = listOfTracks
 	ctx.Data["tracks_count"] = tracksCount
 
