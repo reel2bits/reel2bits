@@ -182,6 +182,21 @@ func runWeb(ctx *cli.Context) error {
 	m.Post("/u/:userSlug/:trackSlug/delete", reqSignIn, csrf.Validate, bindIgnErr(form.TrackDelete{}), track.DeleteTrack)
 	// END TRACK
 
+	// START ALBUM
+	m.Get("/albums")
+	m.Group("/albums/new", func() {
+		m.Get("")
+		m.Post("")
+	}, reqSignIn)
+
+	m.Get("/a/:userSlug/:albumSlug")
+	m.Group("/a/:userSlug/:albumSlug/edit", func() {
+		m.Get("")
+		m.Post("")
+	}, reqSignIn)
+	m.Post("/a/:userSlug/:albumSlug", reqSignIn)
+	// END ALBUM
+
 	// In prod this should be served by Nginx or another reverse proxy for a lot of performances reasons
 	if macaron.Env == macaron.DEV {
 		m.Get("/medias/track/stream/:type/:userSlug/:trackSlug", track.DevGetMediaTrack)

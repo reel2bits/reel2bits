@@ -88,3 +88,17 @@ func IsErrTrackTitleAlreadyExist(err error) bool {
 func (err ErrTrackTitleAlreadyExist) Error() string {
 	return fmt.Sprintf("title already exists [title: %s]", err.Title)
 }
+
+// ErrAlbumNameAlreadyExist struct
+type ErrAlbumNameAlreadyExist struct {
+	Title string
+}
+
+// IsErrAlbumNameAlreadyExist bool
+func IsErrAlbumNameAlreadyExist(err error) bool {
+	_, ok := err.(ErrAlbumNameAlreadyExist)
+	return ok
+}
+func (err ErrAlbumNameAlreadyExist) Error() string {
+	return fmt.Sprintf("name already exists [name: %s]", err.Title)
+}
