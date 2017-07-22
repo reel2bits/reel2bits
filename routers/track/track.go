@@ -205,6 +205,12 @@ func DevGetMediaTrack(ctx *context.Context) {
 
 	storDir := filepath.Join(setting.Storage.Path, "tracks", user.Slug)
 	fName := filepath.Join(storDir, track.Filename)
+	mimeType := track.Mimetype
+
+	if ctx.Params(":type") == "mp3" {
+		fName = fmt.Sprintf("%s.mp3", strings.TrimSuffix(fName, filepath.Ext(fName)))
+		mimeType = "audio/mpeg"
+	}
 
 	content, err := ioutil.ReadFile(fName)
 	if err != nil {
@@ -213,7 +219,7 @@ func DevGetMediaTrack(ctx *context.Context) {
 		return
 	}
 
-	ctx.ServeContentNoDownload(track.Filename, track.Mimetype, bytes.NewReader(content))
+	ctx.ServeContentNoDownload(fmt.Sprintf("%s%s", strings.TrimSuffix(track.Filename, filepath.Ext(track.Filename)), filepath.Ext(fName)), mimeType, bytes.NewReader(content))
 
 }
 
@@ -250,6 +256,44 @@ func DevGetMediaPngWf(ctx *context.Context) {
 
 	ctx.ServeContentNoDownload(track.Filename, "image/png", bytes.NewReader(content))
 
+}
+
+// DevGetMediaDownload [GET] DEV ONLY !
+func DevGetMediaDownload(ctx *context.Context) {
+	if ctx.Params(":userSlug") == "" || ctx.Params(":trackSlug") == "" {
+		ctx.ServerError("No.", nil)
+		return
+	}
+
+	user, err := models.GetUserBySlug(ctx.Params(":userSlug"))
+	if err != nil {
+		log.Error(2, "Cannot get User from slug %s: %s", ctx.Params(":userSlug"), err)
+		ctx.ServerError("Unknown user.", err)
+		return
+	}
+
+	track, err := models.GetTrackBySlugAndUserID(user.ID, ctx.Params(":trackSlug"))
+	if err != nil {
+		log.Error(2, "Cannot get Track from slug %s and user %d: %s",ctx.Params(":trackSlug"), user.ID, err)
+		ctx.ServerError("Unknown track.", err)
+		return
+	}
+
+	storDir := filepath.Join(setting.Storage.Path, "tracks", user.Slug)
+	fName := filepath.Join(storDir, track.Filename)
+
+	if ctx.Params(":type") == "mp3" {
+		fName = fmt.Sprintf("%s.mp3", strings.TrimSuffix(fName, filepath.Ext(fName)))
+	}
+
+	content, err := ioutil.ReadFile(fName)
+	if err != nil {
+		log.Error(2, "Cannot read file %s", err)
+		ctx.ServerError("Cannot read file", err)
+		return
+	}
+
+	ctx.ServeContent(fmt.Sprintf("%s__by__%s%s", track.Slug, user.Slug, filepath.Ext(fName)), bytes.NewReader(content))
 }
 
 // ListUserTracks [GET]
@@ -416,7 +460,7 @@ func Edit(ctx *context.Context) {
 		ctx.Data["show_dl_link"] = track[0].ShowDlLink
 
 		ctx.Data["Title"] = fmt.Sprintf("%s by %s - %s", track[0].Track.Title, user.UserName, setting.AppName)
-		ctx.PageIs("TrackShow")
+		ctx.PageIs("TrackEdit")
 
 		ctx.HTML(200, tmplEdit)
 	}

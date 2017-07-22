@@ -184,8 +184,8 @@ func runWeb(ctx *cli.Context) error {
 
 	// In prod this should be served by Nginx or another reverse proxy for a lot of performances reasons
 	if macaron.Env == macaron.DEV {
-		m.Get("/medias/track/stream/:userSlug/:trackSlug", track.DevGetMediaTrack)
-		m.Get("/medias/track/download/:userSlug/:trackSlug")
+		m.Get("/medias/track/stream/:type/:userSlug/:trackSlug", track.DevGetMediaTrack)
+		m.Get("/medias/track/download/:type/:userSlug/:trackSlug", track.DevGetMediaDownload)
 		m.Get("/medias/track/waveform/:userSlug/:trackSlug", track.DevGetMediaPngWf)
 	}
 

@@ -12,6 +12,7 @@ KISS, that's all.
 # TODO
 - Replace transcoding by something else than sox maybe
 - Show error when mp3 file don't load
+- Maybe permit track stream/download using the server or not
 
 # Install
 

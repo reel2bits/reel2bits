@@ -66,7 +66,7 @@ type Track struct {
 
 	// Permissions
 	IsPrivate	bool        `xorm:"DEFAULT 0"`
-	ShowDlLink	bool		`xorm:"DEFAULT 0"`
+	ShowDlLink	bool		`xorm:"DEFAULT 1"`
 
 	Created     time.Time   `xorm:"-"`
 	CreatedUnix int64
