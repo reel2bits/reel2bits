@@ -89,7 +89,10 @@ func NewFuncMap(m *macaron.Macaron) []template.FuncMap {
 		},
 		"DurationToHuman": DurationToHuman,
 		"ElapsedToHuman": ElapsedToHuman,
-		"URLFor": m.URLFor,
+		"URLFor": func(name string, pairs ...string) string {
+			return fmt.Sprintf("%s%s", strings.TrimSuffix(setting.AppURL, "/"), m.URLFor(name, pairs...))
+		},
+		"URLForRelative": m.URLFor,
 	}}
 }
 
