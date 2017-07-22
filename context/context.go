@@ -59,6 +59,11 @@ func (c *Context) JSONSuccess(data interface{}) {
 	c.JSON(http.StatusOK, data)
 }
 
+// SubURLFor returns AppSubURL + URLFor
+func (c *Context) SubURLFor(name string, pairs ...string) string {
+	return fmt.Sprintf("%s%s", strings.TrimSuffix(setting.AppSubURL, "/"), c.URLFor(name, pairs...))
+}
+
 // HasError returns true if error occurs in form validation.
 func (c *Context) HasError() bool {
 	hasErr, ok := c.Data["HasError"]

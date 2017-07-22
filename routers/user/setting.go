@@ -36,5 +36,5 @@ func SettingsPost(ctx *context.Context, f form.UpdateSettingsProfile) {
 	}
 
 	ctx.Flash.Success(ctx.Tr("settings.update_profile_success"))
-	ctx.SubURLRedirect("/user/settings")
+	ctx.SubURLRedirect(ctx.URLFor("user_settings"))
 }

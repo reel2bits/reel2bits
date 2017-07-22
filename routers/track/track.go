@@ -127,16 +127,14 @@ func UploadPost(ctx *context.Context, f form.TrackUpload) {
 	}
 
 	ctx.Flash.Success(ctx.Tr("track.upload_success"))
-	trackURI := fmt.Sprintf("%s/u/%s/%s", setting.AppSubURL, ctx.User.Slug, t.Slug)
-
-	ctx.SubURLRedirect(trackURI)
+	ctx.SubURLRedirect(ctx.URLFor("track_show", ":userSlug", ctx.User.Slug, ":trackSlug", t.Slug))
 }
 
 // Show [GET]
 func Show(ctx *context.Context) {
 	if ctx.Params(":userSlug") == "" || ctx.Params(":trackSlug") == "" {
 		ctx.Flash.Error("No.")
-		ctx.Redirect(setting.AppSubURL + "/", 500)
+		ctx.SubURLRedirect(ctx.URLFor("home"), 500)
 		return
 	}
 
@@ -144,7 +142,7 @@ func Show(ctx *context.Context) {
 	if err != nil {
 		log.Error(2, "Cannot get User from slug %s: %s", ctx.Params(":userSlug"), err)
 		ctx.Flash.Error("Unknown user.")
-		ctx.Redirect(setting.AppSubURL + "/", 404)
+		ctx.SubURLRedirect(ctx.URLFor("home"), 404)
 		return
 	}
 
@@ -152,7 +150,7 @@ func Show(ctx *context.Context) {
 	if err != nil {
 		log.Error(2, "Cannot get Track With Info from slug %s and user %d: %s",ctx.Params(":trackSlug"), user.ID, err)
 		ctx.Flash.Error("Unknown track.")
-		ctx.Redirect(setting.AppSubURL + "/", 404)
+		ctx.SubURLRedirect(ctx.URLFor("home"), 404)
 		return
 	}
 
@@ -163,7 +161,7 @@ func Show(ctx *context.Context) {
 		if err != nil {
 			log.Error(2, "Cannot get Track from slug %s and user %d: %s",ctx.Params(":trackSlug"), user.ID, err)
 			ctx.Flash.Error("Unknown track.")
-			ctx.Redirect(setting.AppSubURL + "/", 404)
+			ctx.SubURLRedirect(ctx.URLFor("home"), 404)
 			return
 		}
 		ctx.Data["track"] = track
@@ -403,7 +401,7 @@ func DeleteTrack(ctx *context.Context, f form.TrackDelete) {
 
 	ctx.JSONSuccess(map[string]interface{}{
 		"error": nil,
-		"redirect": setting.AppSubURL + "/u/" + user.Slug,
+		"redirect": ctx.SubURLFor("track_list", ":userSlug", user.Slug),
 	})
 	return
 }
@@ -411,11 +409,11 @@ func DeleteTrack(ctx *context.Context, f form.TrackDelete) {
 func Edit(ctx *context.Context) {
 	if ctx.Params(":userSlug") == "" || ctx.Params(":trackSlug") == "" {
 		ctx.Flash.Error("No.")
-		ctx.Redirect(setting.AppSubURL + "/", 500)
+		ctx.SubURLRedirect(ctx.URLFor("home"), 500)
 		return
 	}
 	if !ctx.IsLogged {
-		ctx.Redirect(setting.AppSubURL + "/")
+		ctx.SubURLRedirect(ctx.URLFor("home"), 403)
 		return
 	}
 
@@ -423,12 +421,12 @@ func Edit(ctx *context.Context) {
 	if err != nil {
 		log.Error(2, "Cannot get User from slug %s: %s", ctx.Params(":userSlug"), err)
 		ctx.Flash.Error("Unknown user.")
-		ctx.Redirect(setting.AppSubURL + "/", 404)
+		ctx.SubURLRedirect(ctx.URLFor("home"), 404)
 		return
 	}
 
 	if ctx.Data["LoggedUserID"] != user.ID {
-		ctx.Redirect(setting.AppSubURL + "/", 403)
+		ctx.SubURLRedirect(ctx.URLFor("home"), 403)
 		return
 	}
 
@@ -436,7 +434,7 @@ func Edit(ctx *context.Context) {
 	if err != nil {
 		log.Error(2, "Cannot get Track With Info from slug %s and user %d: %s",ctx.Params(":trackSlug"), user.ID, err)
 		ctx.Flash.Error("Unknown track.")
-		ctx.Redirect(setting.AppSubURL + "/", 404)
+		ctx.SubURLRedirect(ctx.URLFor("home"), 404)
 		return
 	}
 
@@ -445,7 +443,7 @@ func Edit(ctx *context.Context) {
 		if err != nil {
 			log.Error(2, "Cannot get Track from slug %s and user %d: %s",ctx.Params(":trackSlug"), user.ID, err)
 			ctx.Flash.Error("Unknown track.")
-			ctx.Redirect(setting.AppSubURL + "/", 404)
+			ctx.SubURLRedirect(ctx.URLFor("home"), 404)
 			return
 		}
 		ctx.Data["track"] = track
@@ -469,7 +467,7 @@ func Edit(ctx *context.Context) {
 
 func EditPost(ctx *context.Context, f form.TrackEdit) {
 	if !ctx.IsLogged {
-		ctx.Redirect(setting.AppSubURL + "/")
+		ctx.SubURLRedirect(ctx.URLFor("home"), 403)
 		return
 	}
 
@@ -482,7 +480,7 @@ func EditPost(ctx *context.Context, f form.TrackEdit) {
 	if err != nil {
 		log.Error(2, "Cannot get User from slug %s: %s", ctx.Params(":userSlug"), err)
 		ctx.Flash.Error("Unknown user.")
-		ctx.Redirect(setting.AppSubURL + "/", 404)
+		ctx.SubURLRedirect(ctx.URLFor("home"), 404)
 		return
 	}
 
@@ -490,7 +488,7 @@ func EditPost(ctx *context.Context, f form.TrackEdit) {
 	if err != nil {
 		log.Error(2, "Cannot get Track from slug %s and user %d: %s",ctx.Params(":trackSlug"), user.ID, err)
 		ctx.Flash.Error("Unknown track.")
-		ctx.Redirect(setting.AppSubURL + "/", 404)
+		ctx.SubURLRedirect(ctx.URLFor("home"), 404)
 		return
 	}
 
@@ -508,5 +506,5 @@ func EditPost(ctx *context.Context, f form.TrackEdit) {
 		return
 	}
 
-	ctx.Redirect(setting.AppSubURL + "/u/" + user.Slug + "/" + track.Slug)
+	ctx.SubURLRedirect(ctx.URLFor("track_show", ":userSlug", user.Slug, ":trackSlug", track.Slug))
 }

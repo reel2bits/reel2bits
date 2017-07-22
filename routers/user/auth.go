@@ -92,7 +92,7 @@ func Login(ctx *context.Context) {
 		if isValidRedirect(redirectTo) {
 			ctx.Redirect(redirectTo)
 		} else {
-			ctx.Redirect(setting.AppSubURL + "/")
+			ctx.SubURLRedirect(ctx.URLFor("home"))
 		}
 		return
 	}
@@ -147,7 +147,7 @@ func afterLogin(ctx *context.Context, u *models.User, remember bool) {
 		return
 	}
 
-	ctx.Redirect(setting.AppSubURL + "/")
+	ctx.SubURLRedirect(ctx.URLFor("home"))
 }
 
 // Register [GET]
@@ -155,7 +155,7 @@ func Register(ctx *context.Context) {
 	ctx.Title("register.title")
 	if ! setting.CanRegister {
 		ctx.Flash.Error(ctx.Tr("register.not_allowed"))
-		ctx.Redirect(setting.AppSubURL + "/")
+		ctx.SubURLRedirect(ctx.URLFor("home"))
 		return
 	}
 
@@ -168,7 +168,7 @@ func RegisterPost(ctx *context.Context, f form.Register) {
 
 	if ! setting.CanRegister {
 		ctx.Flash.Error(ctx.Tr("register.not_allowed"))
-		ctx.Redirect(setting.AppSubURL + "/")
+		ctx.SubURLRedirect(ctx.URLFor("home"))
 		return
 	}
 
@@ -221,7 +221,7 @@ func RegisterPost(ctx *context.Context, f form.Register) {
 	// TODO: send activation email
 
 	ctx.Flash.Success(ctx.Tr("register.successfull"))
-	ctx.Redirect(setting.AppSubURL + "/user/login")
+	ctx.SubURLRedirect(ctx.URLFor("user_login"))
 }
 
 // Logout [GET]
@@ -231,7 +231,7 @@ func Logout(ctx *context.Context) {
 	ctx.SetCookie(setting.CookieUserName, "", -1, setting.AppSubURL)
 	ctx.SetCookie(setting.CookieRememberName, "", -1, setting.AppSubURL)
 	ctx.SetCookie(setting.CSRFCookieName, "", -1, setting.AppSubURL)
-	ctx.Redirect(setting.AppSubURL + "/")
+	ctx.SubURLRedirect(ctx.URLFor("home"))
 }
 
 
@@ -286,7 +286,7 @@ func ResetPasswdPost(ctx *context.Context) {
 		}
 
 		log.Trace("User password reset: %s", u.UserName)
-		ctx.Redirect(setting.AppSubURL + "/user/login")
+		ctx.SubURLRedirect(ctx.URLFor("user_login"))
 		return
 	}
 	ctx.Data["IsResetFailed"] = true

@@ -21,7 +21,7 @@ func Toggle(options *ToggleOptions) macaron.Handler {
 	return func(ctx *Context) {
 		// Redirect non-login pages from logged in user
 		if options.SignOutRequired && ctx.IsLogged && ctx.Req.RequestURI != "/" {
-			ctx.Redirect(setting.AppSubURL + "/")
+			ctx.SubURLRedirect(ctx.URLFor("home"))
 			return
 		}
 
@@ -37,7 +37,7 @@ func Toggle(options *ToggleOptions) macaron.Handler {
 		if options.SignInRequired {
 			if !ctx.IsLogged {
 				ctx.SetCookie("redirect_to", url.QueryEscape(setting.AppSubURL+ctx.Req.RequestURI), 0, setting.AppSubURL)
-				ctx.Redirect(setting.AppSubURL + "/user/login")
+				ctx.SubURLRedirect(ctx.URLFor("user_login")) // maybe not need appsuburl
 				return
 			} else if !ctx.User.IsActive {
 				ctx.Title("auth.activate_your_account")
@@ -49,7 +49,7 @@ func Toggle(options *ToggleOptions) macaron.Handler {
 		// Redirect to login page if auto-sign provided and not signed in
 		if !options.SignOutRequired && !ctx.IsLogged && len(ctx.GetCookie(setting.CookieUserName)) > 0 {
 			ctx.SetCookie("redirect_to", url.QueryEscape(setting.AppSubURL+ctx.Req.RequestURI), 0, setting.AppSubURL)
-			ctx.Redirect(setting.AppSubURL + "/user/login")
+			ctx.SubURLRedirect(ctx.URLFor("user_login")) // maybe not need appsuburl
 			return
 		}
 
