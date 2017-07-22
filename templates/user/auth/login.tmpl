@@ -21,7 +21,7 @@
     </div>
     <button class="btn btn-lg btn-primary btn-block" type="submit">{{.i18n.Tr "login.sign_in"}}</button>
     <br/>
-    <a class="" href="/user/forget_password">{{.i18n.Tr "auth.needs_password_reset"}}</a>
+    <a class="" href="{{ URLFor "user_forget_password"}}">{{.i18n.Tr "auth.needs_password_reset"}}</a>
 </form>
 
 {{template "base/footer" .}}

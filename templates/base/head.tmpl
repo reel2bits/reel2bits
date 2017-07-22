@@ -43,9 +43,9 @@
         <meta content="Track {{.track.Title}} of {{.user.UserName}}" property="og:title" />
         <meta content="Track {{.track.Title}} of {{.user.UserName}}" property="og:description" />
         {{end}}
-        <meta content="{{AppURL}}u/{{.user.Slug}}/{{.track.Track.Slug}}" property="og:url" />
+        <meta content="{{URLFor "track_show" ":userSlug" .user.Slug ":trackSlug" .track.Track.Slug }}" property="og:url" />
     {{else if .PageIsUserListTracks}}
-        <meta property="og:url" content="{{AppURL}}u/{{.user.Slug}}">
+        <meta property="og:url" content="{{URLFor "track_list" ":userSlug" .user.Slug}}">
         <meta property="og:type" content="profile">
         <meta property="og:site_name" content="{{AppName}}">
         <meta property="og:title" content="List of tracks for {{.user.UserName}} - {{AppName}}">
@@ -69,25 +69,25 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="{{AppSubURL}}/">{{AppName}}</a>
+            <a class="navbar-brand" href="{{URLFor "home"}}">{{AppName}}</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 {{if .IsLogged}}
-                    <li><a href="{{AppSubURL}}/track/upload">{{.i18n.Tr "header.upload_track"}}</a></li>
-                    <li><a href="{{AppSubURL}}/u/{{.LoggedUser.Slug}}">{{.i18n.Tr "header.my_tracks"}}</a></li>
-                    <li><a href="{{AppSubURL}}/user/settings">{{.i18n.Tr "header.settings"}}</a></li>
+                    <li><a href="{{URLFor "track_upload"}}">{{.i18n.Tr "header.upload_track"}}</a></li>
+                    <li><a href="{{URLFor "track_list" ":userSlug" .LoggedUser.Slug}}">{{.i18n.Tr "header.my_tracks"}}</a></li>
+                    <li><a href="{{URLFor "user_settings"}}">{{.i18n.Tr "header.settings"}}</a></li>
                     {{if .UserIsAdmin}}
-                        <li><a href="{{AppSubURL}}/admin">{{.i18n.Tr "header.admin"}}</a></li>
+                        <li><a href="{{URLFor "admin_dashboard"}}">{{.i18n.Tr "header.admin"}}</a></li>
                     {{end}}
-                    <li><a href="{{AppSubURL}}/user/logout">{{.i18n.Tr "header.logout"}}</a></li>
+                    <li><a href="{{URLFor "user_logout"}}">{{.i18n.Tr "header.logout"}}</a></li>
                 {{else}}
                     {{if CanRegister}}
-                        <li><a href="{{AppSubURL}}/user/register">{{.i18n.Tr "header.register"}}</a></li>
+                        <li><a href="{{URLFor "user_register"}}">{{.i18n.Tr "header.register"}}</a></li>
                     {{end}}
-                    <li><a href="{{AppSubURL}}/user/login">{{.i18n.Tr "header.login"}}</a></li>
+                    <li><a href="{{URLFor "user_register"}}">{{.i18n.Tr "header.login"}}</a></li>
                 {{end}}
             </ul>
         </div><!--/.nav-collapse -->
