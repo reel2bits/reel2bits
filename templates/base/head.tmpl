@@ -33,28 +33,28 @@
     <![endif]-->
 
 
-    {{if .PageIsGitxtView}}
+    {{if .PageIsTrackShow}}
         <meta content="{{AppName}}" property="og:site_name" />
         <meta content="object" property="og:type" />
         {{if .repoDescription}}
-        <meta content="{{.repoDescription}}" property="og:title" />
-        <meta content="{{.repoDescription}}" property="og:description" />
+        <meta content="{{.track.Description}}" property="og:title" />
+        <meta content="{{.track.Description}}" property="og:description" />
         {{else}}
-        <meta content="Repository {{.repoHash}} or {{.repoOwnerUsername}}" property="og:title" />
-        <meta content="Repository {{.repoHash}} or {{.repoOwnerUsername}}" property="og:description" />
+        <meta content="Track {{.track.Title}} of {{.user.UserName}}" property="og:title" />
+        <meta content="Track {{.track.Title}} of {{.user.UserName}}" property="og:description" />
         {{end}}
-        <meta content="{{AppURL}}{{.repoOwnerUsername}}/{{.repoHash}}" property="og:url" />
-    {{else if .PageIsGitxtListUser}}
-        <meta property="og:url" content="{{AppURL}}{{.RepoOwnerUsername}}">
+        <meta content="{{AppURL}}u/{{.user.Slug}}/{{.track.Track.Slug}}" property="og:url" />
+    {{else if .PageIsUserListTracks}}
+        <meta property="og:url" content="{{AppURL}}u/{{.user.Slug}}">
         <meta property="og:type" content="profile">
         <meta property="og:site_name" content="{{AppName}}">
-        <meta property="og:title" content="List of snippets for {{.RepoOwnerUsername}} - {{AppName}}">
-        <meta property="og:description" content="List of snippets for {{.RepoOwnerUsername}} - {{AppName}}">
+        <meta property="og:title" content="List of tracks for {{.user.UserName}} - {{AppName}}">
+        <meta property="og:description" content="List of tracks for {{.user.UserName}} - {{AppName}}">
     {{else}}
         <meta property="og:url" content="{{AppURL}}">
         <meta property="og:site_name" content="{{AppName}}">
-        <meta property="og:title" content="{{AppName}} - Git backed snippets">
-        <meta property="og:description" content="Create snippets hosted in git repositories">
+        <meta property="og:title" content="{{AppName}} - Upload and share sound tracks">
+        <meta property="og:description" content="Upload and share sound tracks">
     {{end}}
 </head>
 

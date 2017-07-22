@@ -23,6 +23,7 @@ const (
 	tmplShow     = "track/show"
 	tmplShowWait = "track/show_wait"
 	tmplTracksList = "tracks_list"
+	tmplEdit = "track/edit"
 )
 
 // Upload [GET]
@@ -266,7 +267,7 @@ func ListUserTracks(ctx *context.Context) {
 	}
 
 	ctx.Data["Title"] = fmt.Sprintf("Tracks of %s - %s", user.UserName, setting.AppName)
-	ctx.PageIs("user.list_tracks")
+	ctx.PageIs("UserListTracks")
 
 	page := ctx.QueryInt("page")
 	if page <= 0 {
@@ -360,4 +361,107 @@ func DeleteTrack(ctx *context.Context, f form.TrackDelete) {
 		"redirect": setting.AppSubURL + "/u/" + user.Slug,
 	})
 	return
+}
+
+func Edit(ctx *context.Context) {
+	if ctx.Params(":userSlug") == "" || ctx.Params(":trackSlug") == "" {
+		ctx.Flash.Error("No.")
+		ctx.Redirect(setting.AppSubURL + "/", 500)
+		return
+	}
+	if !ctx.IsLogged {
+		ctx.Redirect(setting.AppSubURL + "/")
+		return
+	}
+
+	user, err := models.GetUserBySlug(ctx.Params(":userSlug"))
+	if err != nil {
+		log.Error(2, "Cannot get User from slug %s: %s", ctx.Params(":userSlug"), err)
+		ctx.Flash.Error("Unknown user.")
+		ctx.Redirect(setting.AppSubURL + "/", 404)
+		return
+	}
+
+	if ctx.Data["LoggedUserID"] != user.ID {
+		ctx.Redirect(setting.AppSubURL + "/", 403)
+		return
+	}
+
+	track, err := models.GetTrackWithInfoBySlugAndUserID(user.ID, ctx.Params(":trackSlug"))
+	if err != nil {
+		log.Error(2, "Cannot get Track With Info from slug %s and user %d: %s",ctx.Params(":trackSlug"), user.ID, err)
+		ctx.Flash.Error("Unknown track.")
+		ctx.Redirect(setting.AppSubURL + "/", 404)
+		return
+	}
+
+	if len(track) < 1 {
+		track, err := models.GetTrackBySlugAndUserID(user.ID, ctx.Params(":trackSlug"))
+		if err != nil {
+			log.Error(2, "Cannot get Track from slug %s and user %d: %s",ctx.Params(":trackSlug"), user.ID, err)
+			ctx.Flash.Error("Unknown track.")
+			ctx.Redirect(setting.AppSubURL + "/", 404)
+			return
+		}
+		ctx.Data["track"] = track
+		ctx.Data["user"] = user
+		ctx.Data["Title"] = fmt.Sprintf("%s by %s - %s", track.Title, user.UserName, setting.AppName)
+		ctx.PageIs("TrackShowWait")
+
+		ctx.HTML(200, tmplShowWait)
+	} else {
+		ctx.Data["title"] = track[0].Title
+		ctx.Data["description"] = track[0].Description
+		ctx.Data["is_private"] = track[0].IsPrivate
+		ctx.Data["show_dl_link"] = track[0].ShowDlLink
+
+		ctx.Data["Title"] = fmt.Sprintf("%s by %s - %s", track[0].Track.Title, user.UserName, setting.AppName)
+		ctx.PageIs("TrackShow")
+
+		ctx.HTML(200, tmplEdit)
+	}
+}
+
+func EditPost(ctx *context.Context, f form.TrackEdit) {
+	if !ctx.IsLogged {
+		ctx.Redirect(setting.AppSubURL + "/")
+		return
+	}
+
+	if ctx.HasError() {
+		ctx.Success(tmplUpload)
+		return
+	}
+
+	user, err := models.GetUserBySlug(ctx.Params(":userSlug"))
+	if err != nil {
+		log.Error(2, "Cannot get User from slug %s: %s", ctx.Params(":userSlug"), err)
+		ctx.Flash.Error("Unknown user.")
+		ctx.Redirect(setting.AppSubURL + "/", 404)
+		return
+	}
+
+	track, err := models.GetTrackBySlugAndUserID(user.ID, ctx.Params(":trackSlug"))
+	if err != nil {
+		log.Error(2, "Cannot get Track from slug %s and user %d: %s",ctx.Params(":trackSlug"), user.ID, err)
+		ctx.Flash.Error("Unknown track.")
+		ctx.Redirect(setting.AppSubURL + "/", 404)
+		return
+	}
+
+	track.Title = f.Title
+	track.Description = f.Description
+	track.IsPrivate = f.IsPrivate
+	track.ShowDlLink = f.ShowDlLink
+
+	err = models.UpdateTrack(track)
+	if err != nil {
+		switch {
+		default:
+			ctx.Handle(500, "EditTrack", err)
+		}
+		return
+	}
+
+	ctx.Redirect(setting.AppSubURL + "/u/" + user.Slug + "/" + track.Slug)
 }

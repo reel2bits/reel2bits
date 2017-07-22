@@ -381,6 +381,15 @@ td.si_btn_edit, td.si_btn_delete {
 div.sound-description {
     font-size: 10px;
     word-wrap: break-word;
+    white-space: pre-line;
+    margin-bottom: 2em;
+}
+
+div.sound-description span {
+    border-left: 1px dotted grey;
+    padding-left: 5px;
+    height: 100%;
+    display: block;
 }
 
 div.ss-user-back h3 {

@@ -20,7 +20,7 @@ func NotFound(ctx *context.Context) {
 // Home [GET]
 func Home(ctx *context.Context) {
 	ctx.Title("Home page")
-	ctx.PageIs("hub.home")
+	ctx.PageIs("HubHome")
 
 	page := ctx.QueryInt("page")
 	if page <= 0 {

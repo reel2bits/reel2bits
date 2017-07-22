@@ -18,9 +18,7 @@
 
 {{ if .track.Track.Description }}
 <div class="row sound-description">
-    <div class="col-lg-6 col-lg-offset-1">
-        {{ .track.Track.Description }}
-    </div>
+    <div class="col-lg-6 col-lg-offset-1"><span>{{ .track.Track.Description }}</span></div>
 </div>
 {{ end }}
 
@@ -92,8 +90,6 @@
                     <tr><td>Bitrate mode</td><td colspan="2">{{ .track.TrackInfo.BitrateMode }}</td></tr>
                 {{ end }}
             {{ end }}
-            <tr><td>Processed Basic</td><td colspan="2">{{ .track.TrackInfo.ProcessedBasic }}</td></tr>
-            <tr><td>Processed Waveform</td><td colspan="2">{{ .track.TrackInfo.ProcessedWaveform }}</td></tr>
         </table>
     </div>
 </div>

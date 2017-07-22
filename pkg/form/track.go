@@ -28,3 +28,16 @@ type TrackDelete struct {
 func (f *TrackDelete) Validate(ctx *macaron.Context, errs binding.Errors) binding.Errors {
 	return validate(errs, ctx.Data, f, ctx.Locale)
 }
+
+// TrackEdit fields
+type TrackEdit struct {
+	Title	string	`form:"title" binding:"Required;MaxSize(255)"`
+	Description	string	`form:"description"`
+	IsPrivate	bool
+	ShowDlLink	bool
+}
+
+// Validate the form
+func (f *TrackEdit) Validate(ctx *macaron.Context, errs binding.Errors) binding.Errors {
+	return validate(errs, ctx.Data, f, ctx.Locale)
+}
