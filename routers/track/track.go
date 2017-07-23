@@ -31,6 +31,10 @@ func Upload(ctx *context.Context) {
 	ctx.Title("track.title_upload")
 	ctx.PageIs("TrackUpload")
 
+	albums, _ := models.GetMapNameIDOfAlbums(ctx.User.ID)
+
+	ctx.Data["albums"] = albums
+
 	ctx.HTML(200, tmplUpload)
 }
 
@@ -57,7 +61,17 @@ func UploadPost(ctx *context.Context, f form.TrackUpload) {
 		Hash: fileHash,
 	}
 
-	mimetype, err := models.SaveTrackFile(f.File, t.Filename, ctx.User.UserName)
+	if f.Album > 0 {
+		t.AlbumID = f.Album
+		count, err := models.GetCountOfAlbumTracks(f.Album)
+		if err != nil {
+			log.Error(2, "Cannot get count for album %d: %s", f.Album, err)
+			count = 0 // well, yes
+		}
+		t.AlbumOrder = count + 1 // if zero it will be Track 1, etc.
+	}
+
+	mimetype, err := models.SaveTrackFile(f.File, t.Filename, ctx.User.Slug)
 	if err != nil {
 		log.Error(2, "Cannot save track file: %s", err)
 		ctx.Flash.Error("Cannot save track file, please retry")
@@ -113,7 +127,7 @@ func UploadPost(ctx *context.Context, f form.TrackUpload) {
 	}
 	_, err = server.SendTask(sig)
 	if err != nil {
-		ctx.Flash.Error("Cannot push the worker job, please retry again.")
+		ctx.Flash.Error("Cannot push the worker job, the watchdog should take care of it.")
 		if t.TranscodeNeeded {
 			err = models.UpdateTrackState(&models.Track{ID: t.ID, TranscodeState: models.ProcessingRetrying}, models.TrackTranscoding)
 			if err != nil {
@@ -169,12 +183,32 @@ func Show(ctx *context.Context) {
 		ctx.Data["Title"] = fmt.Sprintf("%s by %s - %s", track.Title, user.UserName, setting.AppName)
 		ctx.PageIs("TrackShowWait")
 
+		if track.AlbumID > 0 && track.AlbumOrder > 0 {
+			album, err := models.GetAlbumByID(track.AlbumID)
+			if err != nil {
+				log.Error(2, "Cannot get album %d for track %d: %s", track.AlbumID, track.ID, err)
+				ctx.Flash.Error("Album error.")
+				ctx.SubURLRedirect(ctx.URLFor("home"), 404)
+			}
+			ctx.Data["album"] = album
+		}
+
 		ctx.HTML(200, tmplShowWait)
 	} else {
 		ctx.Data["track"] = track[0]
 		ctx.Data["user"] = user
 		ctx.Data["Title"] = fmt.Sprintf("%s by %s - %s", track[0].Track.Title, user.UserName, setting.AppName)
 		ctx.PageIs("TrackShow")
+
+		if track[0].Track.AlbumID > 0 && track[0].Track.AlbumOrder > 0 {
+			album, err := models.GetAlbumByID(track[0].AlbumID)
+			if err != nil {
+				log.Error(2, "Cannot get album %d for track %d: %s", track[0].AlbumID, track[0].Track.ID, err)
+				ctx.Flash.Error("Album error.")
+				ctx.SubURLRedirect(ctx.URLFor("home"), 404)
+			}
+			ctx.Data["album"] = album
+		}
 
 		ctx.HTML(200, tmplShow)
 	}
@@ -438,6 +472,10 @@ func Edit(ctx *context.Context) {
 		return
 	}
 
+	albums, _ := models.GetMapNameIDOfAlbums(ctx.User.ID)
+
+	ctx.Data["albums"] = albums
+
 	if len(track) < 1 {
 		track, err := models.GetTrackBySlugAndUserID(user.ID, ctx.Params(":trackSlug"))
 		if err != nil {
@@ -449,6 +487,7 @@ func Edit(ctx *context.Context) {
 		ctx.Data["track"] = track
 		ctx.Data["user"] = user
 		ctx.Data["Title"] = fmt.Sprintf("%s by %s - %s", track.Title, user.UserName, setting.AppName)
+		ctx.Data["cur_album"] = track.AlbumID
 		ctx.PageIs("TrackShowWait")
 
 		ctx.HTML(200, tmplShowWait)
@@ -459,6 +498,7 @@ func Edit(ctx *context.Context) {
 		ctx.Data["show_dl_link"] = track[0].ShowDlLink
 
 		ctx.Data["Title"] = fmt.Sprintf("%s by %s - %s", track[0].Track.Title, user.UserName, setting.AppName)
+		ctx.Data["cur_album"] = track[0].AlbumID
 		ctx.PageIs("TrackEdit")
 
 		ctx.HTML(200, tmplEdit)
@@ -496,6 +536,19 @@ func EditPost(ctx *context.Context, f form.TrackEdit) {
 	track.Description = f.Description
 	track.IsPrivate = f.IsPrivate
 	track.ShowDlLink = f.ShowDlLink
+
+	if f.Album > 0 {
+		track.AlbumID = f.Album
+		count, err := models.GetCountOfAlbumTracks(f.Album)
+		if err != nil {
+			log.Error(2, "Cannot get count for album %d: %s", f.Album, err)
+			count = 0 // well, yes
+		}
+		track.AlbumOrder = count + 1 // if zero it will be Track 1, etc.
+	} else {
+		track.AlbumID = -1
+		track.AlbumOrder = -1
+	}
 
 	err = models.UpdateTrack(track)
 	if err != nil {

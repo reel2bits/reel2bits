@@ -1,0 +1,22 @@
+{{template "base/head" .}}
+
+<div class="row album_new_btns">
+    <div class="col-lg-9 col-lg-offset-1">
+        <a href="{{URLFor "album_new"}}" class="btn btn-xs btn-info">Create a new album</a>
+    </div>
+</div>
+
+{{ if not .albums }}
+<div class="row">
+    <div class="col-lg-9 col-lg-offset-1">
+        <h4>Looks like there is no albums to show !</h4>
+    </div>
+</div>
+{{ else }}
+<div class="row">
+    <div class="col-lg-9 col-lg-offset-1">
+    </div>
+</div>
+{{ end }}
+
+{{template "base/footer" .}}

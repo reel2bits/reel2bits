@@ -50,6 +50,7 @@ type Track struct {
 
 	Mimetype	string
 
+	AlbumID		int64
 	AlbumOrder	int64
 
 	// Transcode state is also used for the worker job to fetch infos
@@ -75,6 +76,7 @@ type Track struct {
 
 	// Relations
 	// 	UserID
+	//  AlbumID
 }
 
 // TrackWithInfo to be used for JOINs
@@ -323,6 +325,30 @@ func GetTracks(opts *TrackOptions) (tracks []*TrackWithInfo, _ int64, _ error) {
 
 	return tracks, count, sess.Limit(opts.PageSize, (opts.Page-1)*opts.PageSize).Find(&tracks)
 }
+
+// GetNotReadyTracks and only that
+func GetNotReadyTracks() (tracks []*Track, err error) {
+	err = x.Table(&Track{}).Cols("ID").Where("ready=?", false).Find(&tracks)
+	if err != nil {
+		log.Error(2, "Cannot get un-ready tracks: %s", err)
+	}
+	return tracks, err
+}
+
+func GetAlbumTracks(albumID int64, only_ready bool) (tracks []*Track, err error) {
+	sess := x.Table(&Track{}).Cols("ID").Where("album_id=?", false)
+
+	if !only_ready {
+		sess.And("ready=?", true)
+	}
+
+	err = sess.Find(&tracks)
+	if err != nil {
+		log.Error(2, "Cannot get tracks for album %d: %s", albumID, err)
+	}
+	return tracks, err
+}
+
 
 func removeTrackFiles(transcode bool, trackFilename string, userSlug string) error {
 	storDir := filepath.Join(setting.Storage.Path, "tracks", userSlug)

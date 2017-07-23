@@ -11,7 +11,7 @@
                     <div class="content">
                         <div class="form-group {{if .Err_Title}}has-error{{end}}">
                             <label for="title" class="">{{.i18n.Tr "track.form_title"}}</label>
-                            <input type="title" name="title" id="title" class="form-control" value="{{.title}}" placeholder='{{.i18n.Tr "track.form_ph_title"}}' required>
+                            <input type="text" name="title" id="title" class="form-control" value="{{.title}}" placeholder='{{.i18n.Tr "track.form_ph_title"}}' required>
                         </div>
 
                         <div class="form-group {{if .Err_Description}}has-error{{end}}">
@@ -19,9 +19,19 @@
                             <textarea name="description" id="description" class="form-control" placeholder='{{.i18n.Tr "track.form_ph_description"}}'>{{.description}}</textarea>
                         </div>
 
+                        <div class="form-group {{if .Err_Album}}has-error{{end}}">
+                            <label for="album" class="">{{.i18n.Tr "track.form_album"}}</label>
+                            <select id="album" name="album">
+                                <option value="-1" selected>Select an album if you want.</option>
+                                {{range $album := .albums}}
+                                <option value="{{$album.ID}}">{{$album.Name}}</option>
+                                {{end}}
+                            </select>
+                        </div>
+
                         <div class="form-group {{if .Err_File}}has-error{{end}}">
                             <label for="file" class="">{{.i18n.Tr "track.form_file"}}</label>
-                            <input type="file" name="file" id="file" class="" value="{{.file}}" placeholder='{{.i18n.Tr "track.form_ph_file"}}' required>
+                            <input type="file" name="file" id="file" class="" value="{{.file}}" placeholder='{{.i18n.Tr "track.form_ph_file"}}' required accept=".mp3,.mp4,.wav,.ogg,.flac,audio/mpeg,audio/mp4,audio/wav,audio/vorbis,audio/flac">
                         </div>
 
                         <div class="checkbox {{if .Err_IsPrivate}}has-error{{end}}">

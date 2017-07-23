@@ -12,7 +12,6 @@ import (
 // Track database structure
 type Album struct {
 	ID          int64       `xorm:"pk autoincr"`
-	TrackID      int64       `xorm:"INDEX"`
 	UserID		 int64
 
 	Name		string
@@ -199,4 +198,18 @@ func DeleteAlbum(albumID int64, userID int64) error {
 	log.Info("Deleted album for %d/%s", album.ID, album.Name)
 
 	return nil
+}
+
+func GetMapNameIDOfAlbums(userID int64) (sets []Album, err error) {
+	err = x.Table(&Album{}).Cols("id", "name").Where("user_id=?", userID).Find(&sets)
+	if err != nil {
+		log.Error(2, "Cannot get albums for user id %d: %s", userID, err)
+	}
+	return sets, err
+}
+
+func GetCountOfAlbumTracks(albumID int64) (count int64, err error) {
+	track := new(Track)
+	count, err = x.Where("album_id=?", albumID).Count(track)
+	return
 }

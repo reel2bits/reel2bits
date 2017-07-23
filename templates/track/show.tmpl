@@ -80,8 +80,8 @@
             </tr>
             {{ end }}
 
-            {{ if false }}
-            <tr><td colspan="3">In album: <a href="FIXME">fixme album name</a></td></tr>
+            {{ if (gt .track.AlbumID 0) }}
+            <tr><td colspan="3">In album: <a href="{{URLFor "album_show" ":userSlug" .user.Slug ":albumSlug" .album.Slug}}">{{.album.Name}}</a></td></tr>
             {{ end }}
 
             <tr><td>Duration</td><td colspan="2">{{ DurationToHuman .track.TrackInfo.Duration }}</td></tr>

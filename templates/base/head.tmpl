@@ -78,6 +78,7 @@
                 {{if .IsLogged}}
                     <li><a href="{{URLFor "track_upload"}}">{{.i18n.Tr "header.upload_track"}}</a></li>
                     <li><a href="{{URLFor "track_list" ":userSlug" .LoggedUser.Slug}}">{{.i18n.Tr "header.my_tracks"}}</a></li>
+                    <li><a href="{{URLFor "album_list" ":userSlug" .LoggedUser.Slug}}">{{.i18n.Tr "header.my_albums"}}</a></li>
                     <li><a href="{{URLFor "user_settings"}}">{{.i18n.Tr "header.settings"}}</a></li>
                     {{if .UserIsAdmin}}
                         <li><a href="{{URLFor "admin_dashboard"}}">{{.i18n.Tr "header.admin"}}</a></li>
@@ -87,7 +88,7 @@
                     {{if CanRegister}}
                         <li><a href="{{URLFor "user_register"}}">{{.i18n.Tr "header.register"}}</a></li>
                     {{end}}
-                    <li><a href="{{URLFor "user_register"}}">{{.i18n.Tr "header.login"}}</a></li>
+                    <li><a href="{{URLFor "user_login"}}">{{.i18n.Tr "header.login"}}</a></li>
                 {{end}}
             </ul>
         </div><!--/.nav-collapse -->

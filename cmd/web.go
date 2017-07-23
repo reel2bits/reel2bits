@@ -28,6 +28,7 @@ import (
 	"os"
 	"path"
 	"strings"
+	"dev.sigpipe.me/dashie/reel2bits/routers/album"
 )
 
 // Web cli target
@@ -175,12 +176,13 @@ func runWeb(ctx *cli.Context) error {
 
 	// START ALBUM
 	m.Group("/albums", func() {
-		m.Get("").Name("album_list")
-		m.Combo("/new", reqSignIn).Get().Post().Name("album_new")
+		m.Combo("/new", reqSignIn).Get(album.New).Post(csrf.Validate, bindIgnErr(form.Album{}), album.NewPost).Name("album_new")
 	})
 
+	m.Get("/a/:userSlug", album.ListFromUser).Name("album_list")
+
 	m.Group("/a/:userSlug/:albumSlug", func() {
-		m.Get("").Name("album_show")
+		m.Get("", album.Show).Name("album_show")
 		m.Combo("/edit", reqSignIn).Get().Post().Name("album_edit")
 		m.Post("/delete", reqSignIn).Name("album_delete")
 	})
