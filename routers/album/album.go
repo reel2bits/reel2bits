@@ -90,17 +90,30 @@ func Show(ctx *context.Context) {
 	}
 
 	ctx.Data["album"] = album
+	ctx.Data["album_sounds_count"], err = models.GetCountOfAlbumTracks(album.ID)
+	if err != nil {
+		ctx.Flash.Error("Cannot get album tracks count")
+		ctx.Data["album_sounds_count"] = 0
+	}
 
 	only_ready := !(ctx.User.ID == album.UserID)
-	tracks, err := models.GetAlbumTracks(album.ID, only_ready)
 
+	sound, err := models.GetFirstTrackOfAlbum(album.ID, only_ready)
+	if err != nil {
+		ctx.Flash.Error("Album tracks error")
+		log.Error(2, "Album %d cannot get track at order 1: %s", err)
+		ctx.SubURLRedirect(ctx.URLFor("home"), 404)
+		return
+	}
+	ctx.Data["sound"] = sound
+
+	tracks, err := models.GetAlbumTracks(album.ID, only_ready)
 	if err != nil {
 		log.Error(2, "Cannot get album %d tracks: %s", album.ID, err)
 		ctx.Flash.Error("Cannot get album tracks.")
 		ctx.SubURLRedirect(ctx.URLFor("home"), 503)
 		return
 	}
-
 	ctx.Data["tracks"] = tracks
 
 	ctx.Data["user"] = user

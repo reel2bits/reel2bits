@@ -281,6 +281,50 @@ func GetTrackBySlugAndUserID(id int64, slug string) (*Track, error) {
 	return track, nil
 }
 
+func GetTrackByAlbumIDAndOrder(albumID int64, albumOrder int64) (*Track, error) {
+	track := &Track{AlbumID: albumID, AlbumOrder: albumOrder}
+	has, err := x.Get(track)
+	if err != nil {
+		return nil, err
+	} else if !has {
+		return nil, errors.TrackNotExist{albumID, ""}
+	}
+	return track, nil
+}
+
+func GetFirstTrackOfAlbum(albumID int64, onlyReady bool) (*TrackWithInfo, error) {
+	tracks := make([]*TrackWithInfo, 0)
+
+	sess := x.Where("album_id=?", albumID)
+
+	if onlyReady {
+		sess.And("ready=?", true)
+	}
+
+	sess.Desc("track.album_order")
+
+	var countSess xorm.Session
+	countSess = *sess
+	count, err := countSess.Count(new(Track))
+	if err != nil {
+		return nil, fmt.Errorf("Count: %v", err)
+	}
+
+	sess.Table(&Track{}).Join("LEFT", "track_info", "track_info.track_id = track.id").Join(
+		"LEFT", "user", "user.id = track.user_id"	)
+
+	err = sess.Limit(1).Find(&tracks)
+
+	if err != nil {
+		return nil, fmt.Errorf("LimitFind: %v", err)
+	}
+	if count >= 1 {
+		return tracks[0], nil
+	}
+
+	return nil, fmt.Errorf("Album is empty")
+}
+
 // TrackOptions structure
 type TrackOptions struct {
 	UserID      int64
@@ -335,18 +379,21 @@ func GetNotReadyTracks() (tracks []*Track, err error) {
 	return tracks, err
 }
 
-func GetAlbumTracks(albumID int64, only_ready bool) (tracks []*Track, err error) {
-	sess := x.Table(&Track{}).Cols("ID").Where("album_id=?", false)
+func GetAlbumTracks(albumID int64, onlyPublic bool) (tracks []*TrackWithInfo, err error) {
+	tracks = make([]*TrackWithInfo, 0)
 
-	if !only_ready {
-		sess.And("ready=?", true)
+	sess := x.Where("album_id=?", albumID)
+
+	if onlyPublic {
+		sess.And("ready=?", true).And("is_private=?", false)
 	}
 
-	err = sess.Find(&tracks)
-	if err != nil {
-		log.Error(2, "Cannot get tracks for album %d: %s", albumID, err)
-	}
-	return tracks, err
+	sess.Desc("track.album_order")
+
+	sess.Table(&Track{}).Join("LEFT", "track_info", "track_info.track_id = track.id").Join(
+		"LEFT", "user", "user.id = track.user_id"	)
+
+	return tracks, sess.Find(&tracks)
 }
 
 
