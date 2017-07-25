@@ -171,6 +171,8 @@ func runWeb(ctx *cli.Context) error {
 		m.Get("", track.Show).Name("track_show")
 		m.Combo("/edit", reqSignIn).Get(track.Edit).Post(csrf.Validate, bindIgnErr(form.TrackEdit{}), track.EditPost).Name("track_edit")
 		m.Post("/delete", reqSignIn, csrf.Validate, bindIgnErr(form.TrackDelete{}), track.DeleteTrack).Name("track_delete")
+		m.Get(".json", track.GetJsonWaveform).Name("track_infos_json")
+		m.Get("/reorder").Name("track_reorder")
 	})
 	// END TRACK
 
@@ -193,7 +195,6 @@ func runWeb(ctx *cli.Context) error {
 		m.Get("/stream/:type", track.DevGetMediaTrack).Name("media_track_stream")
 		m.Get("/download/:type", track.DevGetMediaDownload).Name("media_track_download")
 		m.Get("/waveform", track.DevGetMediaPngWf).Name("media_track_waveform")
-		m.Get(".json", track.GetJsonWaveform).Name("media_track_waveform_json")
 	})
 
 	/* Admin part */

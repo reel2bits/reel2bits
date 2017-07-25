@@ -95,7 +95,7 @@
             <thead><tr><th></th><th></th><th></th><th></th></tr></thead>
                 <tbody>
                 {{ range .tracks }}
-                <tr class="play-song {{if (eq $.sound.Track.ID .Track.ID)}}song-active{{end}}" data-soundid="{{ .Track.ID }}" data-href="{{URLFor "media_track_waveform_json" ":userSlug" $.user.Slug ":trackSlug" .Track.Slug}}" data-hrefreorder="FIXME JSON REORDER">
+                <tr class="play-song {{if (eq $.sound.Track.ID .Track.ID)}}song-active{{end}}" data-soundid="{{ .Track.ID }}" data-href="{{URLFor "track_infos_json" ":userSlug" $.user.Slug ":trackSlug" .Track.Slug}}" data-hrefreorder="{{URLFor "track_reorder" ":userSlug" $.user.Slug ":trackSlug" .Track.Slug}}">
                     <td width="10px">{{ .Track.AlbumOrder }}</td>
                     <td width="20px"><a href="{{ URLFor "track_show" ":userSlug" $.user.Slug ":trackSlug" .Track.Slug }}"><i class="fa fa-link" aria-hidden="true"></i></a></td>
                     <td class="switch-song"><i class="fa fa-{{ if .Track.IsPrivate }}lock{{ else }}play{{ end }}" aria-hidden="true"></i> {{ SubStr .Track.Title 0 70 }}</td>
