@@ -42,6 +42,14 @@ type TrackInfo struct {
 	// 	TrackID
 }
 
+type Waveform struct {
+	SampleRate			int64
+	SamplePerPixels		int64
+	Bits				int64
+	Length				int64
+	Data				[]int64
+}
+
 // BeforeInsert set times
 func (track *TrackInfo) BeforeInsert() {
 	track.CreatedUnix = time.Now().Unix()

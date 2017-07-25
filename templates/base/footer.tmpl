@@ -41,8 +41,11 @@
     suburl = $('meta[name=_suburl]').attr("content");
 </script>
 
-{{ if (or .PageIsTrackShow .PageIsAlbumshow) }}
-{{template "scripts" .}}
+{{ if .PageIsTrackShow }}
+    {{template "scriptsTrackShow" .}}
+{{ end }}
+{{ if .PageIsAlbumShow }}
+    {{template "scriptsAlbumShow" .}}
 {{ end }}
 
 </body>

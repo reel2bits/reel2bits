@@ -292,16 +292,16 @@ func GetTrackByAlbumIDAndOrder(albumID int64, albumOrder int64) (*Track, error) 
 	return track, nil
 }
 
-func GetFirstTrackOfAlbum(albumID int64, onlyReady bool) (*TrackWithInfo, error) {
+func GetFirstTrackOfAlbum(albumID int64, onlyPublic bool) (*TrackWithInfo, error) {
 	tracks := make([]*TrackWithInfo, 0)
 
 	sess := x.Where("album_id=?", albumID)
 
-	if onlyReady {
-		sess.And("ready=?", true)
+	if onlyPublic {
+		sess.And("ready=?", true).And("is_private=?", false)
 	}
 
-	sess.Desc("track.album_order")
+	sess.Asc("track.album_order")
 
 	var countSess xorm.Session
 	countSess = *sess
@@ -388,7 +388,7 @@ func GetAlbumTracks(albumID int64, onlyPublic bool) (tracks []*TrackWithInfo, er
 		sess.And("ready=?", true).And("is_private=?", false)
 	}
 
-	sess.Desc("track.album_order")
+	sess.Asc("track.album_order")
 
 	sess.Table(&Track{}).Join("LEFT", "track_info", "track_info.track_id = track.id").Join(
 		"LEFT", "user", "user.id = track.user_id"	)

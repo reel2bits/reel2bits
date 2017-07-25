@@ -16,6 +16,7 @@ import (
 	"bytes"
 	"io/ioutil"
 	"github.com/Unknwon/paginater"
+	"encoding/json"
 )
 
 const (
@@ -438,6 +439,62 @@ func DeleteTrack(ctx *context.Context, f form.TrackDelete) {
 		"redirect": ctx.SubURLFor("track_list", ":userSlug", user.Slug),
 	})
 	return
+}
+
+func GetJsonWaveform(ctx *context.Context) {
+	if ctx.Params(":userSlug") == "" || ctx.Params(":trackSlug") == "" {
+		ctx.ServerError("No.", nil)
+		return
+	}
+
+	user, err := models.GetUserBySlug(ctx.Params(":userSlug"))
+	if err != nil {
+		log.Error(2, "Cannot get User from slug %s: %s", ctx.Params(":userSlug"), err)
+		ctx.ServerError("Unknown user.", err)
+		return
+	}
+
+	soundInfos, err := models.GetTrackWithInfoBySlugAndUserID(user.ID, ctx.Params(":trackSlug"))
+	if err != nil {
+		log.Error(2, "Cannot get Track from slug %s and user %d: %s",ctx.Params(":trackSlug"), user.ID, err)
+		ctx.ServerError("Unknown track.", err)
+		return
+	}
+
+	if len(soundInfos) < 1 {
+		ctx.JSONSuccess(map[string]interface{}{
+			"error": "Cannot get Waveform",
+		})
+		return
+	}
+
+	if soundInfos[0].TrackInfo.Waveform != "" && soundInfos[0].TrackInfo.WaveformErr == "" {
+		// MERGE json from .TrackInfo.Waveform
+		var w models.Waveform
+		err := json.Unmarshal([]byte(soundInfos[0].TrackInfo.Waveform), &w)
+
+		if err != nil {
+			log.Error(2, "Cannot unmarshal waveform: %s", err)
+			ctx.JSONSuccess(map[string]interface{}{
+				"error": "Cannot unmarshal Waveform",
+			})
+			return
+		}
+
+		ctx.JSONSuccess(map[string]interface{}{
+			"data": w.Data,
+			"filename": ctx.Data["ErrorMsg"],
+			"wf_png": false,
+			"title": nil,
+		})
+		return
+	}
+
+	ctx.JSONSuccess(map[string]interface{}{
+		"error": "Cannot get Waveform",
+	})
+	return
+
 }
 
 func Edit(ctx *context.Context) {
