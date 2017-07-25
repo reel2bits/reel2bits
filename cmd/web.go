@@ -193,7 +193,7 @@ func runWeb(ctx *cli.Context) error {
 		m.Get("/stream/:type", track.DevGetMediaTrack).Name("media_track_stream")
 		m.Get("/download/:type", track.DevGetMediaDownload).Name("media_track_download")
 		m.Get("/waveform", track.DevGetMediaPngWf).Name("media_track_waveform")
-		m.Get("/waveform.json", track.GetJsonWaveform).Name("media_track_waveform_json")
+		m.Get(".json", track.GetJsonWaveform).Name("media_track_waveform_json")
 	})
 
 	/* Admin part */

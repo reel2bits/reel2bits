@@ -481,11 +481,16 @@ func GetJsonWaveform(ctx *context.Context) {
 			return
 		}
 
+		soundType := "orig"
+		if soundInfos[0].Track.Mimetype != "audio/mpeg" {
+			soundType = "mp3"
+		}
 		ctx.JSONSuccess(map[string]interface{}{
-			"data": w.Data,
-			"filename": ctx.Data["ErrorMsg"],
-			"wf_png": false,
-			"title": nil,
+			"waveform": w,
+			"track_url": ctx.URLFor("media_track_stream", ":userSlug", user.Slug, ":trackSlug", soundInfos[0].Track.Slug, ":type", soundType),
+			"wf_png": ctx.URLFor("media_track_waveform", ":userSlug", user.Slug, ":trackSlug", soundInfos[0].Track.Slug),
+			"title": soundInfos[0].Track.Title,
+			"description": soundInfos[0].Track.Description,
 		})
 		return
 	}

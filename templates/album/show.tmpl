@@ -35,7 +35,7 @@
 
     {{ if .sound.Track.Description }}
         <div class="row sound-description">
-            <div class="col-lg-6 col-lg-offset-1"><span>{{ .sound.Track.Description }}</span></div>
+            <div class="col-lg-6 col-lg-offset-1"><span id="song-description">{{ .sound.Track.Description }}</span></div>
         </div>
     {{ end }}
 {{ end }}
@@ -95,11 +95,11 @@
             <thead><tr><th></th><th></th><th></th><th></th></tr></thead>
                 <tbody>
                 {{ range .tracks }}
-                <tr class="play-song {{if (eq $.sound.Track.ID .Track.ID)}}song-active{{end}}" data-soundid="{{ .Track.ID }}" data-href="FIXME WAVEFORM JSON" data-hrefreorder="FIXME JSON REORDER">
+                <tr class="play-song {{if (eq $.sound.Track.ID .Track.ID)}}song-active{{end}}" data-soundid="{{ .Track.ID }}" data-href="{{URLFor "media_track_waveform_json" ":userSlug" $.user.Slug ":trackSlug" .Track.Slug}}" data-hrefreorder="FIXME JSON REORDER">
                     <td width="10px">{{ .Track.AlbumOrder }}</td>
                     <td width="20px"><a href="{{ URLFor "track_show" ":userSlug" $.user.Slug ":trackSlug" .Track.Slug }}"><i class="fa fa-link" aria-hidden="true"></i></a></td>
                     <td class="switch-song"><i class="fa fa-{{ if .Track.IsPrivate }}lock{{ else }}play{{ end }}" aria-hidden="true"></i> {{ SubStr .Track.Title 0 70 }}</td>
-                    <td class="ast-duration">{{ DurationToHuman .TrackInfo.Duration }}</td>
+                    <td class="switch-song ast-duration">{{ DurationToHuman .TrackInfo.Duration }}</td>
                 </tr>
                 {{ end }}
                 </tbody>
@@ -141,9 +141,10 @@
 
             wavesurfer.stop();
             wavesurfer.empty();
-            load_wf("/uploads/sounds/" + data.filename, data.data);
+            load_wf(data.track_url, data.waveform.Data);
 
             $('#song-title').html(data.title.substring(0, 70));
+            $('#song-description').html(data.description);
 
             element.addClass("song-active");
 
@@ -162,7 +163,7 @@
 
     $("td.switch-song").click(function() {
         if ($(this).parent().hasClass("song-active")) {
-            console.log("no, seriously ?");
+            console.log("I don't want to do that :(");
             return; // ignore self click
         }
         var element = $(this).parent();
