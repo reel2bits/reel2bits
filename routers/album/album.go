@@ -197,3 +197,60 @@ func EditPost(ctx *context.Context, f form.Album) {
 	ctx.SubURLRedirect(ctx.URLFor("album_show", ":userSlug", user.Slug, ":albumSlug", album.Slug))
 
 }
+
+func DeleteAlbum(ctx *context.Context, f form.AlbumDelete) {
+	if ctx.HasError() {
+		ctx.JSONSuccess(map[string]interface{}{
+			"error": ctx.Data["ErrorMsg"],
+			"redirect": false,
+		})
+		return
+	}
+
+	if ctx.Params(":userSlug") == "" || ctx.Params(":albumSlug") == "" {
+		ctx.JSONSuccess(map[string]interface{}{
+			"error": "what about no ?",
+			"redirect": false,
+		})
+		return
+	}
+
+	// Get user and album
+	user, err := models.GetUserBySlug(ctx.Params(":userSlug"))
+	if err != nil {
+		log.Error(2, "Cannot get User from slug %s: %s", ctx.Params(":userSlug"), err)
+		ctx.ServerError("Unknown user.", err)
+		return
+	}
+
+	album, err := models.GetAlbumBySlugAndUserID(user.ID, ctx.Params(":albumSlug"))
+	if err != nil {
+		log.Error(2, "Cannot get Album from slug %s and user %d: %s",ctx.Params(":albumSlug"), user.ID, err)
+		ctx.ServerError("Unknown album.", err)
+		return
+	}
+
+	if ctx.Data["LoggedUserID"] != album.UserID {
+		ctx.JSONSuccess(map[string]interface{}{
+			"error": ctx.Tr("user.unauthorized"),
+			"redirect": false,
+		})
+	}
+
+	err = models.DeleteAlbum(album.ID, album.UserID)
+	if err != nil {
+		ctx.Flash.Error(ctx.Tr("album_delete.error_deleting"))
+		log.Warn("DeleteAlbum.Delete: %v", err)
+		ctx.JSONSuccess(map[string]interface{}{
+			"error": ctx.Tr("album_delete.error_deleting"),
+			"redirect": false,
+		})
+		return
+	}
+
+	ctx.JSONSuccess(map[string]interface{}{
+		"error": nil,
+		"redirect": ctx.SubURLFor("album_list", ":userSlug", user.Slug),
+	})
+	return
+}

@@ -186,7 +186,7 @@ func runWeb(ctx *cli.Context) error {
 	m.Group("/a/:userSlug/:albumSlug", func() {
 		m.Get("", album.Show).Name("album_show")
 		m.Combo("/edit", reqSignIn).Get(album.Edit).Post(csrf.Validate, bindIgnErr(form.Album{}), album.EditPost).Name("album_edit")
-		m.Post("/delete", reqSignIn).Name("album_delete")
+		m.Post("/delete", reqSignIn, csrf.Validate, bindIgnErr(form.AlbumDelete{}), album.DeleteAlbum).Name("album_delete")
 	})
 	// END ALBUM
 

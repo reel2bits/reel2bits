@@ -111,7 +111,7 @@
                         <td class="si_btn_delete">
                             <a role="button" tabindex="0" class="btn btn-danger btn-xs" data-trigger="focus"
                                data-container="body" data-toggle="popover" data-placement="top" data-html="true"
-                               data-content="<a class='btn btn-success btn-xs delete_log_link' href='{{URLFor "album_delete" ":userSlug" .user.Slug ":albumSlug" .album.Slug}}'>yes really</a>">delete</a>
+                               data-content="<a class='btn btn-success btn-xs delete_album_link' data-url='{{URLFor "album_delete" ":userSlug" .user.Slug ":albumSlug" .album.Slug}}' data-user='{{.user.Slug}}' data-album='{{.album.Slug}}'>yes really</a>">delete</a>
                         </td>
                         {{ end }}
                     </tr>

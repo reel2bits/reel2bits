@@ -18,7 +18,7 @@ func (f *Album) Validate(ctx *macaron.Context, errs binding.Errors) binding.Erro
 }
 
 type AlbumDelete struct {
-	Album    int64   `binding:"Required"`
+	Album   string   `binding:"Required"`
 	User    string   `binding:"Required"`
 }
 
