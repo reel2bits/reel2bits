@@ -436,6 +436,7 @@ func DeleteTrack(ctx *context.Context, f form.TrackDelete) {
 		return
 	}
 
+	ctx.Flash.Success(ctx.Tr("track.delete_success"))
 	ctx.JSONSuccess(map[string]interface{}{
 		"error": nil,
 		"redirect": ctx.SubURLFor("track_list", ":userSlug", user.Slug),
@@ -623,5 +624,6 @@ func EditPost(ctx *context.Context, f form.TrackEdit) {
 		return
 	}
 
+	ctx.Flash.Success(ctx.Tr("track.edit_success"))
 	ctx.SubURLRedirect(ctx.URLFor("track_show", ":userSlug", user.Slug, ":trackSlug", track.Slug))
 }

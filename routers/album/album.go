@@ -245,6 +245,7 @@ func EditPost(ctx *context.Context, f form.Album) {
 		return
 	}
 
+	ctx.Flash.Success(ctx.Tr("album.edit_success"))
 	ctx.SubURLRedirect(ctx.URLFor("album_show", ":userSlug", user.Slug, ":albumSlug", album.Slug))
 
 }
@@ -299,6 +300,7 @@ func DeleteAlbum(ctx *context.Context, f form.AlbumDelete) {
 		return
 	}
 
+	ctx.Flash.Success(ctx.Tr("album.delete_success"))
 	ctx.JSONSuccess(map[string]interface{}{
 		"error": nil,
 		"redirect": ctx.SubURLFor("album_list", ":userSlug", user.Slug),
