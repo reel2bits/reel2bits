@@ -54,6 +54,14 @@ func (album *Album) AfterSet(colName string, _ xorm.Cell) {
 	}
 }
 
+func (album *Album) getTracksCount(e Engine) (int64, error) {
+	return e.Where("album_id=?", album.ID).Count(new(Track))
+}
+
+func (album *Album) GetTracksCount() (int64, error) {
+	return album.getTracksCount(x)
+}
+
 func isAlbumNameAlreadyExist(name string, userID int64) (bool, error) {
 	if len(name) == 0 {
 		return true, fmt.Errorf("name is empty")
