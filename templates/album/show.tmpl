@@ -111,7 +111,7 @@
                         <td class="si_btn_delete">
                             <a role="button" tabindex="0" class="btn btn-danger btn-xs" data-trigger="focus"
                                data-container="body" data-toggle="popover" data-placement="top" data-html="true"
-                               data-content="<a class='btn btn-success btn-xs delete_album_link' data-url='{{URLFor "album_delete" ":userSlug" .user.Slug ":albumSlug" .album.Slug}}' data-user='{{.user.Slug}}' data-album='{{.album.Slug}}'>yes really</a>">delete</a>
+                               data-content="<a class='btn btn-success btn-xs delete_album_link' data-url='{{URLFor "album_delete" ":userSlug" .user.Slug ":albumSlug" .album.Slug}}' data-user='{{.user.Slug}}' data-album='{{.album.Slug}}'   >yes really</a>">delete</a>
                         </td>
                         {{ end }}
                     </tr>
@@ -204,7 +204,8 @@
         }
     });
 
-    // initial call
+    {{ if (gt .album_sounds_count 0) }}
+    // initial call, but only if we have an initial sound
     var wf_datas = {{ Unescape .sound.TrackInfo.Waveform }};
     {{if (eq .sound.Track.Mimetype "audio/mpeg")}}
     var filename = "{{URLFor "media_track_stream" ":userSlug" .user.Slug ":trackSlug" .sound.Track.Slug ":type" "orig"}}";
@@ -213,6 +214,7 @@
     {{end}}
 
     load_wf(filename, wf_datas.data);
+    {{end}}
 
     $(function () {
         $('[data-toggle="popover"]').popover();
