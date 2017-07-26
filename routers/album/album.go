@@ -7,6 +7,7 @@ import (
 	log "gopkg.in/clog.v1"
 	"fmt"
 	"dev.sigpipe.me/dashie/reel2bits/setting"
+	"github.com/Unknwon/paginater"
 )
 
 const (
@@ -61,6 +62,54 @@ func NewPost(ctx *context.Context, f form.Album) {
 func ListFromUser(ctx *context.Context) {
 	ctx.Title("album.title_list")
 	ctx.PageIs("AlbumListFromUser")
+
+	if ctx.Params(":userSlug") == "" {
+		ctx.ServerError("No.", nil)
+		return
+	}
+
+	user, err := models.GetUserBySlug(ctx.Params(":userSlug"))
+	if err != nil {
+		log.Error(2, "Cannot get User from slug %s: %s", ctx.Params(":userSlug"), err)
+		ctx.ServerError("Unknown user.", err)
+		return
+	}
+
+	ctx.Data["Title"] = fmt.Sprintf("Albums of %s - %s", user.UserName, setting.AppName)
+
+	page := ctx.QueryInt("page")
+	if page <= 0 {
+		page = 1
+	}
+	ctx.Data["PageNumber"] = page
+
+	opts := &models.AlbumOptions{
+		PageSize: 10,	// TODO: put this in config
+		Page: page,
+		GetAll: false,
+		UserID: user.ID,
+		WithPrivate: false,
+	}
+
+	if ctx.Data["LoggedUserID"] == user.ID {
+		opts.WithPrivate = true
+	}
+
+	listOfAlbums, albumsCount, err := models.GetAlbums(opts)
+	if err != nil {
+		log.Warn("Cannot get Albums with opts %v, %s", opts, err)
+		ctx.Flash.Error(ctx.Tr("album_list.error_getting_list"))
+		ctx.Handle(500, "ListAlbums", err)
+		return
+	}
+
+	ctx.Data["user"] = user
+	ctx.Data["albums"] = listOfAlbums
+	ctx.Data["albums_count"] = albumsCount
+
+	ctx.Data["Total"] = albumsCount
+	ctx.Data["Page"] = paginater.New(int(albumsCount), opts.PageSize, page, 5)
+
 
 	ctx.HTML(200, tmplAlbumList)
 }

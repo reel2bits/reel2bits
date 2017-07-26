@@ -417,5 +417,9 @@ div.single_track_list {
 }
 
 div.album_new_btns {
+    margin-bottom: 2em;
+}
+
+div.album_single_list {
     margin-bottom: 1em;
 }

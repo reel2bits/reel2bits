@@ -1,7 +1,7 @@
 {{template "base/head" .}}
 
 <div class="row album_new_btns">
-    <div class="col-lg-9 col-lg-offset-1">
+    <div class="col-lg-9">
         <a href="{{URLFor "album_new"}}" class="btn btn-xs btn-info">Create a new album</a>
     </div>
 </div>
@@ -13,10 +13,25 @@
     </div>
 </div>
 {{ else }}
-<div class="row">
-    <div class="col-lg-9 col-lg-offset-1">
-    </div>
-</div>
+    {{ range .albums }}
+        <div class="row album_single_list">
+            <div class="col-lg-6">
+                {{ if not .IsPrivate }}<i class="fa fa-music" aria-hidden="true"></i>{{ else }}<i class="fa fa-lock" aria-hidden="true"></i>{{ end }}&nbsp;
+                <a href="{{ URLFor "album_show" ":userSlug" $.user.Slug ":albumSlug" .Slug }}">{{ SubStr .Name 0 60 }}</a>
+                <br />
+                <div class="row">
+                    <div class="col-sm-4">
+                        <i class="fa fa-calendar" aria-hidden="true"></i> {{ ElapsedToHuman .CreatedUnix }}
+                    </div>
+                    <div class="col-sm-4">
+                        <i class="fa fa-play" aria-hidden="true"></i> xxx tracks
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+            </div>
+        </div>
+    {{ end }}
 {{ end }}
 
 {{template "base/footer" .}}
