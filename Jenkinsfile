@@ -8,7 +8,7 @@
 
 // Do some cleanup
 properties [[$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', daysToKeepStr: '10', numToKeepStr: '10']]]
-options { buildDiscarder(logRotator(numToKeepStr: '10')) }
+//options { buildDiscarder(logRotator(numToKeepStr: '10')) }
 
 /**
  * Send notifications based on build status string
