@@ -6,6 +6,9 @@
 // https://gist.github.com/wavded/5e6b0d5016c2a3c05237
 // https://jenkins.io/blog/2017/02/15/declarative-notifications/
 
+// Do some cleanup
+properties([buildDiscarder(logRotator(numToKeepStr: '20', artifactNumToKeepStr: '20'))])
+
 /**
  * Send notifications based on build status string
  */
