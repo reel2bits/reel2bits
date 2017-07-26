@@ -93,6 +93,7 @@ func NewFuncMap(m *macaron.Macaron) []template.FuncMap {
 			return fmt.Sprintf("%s%s", strings.TrimSuffix(setting.AppURL, "/"), m.URLFor(name, pairs...))
 		},
 		"URLForRelative": m.URLFor,
+		"NeedsImpressum": func() bool { return setting.NeedsImpressum},
 	}}
 }
 

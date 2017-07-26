@@ -196,12 +196,15 @@ func runWeb(ctx *cli.Context) error {
 		m.Get("/download/:type", track.DevGetMediaDownload).Name("media_track_download")
 		m.Get("/waveform", track.DevGetMediaPngWf).Name("media_track_waveform")
 	})
-
 	/* Admin part */
 
 	m.Group("/admin", func() {
 		m.Get("", adminReq, admin.Dashboard).Name("admin_dashboard")
 	}, adminReq)
+
+	if setting.NeedsImpressum {
+		m.Get("/impressum", routers.Impressum).Name("impressum")
+	}
 
 	// robots.txt
 	m.Get("/robots.txt", func(ctx *context.Context) {

@@ -9,12 +9,19 @@ import (
 
 const (
 	tmplTracksList = "tracks_list"
+	tmplImpressum = "impressum"
 )
 
 // NotFound [GET]
 func NotFound(ctx *context.Context) {
 	ctx.Title(ctx.Tr("error.page_not_found"))
 	ctx.Handle(404, "home.NotFound", nil)
+}
+
+// Impressum [GET]
+func Impressum(ctx *context.Context) {
+	ctx.Title(ctx.Tr("impressum.title"))
+	ctx.Success(tmplImpressum)
 }
 
 // Home [GET]

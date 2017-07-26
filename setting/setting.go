@@ -42,6 +42,7 @@ var (
 	AppSubURLDepth int // Number of slashes
 	CanRegister    bool
 	ProdMode       bool
+	NeedsImpressum bool
 
 	// Cron tasks
 	Cron struct {
@@ -224,6 +225,8 @@ func InitConfig() {
 	if AppURL[len(AppURL)-1] != '/' {
 		AppURL += "/"
 	}
+
+	NeedsImpressum = Cfg.Section("").Key("NEEDS_IMPRESSUM").MustBool(false)
 
 	// Check if has app suburl.
 	appURL, err := url.Parse(AppURL)

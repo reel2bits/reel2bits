@@ -9,6 +9,10 @@
             © 2017 reel2bits - {{.i18n.Tr "footer.version"}}: {{AppVer}} - {{.i18n.Tr "footer.page"}}: <strong>{{LoadTimes .PageStartTime}}</strong> - {{.i18n.Tr "footer.template"}}: <strong>{{call .TmplLoadTimes}}</strong>
         </div>
         <div class="right">
+            {{if NeedsImpressum}}
+            <a href="{{URLFor "impressum"}}">Impressum</a>
+            -
+            {{end}}
             <a target="_blank" href="https://dev.sigpipe.me/dashie/reel2bits">{{.i18n.Tr "footer.sources"}}</a>
             -
             <span class="version">{{GoVer}}</span>
