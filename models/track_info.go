@@ -1,41 +1,41 @@
 package models
 
 import (
-	"time"
-	"github.com/go-xorm/xorm"
 	"dev.sigpipe.me/dashie/reel2bits/models/errors"
+	"github.com/go-xorm/xorm"
+	"time"
 )
 
 // TrackInfo database structure
 type TrackInfo struct {
-	ID          int64       `xorm:"pk autoincr"`
-	Hash        string      `xorm:"UNIQUE NOT NULL"`
-	TrackID     int64       `xorm:"INDEX"`
+	ID      int64  `xorm:"pk autoincr"`
+	Hash    string `xorm:"UNIQUE NOT NULL"`
+	TrackID int64  `xorm:"INDEX"`
 
-	Duration	float64
-	Format		string		// used only for wave, samplewidth * 8
-	Rate		int		// samplerate, all
-	Channels	int		// all
-	Codec		string		// WAV: PCM, Mp3: encoder infos
-	Waveform	string		`xorm:"TEXT"`
-	WaveformErr	string
-	Bitrate		int		// 320, 128, etc.
-	BitrateMode	string		// VBR, CBR, ... ?
-	Type		string		// MP3, OGG, FLAC, ...
-	TypeHuman	string		// Mpeg 3, Ogg Vorbis, ...
+	Duration    float64
+	Format      string // used only for wave, samplewidth * 8
+	Rate        int    // samplerate, all
+	Channels    int    // all
+	Codec       string // WAV: PCM, Mp3: encoder infos
+	Waveform    string `xorm:"TEXT"`
+	WaveformErr string
+	Bitrate     int    // 320, 128, etc.
+	BitrateMode string // VBR, CBR, ... ?
+	Type        string // MP3, OGG, FLAC, ...
+	TypeHuman   string // Mpeg 3, Ogg Vorbis, ...
 
 	// Theses two uses the ProcessingX const states
-	ProcessedBasic		int	`xorm:"DEFAULT 0"`
-	ProcessedWaveform	int	`xorm:"DEFAULT 0"`
+	ProcessedBasic    int `xorm:"DEFAULT 0"`
+	ProcessedWaveform int `xorm:"DEFAULT 0"`
 
-	ProcessingStart		time.Time	`xorm:"-"`
-	ProcessingStartUnix	int64
-	ProcessingStop		time.Time	`xorm:"-"`
-	ProcessingStopUnix	int64
+	ProcessingStart     time.Time `xorm:"-"`
+	ProcessingStartUnix int64
+	ProcessingStop      time.Time `xorm:"-"`
+	ProcessingStopUnix  int64
 
-	Created     time.Time   `xorm:"-"`
+	Created     time.Time `xorm:"-"`
 	CreatedUnix int64
-	Updated     time.Time   `xorm:"-"`
+	Updated     time.Time `xorm:"-"`
 	UpdatedUnix int64
 
 	// Relations
@@ -44,11 +44,11 @@ type TrackInfo struct {
 
 // Waveform is the JSON reflected structure
 type Waveform struct {
-	SampleRate			int64
-	SamplePerPixels		int64
-	Bits				int64
-	Length				int64
-	Data				[]int64
+	SampleRate      int64
+	SamplePerPixels int64
+	Bits            int64
+	Length          int64
+	Data            []int64
 }
 
 // BeforeInsert set times

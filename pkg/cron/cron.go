@@ -1,10 +1,10 @@
 package cron
 
 import (
+	"dev.sigpipe.me/dashie/reel2bits/workers"
 	"github.com/gogits/cron"
 	log "gopkg.in/clog.v1"
 	"time"
-	"dev.sigpipe.me/dashie/reel2bits/workers"
 )
 
 var c = cron.New()

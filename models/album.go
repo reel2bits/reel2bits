@@ -1,29 +1,29 @@
 package models
 
 import (
-	"time"
+	"dev.sigpipe.me/dashie/reel2bits/models/errors"
+	"fmt"
 	"github.com/go-xorm/xorm"
 	"github.com/gosimple/slug"
-	"fmt"
 	log "gopkg.in/clog.v1"
-	"dev.sigpipe.me/dashie/reel2bits/models/errors"
+	"time"
 )
 
 // Album database structure
 type Album struct {
-	ID          int64       `xorm:"pk autoincr"`
-	UserID		 int64
+	ID     int64 `xorm:"pk autoincr"`
+	UserID int64
 
-	Name		string
-	Description string      `xorm:"TEXT"`
-	Slug		string
+	Name        string
+	Description string `xorm:"TEXT"`
+	Slug        string
 
 	// Permissions
-	IsPrivate	bool        `xorm:"DEFAULT 0"`
+	IsPrivate bool `xorm:"DEFAULT 0"`
 
-	Created     time.Time   `xorm:"-"`
+	Created     time.Time `xorm:"-"`
 	CreatedUnix int64
-	Updated     time.Time   `xorm:"-"`
+	Updated     time.Time `xorm:"-"`
 	UpdatedUnix int64
 
 	// Relations
@@ -86,8 +86,12 @@ func isAlbumNameAlreadyExist(name string, userID int64) (bool, error) {
 // CreateAlbum or error
 func CreateAlbum(a *Album) (err error) {
 	albumNameAlreadyExist, err := isAlbumNameAlreadyExist(a.Name, a.UserID)
-	if err != nil { return err }
-	if albumNameAlreadyExist { return ErrAlbumNameAlreadyExist{} }
+	if err != nil {
+		return err
+	}
+	if albumNameAlreadyExist {
+		return ErrAlbumNameAlreadyExist{}
+	}
 
 	sess := x.NewSession()
 	defer sessionRelease(sess)
@@ -242,7 +246,7 @@ func GetMapNameIDOfAlbums(userID int64) (sets []Album, err error) {
 // GetCountOfAlbumTracks to be used when album.CountTracksblahblah() cannot be used
 // To be deprecated at some point
 func GetCountOfAlbumTracks(albumID int64) (count int64, err error) {
-       track := new(Track)
-       count, err = x.Where("album_id=?", albumID).Count(track)
-       return
+	track := new(Track)
+	count, err = x.Where("album_id=?", albumID).Count(track)
+	return
 }

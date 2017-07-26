@@ -1,10 +1,10 @@
 package workers
 
 import (
-	"github.com/RichardKnop/machinery/v1/config"
 	"dev.sigpipe.me/dashie/reel2bits/setting"
 	"fmt"
 	"github.com/RichardKnop/machinery/v1"
+	"github.com/RichardKnop/machinery/v1/config"
 	log "gopkg.in/clog.v1"
 )
 

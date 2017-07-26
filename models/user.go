@@ -9,12 +9,12 @@ import (
 	"encoding/hex"
 	"fmt"
 	"github.com/Unknwon/com"
+	"github.com/gosimple/slug"
 	"golang.org/x/crypto/pbkdf2"
 	log "gopkg.in/clog.v1"
 	"strings"
 	"time"
 	"unicode/utf8"
-	"github.com/gosimple/slug"
 )
 
 // User database structure
@@ -24,7 +24,7 @@ type User struct {
 	LowerName string `xorm:"UNIQUE NOT NULL"`
 	Email     string `xorm:"NOT NULL"`
 
-	Slug	  string `xorm:"UNIQUE"`
+	Slug string `xorm:"UNIQUE"`
 
 	Password string `xorm:"NOT NULL"`
 	Rands    string `xorm:"VARCHAR(10)"`
@@ -146,7 +146,7 @@ func IsUserExist(uid int64, name string) (bool, error) {
 }
 
 var (
-	reservedUsernames    = []string{"anon", "anonymous", "private", "assets", "css", "img", "js", "less",
+	reservedUsernames = []string{"anon", "anonymous", "private", "assets", "css", "img", "js", "less",
 		"plugins", "debug", "raw", "install", "api", "avatar", "user", "org", "help", "stars", "issues",
 		"pulls", "commits", "repo", "template", "admin", "new", "track", "album", "set", "upload",
 		".", ".."}

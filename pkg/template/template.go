@@ -6,15 +6,15 @@ import (
 	"dev.sigpipe.me/dashie/reel2bits/pkg/tool"
 	"dev.sigpipe.me/dashie/reel2bits/setting"
 	"fmt"
+	"github.com/dustin/go-humanize"
 	"github.com/microcosm-cc/bluemonday"
+	"gopkg.in/macaron.v1"
 	"html/template"
 	"mime"
 	"path/filepath"
 	"runtime"
 	"strings"
 	"time"
-	"github.com/dustin/go-humanize"
-	"gopkg.in/macaron.v1"
 )
 
 // NewFuncMap because you don't want an older
@@ -49,7 +49,7 @@ func NewFuncMap(m *macaron.Macaron) []template.FuncMap {
 		"Sanitize": bluemonday.UGCPolicy().Sanitize,
 		"Str2html": Str2html,
 		"Unescape": func(str string) template.JS {
-			str = strings.Replace(str, "\n","",-1)
+			str = strings.Replace(str, "\n", "", -1)
 			return template.JS(str)
 		},
 		"Add": func(a, b int) int {
@@ -88,12 +88,12 @@ func NewFuncMap(m *macaron.Macaron) []template.FuncMap {
 			return strings.EqualFold(mime, "application/pdf")
 		},
 		"DurationToHuman": DurationToHuman,
-		"ElapsedToHuman": ElapsedToHuman,
+		"ElapsedToHuman":  ElapsedToHuman,
 		"URLFor": func(name string, pairs ...string) string {
 			return fmt.Sprintf("%s%s", strings.TrimSuffix(setting.AppURL, "/"), m.URLFor(name, pairs...))
 		},
 		"URLForRelative": m.URLFor,
-		"NeedsImpressum": func() bool { return setting.NeedsImpressum},
+		"NeedsImpressum": func() bool { return setting.NeedsImpressum },
 	}}
 }
 

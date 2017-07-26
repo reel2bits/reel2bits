@@ -2,14 +2,14 @@ package user
 
 import (
 	"dev.sigpipe.me/dashie/reel2bits/context"
-	"dev.sigpipe.me/dashie/reel2bits/setting"
-	"dev.sigpipe.me/dashie/reel2bits/pkg/form"
 	"dev.sigpipe.me/dashie/reel2bits/models"
-	"dev.sigpipe.me/dashie/reel2bits/pkg/mailer"
-	log "gopkg.in/clog.v1"
 	"dev.sigpipe.me/dashie/reel2bits/models/errors"
-	"net/url"
+	"dev.sigpipe.me/dashie/reel2bits/pkg/form"
+	"dev.sigpipe.me/dashie/reel2bits/pkg/mailer"
+	"dev.sigpipe.me/dashie/reel2bits/setting"
 	"fmt"
+	log "gopkg.in/clog.v1"
+	"net/url"
 )
 
 const (
@@ -153,7 +153,7 @@ func afterLogin(ctx *context.Context, u *models.User, remember bool) {
 // Register [GET]
 func Register(ctx *context.Context) {
 	ctx.Title("register.title")
-	if ! setting.CanRegister {
+	if !setting.CanRegister {
 		ctx.Flash.Error(ctx.Tr("register.not_allowed"))
 		ctx.SubURLRedirect(ctx.URLFor("home"))
 		return
@@ -166,7 +166,7 @@ func Register(ctx *context.Context) {
 func RegisterPost(ctx *context.Context, f form.Register) {
 	ctx.Title("register.title")
 
-	if ! setting.CanRegister {
+	if !setting.CanRegister {
 		ctx.Flash.Error(ctx.Tr("register.not_allowed"))
 		ctx.SubURLRedirect(ctx.URLFor("home"))
 		return
@@ -185,10 +185,10 @@ func RegisterPost(ctx *context.Context, f form.Register) {
 	}
 
 	u := &models.User{
-		UserName:	f.UserName,
-		Email:		f.Email,
-		Password:	f.Password,
-		IsActive:	true, // FIXME: implement user activation by email
+		UserName: f.UserName,
+		Email:    f.Email,
+		Password: f.Password,
+		IsActive: true, // FIXME: implement user activation by email
 	}
 	if err := models.CreateUser(u); err != nil {
 		switch {
@@ -233,7 +233,6 @@ func Logout(ctx *context.Context) {
 	ctx.SetCookie(setting.CSRFCookieName, "", -1, setting.AppSubURL)
 	ctx.SubURLRedirect(ctx.URLFor("home"))
 }
-
 
 // ResetPasswd [GET]
 func ResetPasswd(ctx *context.Context) {

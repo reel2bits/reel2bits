@@ -1,18 +1,18 @@
 package workers
 
 import (
-	log "gopkg.in/clog.v1"
 	"dev.sigpipe.me/dashie/reel2bits/models"
 	"dev.sigpipe.me/dashie/reel2bits/setting"
-	"path/filepath"
-	"github.com/wtolson/go-taglib"
-	"time"
-	"github.com/krig/go-sox"
 	"fmt"
-	"strings"
+	"github.com/krig/go-sox"
+	"github.com/wtolson/go-taglib"
+	log "gopkg.in/clog.v1"
+	"io/ioutil"
 	"os"
 	"os/exec"
-	"io/ioutil"
+	"path/filepath"
+	"strings"
+	"time"
 )
 
 const (
@@ -23,7 +23,7 @@ const (
 
 func check(cond bool, test string) {
 	if !cond {
-		log.Error(2, "check(): " + test + " failed")
+		log.Error(2, "check(): "+test+" failed")
 	}
 }
 
@@ -54,14 +54,14 @@ func fetchMetadatasAndCommit(idx int64) (int64, error) {
 
 	ti := models.TrackInfo{
 		TrackID: track.ID,
-		Hash: track.Hash,
+		Hash:    track.Hash,
 
 		Duration: md.Length().Seconds(),
-		Rate: md.Samplerate(),
+		Rate:     md.Samplerate(),
 		Channels: md.Channels(),
-		Bitrate: md.Bitrate(),
+		Bitrate:  md.Bitrate(),
 
-		ProcessedBasic: models.ProcessingFinished,
+		ProcessedBasic:      models.ProcessingFinished,
 		ProcessingStartUnix: timeStart,
 	}
 
@@ -82,12 +82,12 @@ func fetchMetadatasAndCommit(idx int64) (int64, error) {
 	}
 
 	/*
-	FIXME or TODO if used ?
-	Codec isn't managed, usefull only for MP3 with encoder infos
-	Bitrate from taglib seems to be an average of the file, not the real one
-	BitrateMode isn't managed from taglib, could not determine CBR/VBR
-	Format from WAV not managed by taglib too
-	 */
+		FIXME or TODO if used ?
+		Codec isn't managed, usefull only for MP3 with encoder infos
+		Bitrate from taglib seems to be an average of the file, not the real one
+		BitrateMode isn't managed from taglib, could not determine CBR/VBR
+		Format from WAV not managed by taglib too
+	*/
 
 	err = models.CreateTrackInfo(&ti)
 	if err != nil {
@@ -123,8 +123,8 @@ func generateWaveforms(trackID int64) (waveform string, err error) {
 		fName = fmt.Sprintf("%s.mp3", strings.TrimSuffix(fName, filepath.Ext(fName)))
 	}
 
-	fJSON := filepath.Join(storDir, track.Filename + ".json")
-	fPNG := filepath.Join(storDir, track.Filename + ".png")
+	fJSON := filepath.Join(storDir, track.Filename+".json")
+	fPNG := filepath.Join(storDir, track.Filename+".png")
 
 	// Json
 	out, err := exec.Command(setting.AudiowaveformBin, "-i", fName, "--pixels-per-second", "10", "-b", "8", "-o", fJSON).Output()
@@ -210,7 +210,7 @@ func generateTranscode(trackID int64) (err error) {
 	// TODO 256CBR fixed for output mp3
 
 	dfName := fmt.Sprintf("%s.mp3", strings.TrimSuffix(fName, filepath.Ext(fName)))
-	output = sox.OpenWrite(dfName, input.Signal(), input.Encoding(),nil)
+	output = sox.OpenWrite(dfName, input.Signal(), input.Encoding(), nil)
 	if output == nil {
 		log.Error(2, "Cannot open file %s for write", dfName)
 		return fmt.Errorf("Cannot open file %s for write", dfName)
@@ -218,9 +218,7 @@ func generateTranscode(trackID int64) (err error) {
 	defer output.Release()
 
 	// now cycle
-	for numberRead := input.Read(samples, maxSamples);
-		numberRead > 0;
-	numberRead = input.Read(samples, maxSamples) {
+	for numberRead := input.Read(samples, maxSamples); numberRead > 0; numberRead = input.Read(samples, maxSamples) {
 		check(output.Write(samples, uint(numberRead)) == numberRead, "write")
 	}
 	input.Release()

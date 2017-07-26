@@ -1,12 +1,12 @@
 package cmd
 
 import (
-	"dev.sigpipe.me/dashie/reel2bits/setting"
-	"dev.sigpipe.me/dashie/reel2bits/workers"
-	log "gopkg.in/clog.v1"
-	"github.com/urfave/cli"
 	"dev.sigpipe.me/dashie/reel2bits/models"
 	"dev.sigpipe.me/dashie/reel2bits/pkg/mailer"
+	"dev.sigpipe.me/dashie/reel2bits/setting"
+	"dev.sigpipe.me/dashie/reel2bits/workers"
+	"github.com/urfave/cli"
+	log "gopkg.in/clog.v1"
 )
 
 // Worker cli target

@@ -1,15 +1,16 @@
 package workers
 
 import (
-	"dev.sigpipe.me/dashie/reel2bits/pkg/sync"
-	log "gopkg.in/clog.v1"
 	"dev.sigpipe.me/dashie/reel2bits/models"
-	"github.com/RichardKnop/machinery/v1/tasks"
-	"strings"
+	"dev.sigpipe.me/dashie/reel2bits/pkg/sync"
 	"fmt"
+	"github.com/RichardKnop/machinery/v1/tasks"
+	log "gopkg.in/clog.v1"
+	"strings"
 )
 
 var taskStatusTable = sync.NewStatusTable()
+
 const (
 	transcodingWatchdog = "transcoding_watchdog"
 )
@@ -51,7 +52,7 @@ func TranscodingWatchdog() {
 		for _, t := range tracks {
 			sig := &tasks.Signature{
 				Name: "TranscodeAndFetchInfos",
-				Args: []tasks.Arg{{Type: "int64", Value: t.ID, }, },
+				Args: []tasks.Arg{{Type: "int64", Value: t.ID}},
 			}
 
 			_, err = server.SendTask(sig)
@@ -91,7 +92,7 @@ func TranscodingWatchdog() {
 			// Add it
 			sig := &tasks.Signature{
 				Name: "TranscodeAndFetchInfos",
-				Args: []tasks.Arg{{Type: "int64", Value: t.ID, }, },
+				Args: []tasks.Arg{{Type: "int64", Value: t.ID}},
 			}
 
 			_, err = server.SendTask(sig)

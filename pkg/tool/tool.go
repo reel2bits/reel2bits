@@ -1,17 +1,17 @@
 package tool
 
 import (
-	"encoding/hex"
-	"crypto/sha1"
 	"crypto/md5"
-	"math/big"
 	"crypto/rand"
-	"strings"
+	"crypto/sha1"
+	"dev.sigpipe.me/dashie/reel2bits/setting"
 	"encoding/base64"
-	"time"
+	"encoding/hex"
 	"fmt"
 	"github.com/Unknwon/com"
-	"dev.sigpipe.me/dashie/reel2bits/setting"
+	"math/big"
+	"strings"
+	"time"
 )
 
 const alphanum = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"

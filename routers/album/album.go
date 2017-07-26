@@ -2,19 +2,19 @@ package album
 
 import (
 	"dev.sigpipe.me/dashie/reel2bits/context"
-	"dev.sigpipe.me/dashie/reel2bits/pkg/form"
 	"dev.sigpipe.me/dashie/reel2bits/models"
-	log "gopkg.in/clog.v1"
-	"fmt"
+	"dev.sigpipe.me/dashie/reel2bits/pkg/form"
 	"dev.sigpipe.me/dashie/reel2bits/setting"
+	"fmt"
 	"github.com/Unknwon/paginater"
+	log "gopkg.in/clog.v1"
 )
 
 const (
-	tmplNew   = "album/new"
-	tmplShow     = "album/show"
+	tmplNew       = "album/new"
+	tmplShow      = "album/show"
 	tmplAlbumList = "album/list"
-	tmplEdit = "album/edit"
+	tmplEdit      = "album/edit"
 )
 
 // New [GET]
@@ -36,10 +36,10 @@ func NewPost(ctx *context.Context, f form.Album) {
 	}
 
 	a := &models.Album{
-		UserID: ctx.User.ID,
-		Name: f.Name,
+		UserID:      ctx.User.ID,
+		Name:        f.Name,
 		Description: f.Description,
-		IsPrivate: f.IsPrivate,
+		IsPrivate:   f.IsPrivate,
 	}
 
 	if err := models.CreateAlbum(a); err != nil {
@@ -85,10 +85,10 @@ func ListFromUser(ctx *context.Context) {
 	ctx.Data["PageNumber"] = page
 
 	opts := &models.AlbumOptions{
-		PageSize: 10,	// TODO: put this in config
-		Page: page,
-		GetAll: false,
-		UserID: user.ID,
+		PageSize:    10, // TODO: put this in config
+		Page:        page,
+		GetAll:      false,
+		UserID:      user.ID,
 		WithPrivate: false,
 	}
 
@@ -111,7 +111,6 @@ func ListFromUser(ctx *context.Context) {
 	ctx.Data["Total"] = albumsCount
 	ctx.Data["Page"] = paginater.New(int(albumsCount), opts.PageSize, page, 5)
 
-
 	ctx.HTML(200, tmplAlbumList)
 }
 
@@ -133,7 +132,7 @@ func Show(ctx *context.Context) {
 
 	album, err := models.GetAlbumBySlugAndUserID(user.ID, ctx.Params(":albumSlug"))
 	if err != nil {
-		log.Error(2, "Cannot get Album from slug %s and user %d: %s",ctx.Params(":albumSlug"), user.ID, err)
+		log.Error(2, "Cannot get Album from slug %s and user %d: %s", ctx.Params(":albumSlug"), user.ID, err)
 		ctx.Flash.Error("Unknown album.")
 		ctx.SubURLRedirect(ctx.URLFor("home"), 404)
 		return
@@ -257,7 +256,7 @@ func EditPost(ctx *context.Context, f form.Album) {
 func DeleteAlbum(ctx *context.Context, f form.AlbumDelete) {
 	if ctx.HasError() {
 		ctx.JSONSuccess(map[string]interface{}{
-			"error": ctx.Data["ErrorMsg"],
+			"error":    ctx.Data["ErrorMsg"],
 			"redirect": false,
 		})
 		return
@@ -265,7 +264,7 @@ func DeleteAlbum(ctx *context.Context, f form.AlbumDelete) {
 
 	if ctx.Params(":userSlug") == "" || ctx.Params(":albumSlug") == "" {
 		ctx.JSONSuccess(map[string]interface{}{
-			"error": "what about no ?",
+			"error":    "what about no ?",
 			"redirect": false,
 		})
 		return
@@ -281,14 +280,14 @@ func DeleteAlbum(ctx *context.Context, f form.AlbumDelete) {
 
 	album, err := models.GetAlbumBySlugAndUserID(user.ID, ctx.Params(":albumSlug"))
 	if err != nil {
-		log.Error(2, "Cannot get Album from slug %s and user %d: %s",ctx.Params(":albumSlug"), user.ID, err)
+		log.Error(2, "Cannot get Album from slug %s and user %d: %s", ctx.Params(":albumSlug"), user.ID, err)
 		ctx.ServerError("Unknown album.", err)
 		return
 	}
 
 	if ctx.Data["LoggedUserID"] != album.UserID {
 		ctx.JSONSuccess(map[string]interface{}{
-			"error": ctx.Tr("user.unauthorized"),
+			"error":    ctx.Tr("user.unauthorized"),
 			"redirect": false,
 		})
 	}
@@ -298,7 +297,7 @@ func DeleteAlbum(ctx *context.Context, f form.AlbumDelete) {
 		ctx.Flash.Error(ctx.Tr("album_delete.error_deleting"))
 		log.Warn("DeleteAlbum.Delete: %v", err)
 		ctx.JSONSuccess(map[string]interface{}{
-			"error": ctx.Tr("album_delete.error_deleting"),
+			"error":    ctx.Tr("album_delete.error_deleting"),
 			"redirect": false,
 		})
 		return
@@ -306,7 +305,7 @@ func DeleteAlbum(ctx *context.Context, f form.AlbumDelete) {
 
 	ctx.Flash.Success(ctx.Tr("album.delete_success"))
 	ctx.JSONSuccess(map[string]interface{}{
-		"error": nil,
+		"error":    nil,
 		"redirect": ctx.SubURLFor("album_list", ":userSlug", user.Slug),
 	})
 	return

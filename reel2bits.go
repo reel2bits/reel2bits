@@ -1,12 +1,12 @@
 package main
 
 import (
-	"os"
-	"github.com/urfave/cli"
 	"dev.sigpipe.me/dashie/reel2bits/cmd"
 	"dev.sigpipe.me/dashie/reel2bits/setting"
-	"github.com/getsentry/raven-go"
 	"fmt"
+	"github.com/getsentry/raven-go"
+	"github.com/urfave/cli"
+	"os"
 )
 
 // AppVersion is... guess what ?

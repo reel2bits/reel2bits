@@ -6,8 +6,8 @@ package tool
 
 import (
 	"fmt"
-	"math"
 	"github.com/rakyll/magicmime"
+	"math"
 )
 
 // Sizes definitions

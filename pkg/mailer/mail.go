@@ -29,9 +29,9 @@ var mailRender MailRender
 // InitMailRender templating system
 func InitMailRender(dir string, funcMap []template.FuncMap) {
 	opt := &macaron.RenderOptions{
-		Directory:         dir,
-		Funcs:             funcMap,
-		Extensions:        []string{".tmpl", ".html"},
+		Directory:  dir,
+		Funcs:      funcMap,
+		Extensions: []string{".tmpl", ".html"},
 	}
 	ts := macaron.NewTemplateSet()
 	ts.Set(macaron.DEFAULT_TPL_SET_NAME, opt)

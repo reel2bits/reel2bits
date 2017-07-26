@@ -9,8 +9,9 @@ import (
 	"dev.sigpipe.me/dashie/reel2bits/pkg/template"
 	"dev.sigpipe.me/dashie/reel2bits/routers"
 	"dev.sigpipe.me/dashie/reel2bits/routers/admin"
-	"dev.sigpipe.me/dashie/reel2bits/routers/user"
+	"dev.sigpipe.me/dashie/reel2bits/routers/album"
 	"dev.sigpipe.me/dashie/reel2bits/routers/track"
+	"dev.sigpipe.me/dashie/reel2bits/routers/user"
 	"dev.sigpipe.me/dashie/reel2bits/setting"
 	"fmt"
 	"github.com/go-macaron/binding"
@@ -28,7 +29,6 @@ import (
 	"os"
 	"path"
 	"strings"
-	"dev.sigpipe.me/dashie/reel2bits/routers/album"
 )
 
 // Web cli target
@@ -97,7 +97,7 @@ func newMacaron() *macaron.Macaron {
 
 	m.Use(toolbox.Toolboxer(m, toolbox.Options{
 		HealthCheckFuncs: []*toolbox.HealthCheckFuncDesc{
-			&toolbox.HealthCheckFuncDesc{
+			{
 				Desc: "Database connection",
 				Func: models.Ping,
 			},
@@ -242,7 +242,7 @@ func runWeb(ctx *cli.Context) error {
 		os.Remove(listenAddr)
 
 		var listener *net.UnixListener
-		listener, err = net.ListenUnix("unix", &net.UnixAddr{listenAddr, "unix"})
+		listener, err = net.ListenUnix("unix", &net.UnixAddr{Name: listenAddr, Net: "unix"})
 		if err != nil {
 			break // Handle error after switch
 		}

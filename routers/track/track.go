@@ -1,30 +1,29 @@
 package track
 
-
 import (
-	"dev.sigpipe.me/dashie/reel2bits/context"
-	"dev.sigpipe.me/dashie/reel2bits/pkg/form"
-	"dev.sigpipe.me/dashie/reel2bits/models"
-	log "gopkg.in/clog.v1"
-	"strings"
-	"path/filepath"
-	"fmt"
-	"dev.sigpipe.me/dashie/reel2bits/setting"
-	"os"
-	"github.com/RichardKnop/machinery/v1/tasks"
-	"dev.sigpipe.me/dashie/reel2bits/workers"
 	"bytes"
-	"io/ioutil"
-	"github.com/Unknwon/paginater"
+	"dev.sigpipe.me/dashie/reel2bits/context"
+	"dev.sigpipe.me/dashie/reel2bits/models"
+	"dev.sigpipe.me/dashie/reel2bits/pkg/form"
+	"dev.sigpipe.me/dashie/reel2bits/setting"
+	"dev.sigpipe.me/dashie/reel2bits/workers"
 	"encoding/json"
+	"fmt"
+	"github.com/RichardKnop/machinery/v1/tasks"
+	"github.com/Unknwon/paginater"
+	log "gopkg.in/clog.v1"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+	"strings"
 )
 
 const (
-	tmplUpload   = "track/upload"
-	tmplShow     = "track/show"
-	tmplShowWait = "track/show_wait"
+	tmplUpload     = "track/upload"
+	tmplShow       = "track/show"
+	tmplShowWait   = "track/show_wait"
 	tmplTracksList = "tracks_list"
-	tmplEdit = "track/edit"
+	tmplEdit       = "track/edit"
 )
 
 // Upload [GET]
@@ -52,14 +51,14 @@ func UploadPost(ctx *context.Context, f form.TrackUpload) {
 	fileHash := models.GenerateHash(f.Title, ctx.User.ID)
 
 	t := &models.Track{
-		UserID: ctx.User.ID,
-		Title: f.Title,
-		Description: f.Description,
-		IsPrivate: f.IsPrivate,
-		ShowDlLink: f.ShowDlLink,
-		Filename: fmt.Sprintf("%s%s", fileHash, filepath.Ext(f.File.Filename)), // .Ext returns the dot
+		UserID:       ctx.User.ID,
+		Title:        f.Title,
+		Description:  f.Description,
+		IsPrivate:    f.IsPrivate,
+		ShowDlLink:   f.ShowDlLink,
+		Filename:     fmt.Sprintf("%s%s", fileHash, filepath.Ext(f.File.Filename)), // .Ext returns the dot
 		FilenameOrig: strings.TrimSuffix(f.File.Filename, filepath.Ext(f.File.Filename)),
-		Hash: fileHash,
+		Hash:         fileHash,
 	}
 
 	if f.Album > 0 {
@@ -109,7 +108,7 @@ func UploadPost(ctx *context.Context, f form.TrackUpload) {
 
 	sig := &tasks.Signature{
 		Name: "TranscodeAndFetchInfos",
-		Args: []tasks.Arg{{Type: "int64", Value: t.ID,},},
+		Args: []tasks.Arg{{Type: "int64", Value: t.ID}},
 	}
 	server, err := workers.CreateServer()
 	if err != nil {
@@ -163,7 +162,7 @@ func Show(ctx *context.Context) {
 
 	track, err := models.GetTrackWithInfoBySlugAndUserID(user.ID, ctx.Params(":trackSlug"))
 	if err != nil {
-		log.Error(2, "Cannot get Track With Info from slug %s and user %d: %s",ctx.Params(":trackSlug"), user.ID, err)
+		log.Error(2, "Cannot get Track With Info from slug %s and user %d: %s", ctx.Params(":trackSlug"), user.ID, err)
 		ctx.Flash.Error("Unknown track.")
 		ctx.SubURLRedirect(ctx.URLFor("home"), 404)
 		return
@@ -174,7 +173,7 @@ func Show(ctx *context.Context) {
 	if len(track) < 1 {
 		track, err := models.GetTrackBySlugAndUserID(user.ID, ctx.Params(":trackSlug"))
 		if err != nil {
-			log.Error(2, "Cannot get Track from slug %s and user %d: %s",ctx.Params(":trackSlug"), user.ID, err)
+			log.Error(2, "Cannot get Track from slug %s and user %d: %s", ctx.Params(":trackSlug"), user.ID, err)
 			ctx.Flash.Error("Unknown track.")
 			ctx.SubURLRedirect(ctx.URLFor("home"), 404)
 			return
@@ -233,7 +232,7 @@ func DevGetMediaTrack(ctx *context.Context) {
 
 	track, err := models.GetTrackBySlugAndUserID(user.ID, ctx.Params(":trackSlug"))
 	if err != nil {
-		log.Error(2, "Cannot get Track from slug %s and user %d: %s",ctx.Params(":trackSlug"), user.ID, err)
+		log.Error(2, "Cannot get Track from slug %s and user %d: %s", ctx.Params(":trackSlug"), user.ID, err)
 		ctx.ServerError("Unknown track.", err)
 		return
 	}
@@ -274,7 +273,7 @@ func DevGetMediaPngWf(ctx *context.Context) {
 
 	track, err := models.GetTrackBySlugAndUserID(user.ID, ctx.Params(":trackSlug"))
 	if err != nil {
-		log.Error(2, "Cannot get Track from slug %s and user %d: %s",ctx.Params(":trackSlug"), user.ID, err)
+		log.Error(2, "Cannot get Track from slug %s and user %d: %s", ctx.Params(":trackSlug"), user.ID, err)
 		ctx.ServerError("Unknown track.", err)
 		return
 	}
@@ -309,7 +308,7 @@ func DevGetMediaDownload(ctx *context.Context) {
 
 	track, err := models.GetTrackBySlugAndUserID(user.ID, ctx.Params(":trackSlug"))
 	if err != nil {
-		log.Error(2, "Cannot get Track from slug %s and user %d: %s",ctx.Params(":trackSlug"), user.ID, err)
+		log.Error(2, "Cannot get Track from slug %s and user %d: %s", ctx.Params(":trackSlug"), user.ID, err)
 		ctx.ServerError("Unknown track.", err)
 		return
 	}
@@ -355,12 +354,12 @@ func ListUserTracks(ctx *context.Context) {
 	ctx.Data["PageNumber"] = page
 
 	opts := &models.TrackOptions{
-		PageSize: 10,	// TODO: put this in config
-		Page: page,
-		GetAll: false,
-		UserID: user.ID,
+		PageSize:    10, // TODO: put this in config
+		Page:        page,
+		GetAll:      false,
+		UserID:      user.ID,
 		WithPrivate: false,
-		OnlyReady: true,
+		OnlyReady:   true,
 	}
 
 	if ctx.Data["LoggedUserID"] == user.ID {
@@ -390,7 +389,7 @@ func ListUserTracks(ctx *context.Context) {
 func DeleteTrack(ctx *context.Context, f form.TrackDelete) {
 	if ctx.HasError() {
 		ctx.JSONSuccess(map[string]interface{}{
-			"error": ctx.Data["ErrorMsg"],
+			"error":    ctx.Data["ErrorMsg"],
 			"redirect": false,
 		})
 		return
@@ -398,7 +397,7 @@ func DeleteTrack(ctx *context.Context, f form.TrackDelete) {
 
 	if ctx.Params(":userSlug") == "" || ctx.Params(":trackSlug") == "" {
 		ctx.JSONSuccess(map[string]interface{}{
-			"error": "what about no ?",
+			"error":    "what about no ?",
 			"redirect": false,
 		})
 		return
@@ -414,14 +413,14 @@ func DeleteTrack(ctx *context.Context, f form.TrackDelete) {
 
 	track, err := models.GetTrackBySlugAndUserID(user.ID, ctx.Params(":trackSlug"))
 	if err != nil {
-		log.Error(2, "Cannot get Track from slug %s and user %d: %s",ctx.Params(":trackSlug"), user.ID, err)
+		log.Error(2, "Cannot get Track from slug %s and user %d: %s", ctx.Params(":trackSlug"), user.ID, err)
 		ctx.ServerError("Unknown track.", err)
 		return
 	}
 
 	if ctx.Data["LoggedUserID"] != track.UserID {
 		ctx.JSONSuccess(map[string]interface{}{
-			"error": ctx.Tr("user.unauthorized"),
+			"error":    ctx.Tr("user.unauthorized"),
 			"redirect": false,
 		})
 	}
@@ -431,7 +430,7 @@ func DeleteTrack(ctx *context.Context, f form.TrackDelete) {
 		ctx.Flash.Error(ctx.Tr("track_delete.error_deleting"))
 		log.Warn("DeleteTrack.Delete: %v", err)
 		ctx.JSONSuccess(map[string]interface{}{
-			"error": ctx.Tr("track_delete.error_deleting"),
+			"error":    ctx.Tr("track_delete.error_deleting"),
 			"redirect": false,
 		})
 		return
@@ -439,7 +438,7 @@ func DeleteTrack(ctx *context.Context, f form.TrackDelete) {
 
 	ctx.Flash.Success(ctx.Tr("track.delete_success"))
 	ctx.JSONSuccess(map[string]interface{}{
-		"error": nil,
+		"error":    nil,
 		"redirect": ctx.SubURLFor("track_list", ":userSlug", user.Slug),
 	})
 	return
@@ -461,7 +460,7 @@ func GetJSONWaveform(ctx *context.Context) {
 
 	soundInfos, err := models.GetTrackWithInfoBySlugAndUserID(user.ID, ctx.Params(":trackSlug"))
 	if err != nil {
-		log.Error(2, "Cannot get Track from slug %s and user %d: %s",ctx.Params(":trackSlug"), user.ID, err)
+		log.Error(2, "Cannot get Track from slug %s and user %d: %s", ctx.Params(":trackSlug"), user.ID, err)
 		ctx.ServerError("Unknown track.", err)
 		return
 	}
@@ -491,10 +490,10 @@ func GetJSONWaveform(ctx *context.Context) {
 			soundType = "mp3"
 		}
 		ctx.JSONSuccess(map[string]interface{}{
-			"waveform": w,
-			"track_url": ctx.URLFor("media_track_stream", ":userSlug", user.Slug, ":trackSlug", soundInfos[0].Track.Slug, ":type", soundType),
-			"wf_png": ctx.URLFor("media_track_waveform", ":userSlug", user.Slug, ":trackSlug", soundInfos[0].Track.Slug),
-			"title": soundInfos[0].Track.Title,
+			"waveform":    w,
+			"track_url":   ctx.URLFor("media_track_stream", ":userSlug", user.Slug, ":trackSlug", soundInfos[0].Track.Slug, ":type", soundType),
+			"wf_png":      ctx.URLFor("media_track_waveform", ":userSlug", user.Slug, ":trackSlug", soundInfos[0].Track.Slug),
+			"title":       soundInfos[0].Track.Title,
 			"description": soundInfos[0].Track.Description,
 		})
 		return
@@ -534,7 +533,7 @@ func Edit(ctx *context.Context) {
 
 	track, err := models.GetTrackWithInfoBySlugAndUserID(user.ID, ctx.Params(":trackSlug"))
 	if err != nil {
-		log.Error(2, "Cannot get Track With Info from slug %s and user %d: %s",ctx.Params(":trackSlug"), user.ID, err)
+		log.Error(2, "Cannot get Track With Info from slug %s and user %d: %s", ctx.Params(":trackSlug"), user.ID, err)
 		ctx.Flash.Error("Unknown track.")
 		ctx.SubURLRedirect(ctx.URLFor("home"), 404)
 		return
@@ -547,7 +546,7 @@ func Edit(ctx *context.Context) {
 	if len(track) < 1 {
 		track, err := models.GetTrackBySlugAndUserID(user.ID, ctx.Params(":trackSlug"))
 		if err != nil {
-			log.Error(2, "Cannot get Track from slug %s and user %d: %s",ctx.Params(":trackSlug"), user.ID, err)
+			log.Error(2, "Cannot get Track from slug %s and user %d: %s", ctx.Params(":trackSlug"), user.ID, err)
 			ctx.Flash.Error("Unknown track.")
 			ctx.SubURLRedirect(ctx.URLFor("home"), 404)
 			return
@@ -595,7 +594,7 @@ func EditPost(ctx *context.Context, f form.TrackEdit) {
 
 	track, err := models.GetTrackBySlugAndUserID(user.ID, ctx.Params(":trackSlug"))
 	if err != nil {
-		log.Error(2, "Cannot get Track from slug %s and user %d: %s",ctx.Params(":trackSlug"), user.ID, err)
+		log.Error(2, "Cannot get Track from slug %s and user %d: %s", ctx.Params(":trackSlug"), user.ID, err)
 		ctx.Flash.Error("Unknown track.")
 		ctx.SubURLRedirect(ctx.URLFor("home"), 404)
 		return

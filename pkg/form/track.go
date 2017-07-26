@@ -1,19 +1,19 @@
 package form
 
 import (
-	"gopkg.in/macaron.v1"
 	"github.com/go-macaron/binding"
+	"gopkg.in/macaron.v1"
 	"mime/multipart"
 )
 
 // TrackUpload fields
 type TrackUpload struct {
-	Title	string	`form:"title" binding:"Required;MaxSize(255)"`
-	Description	string	`form:"description"`
-	IsPrivate	bool
-	ShowDlLink	bool
-	Album		int64
-	File		*multipart.FileHeader	`form:"file" binding:"Required;OnlyAudioFile"`
+	Title       string `form:"title" binding:"Required;MaxSize(255)"`
+	Description string `form:"description"`
+	IsPrivate   bool
+	ShowDlLink  bool
+	Album       int64
+	File        *multipart.FileHeader `form:"file" binding:"Required;OnlyAudioFile"`
 }
 
 // Validate the form
@@ -23,8 +23,8 @@ func (f *TrackUpload) Validate(ctx *macaron.Context, errs binding.Errors) bindin
 
 // TrackDelete fields
 type TrackDelete struct {
-	Track    string   `binding:"Required"`
-	User    string   `binding:"Required"`
+	Track string `binding:"Required"`
+	User  string `binding:"Required"`
 }
 
 // Validate the form
@@ -34,11 +34,11 @@ func (f *TrackDelete) Validate(ctx *macaron.Context, errs binding.Errors) bindin
 
 // TrackEdit fields
 type TrackEdit struct {
-	Title	string	`form:"title" binding:"Required;MaxSize(255)"`
-	Description	string	`form:"description"`
-	IsPrivate	bool
-	ShowDlLink	bool
-	Album		int64
+	Title       string `form:"title" binding:"Required;MaxSize(255)"`
+	Description string `form:"description"`
+	IsPrivate   bool
+	ShowDlLink  bool
+	Album       int64
 }
 
 // Validate the form

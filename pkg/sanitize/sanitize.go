@@ -6,10 +6,10 @@ package sanitize
  */
 
 import (
-	"strings"
+	"bytes"
 	"path"
 	"regexp"
-	"bytes"
+	"strings"
 )
 
 // A very limited list of transliterations to catch common european names translated to urls.

@@ -2,14 +2,14 @@ package routers
 
 import (
 	"dev.sigpipe.me/dashie/reel2bits/context"
-	"github.com/Unknwon/paginater"
 	"dev.sigpipe.me/dashie/reel2bits/models"
+	"github.com/Unknwon/paginater"
 	log "gopkg.in/clog.v1"
 )
 
 const (
 	tmplTracksList = "tracks_list"
-	tmplImpressum = "impressum"
+	tmplImpressum  = "impressum"
 )
 
 // NotFound [GET]
@@ -36,11 +36,11 @@ func Home(ctx *context.Context) {
 	ctx.Data["PageNumber"] = page
 
 	opts := &models.TrackOptions{
-		PageSize: 10,	// TODO: put this in config
-		Page: page,
-		GetAll: true,
+		PageSize:    10, // TODO: put this in config
+		Page:        page,
+		GetAll:      true,
 		WithPrivate: false,
-		OnlyReady: true,
+		OnlyReady:   true,
 	}
 
 	listOfTracks, tracksCount, err := models.GetTracks(opts)
