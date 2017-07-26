@@ -11,7 +11,7 @@ import (
 
 var taskStatusTable = sync.NewStatusTable()
 const (
-	_TRANSCODING_WATCHDOG = "transcoding_watchdog"
+	transcodingWatchdog = "transcoding_watchdog"
 )
 
 // TranscodingWatchdog take care to add un-ready tracsk to the worker queue if not ready and not found in it
@@ -19,11 +19,11 @@ const (
 // I don't think we really care to set the flag to "processing" "wait" etc. since this watchdog is mainly
 // only for the case of redis unavailable when the track is uploaded, and this sould not happens lot of times.
 func TranscodingWatchdog() {
-	if taskStatusTable.IsRunning(_TRANSCODING_WATCHDOG) {
+	if taskStatusTable.IsRunning(transcodingWatchdog) {
 		return
 	}
-	taskStatusTable.Start(_TRANSCODING_WATCHDOG)
-	defer taskStatusTable.Stop(_TRANSCODING_WATCHDOG)
+	taskStatusTable.Start(transcodingWatchdog)
+	defer taskStatusTable.Stop(transcodingWatchdog)
 
 	log.Trace("Running cron: TranscodingWatchdog")
 
@@ -33,7 +33,7 @@ func TranscodingWatchdog() {
 		log.Error(2, "Cannot initiate the worker connection, please retry again.")
 	}
 
-	queue_transcoding_infos, _ := server.GetBroker().GetPendingTasks("reel2bits_queue")
+	queueTranscodingInfos, _ := server.GetBroker().GetPendingTasks("reel2bits_queue")
 
 	// get all un-ready tracks
 	tracks, err := models.GetNotReadyTracks()
@@ -44,7 +44,7 @@ func TranscodingWatchdog() {
 		return
 	}
 
-	if len(queue_transcoding_infos) <= 0 {
+	if len(queueTranscodingInfos) <= 0 {
 		log.Info("Workers queue is empty, checking for un-ready tracks.")
 		log.Info("Found %d un-ready tracks to process.", len(tracks))
 		// Add them to the worker queue
@@ -66,7 +66,7 @@ func TranscodingWatchdog() {
 	for _, t := range tracks {
 		trackFound := false
 		// check if we find the track in the queue
-		for _, qi := range queue_transcoding_infos {
+		for _, qi := range queueTranscodingInfos {
 			arg := qi.Args[0]
 
 			var argValue int64

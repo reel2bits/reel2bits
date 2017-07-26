@@ -19,6 +19,7 @@ import (
 // Scheme of type HTTP, HTTPS, etc.
 type Scheme string
 
+// Scheme consts
 const (
 	SchemeHTTP       Scheme = "http"
 	SchemeHTTPS      Scheme = "https"

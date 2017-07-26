@@ -386,6 +386,7 @@ func ListUserTracks(ctx *context.Context) {
 	ctx.Success(tmplTracksList)
 }
 
+// DeleteTrack [POST]
 func DeleteTrack(ctx *context.Context, f form.TrackDelete) {
 	if ctx.HasError() {
 		ctx.JSONSuccess(map[string]interface{}{
@@ -444,7 +445,8 @@ func DeleteTrack(ctx *context.Context, f form.TrackDelete) {
 	return
 }
 
-func GetJsonWaveform(ctx *context.Context) {
+// GetJSONWaveform [GET]
+func GetJSONWaveform(ctx *context.Context) {
 	if ctx.Params(":userSlug") == "" || ctx.Params(":trackSlug") == "" {
 		ctx.ServerError("No.", nil)
 		return
@@ -505,6 +507,7 @@ func GetJsonWaveform(ctx *context.Context) {
 
 }
 
+// Edit [GET]
 func Edit(ctx *context.Context) {
 	if ctx.Params(":userSlug") == "" || ctx.Params(":trackSlug") == "" {
 		ctx.Flash.Error("No.")
@@ -570,6 +573,7 @@ func Edit(ctx *context.Context) {
 	}
 }
 
+// EditPost [POST]
 func EditPost(ctx *context.Context, f form.TrackEdit) {
 	if !ctx.IsLogged {
 		ctx.SubURLRedirect(ctx.URLFor("home"), 403)

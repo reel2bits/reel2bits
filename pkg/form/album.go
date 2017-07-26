@@ -17,11 +17,13 @@ func (f *Album) Validate(ctx *macaron.Context, errs binding.Errors) binding.Erro
 	return validate(errs, ctx.Data, f, ctx.Locale)
 }
 
+// AlbumDelete fields
 type AlbumDelete struct {
 	Album   string   `binding:"Required"`
 	User    string   `binding:"Required"`
 }
 
+// Validate the form
 func (f *AlbumDelete) Validate(ctx *macaron.Context, errs binding.Errors) binding.Errors {
 	return validate(errs, ctx.Data, f, ctx.Locale)
 }

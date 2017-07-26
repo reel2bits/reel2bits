@@ -21,11 +21,13 @@ func (f *TrackUpload) Validate(ctx *macaron.Context, errs binding.Errors) bindin
 	return validate(errs, ctx.Data, f, ctx.Locale)
 }
 
+// TrackDelete fields
 type TrackDelete struct {
 	Track    string   `binding:"Required"`
 	User    string   `binding:"Required"`
 }
 
+// Validate the form
 func (f *TrackDelete) Validate(ctx *macaron.Context, errs binding.Errors) binding.Errors {
 	return validate(errs, ctx.Data, f, ctx.Locale)
 }

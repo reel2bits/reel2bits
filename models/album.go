@@ -9,7 +9,7 @@ import (
 	"dev.sigpipe.me/dashie/reel2bits/models/errors"
 )
 
-// Track database structure
+// Album database structure
 type Album struct {
 	ID          int64       `xorm:"pk autoincr"`
 	UserID		 int64
@@ -58,6 +58,7 @@ func (album *Album) getTracksCount(e Engine) (int64, error) {
 	return e.Where("album_id=?", album.ID).Count(new(Track))
 }
 
+// GetTracksCount 1+1=2
 func (album *Album) GetTracksCount() (int64, error) {
 	return album.getTracksCount(x)
 }
@@ -82,7 +83,7 @@ func isAlbumNameAlreadyExist(name string, userID int64) (bool, error) {
 	return false, nil
 }
 
-// CreateTrack or error
+// CreateAlbum or error
 func CreateAlbum(a *Album) (err error) {
 	albumNameAlreadyExist, err := isAlbumNameAlreadyExist(a.Name, a.UserID)
 	if err != nil { return err }
@@ -122,7 +123,7 @@ func getAlbumByID(e Engine, id int64) (*Album, error) {
 	return t, nil
 }
 
-// GetTrackByID or error
+// GetAlbumByID or error
 func GetAlbumByID(id int64) (*Album, error) {
 	return getAlbumByID(x, id)
 }
@@ -195,6 +196,7 @@ func getTracksAndDeassociate(albumID int64) error {
 	return nil
 }
 
+// DeleteAlbum delete album
 func DeleteAlbum(albumID int64, userID int64) error {
 	// Get album
 	album := &Album{ID: albumID, UserID: userID}
@@ -228,6 +230,7 @@ func DeleteAlbum(albumID int64, userID int64) error {
 	return nil
 }
 
+// GetMapNameIDOfAlbums returns a []Album of albums
 func GetMapNameIDOfAlbums(userID int64) (sets []Album, err error) {
 	err = x.Table(&Album{}).Cols("id", "name").Where("user_id=?", userID).Find(&sets)
 	if err != nil {
@@ -236,8 +239,10 @@ func GetMapNameIDOfAlbums(userID int64) (sets []Album, err error) {
 	return sets, err
 }
 
+// GetCountOfAlbumTracks to be used when album.CountTracksblahblah() cannot be used
+// To be deprecated at some point
 func GetCountOfAlbumTracks(albumID int64) (count int64, err error) {
-	track := new(Track)
-	count, err = x.Where("album_id=?", albumID).Count(track)
-	return
+       track := new(Track)
+       count, err = x.Where("album_id=?", albumID).Count(track)
+       return
 }

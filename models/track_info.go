@@ -42,6 +42,7 @@ type TrackInfo struct {
 	// 	TrackID
 }
 
+// Waveform is the JSON reflected structure
 type Waveform struct {
 	SampleRate			int64
 	SamplePerPixels		int64

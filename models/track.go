@@ -281,6 +281,7 @@ func GetTrackBySlugAndUserID(id int64, slug string) (*Track, error) {
 	return track, nil
 }
 
+// GetTrackByAlbumIDAndOrder like it's said
 func GetTrackByAlbumIDAndOrder(albumID int64, albumOrder int64) (*Track, error) {
 	track := &Track{AlbumID: albumID, AlbumOrder: albumOrder}
 	has, err := x.Get(track)
@@ -292,6 +293,7 @@ func GetTrackByAlbumIDAndOrder(albumID int64, albumOrder int64) (*Track, error) 
 	return track, nil
 }
 
+// GetFirstTrackOfAlbum and not the last
 func GetFirstTrackOfAlbum(albumID int64, onlyPublic bool) (*TrackWithInfo, error) {
 	tracks := make([]*TrackWithInfo, 0)
 
@@ -379,6 +381,7 @@ func GetNotReadyTracks() (tracks []*Track, err error) {
 	return tracks, err
 }
 
+// GetAlbumTracks will get album tracks
 func GetAlbumTracks(albumID int64, onlyPublic bool) (tracks []*TrackWithInfo, err error) {
 	tracks = make([]*TrackWithInfo, 0)
 
@@ -438,6 +441,7 @@ func removeTrackFiles(transcode bool, trackFilename string, userSlug string) err
 	return nil
 }
 
+// DeleteTrack will delete a track
 func DeleteTrack(trackID int64, userID int64) error {
 
 	// With session

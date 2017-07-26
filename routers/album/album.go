@@ -59,6 +59,7 @@ func NewPost(ctx *context.Context, f form.Album) {
 	ctx.SubURLRedirect(ctx.URLFor("album_show", ":userSlug", ctx.User.Slug, ":albumSlug", a.Slug))
 }
 
+// ListFromUser [GET]
 func ListFromUser(ctx *context.Context) {
 	ctx.Title("album.title_list")
 	ctx.PageIs("AlbumListFromUser")
@@ -139,15 +140,15 @@ func Show(ctx *context.Context) {
 	}
 
 	ctx.Data["album"] = album
-	ctx.Data["album_sounds_count"], err = models.GetCountOfAlbumTracks(album.ID)
+	ctx.Data["album_sounds_count"], err = album.GetTracksCount()
 	if err != nil {
 		ctx.Flash.Error("Cannot get album tracks count")
 		ctx.Data["album_sounds_count"] = 0
 	}
 
-	only_ready := !(ctx.User.ID == album.UserID)
+	onlyReady := !(ctx.User.ID == album.UserID)
 
-	sound, err := models.GetFirstTrackOfAlbum(album.ID, only_ready)
+	sound, err := models.GetFirstTrackOfAlbum(album.ID, onlyReady)
 	if err != nil {
 		ctx.Flash.Warning("Album is empty.")
 		log.Error(2, "Album %d cannot get track at order 1: %s", err)
@@ -158,7 +159,7 @@ func Show(ctx *context.Context) {
 		ctx.Data["sound"] = sound
 	}
 
-	tracks, err := models.GetAlbumTracks(album.ID, only_ready)
+	tracks, err := models.GetAlbumTracks(album.ID, onlyReady)
 	if err != nil {
 		log.Error(2, "Cannot get album %d tracks: %s", album.ID, err)
 		ctx.Flash.Error("Cannot get album tracks.")
@@ -174,6 +175,7 @@ func Show(ctx *context.Context) {
 	ctx.HTML(200, tmplShow)
 }
 
+// Edit [GET]
 func Edit(ctx *context.Context) {
 	if ctx.Params(":userSlug") == "" || ctx.Params(":albumSlug") == "" {
 		ctx.Flash.Error("No.")
@@ -205,6 +207,7 @@ func Edit(ctx *context.Context) {
 	ctx.HTML(200, tmplEdit)
 }
 
+// EditPost [POST]
 func EditPost(ctx *context.Context, f form.Album) {
 	if !ctx.IsLogged {
 		ctx.SubURLRedirect(ctx.URLFor("home"), 403)
@@ -250,6 +253,7 @@ func EditPost(ctx *context.Context, f form.Album) {
 
 }
 
+// DeleteAlbum [POST]
 func DeleteAlbum(ctx *context.Context, f form.AlbumDelete) {
 	if ctx.HasError() {
 		ctx.JSONSuccess(map[string]interface{}{
