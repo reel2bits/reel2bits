@@ -54,10 +54,10 @@ node('linux && x86_64 && go') {
     // Install the desired Go version
     def root = tool name: 'Go 1.8.3', type: 'go'
 
-    ws("${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}/src/dev.sigpipe.me/dashie/reel2bits") {
+    ws("${JENKINS_HOME}/jobs/reel2bits/branches/${BRANCH_NAME}/builds/${BUILD_ID}/workspace-files/src/dev.sigpipe.me/dashie/reel2bits") {
         // Export environment variables pointing to the directory where Go was installed
         env.GOROOT="${root}"
-        env.GOPATH="${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}/"
+        env.GOPATH="${JENKINS_HOME}/jobs/reel2bits/branches/${BRANCH_NAME}/builds/${BUILD_ID}/workspace-files"
         env.PATH="${GOPATH}/bin:$PATH"
 
         stage('Start') {
