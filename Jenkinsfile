@@ -7,8 +7,8 @@
 // https://jenkins.io/blog/2017/02/15/declarative-notifications/
 
 // Do some cleanup
-properties [[$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', daysToKeepStr: '10', numToKeepStr: '10']]]
-//options { buildDiscarder(logRotator(numToKeepStr: '10')) }
+//properties [[$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', daysToKeepStr: '10', numToKeepStr: '10']]]
+options { buildDiscarder(logRotator(numToKeepStr: '10')) }
 
 /**
  * Send notifications based on build status string
