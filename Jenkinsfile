@@ -37,7 +37,7 @@ def sendNotifications(String buildStatus = 'STARTED') {
   //slackSend (color: colorCode, message: summary)
   //hipchatSend (color: color, notify: true, message: summary)
 
-  mattermostSend color: 'good', message: details
+  mattermostSend color: colorCode, message: details
   emailext (
       to: 'dashie+jenkins@sigpipe.me',
       subject: subject,
