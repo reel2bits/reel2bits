@@ -80,7 +80,7 @@
             </tr>
             {{ end }}
 
-            {{ if (gt .track.AlbumID 0) }}
+            {{ if .album }}
             <tr><td colspan="3">In album: <a href="{{URLFor "album_show" ":userSlug" .user.Slug ":albumSlug" .album.Slug}}">{{.album.Name}}</a></td></tr>
             {{ end }}
 

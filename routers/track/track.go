@@ -205,10 +205,12 @@ func Show(ctx *context.Context) {
 			album, err := models.GetAlbumByID(track[0].AlbumID)
 			if err != nil {
 				log.Error(2, "Cannot get album %d for track %d: %s", track[0].AlbumID, track[0].Track.ID, err)
-				ctx.Flash.Error("Album error.")
-				ctx.SubURLRedirect(ctx.URLFor("home"), 404)
+				ctx.Flash.Error("Invalid album.")
+				//ctx.SubURLRedirect(ctx.URLFor("home"), 404)
+				ctx.Data["album"] = nil
+			} else {
+				ctx.Data["album"] = album
 			}
-			ctx.Data["album"] = album
 		}
 
 		ctx.HTML(200, tmplShow)

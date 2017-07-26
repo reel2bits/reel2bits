@@ -171,14 +171,34 @@ func GetAlbums(opts *AlbumOptions) (albums []*Album, _ int64, _ error) {
 	return albums, count, sess.Limit(opts.PageSize, (opts.Page-1)*opts.PageSize).Find(&albums)
 }
 
+func getTracksAndDeassociate(albumID int64) error {
+	tracks, err := GetAlbumTracks(albumID, false)
+	if err != nil {
+		return err
+	}
+	for _, track := range tracks {
+		track.Track.AlbumID = -1
+		track.Track.AlbumOrder = -1
+		err := UpdateTrack(&track.Track)
+		if err != nil {
+			log.Error(2, "Deassociating album %d from track %d: %s", albumID, track.Track.ID, err)
+		}
+	}
+	return nil
+}
+
 func DeleteAlbum(albumID int64, userID int64) error {
-	// Get track
+	// Get album
 	album := &Album{ID: albumID, UserID: userID}
 	hasAlbum, err := x.Get(album)
 	if err != nil {
 		return err
 	} else if !hasAlbum {
 		return errors.AlbumNotExist{albumID, ""}
+	}
+
+	if err = getTracksAndDeassociate(album.ID); err != nil {
+		log.Error(2, "Error while deassociating tracks of album %d: %s", albumID, err)
 	}
 
 	sess := x.NewSession()
