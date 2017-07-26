@@ -1,132 +1,125 @@
 {{template "base/head" .}}
 
 <div class="row">
-    <div class="col-lg-3 col-lg-offset-1 ss-user-back">
-        <h3><i class="fa fa-angle-double-left" aria-hidden="true"></i> <a href="{{URLFor "track_list" ":userSlug" .user.Slug}}">{{.user.UserName}}</a></h3>
-    </div>
-    <div class="col-lg-5">
-    </div>
-</div>
-
-<div class="row">
-    <div class="col-lg-7 col-lg-offset-1">
-        <h3>{{ if not .album.IsPrivate }}<i class="fa fa-music" aria-hidden="true"></i>{{ else }}<i class="fa fa-lock" aria-hidden="true"></i>{{ end }} {{ SubStr .album.Name 0 40 }}</h3>
-    </div>
-
-    <div class="col-lg-3">
-        <h3><i class="fa fa-calendar" aria-hidden="true"></i> {{ ElapsedToHuman .album.CreatedUnix }}</h3>
-    </div>
-</div>
-
-{{ if .album.Description }}
-        <div class="row sound-description">
-        <div class="col-lg-6 col-lg-offset-1">
-            {{ .album.Description }}
+    <div class="col-lg-7 col-lg-offset-1 ss-user-back">
+        <div class="row">
+            <div class="col-lg-12">
+                <h3><i class="fa fa-angle-double-left" aria-hidden="true"></i> <a href="{{URLFor "track_list" ":userSlug" .user.Slug}}">{{.user.UserName}}</a></h3>
+            </div>
         </div>
-        </div>
-{{ end }}
 
-{{ if (gt .album_sounds_count 0) }}
-    <div class="row sound-title">
-        <div class="col-lg-6 col-lg-offset-1">
-            <i class="fa fa-play" aria-hidden="true"></i> <span id="song-title">{{ SubStr .sound.Title 0 70 }}</span>
+        <div class="row">
+            <div class="col-lg-12">
+                <h3>{{ if not .album.IsPrivate }}<i class="fa fa-music" aria-hidden="true"></i>{{ else }}<i class="fa fa-lock" aria-hidden="true"></i>{{ end }} {{ SubStr .album.Name 0 40 }}</h3>
+            </div>
         </div>
-    </div>
 
-    {{ if .sound.Track.Description }}
-        <div class="row sound-description">
-            <div class="col-lg-6 col-lg-offset-1"><span id="song-description">{{ .sound.Track.Description }}</span></div>
-        </div>
-    {{ end }}
-{{ end }}
-
-{{ if (gt .album_sounds_count 0) }}
-    <div class="row">
-        <div class="col-lg-7 col-lg-offset-1">
-            <div class="row"><div class="col-lg-12">
-                <div id="waveform"></div>
-                <hr>
-            </div></div>
-            <div class="row">
-                <div class="col-lg-3">
-                    <span id="player-time-cur"></span> / <span id="player-time-tot"></span>
+        {{ if .album.Description }}
+            <div class="row sound-description">
+                <div class="col-lg-12">
+                    {{ .album.Description }}
                 </div>
-                <div class="col-lg-7">
-                <p align="center">
-                    <button class="btn btn-primary" onclick="wavesurfer.skipBackward()">
-                        <i class="fa fa-step-backward" aria-hidden="true"></i>
-                    </button>
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <button class="btn btn-primary" onclick="wavesurfer.playPause()">
-                        <i class="fa fa-play" aria-hidden="true"></i> / <i class="fa fa-pause" aria-hidden="true"></i>
-                    </button>
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <button class="btn btn-primary" onclick="wavesurfer.skipForward()">
-                        <i class="fa fa-step-forward" aria-hidden="true"></i>
-                    </button>
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <button class="btn btn-primary" onclick="wavesurfer.toggleMute()">
-                        <i class="fa fa-volume-off" aria-hidden="true"></i>
-                    </button>
-                </p>
-            </div></div>
-        </div>
-        <div class="col-lg-3">
-            <table class="table table-condensed table-hoverable">
-                    <tr>
-                        <td>
-                        </td>
-                        {{ if (eq .IsLogged true) and (eq .album.UserID .LoggedUserID) }}
-                            <td class="si_btn_edit"><a class="btn btn-success btn-xs" href="{{URLFor "album_edit" ":userSlug" .user.Slug ":albumSlug" .album.Slug}}">edit</a></td>
-                            <td class="si_btn_delete">
-                            <a role="button" tabindex="0" class="btn btn-danger btn-xs" data-trigger="focus"
-                               data-container="body" data-toggle="popover" data-placement="top" data-html="true"
-                               data-content="<a class='btn btn-success btn-xs delete_log_link' href='{{URLFor "album_delete" ":userSlug" .user.Slug ":albumSlug" .album.Slug}}'>yes really</a>">delete</a>
-                            </td>
-                        {{ end }}
-                    </tr>
-            </table>
-        </div>
-    </div>
+            </div>
+        {{ end }}
 
-    <div class="row">
-        <div class="col-lg-7 col-lg-offset-1">
-            <table class="table table-condensed table-album-sounds">
-            <thead><tr><th></th><th></th><th></th><th></th></tr></thead>
-                <tbody>
-                {{ range .tracks }}
-                <tr class="play-song {{if (eq $.sound.Track.ID .Track.ID)}}song-active{{end}}" data-soundid="{{ .Track.ID }}" data-href="{{URLFor "track_infos_json" ":userSlug" $.user.Slug ":trackSlug" .Track.Slug}}" data-hrefreorder="{{URLFor "track_reorder" ":userSlug" $.user.Slug ":trackSlug" .Track.Slug}}">
+        {{ if (gt .album_sounds_count 0) }}
+            <div class="row sound-title">
+                <div class="col-lg-12">
+                    <i class="fa fa-play" aria-hidden="true"></i> <span id="song-title">{{ SubStr .sound.Title 0 70 }}</span>
+                </div>
+            </div>
+
+            {{ if .sound.Track.Description }}
+            <div class="row sound-description">
+                <div class="col-lg-12"><span id="song-description">{{ .sound.Track.Description }}</span></div>
+            </div>
+            {{ end }}
+        {{ end }}
+
+        {{ if (gt .album_sounds_count 0) }}
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="row"><div class="col-lg-12">
+                    <div id="waveform"></div>
+                    <hr>
+                </div></div>
+                <div class="row">
+                    <div class="col-lg-3">
+                        <span id="player-time-cur"></span> / <span id="player-time-tot"></span>
+                    </div>
+                    <div class="col-lg-7">
+                        <p align="center">
+                            <button class="btn btn-primary" onclick="wavesurfer.skipBackward()">
+                                <i class="fa fa-step-backward" aria-hidden="true"></i>
+                            </button>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <button class="btn btn-primary" onclick="wavesurfer.playPause()">
+                                <i class="fa fa-play" aria-hidden="true"></i> / <i class="fa fa-pause" aria-hidden="true"></i>
+                            </button>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <button class="btn btn-primary" onclick="wavesurfer.skipForward()">
+                                <i class="fa fa-step-forward" aria-hidden="true"></i>
+                            </button>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <button class="btn btn-primary" onclick="wavesurfer.toggleMute()">
+                                <i class="fa fa-volume-off" aria-hidden="true"></i>
+                            </button>
+                        </p>
+                    </div></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12">
+                <table class="table table-condensed table-album-sounds">
+                    <thead><tr><th></th><th></th><th></th><th></th></tr></thead>
+                    <tbody>
+                    {{ range .tracks }}
+                    <tr class="play-song {{if (eq $.sound.Track.ID .Track.ID)}}song-active{{end}}" data-soundid="{{ .Track.ID }}" data-href="{{URLFor "track_infos_json" ":userSlug" $.user.Slug ":trackSlug" .Track.Slug}}" data-hrefreorder="{{URLFor "track_reorder" ":userSlug" $.user.Slug ":trackSlug" .Track.Slug}}">
                     <td width="10px">{{ .Track.AlbumOrder }}</td>
                     <td width="20px"><a href="{{ URLFor "track_show" ":userSlug" $.user.Slug ":trackSlug" .Track.Slug }}"><i class="fa fa-link" aria-hidden="true"></i></a></td>
                     <td class="switch-song"><i class="fa fa-{{ if .Track.IsPrivate }}lock{{ else }}play{{ end }}" aria-hidden="true"></i> {{ SubStr .Track.Title 0 70 }}</td>
                     <td class="switch-song ast-duration">{{ DurationToHuman .TrackInfo.Duration }}</td>
-                </tr>
-                {{ end }}
-                </tbody>
-            </table>
+                    </tr>
+                    {{ end }}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {{ else }}
+        <div class="row"><div class="col-lg-7 col-lg-offset-1">This album is empty.</div></div>
+        {{ end }}
+
+    </div>
+
+    <!-- right sidebar -->
+    <div class="col-lg-4">
+        <div class="row">
+            <div class="col-lg-12">
+                <h3><i class="fa fa-calendar" aria-hidden="true"></i> {{ ElapsedToHuman .album.CreatedUnix }}</h3>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12">
+                <table class="table table-condensed table-hoverable">
+                    <tr>
+                        <td>
+                        </td>
+                        {{ if (eq .IsLogged true) and (eq .album.UserID .LoggedUserID) }}
+                        <td class="si_btn_edit"><a class="btn btn-success btn-xs" href="{{URLFor "album_edit" ":userSlug" .user.Slug ":albumSlug" .album.Slug}}">edit</a></td>
+                        <td class="si_btn_delete">
+                            <a role="button" tabindex="0" class="btn btn-danger btn-xs" data-trigger="focus"
+                               data-container="body" data-toggle="popover" data-placement="top" data-html="true"
+                               data-content="<a class='btn btn-success btn-xs delete_log_link' href='{{URLFor "album_delete" ":userSlug" .user.Slug ":albumSlug" .album.Slug}}'>yes really</a>">delete</a>
+                        </td>
+                        {{ end }}
+                    </tr>
+                </table>
+            </div>
         </div>
     </div>
-{{ else }}
-    <div class="row">
-    <div class="col-lg-7 col-lg-offset-1">
-    </div>
-        <div class="col-lg-3">
-        <table class="table table-condensed table-hoverable">
-            <tr></tr>
-            <tr>
-                {{ if (eq .IsLogged true) and (eq .album.UserID .LoggedUserID) }}
-                    <td class="si_btn_edit"><a class="btn btn-success btn-xs" href="{{URLFor "album_edit" ":userSlug" .user.Slug ":albumSlug" .album.Slug}}">edit</a></td>
-                    <td class="si_btn_delete">
-                    <a role="button" tabindex="0" class="btn btn-danger btn-xs" data-trigger="focus"
-                       data-container="body" data-toggle="popover" data-placement="top" data-html="true"
-                       data-content="<a class='btn btn-success btn-xs delete_log_link' href='{{URLFor "album_delete" ":userSlug" .user.Slug ":albumSlug" .album.Slug}}'>yes really</a>">delete</a>
-                    </td>
-                {{ end }}
-            </tr>
-        </table>
-    </div>
-    <div class="row"><div class="col-lg-7 col-lg-offset-1">This album is empty.</div></div>
-{{ end }}
+</div>
 
 
 {{ define "scriptsAlbumShow" }}

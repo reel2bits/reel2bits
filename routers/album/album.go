@@ -122,3 +122,78 @@ func Show(ctx *context.Context) {
 
 	ctx.HTML(200, tmplShow)
 }
+
+func Edit(ctx *context.Context) {
+	if ctx.Params(":userSlug") == "" || ctx.Params(":albumSlug") == "" {
+		ctx.Flash.Error("No.")
+		ctx.SubURLRedirect(ctx.URLFor("home"), 500)
+		return
+	}
+
+	user, err := models.GetUserBySlug(ctx.Params(":userSlug"))
+	if err != nil {
+		log.Error(2, "Cannot get User from slug %s: %s", ctx.Params(":userSlug"), err)
+		ctx.Flash.Error("Unknown user.")
+		ctx.SubURLRedirect(ctx.URLFor("home"), 404)
+		return
+	}
+
+	album, err := models.GetAlbumBySlugAndUserID(user.ID, ctx.Params(":albumSlug"))
+	if err != nil {
+		log.Error(2, "Cannot get Album from slug %s and user %d: %s", ctx.Params(":albumSlug"), user.ID, err)
+		ctx.Flash.Error("Unknown album.")
+		ctx.SubURLRedirect(ctx.URLFor("home"), 404)
+		return
+	}
+
+	ctx.Data["name"] = album.Name
+	ctx.Data["is_private"] = album.IsPrivate
+	ctx.Data["description"] = album.Description
+
+	ctx.PageIs("AlbumEdit")
+	ctx.HTML(200, tmplEdit)
+}
+
+func EditPost(ctx *context.Context, f form.Album) {
+	if !ctx.IsLogged {
+		ctx.SubURLRedirect(ctx.URLFor("home"), 403)
+		return
+	}
+
+	if ctx.HasError() {
+		ctx.Success(tmplEdit)
+		return
+	}
+
+	user, err := models.GetUserBySlug(ctx.Params(":userSlug"))
+	if err != nil {
+		log.Error(2, "Cannot get User from slug %s: %s", ctx.Params(":userSlug"), err)
+		ctx.Flash.Error("Unknown user.")
+		ctx.SubURLRedirect(ctx.URLFor("home"), 404)
+		return
+	}
+
+	album, err := models.GetAlbumBySlugAndUserID(user.ID, ctx.Params(":albumSlug"))
+	if err != nil {
+		log.Error(2, "Cannot get Album from slug %s and user %d: %s", ctx.Params(":albumSlug"), user.ID, err)
+		ctx.Flash.Error("Unknown album.")
+		ctx.SubURLRedirect(ctx.URLFor("home"), 404)
+		return
+	}
+
+	album.Name = f.Name
+	album.Description = f.Description
+	album.IsPrivate = f.IsPrivate
+
+	err = models.UpdateAlbum(album)
+	if err != nil {
+		switch {
+		default:
+			ctx.Handle(500, "EditAlbum", err)
+		}
+		return
+	}
+
+	ctx.SubURLRedirect(ctx.URLFor("album_show", ":userSlug", user.Slug, ":albumSlug", album.Slug))
+
+}

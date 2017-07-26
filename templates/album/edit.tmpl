@@ -4,7 +4,7 @@
     <div class="col-lg-9 col-lg-offset-1">
         <form class="form" action="{{.Link}}" method="post">
             {{.CSRFTokenHTML}}
-            <h4 class="header">{{.i18n.Tr "album.title_new"}}</h4>
+            <h4 class="header">{{.i18n.Tr "album.title_edit"}}</h4>
 
             <div class="row">
                 <div class="col-lg-6">
@@ -21,11 +21,11 @@
 
                         <div class="checkbox {{if .Err_IsPrivate}}has-error{{end}}">
                             <label>
-                                <input type="checkbox" name="is_private" id="is_private" class="" value="true">{{.i18n.Tr "album.form_is_private"}}
+                                <input type="checkbox" name="is_private" id="is_private" class="" value="true" {{if .is_private}}checked{{end}}>{{.i18n.Tr "album.form_is_private"}}
                             </label>
                         </div>
 
-                        <button class="btn btn-sm btn-success" type="submit">{{.i18n.Tr "form.save"}}</button>
+                        <button class="btn btn-sm btn-success" type="submit">{{.i18n.Tr "form.edit"}}</button>
                     </div>
                 </div>
             </div>
