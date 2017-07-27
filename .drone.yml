@@ -33,7 +33,7 @@ pipeline:
       TAGS: sqlite
       GOPATH: /srv/app
     commands:
-      - apk -U add sox taglib libmagic
+      - apk -U add sox sox-dev taglib taglib-dev libmagic file-dev
       - make test
     when:
       event: [ tag, pull_request ]
@@ -44,7 +44,7 @@ pipeline:
     environment:
       GOPATH: /srv/app
     commands:
-      - apk -U add sox taglib libmagic
+      - apk -U add sox sox-dev taglib taglib-dev libmagic file-dev
       - make test-sqlite
     when:
       event: [ push, tag, pull_request ]
@@ -56,7 +56,7 @@ pipeline:
       TAGS: sqlite
       GOPATH: /srv/app
     commands:
-      - apk -U add sox taglib libmagic
+      - apk -U add sox sox-dev taglib taglib-dev libmagic file-dev
       - make release
     when:
       event: [ push, tag ]
