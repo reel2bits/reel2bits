@@ -15,7 +15,7 @@ pipeline:
       TAGS: sqlite
       GOPATH: /srv/app
     commands:
-      - apk -U add sox taglib libmagic
+      - apk -U add sox sox-dev taglib taglib-dev libmagic file-dev
       - go get github.com/Masterminds/glide
       - glide install
       - make clean
