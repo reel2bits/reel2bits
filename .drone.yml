@@ -61,9 +61,9 @@ pipeline:
     when:
       event: [ push, tag ]
 
-  mattermost:
+  slack:
     image: plugins/slack
-    webhook: ${WEBHOOK}
+    secrets: [ slack_webhook ]
     channel: gitea
     when:
       event: [ push, tag, pull_request ]
