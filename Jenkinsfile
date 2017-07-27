@@ -96,7 +96,7 @@ node('linux && x86_64 && go') {
             // The real tests then publish the results
             try {
                 // broken due to some go /vendor directory crap
-                sh 'go test -v $(go list ./... | grep -v /vendor/) > tests.txt'
+                sh 'make test > tests.txt'
             } catch (err) {
                 if (currentBuild.result == 'UNSTABLE')
                     currentBuild.result = 'FAILURE'
