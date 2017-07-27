@@ -55,9 +55,9 @@ func TestRegister(t *testing.T) {
 		req = NewRequestWithValues(t, "POST", "/user/register", map[string]string{
 			"_csrf":     doc.GetCSRF(),
 			"user_name": "userC",
-			"email": "userc@example.com",
-			"password": "password",
-			"repeat": "password",
+			"email":     "userc@example.com",
+			"password":  "password",
+			"repeat":    "password",
 		})
 		MakeRequest(t, req, http.StatusFound)
 
