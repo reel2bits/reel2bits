@@ -12,7 +12,7 @@ NOW=$(shell date -u '+%Y%m%d%I%M%S')
 GOFMT ?= gofmt -s
 
 GOFILES := $(shell find . -name "*.go" -type f ! -path "./vendor/*" ! -path "*/bindata.go")
-PACKAGES ?= $(shell go list ./... | grep -v /vendor/)
+PACKAGES ?= $(filter-out dev.sigpipe.me/dashie/reel2bits/integrations,$(shell go list ./... | grep -v /vendor/))
 
 SOURCES ?= $(shell find . -name "*.go" -type f)
 
@@ -43,7 +43,7 @@ clean:
 clean-mac: clean
 	find . -name ".DS_Store" -delete
 
-test:
+test: fmt-check
 	go test -cover -race -v $(PACKAGES)
 
 
@@ -69,4 +69,4 @@ integrations.sqlite.test: $(SOURCES)
 
 .PHONY: test-sqlite
 test-sqlite: integrations.sqlite.test
-	REEL2BITS_ROOT=${CURDIR} REEL2BITS_CONF=integrations/sqlite.ini ./integrations.sqlite.test
+	APP_ROOT=${CURDIR} APP_CONF=integrations/sqlite.ini ./integrations.sqlite.test

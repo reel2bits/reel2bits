@@ -1,0 +1,23 @@
+# NOTE: all users should have a password of "password"
+
+- # NOTE: this user (id=1) is the admin
+  id: 1
+  user_name: userA
+  lower_name: usera
+  email: usera@example.com
+  slug: usera
+  password: 7d93daa0d1e6f2305cc8fa496847d61dc7320bb16262f9c55dd753480207234cdd96a93194e408341971742f4701772a025a # password
+  salt: ZogKvWdyEx
+  is_admin: true
+  is_active: true
+
+-
+  id: 2
+  user_name: userB
+  lower_name: userb
+  email: userb@example.com
+  slug: userb
+  password: 7d93daa0d1e6f2305cc8fa496847d61dc7320bb16262f9c55dd753480207234cdd96a93194e408341971742f4701772a025a # password
+  salt: ZogKvWdyEx
+  is_admin: false
+  is_active: true

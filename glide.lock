@@ -1,12 +1,18 @@
-hash: 5ba4723eaf9f0a9a7c955c19c143d7da2b62f6170ede92d6bd58324cfd6c6fc9
-updated: 2017-07-26T22:21:34.520744656+02:00
+hash: 12d0f14cc33516a6fd228480072d949d288a508d2be730721468e66d767cbdba
+updated: 2017-07-27T10:27:50.193829608+02:00
 imports:
+- name: github.com/andybalholm/cascadia
+  version: 349dd0209470eabd9514242c688c403c0926d266
 - name: github.com/bradfitz/gomemcache
   version: 1952afaa557dc08e8e0d89eafab110fb501c1a2b
   subpackages:
   - memcache
 - name: github.com/certifi/gocertifi
   version: a9c833d2837d3b16888d55d5aafa9ffe9afb22b0
+- name: github.com/davecgh/go-spew
+  version: 6d212800a42e8ab5c146b8ace3490ee17e5225f9
+  subpackages:
+  - spew
 - name: github.com/denisenkom/go-mssqldb
   version: f77039e4e9bc788cb0406a666f410abee0ca1580
 - name: github.com/dhowden/tag
@@ -74,6 +80,12 @@ imports:
   version: e79763773ab6222ca1d5a7cbd9d62d83c1f77081
 - name: github.com/olekukonko/tablewriter
   version: febf2d34b54a69ce7530036c7503b1c9fbfdf0bb
+- name: github.com/pmezard/go-difflib
+  version: d8ed2627bdf02c080bf22230dbb337003b7aba2d
+  subpackages:
+  - difflib
+- name: github.com/PuerkitoBio/goquery
+  version: e1271ee34c6a305e38566ecd27ae374944907ee9
 - name: github.com/rainycape/unidecode
   version: cb7f23ec59bec0d61b19c56cd88cee3d0cc1870c
 - name: github.com/rakyll/magicmime
@@ -101,6 +113,10 @@ imports:
   version: 6ed919a936d5ab554e4b40bc51f7c522488122c6
 - name: github.com/streadway/amqp
   version: dfe15e36048539f4cda41f240b27a5ca25b9cd46
+- name: github.com/stretchr/testify
+  version: 69483b4bd14f5845b5a1e55bca19e954e827f1d0
+  subpackages:
+  - assert
 - name: github.com/Unknwon/com
   version: 0db4a625e949e956314d7d1adea9bf82384cc10c
 - name: github.com/Unknwon/i18n

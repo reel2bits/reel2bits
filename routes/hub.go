@@ -26,7 +26,7 @@ func Impressum(ctx *context.Context) {
 
 // Home [GET]
 func Home(ctx *context.Context) {
-	ctx.Title("Home page")
+	ctx.Title("app.home_title")
 	ctx.PageIs("HubHome")
 
 	page := ctx.QueryInt("page")

@@ -30,7 +30,6 @@ func runWeb(ctx *cli.Context) error {
 		setting.CustomConf = ctx.String("config")
 	}
 
-
 	routes.GlobalInit()
 
 	m := routes.NewMacaron()
