@@ -88,7 +88,7 @@ node('linux && x86_64 && go') {
             sh 'glide install'
         }
 
-        stage('Test') {
+        stage('Test classic') {
             // Static check and publish warnings
             sh 'golint $(go list ./... | grep -v /vendor/) > lint.txt'
             warnings canComputeNew: false, canResolveRelativePaths: false, defaultEncoding: '', excludePattern: '', healthy: '', includePattern: '', messagesPattern: '', parserConfigurations: [[parserName: 'Go Lint', pattern: 'lint.txt']], unHealthy: ''
@@ -115,6 +115,12 @@ node('linux && x86_64 && go') {
                 //])
             }
         }
+
+        stage('Test integrations') {
+            // The real tests
+            make test-sqlite
+        }
+
 
         stage('Build') {
             // Darwin/amd64
