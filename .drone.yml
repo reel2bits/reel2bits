@@ -49,17 +49,17 @@ pipeline:
     when:
       event: [ push, tag, pull_request ]
 
-  static:
-    image: karalabe/xgo-latest:latest
-    pull: true
-    environment:
-      TAGS: sqlite
-      GOPATH: /srv/app
-    commands:
-      - apk -U add sox sox-dev taglib taglib-dev libmagic file-dev
-      - make release
-    when:
-      event: [ push, tag ]
+#  static:
+#    image: karalabe/xgo-latest:latest
+#    pull: true
+#    environment:
+#      TAGS: sqlite
+#      GOPATH: /srv/app
+#    commands:
+#      - apk -U add sox sox-dev taglib taglib-dev libmagic file-dev
+#      - make release
+#    when:
+#      event: [ push, tag ]
 
   slack:
     image: plugins/slack
