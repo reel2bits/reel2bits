@@ -118,7 +118,7 @@ node('linux && x86_64 && go') {
 
         stage('Test integrations') {
             // The real tests
-            make test-sqlite
+            sh 'make test-sqlite'
         }
 
 
