@@ -100,6 +100,7 @@ node('linux && x86_64 && go') {
             } catch (err) {
                 if (currentBuild.result == 'UNSTABLE')
                     currentBuild.result = 'FAILURE'
+                sendNotifications currentBuild.result
                 throw err
             } finally {
                 sh 'cat tests.txt | go2xunit -output tests.xml'
