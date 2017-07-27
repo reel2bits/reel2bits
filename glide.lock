@@ -1,5 +1,5 @@
-hash: da694cce0828e3ac1cf861ccfb367e4a8673f1a382fa7702d82655afb2849010
-updated: 2017-07-16T23:12:49.564729472+02:00
+hash: 5ba4723eaf9f0a9a7c955c19c143d7da2b62f6170ede92d6bd58324cfd6c6fc9
+updated: 2017-07-26T22:21:34.520744656+02:00
 imports:
 - name: github.com/bradfitz/gomemcache
   version: 1952afaa557dc08e8e0d89eafab110fb501c1a2b
@@ -38,6 +38,8 @@ imports:
   version: 6766b8f16d1b135b250f09ba4dc4e24ab65b1107
 - name: github.com/go-sql-driver/mysql
   version: a0583e0143b1624142adab07e0e97fe106d99561
+- name: github.com/go-testfixtures/testfixtures
+  version: c436304eb1a52ddc030e8f6f939a881c5b0dfe5f
 - name: github.com/go-xorm/builder
   version: c8871c857d2555fbfbd8524f895be5386d3d8836
 - name: github.com/go-xorm/core
@@ -47,7 +49,7 @@ imports:
 - name: github.com/gogits/cron
   version: c803a08f3bd6f5d5f0281e5ef6a5e09b28488ed7
 - name: github.com/gosimple/slug
-  version: 32efb997950eba210b1880d8cf52b601c1b5abe3
+  version: e756f2ec7e1e59e2ef20938fac5e677842641777
 - name: github.com/jaytaylor/html2text
   version: 7c7a33a7a158a5ce395c803d2b6a209b2bbc14c8
 - name: github.com/kelseyhightower/envconfig

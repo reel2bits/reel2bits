@@ -52,6 +52,8 @@ import:
 - package: github.com/wtolson/go-taglib
 - package: github.com/krig/go-sox
 - package: github.com/dustin/go-humanize
+- package: github.com/go-testfixtures/testfixtures
+  version: ^2.4.1
 testImport:
 - package: github.com/smartystreets/goconvey
   version: ^1.6.2

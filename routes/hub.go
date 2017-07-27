@@ -1,4 +1,4 @@
-package routers
+package routes
 
 import (
 	"dev.sigpipe.me/dashie/reel2bits/context"

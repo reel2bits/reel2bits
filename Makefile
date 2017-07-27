@@ -14,6 +14,8 @@ GOFMT ?= gofmt -s
 GOFILES := $(shell find . -name "*.go" -type f ! -path "./vendor/*" ! -path "*/bindata.go")
 PACKAGES ?= $(shell go list ./... | grep -v /vendor/)
 
+SOURCES ?= $(shell find . -name "*.go" -type f)
+
 .PHONY: build clean
 
 all: build
@@ -61,3 +63,10 @@ fmt-check: required-gofmt-version
 		echo "$${diff}"; \
 		exit 1; \
 	fi;
+
+integrations.sqlite.test: $(SOURCES)
+	go test -c dev.sigpipe.me/dashie/reel2bits/integrations -o integrations.sqlite.test -tags 'sqlite'
+
+.PHONY: test-sqlite
+test-sqlite: integrations.sqlite.test
+	REEL2BITS_ROOT=${CURDIR} REEL2BITS_CONF=integrations/sqlite.ini ./integrations.sqlite.test
