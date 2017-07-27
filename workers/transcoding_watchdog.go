@@ -18,7 +18,7 @@ const (
 // TranscodingWatchdog take care to add un-ready tracsk to the worker queue if not ready and not found in it
 // The track statuses are not updated, only by the worker when processed
 // I don't think we really care to set the flag to "processing" "wait" etc. since this watchdog is mainly
-// only for the case of redis unavailable when the track is uploaded, and this sould not happens lot of times.
+// only for the case of redis unavailable when the track is uploaded, and this should not happens lot of times.
 func TranscodingWatchdog() {
 	if taskStatusTable.IsRunning(transcodingWatchdog) {
 		return

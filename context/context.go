@@ -112,7 +112,7 @@ func (c *Context) ServerError(title string, err error) {
 	c.Handle(http.StatusInternalServerError, title, err)
 }
 
-// SubURLRedirect responses redirection wtih given location and status.
+// SubURLRedirect responses redirection with given location and status.
 // It prepends setting.AppSubURL to the location string.
 func (c *Context) SubURLRedirect(location string, status ...int) {
 	c.Redirect(setting.AppSubURL + location)

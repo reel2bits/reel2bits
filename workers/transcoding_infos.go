@@ -83,7 +83,7 @@ func fetchMetadatasAndCommit(idx int64) (int64, error) {
 
 	/*
 		FIXME or TODO if used ?
-		Codec isn't managed, usefull only for MP3 with encoder infos
+		Codec isn't managed, useful only for MP3 with encoder infos
 		Bitrate from taglib seems to be an average of the file, not the real one
 		BitrateMode isn't managed from taglib, could not determine CBR/VBR
 		Format from WAV not managed by taglib too
