@@ -1,11 +1,29 @@
 LDFLAGS += -X "/setting.BuildTime=$(shell date -u '+%Y-%m-%d %I:%M:%S %Z')"
 LDFLAGS += -X "/setting.BuildGitHash=$(shell git rev-parse HEAD)"
+EXTRA_GOFLAGS ?=
 
 OS := $(shell uname)
 
+ifeq ($(OS), Windows_NT)
+	EXECUTABLE := reel2bits.exe
+else
+	EXECUTABLE := reel2bits
+endif
+
+ifneq ($(DRONE_TAG),)
+	VERSION ?= $(subst v,,$(DRONE_TAG))
+else
+	ifneq ($(DRONE_BRANCH),)
+		VERSION ?= $(subst release/v,,$(DRONE_BRANCH))
+	else
+		VERSION ?= master
+	endif
+endif
+
+DIST := dist
+
 DATA_FILES := $(shell find conf | sed 's/ /\\ /g')
 
-BUILD_FLAGS:=-o reel2bits 
 TAGS=sqlite
 NOW=$(shell date -u '+%Y%m%d%I%M%S')
 
@@ -28,14 +46,10 @@ web: build
 vet:
 	go vet $(PACKAGES)
 
-build:
-	go build $(BUILD_FLAGS) -ldflags '$(LDFLAGS)' -tags '$(TAGS)'
+build: $(EXECUTABLE)
 
-build-dev: govet
-	go build $(BUILD_FLAGS) -tags '$(TAGS)'
-
-build-dev-race: govet
-	go build $(BUILD_FLAGS) -race -tags '$(TAGS)'
+$(EXECUTABLE): $(SOURCES)
+	go build $(BUILD_FLAGS) $(EXTRA_GOFLAGS) -tags '$(TAGS)' -ldflags '$(LDFLAGS)' -o $@
 
 clean:
 	go clean -i ./...
@@ -70,3 +84,68 @@ integrations.sqlite.test: $(SOURCES)
 .PHONY: test-sqlite
 test-sqlite: integrations.sqlite.test
 	APP_ROOT=${CURDIR} APP_CONF=integrations/sqlite.ini ./integrations.sqlite.test
+
+lint:
+	@hash golint > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
+		go get -u github.com/golang/lint/golint; \
+	fi
+	for PKG in $(PACKAGES); do golint -set_exit_status $$PKG || exit 1; done;
+
+.PHONY: misspell-check
+misspell-check:
+	@hash misspell > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
+		go get -u github.com/client9/misspell/cmd/misspell; \
+	fi
+	misspell -error -i unknwon $(GOFILES)
+
+.PHONY: misspell
+misspell:
+	@hash misspell > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
+		go get -u github.com/client9/misspell/cmd/misspell; \
+	fi
+	misspell -w -i unknwon $(GOFILES)
+
+.PHONY: release
+release: release-dirs release-windows release-linux release-darwin release-copy release-check
+
+.PHONY: release-dirs
+release-dirs:
+	mkdir -p $(DIST)/binaries $(DIST)/release
+
+.PHONY: release-windows
+release-windows:
+	@hash xgo > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
+		go get -u github.com/karalabe/xgo; \
+	fi
+	xgo -dest $(DIST)/binaries -tags 'netgo $(TAGS)' -ldflags '-linkmode external -extldflags "-static" $(LDFLAGS)' -targets 'windows/*' -out reel2bits-$(VERSION) .
+ifeq ($(CI),drone)
+	mv /build/* $(DIST)/binaries
+endif
+
+.PHONY: release-linux
+release-linux:
+	@hash xgo > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
+		go get -u github.com/karalabe/xgo; \
+	fi
+	xgo -dest $(DIST)/binaries -tags 'netgo $(TAGS)' -ldflags '-linkmode external -extldflags "-static" $(LDFLAGS)' -targets 'linux/*' -out reel2bits-$(VERSION) .
+ifeq ($(CI),drone)
+	mv /build/* $(DIST)/binaries
+endif
+
+.PHONY: release-darwin
+release-darwin:
+	@hash xgo > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
+		go get -u github.com/karalabe/xgo; \
+	fi
+	xgo -dest $(DIST)/binaries -tags 'netgo $(TAGS)' -ldflags '$(LDFLAGS)' -targets 'darwin/*' -out reel2bits-$(VERSION) .
+ifeq ($(CI),drone)
+	mv /build/* $(DIST)/binaries
+endif
+
+.PHONY: release-copy
+release-copy:
+	$(foreach file,$(wildcard $(DIST)/binaries/$(EXECUTABLE)-*),cp $(file) $(DIST)/release/$(notdir $(file));)
+
+.PHONY: release-check
+release-check:
+	cd $(DIST)/release; $(foreach file,$(wildcard $(DIST)/release/$(EXECUTABLE)-*),sha256sum $(notdir $(file)) > $(notdir $(file)).sha256;)
