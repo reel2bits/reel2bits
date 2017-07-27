@@ -48,6 +48,7 @@ import:
 - package: github.com/RichardKnop/machinery
   subpackages:
   - v1
+  - v1/log
 - package: github.com/dhowden/tag
 - package: github.com/wtolson/go-taglib
 - package: github.com/krig/go-sox
