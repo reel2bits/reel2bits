@@ -34,7 +34,7 @@ pipeline:
       - apk -U add sox sox-dev taglib taglib-dev libmagic file-dev
       - make test
     when:
-      event: [ tag, pull_request ]
+      event: [ push, tag, pull_request ]
   test-sqlite:
     image: webhippie/golang:edge
     pull: true
@@ -47,7 +47,7 @@ pipeline:
       event: [ push, tag, pull_request ]
   slack:
     image: plugins/slack
-    secrets: [ slack_webhook ]
+    secrets: [ webhook ]
     channel: gitea
     when:
       event: [ push, tag, pull_request ]
