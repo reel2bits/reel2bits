@@ -45,11 +45,11 @@ pipeline:
       - make test-sqlite
     when:
       event: [ push, tag, pull_request ]
-  slack:
+  notify:
     image: plugins/slack
-    secrets: [ slack_webhook ]
-    webhook: ${SLACK_WEBHOOK}
     channel: gitea
+    secrets:
+      - SLACK_WEBHOOK
     when:
       event: [ push, tag, pull_request ]
-      status: [ changed, failure ]
+      status: [ changed, failure, success ]
