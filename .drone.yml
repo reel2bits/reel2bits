@@ -7,7 +7,6 @@ pipeline:
     image: plugins/git
     depth: 50
     tags: true
-
   build:
     image: webhippie/golang:edge
     pull: true
@@ -25,7 +24,6 @@ pipeline:
       - make build
     when:
       event: [ push, tag, pull_request ]
-
   test:
     image: webhippie/golang:edge
     pull: true
@@ -37,7 +35,6 @@ pipeline:
       - make test
     when:
       event: [ tag, pull_request ]
-
   test-sqlite:
     image: webhippie/golang:edge
     pull: true
@@ -48,7 +45,6 @@ pipeline:
       - make test-sqlite
     when:
       event: [ push, tag, pull_request ]
-
   slack:
     image: plugins/slack
     secrets: [ slack_webhook ]
@@ -56,4 +52,3 @@ pipeline:
     when:
       event: [ push, tag, pull_request ]
       status: [ changed, failure ]
-
