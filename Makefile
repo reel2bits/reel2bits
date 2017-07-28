@@ -58,7 +58,7 @@ clean-mac: clean
 	find . -name ".DS_Store" -delete
 
 test: fmt-check
-	go test -cover -race -v $(PACKAGES)
+	go test -cover -v $(PACKAGES)
 
 
 required-gofmt-version:
