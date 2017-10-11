@@ -1,5 +1,5 @@
-LDFLAGS += -X "/setting.BuildTime=$(shell date -u '+%Y-%m-%d %I:%M:%S %Z')"
-LDFLAGS += -X "/setting.BuildGitHash=$(shell git rev-parse HEAD)"
+LDFLAGS += -X "dev.sigpipe.me/dashie/reel2bits/setting.BuildTime=$(shell date -u '+%Y-%m-%d %I:%M:%S %Z')"
+LDFLAGS += -X "dev.sigpipe.me/dashie/reel2bits/setting.BuildGitHash=$(shell git rev-parse HEAD)"
 EXTRA_GOFLAGS ?=
 
 OS := $(shell uname)
