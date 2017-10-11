@@ -18,7 +18,13 @@ KISS, that's all.
 
 # Install
 
-go get -v -insecure -u dev.sigpipe.me/dashie/reel2bits
+- Ubuntu/debian:
+
+    apt install libtagc0-dev libtag1-dev libmagic-dev sox libsox-fmt-mp3
+
+- Checkout:
+
+    go get -v -insecure -u dev.sigpipe.me/dashie/reel2bits
 
 Edit config: conf/app.ini
 

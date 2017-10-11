@@ -53,6 +53,7 @@ $(EXECUTABLE): $(SOURCES)
 
 clean:
 	go clean -i ./...
+	rm -f integrations.*.test
 
 clean-mac: clean
 	find . -name ".DS_Store" -delete
@@ -62,7 +63,7 @@ test: fmt-check
 
 
 required-gofmt-version:
-	@go version  | grep -q '\(1.7\|1.8\)' || { echo "We require go version 1.7 or 1.8 to format code" >&2 && exit 1; }
+	@go version  | grep -q '\(1.7\|1.8\|1.9\)' || { echo "We require go version 1.7, 1.8 or 1.9 to format code" >&2 && exit 1; }
 
 .PHONY: fmt
 fmt: required-gofmt-version
