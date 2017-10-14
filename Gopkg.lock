@@ -17,7 +17,6 @@
   name = "github.com/RichardKnop/machinery"
   packages = ["v1","v1/backends","v1/brokers","v1/common","v1/config","v1/log","v1/retry","v1/tasks"]
   revision = "68f4317d72d399650e9297fca69a297fcb1ba73b"
-  version = "v1.0.4"
 
 [[projects]]
   branch = "master"
@@ -394,6 +393,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "46e2501ddecb5cfdd5080ae804f1e845d95b1b65143c47ce65d5c764f86da98b"
+  inputs-digest = "93f51e12197b31ff9cd315691f6862cb190822d3d263363d46386bed75b05080"
   solver-name = "gps-cdcl"
   solver-version = 1
