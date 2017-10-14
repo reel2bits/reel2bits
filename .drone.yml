@@ -15,8 +15,6 @@ pipeline:
       GOPATH: /srv/app
     commands:
       - apk -U add sox sox-dev taglib taglib-dev libmagic file-dev
-      - go get github.com/Masterminds/glide
-      - glide install
       - make clean
       - make vet
       - make lint
