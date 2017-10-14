@@ -1,0 +1,146 @@
+
+# Gopkg.toml example
+#
+# Refer to https://github.com/golang/dep/blob/master/docs/Gopkg.toml.md
+# for detailed Gopkg.toml documentation.
+#
+# required = ["github.com/user/thing/cmd/thing"]
+# ignored = ["github.com/user/project/pkgX", "bitbucket.org/user/project/pkgA/pkgY"]
+#
+# [[constraint]]
+#   name = "github.com/user/project"
+#   version = "1.0.0"
+#
+# [[constraint]]
+#   name = "github.com/user/project2"
+#   branch = "dev"
+#   source = "github.com/myfork/project2"
+#
+# [[override]]
+#  name = "github.com/x/y"
+#  version = "2.4.0"
+
+
+[[constraint]]
+  name = "github.com/PuerkitoBio/goquery"
+  version = "1.1.0"
+
+[[constraint]]
+  name = "github.com/RichardKnop/machinery"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/Unknwon/com"
+
+[[constraint]]
+  name = "github.com/Unknwon/i18n"
+
+[[constraint]]
+  name = "github.com/Unknwon/paginater"
+
+[[constraint]]
+  name = "github.com/denisenkom/go-mssqldb"
+
+[[constraint]]
+  name = "github.com/dustin/go-humanize"
+
+[[constraint]]
+  name = "github.com/getsentry/raven-go"
+
+[[constraint]]
+  name = "github.com/go-macaron/binding"
+
+[[constraint]]
+  name = "github.com/go-macaron/cache"
+
+[[constraint]]
+  name = "github.com/go-macaron/csrf"
+
+[[constraint]]
+  name = "github.com/go-macaron/i18n"
+
+[[constraint]]
+  name = "github.com/go-macaron/session"
+
+[[constraint]]
+  name = "github.com/go-macaron/toolbox"
+
+[[constraint]]
+  name = "github.com/go-sql-driver/mysql"
+  version = "1.3.0"
+
+[[constraint]]
+  name = "github.com/go-testfixtures/testfixtures"
+  version = "2.4.1"
+
+[[constraint]]
+  name = "github.com/go-xorm/core"
+  version = "0.5.6"
+
+[[constraint]]
+  name = "github.com/go-xorm/xorm"
+  version = "0.6.2"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/gogits/cron"
+
+[[constraint]]
+  name = "github.com/gosimple/slug"
+  version = "1.0.3"
+
+[[constraint]]
+  name = "github.com/jaytaylor/html2text"
+
+[[constraint]]
+  name = "github.com/krig/go-sox"
+
+[[constraint]]
+  name = "github.com/lib/pq"
+
+[[constraint]]
+  name = "github.com/mattn/go-sqlite3"
+  version = "1.2.0"
+
+[[constraint]]
+  name = "github.com/microcosm-cc/bluemonday"
+
+[[constraint]]
+  name = "github.com/rakyll/magicmime"
+
+[[constraint]]
+  name = "github.com/russross/blackfriday"
+  version = "1.4.0"
+
+[[constraint]]
+  name = "github.com/smartystreets/goconvey"
+  version = "1.6.2"
+
+[[constraint]]
+  name = "github.com/stretchr/testify"
+  version = "1.1.4"
+
+[[constraint]]
+  name = "github.com/urfave/cli"
+  version = "1.19.1"
+
+[[constraint]]
+  name = "github.com/wtolson/go-taglib"
+
+[[constraint]]
+  name = "golang.org/x/crypto"
+
+[[constraint]]
+  name = "golang.org/x/net"
+
+[[constraint]]
+  name = "gopkg.in/clog.v1"
+
+[[constraint]]
+  name = "gopkg.in/gomail.v2"
+
+[[constraint]]
+  name = "gopkg.in/ini.v1"
+
+[[constraint]]
+  name = "gopkg.in/macaron.v1"
