@@ -79,7 +79,7 @@ func (track *TrackInfo) AfterSet(colName string, _ xorm.Cell) {
 // CreateTrackInfo or error
 func CreateTrackInfo(t *TrackInfo) (err error) {
 	sess := x.NewSession()
-	defer sessionRelease(sess)
+	defer sess.Close()
 	if err = sess.Begin(); err != nil {
 		return err
 	}
