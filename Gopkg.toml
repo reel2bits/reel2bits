@@ -27,7 +27,7 @@
 
 [[constraint]]
   name = "github.com/RichardKnop/machinery"
-  revision = "68f4317d72d399650e9297fca69a297fcb1ba73b"
+  revision = "c42d92ff7e860f492d8e62c11cb96911942cece8"
 
 [[constraint]]
   branch = "master"

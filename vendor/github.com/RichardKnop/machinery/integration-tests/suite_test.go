@@ -22,8 +22,7 @@ func (a ascendingInt64s) Less(i, j int) bool { return a[i] < a[j] }
 
 func testAll(server *machinery.Server, t *testing.T) {
 	testSendTask(server, t)
-	testSendGroup(server, t, 0) // with unlimited concurrency
-	testSendGroup(server, t, 2) // with limited concurrency (2 parallel tasks at the most)
+	testSendGroup(server, t)
 	testSendChord(server, t)
 	testSendChain(server, t)
 	testReturnJustError(server, t)
@@ -58,11 +57,11 @@ func testSendTask(server *machinery.Server, t *testing.T) {
 	}
 }
 
-func testSendGroup(server *machinery.Server, t *testing.T, sendConcurrency int) {
+func testSendGroup(server *machinery.Server, t *testing.T) {
 	t1, t2, t3 := newAddTask(1, 1), newAddTask(2, 2), newAddTask(5, 6)
 
 	group := tasks.NewGroup(t1, t2, t3)
-	asyncResults, err := server.SendGroup(group, sendConcurrency)
+	asyncResults, err := server.SendGroup(group)
 	if err != nil {
 		t.Error(err)
 	}
@@ -131,7 +130,7 @@ func testSendChord(server *machinery.Server, t *testing.T) {
 
 	group := tasks.NewGroup(t1, t2, t3)
 	chord := tasks.NewChord(group, t4)
-	chordAsyncResult, err := server.SendChord(chord, 10)
+	chordAsyncResult, err := server.SendChord(chord)
 	if err != nil {
 		t.Error(err)
 	}
