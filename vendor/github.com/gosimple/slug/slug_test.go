@@ -207,6 +207,7 @@ func TestSlugMakeSmartTruncate(t *testing.T) {
 }
 
 func TestIsSlug(t *testing.T) {
+	MaxLength = 0
 	type args struct {
 		text string
 	}
@@ -218,8 +219,14 @@ func TestIsSlug(t *testing.T) {
 		{"some", args{"some"}, true},
 		{"with -", args{"some-more"}, true},
 		{"with _", args{"some_more"}, true},
+		{"with numbers", args{"number-2"}, true},
+		{"empty string", args{""}, false},
 		{"upper case", args{"Some-more"}, false},
 		{"space", args{"some more"}, false},
+		{"starts with '-'", args{"-some"}, false},
+		{"ends with '-'", args{"some-"}, false},
+		{"starts with '_'", args{"_some"}, false},
+		{"ends with '_'", args{"some_"}, false},
 		{"outside ASCII", args{"Dobrosław Żybort"}, false},
 		{"outside ASCII –", args{"2000–2013"}, false},
 		{"smile ☺", args{"smile ☺"}, false},
@@ -231,6 +238,14 @@ func TestIsSlug(t *testing.T) {
 			}
 		})
 	}
+
+	t.Run("MaxLength", func(t *testing.T) {
+		MaxLength = 4
+		if got := IsSlug("012345"); got != false {
+			t.Errorf("IsSlug() = %v, want %v", got, false)
+		}
+		MaxLength = 0
+	})
 }
 
 func BenchmarkMakeShortAscii(b *testing.B) {

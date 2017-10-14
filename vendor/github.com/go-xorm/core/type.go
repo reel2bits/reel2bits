@@ -54,7 +54,7 @@ func (s *SQLType) IsNumeric() bool {
 }
 
 func (s *SQLType) IsJson() bool {
-	return s.Name == Json
+	return s.Name == Json || s.Name == Jsonb
 }
 
 var (
@@ -100,7 +100,8 @@ var (
 	LongBlob   = "LONGBLOB"
 	Bytea      = "BYTEA"
 
-	Bool = "BOOL"
+	Bool    = "BOOL"
+	Boolean = "BOOLEAN"
 
 	Serial    = "SERIAL"
 	BigSerial = "BIGSERIAL"
@@ -163,7 +164,7 @@ var (
 	uintTypes = sort.StringSlice{"*uint", "*uint16", "*uint32", "*uint8"}
 )
 
-// !nashtsai! treat following var as interal const values, these are used for reflect.TypeOf comparision
+// !nashtsai! treat following var as interal const values, these are used for reflect.TypeOf comparison
 var (
 	c_EMPTY_STRING       string
 	c_BOOL_DEFAULT       bool

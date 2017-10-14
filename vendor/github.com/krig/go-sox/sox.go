@@ -288,6 +288,22 @@ func (f *Format) DeleteComments() {
 	C.sox_delete_comments(&f.cFormat.oob.comments)
 }
 
+func NewEncodingInfo(encoding C.sox_encoding_t, bitsPerSample uint, compression float64, oppositeEndian bool) *EncodingInfo {
+	var e EncodingInfo
+	e.cEncoding = &C.sox_encodinginfo_t{}
+	e.cEncoding.encoding = encoding
+	e.cEncoding.bits_per_sample = C.unsigned(bitsPerSample)
+	e.cEncoding.compression = C.double(compression)
+	e.cEncoding.reverse_bytes = NO
+	e.cEncoding.reverse_nibbles = NO
+	if oppositeEndian {
+		e.cEncoding.opposite_endian = C.sox_bool(1)
+	} else {
+		e.cEncoding.opposite_endian = C.sox_bool(0)
+	}
+	return &e
+}
+
 func NewSignalInfo(rate float64, channels, precision uint, length uint64, mult *float64) *SignalInfo {
 	var s SignalInfo
 	s.cSignal = &C.sox_signalinfo_t{}

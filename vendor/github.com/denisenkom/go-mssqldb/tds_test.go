@@ -97,7 +97,7 @@ func TestSendSqlBatch(t *testing.T) {
 	}
 
 	ch := make(chan tokenStruct, 5)
-	go processResponse(context.Background(), conn, ch)
+	go processResponse(context.Background(), conn, ch, nil)
 
 	var lastRow []interface{}
 loop:
@@ -147,7 +147,9 @@ func makeConnStr(t *testing.T) *url.URL {
 			t.Fatal("unable to parse SQLSERVER_DSN as URL", err)
 		}
 		values := parsed.Query()
-		values.Set("log", "127")
+		if values.Get("log") == "" {
+			values.Set("log", "127")
+		}
 		parsed.RawQuery = values.Encode()
 		return parsed
 	}
@@ -196,35 +198,6 @@ func TestConnect(t *testing.T) {
 		return
 	}
 	defer conn.Close()
-}
-
-func TestBadConnect(t *testing.T) {
-	var badDSNs []string
-
-	if parsed, err := url.Parse(os.Getenv("SQLSERVER_DSN")); err == nil {
-		parsed.User = url.UserPassword("baduser", "badpwd")
-		badDSNs = append(badDSNs, parsed.String())
-	}
-	if len(os.Getenv("HOST")) > 0 && len(os.Getenv("INSTANCE")) > 0 {
-		badDSNs = append(badDSNs,
-			fmt.Sprintf(
-				"Server=%s\\%s;User ID=baduser;Password=badpwd",
-				os.Getenv("HOST"), os.Getenv("INSTANCE"),
-			),
-		)
-	}
-	SetLogger(testLogger{t})
-	for _, badDsn := range badDSNs {
-		conn, err := sql.Open("mssql", badDsn)
-		if err != nil {
-			t.Error("Open connection failed:", err.Error())
-		}
-		defer conn.Close()
-		err = conn.Ping()
-		if err == nil {
-			t.Error("Ping should fail for connection: ", badDsn)
-		}
-	}
 }
 
 func simpleQuery(conn *sql.DB, t *testing.T) (stmt *sql.Stmt) {

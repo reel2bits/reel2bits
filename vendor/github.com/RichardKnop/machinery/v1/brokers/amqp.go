@@ -26,10 +26,10 @@ func NewAMQPBroker(cnf *config.Config) Interface {
 }
 
 // StartConsuming enters a loop and waits for incoming messages
-func (b *AMQPBroker) StartConsuming(consumerTag string, taskProcessor TaskProcessor) (bool, error) {
+func (b *AMQPBroker) StartConsuming(consumerTag string, concurrency int, taskProcessor TaskProcessor) (bool, error) {
 	b.startConsuming(consumerTag, taskProcessor)
 
-	conn, channel, queue, _, err := b.Connect(
+	conn, channel, queue, _, amqpCloseChan, err := b.Connect(
 		b.cnf.Broker,
 		b.cnf.TLSConfig,
 		b.cnf.AMQP.Exchange,     // exchange name
@@ -71,7 +71,7 @@ func (b *AMQPBroker) StartConsuming(consumerTag string, taskProcessor TaskProces
 
 	log.INFO.Print("[*] Waiting for messages. To exit press CTRL+C")
 
-	if err := b.consume(deliveries, taskProcessor); err != nil {
+	if err := b.consume(deliveries, concurrency, taskProcessor, amqpCloseChan); err != nil {
 		return b.retry, err
 	}
 
@@ -104,7 +104,7 @@ func (b *AMQPBroker) Publish(signature *tasks.Signature) error {
 		return fmt.Errorf("JSON marshal error: %s", err)
 	}
 
-	conn, channel, _, confirmsChan, err := b.Connect(
+	conn, channel, _, confirmsChan, _, err := b.Connect(
 		b.cnf.Broker,
 		b.cnf.TLSConfig,
 		b.cnf.AMQP.Exchange,     // exchange name
@@ -148,13 +148,12 @@ func (b *AMQPBroker) Publish(signature *tasks.Signature) error {
 
 // consume takes delivered messages from the channel and manages a worker pool
 // to process tasks concurrently
-func (b *AMQPBroker) consume(deliveries <-chan amqp.Delivery, taskProcessor TaskProcessor) error {
-	maxWorkers := b.cnf.MaxWorkerInstances
-	pool := make(chan struct{}, maxWorkers)
+func (b *AMQPBroker) consume(deliveries <-chan amqp.Delivery, concurrency int, taskProcessor TaskProcessor, amqpCloseChan <-chan *amqp.Error) error {
+	pool := make(chan struct{}, concurrency)
 
 	// initialize worker pool with maxWorkers workers
 	go func() {
-		for i := 0; i < maxWorkers; i++ {
+		for i := 0; i < concurrency; i++ {
 			pool <- struct{}{}
 		}
 	}()
@@ -167,10 +166,12 @@ func (b *AMQPBroker) consume(deliveries <-chan amqp.Delivery, taskProcessor Task
 
 	for {
 		select {
+		case amqpErr := <-amqpCloseChan:
+			return amqpErr
 		case err := <-errorsChan:
 			return err
 		case d := <-deliveries:
-			if maxWorkers != 0 {
+			if concurrency > 0 {
 				// get worker from pool (blocks until one is available)
 				<-pool
 			}
@@ -186,7 +187,7 @@ func (b *AMQPBroker) consume(deliveries <-chan amqp.Delivery, taskProcessor Task
 					errorsChan <- err
 				}
 
-				if maxWorkers != 0 {
+				if concurrency > 0 {
 					// give worker back to pool
 					pool <- struct{}{}
 				}
@@ -256,7 +257,7 @@ func (b *AMQPBroker) delay(signature *tasks.Signature, delayMs int64) error {
 		// Time after that the queue will be deleted.
 		"x-expires": delayMs * 2,
 	}
-	conn, channel, _, _, err := b.Connect(
+	conn, channel, _, _, _, err := b.Connect(
 		b.cnf.Broker,
 		b.cnf.TLSConfig,
 		b.cnf.AMQP.Exchange,                     // exchange name

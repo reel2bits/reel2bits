@@ -230,19 +230,18 @@ import (
   "github.com/RichardKnop/machinery/v1"
 )
 
-var cnf = config.Config{
+var cnf = &config.Config{
   Broker:             "amqp://guest:guest@localhost:5672/",
+  DefaultQueue:       "machinery_tasks",
   ResultBackend:      "amqp://guest:guest@localhost:5672/",
-  MaxWorkerInstances: 0,
-  AMQP:               config.AMQPConfig{
+  AMQP:               &config.AMQPConfig{
     Exchange:     "machinery_exchange",
     ExchangeType: "direct",
-    DefaultQueue: "machinery_tasks",
     BindingKey:   "machinery_task",
   },
 }
 
-server, err := machinery.NewServer(&cnf)
+server, err := machinery.NewServer(cnf)
 if err != nil {
   // do something with the error
 }
@@ -253,7 +252,7 @@ if err != nil {
 In order to consume tasks, you need to have one or more workers running. All you need to run a worker is a `Server` instance with registered tasks. E.g.:
 
 ```go
-worker := server.NewWorker("worker_name")
+worker := server.NewWorker("worker_name", 10)
 err := worker.Launch()
 if err != nil {
   // do something with the error
@@ -261,9 +260,8 @@ if err != nil {
 ```
 
 Each worker will only consume registered tasks. For each task on the queue the Worker.Process() method will will be run
-in a goroutine. Use the `MaxWorkerInstances` config option to limit the number of concurrently running Worker.Process()
-calls (per worker). `MaxWorkerInstances = 1` will serialize task execution. `MaxWorkerInstances = 0` makes the number of
-concurrently executed tasks unlimited (default).
+in a goroutine. Use the second parameter of `server.NewWorker` to limit the number of concurrently running Worker.Process()
+calls (per worker). Example: 1 will serialize task execution while 0 makes the number of concurrently executed tasks unlimited (default).
 
 ### Tasks
 
@@ -825,16 +823,10 @@ brew install mongodb
 
 According to [Go 1.5 Vendor experiment](https://docs.google.com/document/d/1Bz5-UB7g2uPBdOx-rw5t9MxJwkfpx90cqG9AFL0JAYo), all dependencies are stored in the vendor directory. This approach is called `vendoring` and is the best practice for Go projects to lock versions of dependencies in order to achieve reproducible builds.
 
-To update dependencies during development:
+This project uses [dep](https://github.com/golang/dep) for dependency management. To update dependencies during development:
 
 ```sh
-make update-deps
-```
-
-To install dependencies:
-
-```sh
-make install-deps
+dep ensure
 ```
 
 #### Testing

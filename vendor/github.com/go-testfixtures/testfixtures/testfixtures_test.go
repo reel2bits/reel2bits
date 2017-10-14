@@ -31,7 +31,7 @@ var databases = []databaseTest{}
 
 func TestLoadFixtures(t *testing.T) {
 	if len(databases) == 0 {
-		t.Error("No database choosen for tests!")
+		t.Error("No database chosen for tests!")
 	}
 
 	for _, database := range databases {
@@ -80,6 +80,50 @@ func TestLoadFixtures(t *testing.T) {
 			t.Error(err)
 		} else if err := context.Load(); err != nil {
 			t.Error(err)
+		}
+	}
+}
+
+func TestQuoteKeyword(t *testing.T) {
+	tests := []struct {
+		Helper   Helper
+		Keyword  string
+		Expected string
+	}{
+		{&PostgreSQL{}, `posts_tags`, `"posts_tags"`},
+		{&PostgreSQL{}, `test_schema.posts_tags`, `"test_schema"."posts_tags"`},
+	}
+
+	for _, test := range tests {
+		actual := test.Helper.quoteKeyword(test.Keyword)
+
+		if test.Expected != actual {
+			t.Errorf("TestQuoteKeyword keyword %s should have escaped to %s. Received %s instead", test.Keyword, test.Expected, actual)
+		}
+	}
+}
+
+func TestDatabaseNameHelperSurfacesErrors(t *testing.T) {
+	if len(databases) == 0 {
+		t.Error("No database chosen for tests!")
+	}
+
+	for _, database := range databases {
+		connString := os.Getenv(database.connEnv)
+
+		fmt.Printf("Test for %s\n", database.name)
+
+		db, err := sql.Open(database.name, connString)
+		if err != nil {
+			log.Fatalf("Failed to connect to database: %v\n", err)
+		}
+
+		// Ensure a connection error occurs
+		db.Close()
+
+		_, err = database.helper.databaseName(db)
+		if err == nil {
+			t.Error("Expected databaseName to surface error")
 		}
 	}
 }

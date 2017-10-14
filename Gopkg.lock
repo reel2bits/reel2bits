@@ -8,20 +8,22 @@
   version = "v1.1.0"
 
 [[projects]]
+  branch = "master"
   name = "github.com/RichardKnop/logging"
   packages = ["."]
-  revision = "0745ebe7cc826d7d0453c7c9f08ea75a7fe86f7b"
+  revision = "c29d67bd732ba53b98680ceacd5131d8ec3bd285"
 
 [[projects]]
   name = "github.com/RichardKnop/machinery"
   packages = ["v1","v1/backends","v1/brokers","v1/common","v1/config","v1/log","v1/retry","v1/tasks"]
-  revision = "c42d92ff7e860f492d8e62c11cb96911942cece8"
+  revision = "68f4317d72d399650e9297fca69a297fcb1ba73b"
+  version = "v1.0.4"
 
 [[projects]]
   branch = "master"
   name = "github.com/Unknwon/com"
   packages = ["."]
-  revision = "0db4a625e949e956314d7d1adea9bf82384cc10c"
+  revision = "7677a1d7c1137cd3dd5ba7a076d0c898a1ef4520"
 
 [[projects]]
   branch = "master"
@@ -50,43 +52,50 @@
 [[projects]]
   name = "github.com/certifi/gocertifi"
   packages = ["."]
-  revision = "a9c833d2837d3b16888d55d5aafa9ffe9afb22b0"
-  version = "2017.04.17"
+  revision = "3fd9e1adb12b72d2f3f82191d49be9b93c69f67c"
+  version = "2017.07.27"
 
 [[projects]]
   name = "github.com/davecgh/go-spew"
   packages = ["spew"]
-  revision = "6d212800a42e8ab5c146b8ace3490ee17e5225f9"
+  revision = "346938d642f2ec3594ed81d874461961cd0faa76"
+  version = "v1.1.0"
 
 [[projects]]
+  branch = "master"
   name = "github.com/denisenkom/go-mssqldb"
   packages = ["."]
-  revision = "f77039e4e9bc788cb0406a666f410abee0ca1580"
+  revision = "88555645b640cc621e32f8693d7586a1aa1575f4"
 
 [[projects]]
+  branch = "master"
   name = "github.com/dustin/go-humanize"
   packages = ["."]
-  revision = "259d2a102b871d17f30e3cd9881a642961a1e486"
+  revision = "77ed807830b4df581417e7f89eb81d4872832b72"
 
 [[projects]]
   name = "github.com/fatih/color"
   packages = ["."]
-  revision = "62e9147c64a1ed519147b62a56a14e83e2be02c1"
+  revision = "570b54cabe6b8eb0bc2dfce68d964677d63b5260"
+  version = "v1.5.0"
 
 [[projects]]
   name = "github.com/garyburd/redigo"
   packages = ["internal","redis"]
-  revision = "95d11dba2d44531bdb8022752b98912baafae03a"
+  revision = "433969511232c397de61b1442f9fd49ec06ae9ba"
+  version = "v1.1.0"
 
 [[projects]]
+  branch = "master"
   name = "github.com/getsentry/raven-go"
   packages = ["."]
-  revision = "4fa2ac0d29f801e79a063c0da82d37b5ff2873b2"
+  revision = "1452f6376ddb15c546b6d7567e1d9518765391b5"
 
 [[projects]]
+  branch = "master"
   name = "github.com/go-macaron/binding"
   packages = ["."]
-  revision = "1513c901915731e941815f60ede6a9c21c69a550"
+  revision = "ac54ee249c27dca7e76fad851a4a04b73bd1b183"
 
 [[projects]]
   branch = "master"
@@ -133,8 +142,8 @@
 [[projects]]
   name = "github.com/go-testfixtures/testfixtures"
   packages = ["."]
-  revision = "c436304eb1a52ddc030e8f6f939a881c5b0dfe5f"
-  version = "v2.4.1"
+  revision = "e34263135c9fc3e6710268b1ba3a9b73fb7104d2"
+  version = "v2.4.2"
 
 [[projects]]
   branch = "master"
@@ -145,14 +154,14 @@
 [[projects]]
   name = "github.com/go-xorm/core"
   packages = ["."]
-  revision = "5bf745d7d163f4380e6c2bba8c4afa60534dd087"
-  version = "v0.5.6"
+  revision = "da1adaf7a28ca792961721a34e6e04945200c890"
+  version = "v0.5.7"
 
 [[projects]]
   name = "github.com/go-xorm/xorm"
   packages = ["."]
-  revision = "3c8314e91603f0bfa6a228c1a0fea8a9e298f6d9"
-  version = "v0.6.2"
+  revision = "d7f04c3cecff8d8c9321b2c39940e1992ce9f01a"
+  version = "v0.6.3"
 
 [[projects]]
   branch = "master"
@@ -161,20 +170,22 @@
   revision = "c803a08f3bd6f5d5f0281e5ef6a5e09b28488ed7"
 
 [[projects]]
+  branch = "master"
   name = "github.com/gopherjs/gopherjs"
   packages = ["js"]
-  revision = "7cde3d36aea3e1b3be7827c4dcbe6bbae73d012e"
+  revision = "415225646bb92c4449bb484646f2c95a98402f6f"
 
 [[projects]]
   name = "github.com/gosimple/slug"
   packages = ["."]
-  revision = "e756f2ec7e1e59e2ef20938fac5e677842641777"
-  version = "v1.1.0"
+  revision = "e9f42fa127660e552d0ad2b589868d403a9be7c6"
+  version = "v1.1.1"
 
 [[projects]]
+  branch = "master"
   name = "github.com/jaytaylor/html2text"
   packages = ["."]
-  revision = "7c7a33a7a158a5ce395c803d2b6a209b2bbc14c8"
+  revision = "0ee88d3006305456b84cad14a24b2576f9411965"
 
 [[projects]]
   name = "github.com/jtolds/gls"
@@ -185,33 +196,38 @@
 [[projects]]
   name = "github.com/kelseyhightower/envconfig"
   packages = ["."]
-  revision = "70f0258d44cbaa3b6a2581d82f58da01a38e4de4"
+  revision = "f611eb38b3875cc3bd991ca91c51d06446afa14c"
+  version = "v1.3.0"
 
 [[projects]]
+  branch = "master"
   name = "github.com/krig/go-sox"
   packages = ["."]
-  revision = "875901c9b7fa706bc17c59afd07681edfe32ca6e"
+  revision = "2995aa087f0edbce66f25037af7ca6771a74da74"
 
 [[projects]]
+  branch = "master"
   name = "github.com/lib/pq"
   packages = [".","oid"]
-  revision = "91f10e40ba0dd2d0bf9f93ec1d4077711a78df88"
+  revision = "017e4c14d80628353eaee677a1aeffe47a10c0dc"
 
 [[projects]]
   name = "github.com/mattn/go-colorable"
   packages = ["."]
-  revision = "5411d3eea5978e6cdc258b30de592b60df6aba96"
+  revision = "167de6bfdfba052fa6b2d3664c8f5272e23c9072"
+  version = "v0.0.9"
 
 [[projects]]
   name = "github.com/mattn/go-isatty"
   packages = ["."]
-  revision = "57fdcb988a5c543893cc61bce354a6e24ab70022"
+  revision = "0360b2af4f38e8d38c7fce2a9f4e702702d73a39"
+  version = "v0.0.3"
 
 [[projects]]
-  branch = "master"
   name = "github.com/mattn/go-runewidth"
   packages = ["."]
-  revision = "97311d9f7767e3d6f422ea06661bc2c7a19e8a5d"
+  revision = "9e777a8366cce605130a531d2cd6363d07ad7317"
+  version = "v0.0.2"
 
 [[projects]]
   name = "github.com/mattn/go-sqlite3"
@@ -220,19 +236,22 @@
   version = "v1.2.0"
 
 [[projects]]
+  branch = "master"
   name = "github.com/microcosm-cc/bluemonday"
   packages = ["."]
-  revision = "e79763773ab6222ca1d5a7cbd9d62d83c1f77081"
+  revision = "68fecaef60268522d2ac3f0123cec9d3bcab7b6e"
 
 [[projects]]
+  branch = "master"
   name = "github.com/olekukonko/tablewriter"
   packages = ["."]
-  revision = "febf2d34b54a69ce7530036c7503b1c9fbfdf0bb"
+  revision = "a7a4c189eb47ed33ce7b35f2880070a0c82a67d4"
 
 [[projects]]
   name = "github.com/pmezard/go-difflib"
   packages = ["difflib"]
-  revision = "d8ed2627bdf02c080bf22230dbb337003b7aba2d"
+  revision = "792786c7400a136282c1664665ae0a8db921c6c2"
+  version = "v1.0.0"
 
 [[projects]]
   branch = "master"
@@ -249,40 +268,38 @@
 [[projects]]
   name = "github.com/russross/blackfriday"
   packages = ["."]
-  revision = "0b647d0506a698cca42caca173e55559b12a69f2"
-  version = "v1.4"
+  revision = "4048872b16cc0fc2c5fd9eacf0ed2c2fedaa0c8c"
+  version = "v1.5"
 
 [[projects]]
-  branch = "master"
   name = "github.com/satori/go.uuid"
   packages = ["."]
-  revision = "5bf94b69c6b68ee1b541973bb8e1144db23a194b"
-
-[[projects]]
-  name = "github.com/shurcooL/sanitized_anchor_name"
-  packages = ["."]
-  revision = "541ff5ee47f1dddf6a5281af78307d921524bcb5"
+  revision = "879c5887cd475cd7864858769793b2ceb0d44feb"
+  version = "v1.1.0"
 
 [[projects]]
   name = "github.com/smartystreets/assertions"
   packages = [".","internal/go-render/render","internal/oglematchers"]
-  revision = "8d53f0381cdc56c7e0f06f4995d21cd04c5a53a8"
+  revision = "ff1918e1e5a13a74014644ae7c1e0ba2f791364d"
+  version = "1.8.0"
 
 [[projects]]
   name = "github.com/smartystreets/goconvey"
   packages = ["convey","convey/gotest","convey/reporting"]
-  revision = "d4c757aa9afd1e2fc1832aaab209b5794eb336e1"
-  version = "1.6.2"
+  revision = "9e8dc3f972df6c8fcc0375ef492c24d0bb204857"
+  version = "1.6.3"
 
 [[projects]]
+  branch = "master"
   name = "github.com/ssor/bom"
   packages = ["."]
-  revision = "6ed919a936d5ab554e4b40bc51f7c522488122c6"
+  revision = "6386211fdfcf24c0bfbdaceafd02849ed9a8a509"
 
 [[projects]]
+  branch = "master"
   name = "github.com/streadway/amqp"
   packages = ["."]
-  revision = "dfe15e36048539f4cda41f240b27a5ca25b9cd46"
+  revision = "7db842394ca79f338f781d47bc59115f44adb20b"
 
 [[projects]]
   name = "github.com/stretchr/testify"
@@ -293,8 +310,8 @@
 [[projects]]
   name = "github.com/urfave/cli"
   packages = ["."]
-  revision = "0bdeddeeb0f650497d603c4ad7b20cfe685682f6"
-  version = "v1.19.1"
+  revision = "cfb38830724cc34fedffe9a2a29fb54fa9169cd1"
+  version = "v1.20.0"
 
 [[projects]]
   branch = "master"
@@ -303,24 +320,28 @@
   revision = "6e68349ff94ecea412de7e748cb5eaa26f472777"
 
 [[projects]]
+  branch = "master"
   name = "golang.org/x/crypto"
   packages = ["md4","pbkdf2"]
-  revision = "e1a4589e7d3ea14a3352255d04b6f1a418845e5e"
+  revision = "9419663f5a44be8b34ca85f08abc5fe1be11f8a3"
 
 [[projects]]
+  branch = "master"
   name = "golang.org/x/net"
   packages = ["context","html","html/atom"]
-  revision = "3da985ce5951d99de868be4385f21ea6c2b22f24"
+  revision = "a04bdaca5b32abe1c069418fb7088ae607de5bd0"
 
 [[projects]]
+  branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "e24f485414aeafb646f6fca458b0bf869c0880a1"
+  revision = "686000749eaec0b8855b8eef5336cf63899fe51d"
 
 [[projects]]
+  branch = "master"
   name = "golang.org/x/text"
   packages = ["internal/gen","internal/tag","language","unicode/cldr"]
-  revision = "4ee4af566555f5fbe026368b75596286a312663a"
+  revision = "c01e4764d870b77f8abe5096ee19ad20d80e8075"
 
 [[projects]]
   branch = "v3"
@@ -335,22 +356,22 @@
   version = "v1.1.1"
 
 [[projects]]
-  branch = "v2"
   name = "gopkg.in/gomail.v2"
   packages = ["."]
-  revision = "81ebce5c23dfd25c6c67194b37d3dd3f338c98b1"
+  revision = "41f3572897373c5538c50a2402db15db079fa4fd"
+  version = "2.0.0"
 
 [[projects]]
   name = "gopkg.in/ini.v1"
   packages = ["."]
-  revision = "d3de07a94d22b4a0972deb4b96d790c2c0ce8333"
-  version = "v1.28.0"
+  revision = "3321baafb1bb36f5288e5fff1c7cc98abd4c173a"
+  version = "v1.29.2"
 
 [[projects]]
   name = "gopkg.in/macaron.v1"
   packages = ["."]
-  revision = "a325110f8b392bce3e5cdeb8c44bf98078ada3be"
-  version = "v1.2.1"
+  revision = "97f995df0bf34ca1a77c00704c9278476275566b"
+  version = "v1.2.2"
 
 [[projects]]
   branch = "v2"
@@ -365,9 +386,10 @@
   version = "v1.0.1"
 
 [[projects]]
+  branch = "v2"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
-  revision = "cd8b52f8269e0feb286dfeef29f8fe4d5b397e0b"
+  revision = "eb3733d160e74a9c7e442f435eb3bea458e1d19f"
 
 [solve-meta]
   analyzer-name = "dep"

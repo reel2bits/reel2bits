@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"time"
@@ -96,7 +97,7 @@ func worker() error {
 
 	// The second argument is a consumer tag
 	// Ideally, each worker should have a unique tag (worker1, worker2 etc)
-	worker := server.NewWorker("machinery_worker")
+	worker := server.NewWorker("machinery_worker", 0)
 
 	if err := worker.Launch(); err != nil {
 		return err
@@ -201,7 +202,7 @@ func send() error {
 	log.INFO.Println("Group of tasks (parallel execution):")
 
 	group := tasks.NewGroup(&task0, &task1, &task2)
-	asyncResults, err := server.SendGroup(group)
+	asyncResults, err := server.SendGroup(group, 10)
 	if err != nil {
 		return fmt.Errorf("Could not send group: %s", err.Error())
 	}
@@ -225,7 +226,7 @@ func send() error {
 
 	group = tasks.NewGroup(&task0, &task1, &task2)
 	chord := tasks.NewChord(group, &task4)
-	chordAsyncResult, err := server.SendChord(chord)
+	chordAsyncResult, err := server.SendChord(chord, 10)
 	if err != nil {
 		return fmt.Errorf("Could not send chord: %s", err.Error())
 	}
@@ -258,6 +259,12 @@ func send() error {
 	if err != nil {
 		return fmt.Errorf("Could not send task: %s", err.Error())
 	}
+
+	_, err = asyncResult.Get(time.Duration(time.Millisecond * 5))
+	if err == nil {
+		return errors.New("Error should not be nil if task panicked")
+	}
+	log.INFO.Printf("Task panicked and returned error = %v\n", err.Error())
 
 	return nil
 }
