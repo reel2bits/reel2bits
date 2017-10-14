@@ -15,6 +15,8 @@ pipeline:
       GOPATH: /srv/app
     commands:
       - apk -U add sox sox-dev taglib taglib-dev libmagic file-dev
+      - go get -u github.com/golang/dep/cmd/dep
+      - dep ensure
       - make clean
       - make vet
       - make lint
