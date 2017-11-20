@@ -150,3 +150,13 @@ release-copy:
 .PHONY: release-check
 release-check:
 	cd $(DIST)/release; $(foreach file,$(wildcard $(DIST)/release/$(EXECUTABLE)-*),sha256sum $(notdir $(file)) > $(notdir $(file)).sha256;)
+
+
+# Docker
+docker-build: docker-build-web docker-build-worker
+
+docker-build-web:
+	docker build -t dashie/reel2bits-web:latest -f Dockerfile-web .
+
+docker-build-worker:
+	docker build -t dashie/reel2bits-worker:latest -f Dockerfile-worker .

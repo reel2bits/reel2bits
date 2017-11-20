@@ -25,6 +25,45 @@ pipeline:
       - make build
     when:
       event: [ push, tag, pull_request ]
+
+  publish:
+    image: plugins/docker
+    repo: dashie/reel2bits-web
+    dockerfile: Dockerfile-web
+    tags: [ latest ]
+    secrets:
+        - DOCKER_USERNAME
+        - DOCKER_PASSWORD
+
+  publish:
+    image: plugins/docker
+    repo: dashie/reel2bits-worker
+    dockerfile: Dockerfile-worker
+    tags: [ latest ]
+    secrets:
+        - DOCKER_USERNAME
+        - DOCKER_PASSWORD
+
+  build-docker:
+    image: webhippie/golang:edge
+    pull: true
+    environment:
+      TAGS: sqlite
+      GOPATH: /srv/app
+    commands:
+      - apk -U add sox sox-dev taglib taglib-dev libmagic file-dev
+      - go get -u github.com/golang/dep/cmd/dep
+      - dep ensure
+      - git status
+      - make clean
+      - make vet
+      - make lint
+      - make misspell-check
+      - make build
+      - make build-docker
+    when:
+      event: [ push, tag, pull_request ]
+
   test:
     image: webhippie/golang:edge
     pull: true

@@ -1,0 +1,25 @@
+# vim:set ft=dockerfile:
+FROM alpine:3.6
+
+LABEL maintainer="Dashie <dashie@sigpipe.me>"
+
+LABEL org.label-schema.license=MIT \
+    org.label-schema.name=reel2bits-web \
+    org.label-schema.vcs-url=https://dev.sigpipe.me/dashie/reel2bits
+
+RUN mkdir /app /data
+COPY reel2bits /app/
+COPY conf/ /app/
+COPY entrypoint.sh /app/
+
+RUN apk --no-cache --no-progress add sox taglib libmagic tzdata libmad boost libsndfile libid3tag
+
+VOLUME ["/data"]
+
+WORKDIR /app
+
+EXPOSE 4000
+
+ENTRYPOINT ["/app/entrypoint.sh"]
+
+CMD ["/app/reel2bits", "web"]
