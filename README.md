@@ -1,5 +1,4 @@
-reel2bits
-=====
+# reel2bits
 
 Like Soundcloud but lighter, really lighter.
 
@@ -9,18 +8,19 @@ HTML5 audio player.
 
 KISS, that's all.
 
-# TODO
+## TODO
+
 - Replace transcoding by something else than sox maybe
 - Show error when mp3 file don't load
 - Maybe permit track stream/download using the server or not
 - Timezone management ? Actually all is more-or-less UTC
 - When switching song, the duration doesn't always get filled
 
-# Install
+## Install
 
 - Ubuntu/debian:
 
-    apt install libtagc0-dev libtag1-dev libmagic-dev sox libsox-fmt-mp3
+    apt install libtagc0-dev libtag1-dev libmagic-dev sox libsox-fmt-mp3 libsox-dev
 
 - Checkout:
 
@@ -31,11 +31,12 @@ Edit config: conf/app.ini
 Launch how you want the "./reel2bits web" and "./reel2bits worker"
 Or use the Systemd Unit files in "conf/" directory and adapt them
 
-# Contact, issues
+## Contact, issues
+
 - Main contact: Dashie: dashie (at) sigpipe (dot) me
-- Main repository: https://dev.sigpipe.me/dashie/reel2bits
-- Main issue tracker: https://dev.sigpipe.me/dashie/reel2bits/issues
+- Main repository: <https://dev.sigpipe.me/dashie/reel2bits>
+- Main issue tracker: <https://dev.sigpipe.me/dashie/reel2bits/issues>
 
-# Licensing
+## Licensing
+
 - MIT License
-
