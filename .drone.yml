@@ -25,25 +25,6 @@ pipeline:
       - make build
     when:
       event: [ push, tag, pull_request ]
-
-  publish:
-    image: plugins/docker
-    repo: dashie/reel2bits-web
-    dockerfile: Dockerfile-web
-    tags: [ latest ]
-    secrets:
-        - DOCKER_USERNAME
-        - DOCKER_PASSWORD
-
-  publish:
-    image: plugins/docker
-    repo: dashie/reel2bits-worker
-    dockerfile: Dockerfile-worker
-    tags: [ latest ]
-    secrets:
-        - DOCKER_USERNAME
-        - DOCKER_PASSWORD
-
   test:
     image: webhippie/golang:edge
     pull: true
@@ -65,6 +46,23 @@ pipeline:
       - make test-sqlite
     when:
       event: [ push, tag, pull_request ]
+  publish:
+    image: plugins/docker
+    repo: dashie/reel2bits-web
+    dockerfile: Dockerfile-web
+    tags: [ latest ]
+    secrets:
+        - DOCKER_USERNAME
+        - DOCKER_PASSWORD
+
+  publish:
+    image: plugins/docker
+    repo: dashie/reel2bits-worker
+    dockerfile: Dockerfile-worker
+    tags: [ latest ]
+    secrets:
+        - DOCKER_USERNAME
+        - DOCKER_PASSWORD
   notify:
     image: plugins/slack
     channel: gitea
