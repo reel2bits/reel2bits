@@ -28,6 +28,12 @@
                                 {{ DurationToHuman $track.TrackInfo.Duration }}
                             </div>
                         </div>
+
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <i class="fa fa-user-o" aria-hidden="true"></i> by <a href="{{ URLFor "track_list" ":userSlug" $track.User.Slug }}">{{ $track.User.UserName }}</a>
+                            </div>
+                        </div>
                     </div>
                     <div class="col-lg-6">
                         {{ if $track.TrackInfo.Waveform }}
