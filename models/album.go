@@ -122,7 +122,7 @@ func getAlbumByID(e Engine, id int64) (*Album, error) {
 	if err != nil {
 		return nil, err
 	} else if !has {
-		return nil, errors.AlbumNotExist{id, ""}
+		return nil, errors.AlbumNotExist{AlbumID: id, Name: ""}
 	}
 	return t, nil
 }
@@ -139,7 +139,7 @@ func GetAlbumBySlugAndUserID(id int64, slug string) (*Album, error) {
 	if err != nil {
 		return nil, err
 	} else if !has {
-		return nil, errors.AlbumNotExist{id, ""}
+		return nil, errors.AlbumNotExist{AlbumID: id, Name: ""}
 	}
 	return album, nil
 }
@@ -208,7 +208,7 @@ func DeleteAlbum(albumID int64, userID int64) error {
 	if err != nil {
 		return err
 	} else if !hasAlbum {
-		return errors.AlbumNotExist{albumID, ""}
+		return errors.AlbumNotExist{AlbumID: albumID, Name: ""}
 	}
 
 	if err = getTracksAndDeassociate(album.ID); err != nil {

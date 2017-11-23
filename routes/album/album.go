@@ -150,7 +150,7 @@ func Show(ctx *context.Context) {
 	sound, err := models.GetFirstTrackOfAlbum(album.ID, onlyReady)
 	if err != nil {
 		//ctx.Flash.Warning("Album is empty.")
-		log.Errorf("Album %d cannot get track at order 1: %s", err)
+		log.Errorf("Album %d cannot get track at order 1: %s", album.ID, err)
 		//ctx.SubURLRedirect(ctx.URLFor("home"), 404)
 		//return
 		ctx.Data["sound"] = nil

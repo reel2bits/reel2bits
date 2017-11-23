@@ -249,7 +249,7 @@ func getTrackByID(e Engine, id int64) (*Track, error) {
 	if err != nil {
 		return nil, err
 	} else if !has {
-		return nil, errors.TrackNotExist{id, ""}
+		return nil, errors.TrackNotExist{TrackID: id, Title: ""}
 	}
 	return t, nil
 }
@@ -285,7 +285,7 @@ func GetTrackBySlugAndUserID(id int64, slug string) (*Track, error) {
 	if err != nil {
 		return nil, err
 	} else if !has {
-		return nil, errors.TrackNotExist{id, ""}
+		return nil, errors.TrackNotExist{TrackID: id, Title: ""}
 	}
 	return track, nil
 }
@@ -297,7 +297,7 @@ func GetTrackByAlbumIDAndOrder(albumID int64, albumOrder int64) (*Track, error) 
 	if err != nil {
 		return nil, err
 	} else if !has {
-		return nil, errors.TrackNotExist{albumID, ""}
+		return nil, errors.TrackNotExist{TrackID: albumID, Title: ""}
 	}
 	return track, nil
 }
@@ -468,7 +468,7 @@ func DeleteTrack(trackID int64, userID int64) error {
 	if err != nil {
 		return err
 	} else if !hasTrack {
-		return errors.TrackNotExist{trackID, ""}
+		return errors.TrackNotExist{TrackID: trackID, Title: ""}
 	}
 	trackFilename := track.Filename
 	trackTranscoded := track.TranscodeState != ProcessingNotNeeded

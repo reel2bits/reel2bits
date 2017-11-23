@@ -107,7 +107,7 @@ func getTrackInfoByID(e Engine, id int64) (*TrackInfo, error) {
 	if err != nil {
 		return nil, err
 	} else if !has {
-		return nil, errors.TrackInfoNotExist{id}
+		return nil, errors.TrackInfoNotExist{TrackInfoID: id}
 	}
 	return t, nil
 }

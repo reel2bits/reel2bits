@@ -72,7 +72,7 @@ func getUserByID(e Engine, id int64) (*User, error) {
 	if err != nil {
 		return nil, err
 	} else if !has {
-		return nil, errors.UserNotExist{id, ""}
+		return nil, errors.UserNotExist{UserID: id, Name: ""}
 	}
 	return u, nil
 }
@@ -85,14 +85,14 @@ func GetUserByID(id int64) (*User, error) {
 // GetUserByName returns user by given name.
 func GetUserByName(name string) (*User, error) {
 	if len(name) == 0 {
-		return nil, errors.UserNotExist{0, name}
+		return nil, errors.UserNotExist{UserID: 0, Name: name}
 	}
 	u := &User{LowerName: strings.ToLower(name)}
 	has, err := x.Get(u)
 	if err != nil {
 		return nil, err
 	} else if !has {
-		return nil, errors.UserNotExist{0, name}
+		return nil, errors.UserNotExist{UserID: 0, Name: name}
 	}
 	return u, nil
 }
@@ -100,7 +100,7 @@ func GetUserByName(name string) (*User, error) {
 // GetUserByEmail returns the user object by given e-mail if exists.
 func GetUserByEmail(email string) (*User, error) {
 	if len(email) == 0 {
-		return nil, errors.UserNotExist{0, "email"}
+		return nil, errors.UserNotExist{UserID: 0, Name: "email"}
 	}
 
 	email = strings.ToLower(email)
@@ -113,13 +113,13 @@ func GetUserByEmail(email string) (*User, error) {
 		return user, nil
 	}
 
-	return nil, errors.UserNotExist{0, email}
+	return nil, errors.UserNotExist{UserID: 0, Name: email}
 }
 
 // GetUserBySlug or error
 func GetUserBySlug(slug string) (*User, error) {
 	if len(slug) == 0 {
-		return nil, errors.UserNotExist{0, "slug"}
+		return nil, errors.UserNotExist{UserID: 0, Name: "slug"}
 	}
 
 	user := &User{Slug: slug}
@@ -131,7 +131,7 @@ func GetUserBySlug(slug string) (*User, error) {
 		return user, nil
 	}
 
-	return nil, errors.UserNotExist{0, slug}
+	return nil, errors.UserNotExist{UserID: 0, Name: slug}
 }
 
 // IsUserExist checks if given user name exist,
@@ -269,10 +269,10 @@ func UserLogin(username, password string) (*User, error) {
 			return user, nil
 		}
 
-		return nil, errors.UserNotExist{user.ID, user.UserName}
+		return nil, errors.UserNotExist{UserID: user.ID, Name: user.UserName}
 	}
 
-	return nil, errors.UserNotExist{user.ID, user.UserName}
+	return nil, errors.UserNotExist{UserID: user.ID, Name: user.UserName}
 }
 
 // get user by verify code
