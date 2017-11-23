@@ -156,7 +156,10 @@ func GetDescriptionByLang(lang string) string {
 }
 
 func SetMessageWithDesc(lang, langDesc string, localeFile interface{}, otherLocaleFiles ...interface{}) error {
-	message, err := ini.Load(localeFile, otherLocaleFiles...)
+	message, err := ini.LoadSources(ini.LoadOptions{
+		IgnoreInlineComment:         true,
+		UnescapeValueCommentSymbols: true,
+	}, localeFile, otherLocaleFiles...)
 	if err == nil {
 		message.BlockMode = false
 		lc := new(locale)

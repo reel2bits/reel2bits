@@ -27,43 +27,54 @@
 
 [[constraint]]
   name = "github.com/RichardKnop/machinery"
-  revision = "c42d92ff7e860f492d8e62c11cb96911942cece8"
+  version = "1.0.11"
+
+[[constraint]]
+  name = "github.com/Unknwon/com"
+  branch = "master"
 
 [[constraint]]
   branch = "master"
-  name = "github.com/Unknwon/com"
-
-[[constraint]]
   name = "github.com/Unknwon/i18n"
 
 [[constraint]]
+  branch = "master"
   name = "github.com/Unknwon/paginater"
 
 [[constraint]]
+  branch = "master"
   name = "github.com/denisenkom/go-mssqldb"
 
 [[constraint]]
+  branch = "master"
   name = "github.com/dustin/go-humanize"
 
 [[constraint]]
+  branch = "master"
   name = "github.com/getsentry/raven-go"
 
 [[constraint]]
+  branch = "master"
   name = "github.com/go-macaron/binding"
 
 [[constraint]]
+  branch = "master"
   name = "github.com/go-macaron/cache"
 
 [[constraint]]
+  branch = "master"
   name = "github.com/go-macaron/csrf"
 
 [[constraint]]
+  branch = "master"
   name = "github.com/go-macaron/i18n"
 
 [[constraint]]
+  branch = "master"
   name = "github.com/go-macaron/session"
 
 [[constraint]]
+  branch = "master"
   name = "github.com/go-macaron/toolbox"
 
 [[constraint]]
@@ -72,41 +83,50 @@
 
 [[constraint]]
   name = "github.com/go-testfixtures/testfixtures"
-  version = "2.4.1"
+  version = "2.4.3"
 
 [[constraint]]
   name = "github.com/go-xorm/core"
-  version = "0.5.6"
+  version = "0.5.7"
 
 [[constraint]]
   name = "github.com/go-xorm/xorm"
-  version = "0.6.2"
+  version = "0.6.3"
 
 [[constraint]]
   branch = "master"
+  name = "github.com/gogap/logrus_mate"
+
+[[constraint]]
   name = "github.com/gogits/cron"
+  version = "1.0.0"
 
 [[constraint]]
   name = "github.com/gosimple/slug"
-  version = "1.0.3"
+  version = "1.1.1"
 
 [[constraint]]
+  branch = "master"
   name = "github.com/jaytaylor/html2text"
 
 [[constraint]]
+  branch = "master"
   name = "github.com/krig/go-sox"
 
 [[constraint]]
+  branch = "master"
   name = "github.com/lib/pq"
 
 [[constraint]]
   name = "github.com/mattn/go-sqlite3"
-  version = "1.2.0"
+  version = "1.4.0"
 
 [[constraint]]
+  branch = "master"
   name = "github.com/microcosm-cc/bluemonday"
 
 [[constraint]]
+  branch = "master"
   name = "github.com/rakyll/magicmime"
 
 [[constraint]]
@@ -114,8 +134,12 @@
   version = "1.4.0"
 
 [[constraint]]
+  name = "github.com/sirupsen/logrus"
+  version = "1.0.3"
+
+[[constraint]]
   name = "github.com/smartystreets/goconvey"
-  version = "1.6.2"
+  version = "1.6.3"
 
 [[constraint]]
   name = "github.com/stretchr/testify"
@@ -123,25 +147,28 @@
 
 [[constraint]]
   name = "github.com/urfave/cli"
-  version = "1.19.1"
+  version = "1.20.0"
 
 [[constraint]]
+  branch = "master"
   name = "github.com/wtolson/go-taglib"
 
 [[constraint]]
+  branch = "master"
   name = "golang.org/x/crypto"
 
 [[constraint]]
+  branch = "master"
   name = "golang.org/x/net"
 
 [[constraint]]
-  name = "gopkg.in/clog.v1"
-
-[[constraint]]
   name = "gopkg.in/gomail.v2"
+  version = "2.0.0"
 
 [[constraint]]
   name = "gopkg.in/ini.v1"
+  version = "1.32.0"
 
 [[constraint]]
   name = "gopkg.in/macaron.v1"
+  version = "1.2.3"

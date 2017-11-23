@@ -1,0 +1,64 @@
+mike {
+        out.name = "redisio"
+        out.options {
+                    network  = "tcp"
+                    address  = "127.0.0.1:6379"
+                    password = ""
+                    db = 7
+                    list-name= "redisio"
+        }
+
+        level = "error"
+
+        formatter.name = "text"
+        formatter.options  {
+                            force-colors      = false
+                            disable-colors    = true
+                            disable-timestamp = false
+                            full-timestamp    = false
+                            timestamp-format  = "2006-01-02 15:04:05"
+                            disable-sorting   = false
+        }
+
+        hooks {
+                
+                syslog {
+                        network= "udp"
+                        address= "localhost:514"
+                        priority= "LOG_ERR"
+                        tag = ""
+                }
+
+
+                bugsnag.api_key = ""
+
+                slack {
+                    url      = ""
+                    levels   = ["debug", "error", "info"]
+                    channel  = ""
+                    emoji    = ":rag:"
+                    username = "logrus_mate"
+                }
+
+                mail {
+                    app_name =  "logrus_example"
+                    host     =  "smtp.xxx.com"
+                    port     =  587
+                    from     =  ""
+                    to       =  ""
+                    username =  ""
+                    password =  ""
+                }
+
+                logstash {
+                    app_name = "logrus_example"
+                    protocol = "tcp",
+                    address  = "172.17.0.2:9999"
+                    always_sent_fields {
+                        serviceName = "myServiceName"
+                    }
+                    prefix = "gogap"
+                }
+        }
+}
+         

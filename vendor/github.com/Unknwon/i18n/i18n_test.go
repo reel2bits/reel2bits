@@ -40,6 +40,10 @@ func Test_Tr(t *testing.T) {
 		t.Errorf("expect 'Bad Name', got '%s'", result)
 	}
 
+	result = Tr("en-US", "section.COMMENT_SYMBOL")
+	if result != `test value <span style="color: ; background: ">more text</span>` {
+		t.Errorf(`expect 'test value <span style="color: ; background: ">more text</span>', got '%s'`, result)
+	}
 }
 
 func Benchmark_Tr(b *testing.B) {

@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"reflect"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 type MyInt int
@@ -139,7 +141,13 @@ func TestBuilderCond(t *testing.T) {
 }
 
 func TestBuilderSelect(t *testing.T) {
-	sql, args, err := Select("c, d").From("table1").Where(Eq{"a": 1}).ToSQL()
+	sql, args, err := Select("c, d").From("table1").ToSQL()
+	if err != nil {
+		t.Fatal(err)
+	}
+	fmt.Println(sql, args)
+
+	sql, args, err = Select("c, d").From("table1").Where(Eq{"a": 1}).ToSQL()
 	if err != nil {
 		t.Error(err)
 		return
@@ -194,4 +202,18 @@ func TestBuilderDelete(t *testing.T) {
 		return
 	}
 	fmt.Println(sql, args)
+}
+
+func TestSubquery(t *testing.T) {
+	subb := Select("id").From("table_b").Where(Eq{"b": "a"})
+	b := Select("a, b").From("table_a").Where(
+		Eq{
+			"id":   23,
+			"b_id": subb,
+		},
+	)
+	sql, args, err := b.ToSQL()
+	assert.NoError(t, err)
+	assert.EqualValues(t, "SELECT a, b FROM table_a WHERE id=? AND b_id=(SELECT id FROM table_b WHERE b=?)", sql)
+	assert.EqualValues(t, []interface{}{23, "a"}, args)
 }

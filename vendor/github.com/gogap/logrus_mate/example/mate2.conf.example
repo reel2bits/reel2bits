@@ -1,0 +1,26 @@
+mike {
+
+        level = "error"
+
+        formatter.name = "text"
+        formatter.options  {
+                            force-colors      = false
+                            disable-colors    = false
+                            disable-timestamp = false
+                            full-timestamp    = false
+                            timestamp-format  = "2006-01-02 15:04:05"
+                            disable-sorting   = false
+        }
+
+        hooks {
+                expander {}
+
+                slack {
+                    url      = ""
+                    levels   = ["debug", "error", "info"]
+                    channel  = ""
+                    emoji    = ":rag:"
+                    username = "logrus_mate"
+                }
+        }
+}
