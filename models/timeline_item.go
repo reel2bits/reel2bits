@@ -80,7 +80,7 @@ func CreateTimelineItem(ti *TimelineItem) (err error) {
 }
 
 // DeleteTimelineItem delete an item from the timeline
-func DeleteTimineItem(userID int64, trackID int64, albumID int64) error {
+func DeleteTimelineItem(userID int64, trackID int64, albumID int64) error {
 	timelineItem := &TimelineItem{UserID: userID, TrackID: trackID, AlbumID: albumID}
 	hasTimelineItem, err := x.Get(timelineItem)
 	if err != nil {
