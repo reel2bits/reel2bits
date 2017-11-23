@@ -4,7 +4,9 @@ import (
 	"github.com/Unknwon/com"
 	"github.com/go-macaron/session"
 	"github.com/gogap/logrus_mate"
+	// Logrus to file
 	_ "github.com/gogap/logrus_mate/hooks/file"
+	// Logrus to syslog [optional]
 	_ "github.com/gogap/logrus_mate/hooks/syslog"
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/ini.v1"
