@@ -49,7 +49,12 @@ var (
 )
 
 func init() {
-	tables = append(tables, new(User), new(Track), new(TrackInfo), new(Album))
+	tables = append(tables,
+		new(User),
+		new(Track),
+		new(TrackInfo),
+		new(Album),
+		new(TimelineItem))
 
 	gonicNames := []string{"SSL"}
 	for _, name := range gonicNames {

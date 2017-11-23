@@ -102,3 +102,14 @@ func IsErrAlbumNameAlreadyExist(err error) bool {
 func (err ErrAlbumNameAlreadyExist) Error() string {
 	return fmt.Sprintf("name already exists [name: %s]", err.Title)
 }
+
+// ErrTimelineItemAlreadyExist struct
+type ErrTimelineItemAlreadyExist struct {
+	UserID  int64
+	TrackID int64
+	AlbumID int64
+}
+
+func (err ErrTimelineItemAlreadyExist) Error() string {
+	return fmt.Sprintf("timeline item already exists [userID: %d, trackID: %d, albumID: %d", err.UserID, err.TrackID, err.AlbumID)
+}
