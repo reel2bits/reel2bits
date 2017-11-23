@@ -15,7 +15,7 @@ import (
 
 // RedisBackend represents a Memcache result backend
 type RedisBackend struct {
-	Backend
+	cnf      *config.Config
 	host     string
 	password string
 	db       int
@@ -29,7 +29,7 @@ type RedisBackend struct {
 // NewRedisBackend creates RedisBackend instance
 func NewRedisBackend(cnf *config.Config, host, password, socketPath string, db int) Interface {
 	return &RedisBackend{
-		Backend:    New(cnf),
+		cnf:        cnf,
 		host:       host,
 		db:         db,
 		password:   password,

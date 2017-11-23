@@ -20,7 +20,7 @@ func TestRedisSocket(t *testing.T) {
 		DefaultQueue:  "test_queue",
 		ResultBackend: fmt.Sprintf("redis+socket://%v", redisSocket),
 	})
-	worker := server.NewWorker("test_worker", 0)
+	worker := server.NewWorker("test_worker")
 	go worker.Launch()
 	testAll(server, t)
 	worker.Quit()

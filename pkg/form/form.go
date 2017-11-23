@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/Unknwon/com"
 	"github.com/go-macaron/binding"
-	log "gopkg.in/clog.v1"
+	log "github.com/sirupsen/logrus"
 	"gopkg.in/macaron.v1"
 	"io/ioutil"
 	"mime/multipart"
@@ -60,7 +60,7 @@ func init() {
 				errs.Add([]string{name}, errOnlyAudioFile, "OnlyAudioFile")
 				return false, errs
 			}
-			log.Trace("Got mimetype %s for file %s", mimetype, v.(*multipart.FileHeader).Filename)
+			log.Debug("Got mimetype %s for file %s", mimetype, v.(*multipart.FileHeader).Filename)
 
 			if mimetype != "audio/mpeg" && mimetype != "audio/x-wav" && mimetype != "audio/ogg" && mimetype != "audio/x-flac" {
 				errs.Add([]string{name}, errOnlyAudioFile, "OnlyAudioFile")
@@ -132,7 +132,7 @@ func getIn(field reflect.StructField) string {
 }
 
 func validate(errs binding.Errors, data map[string]interface{}, f Form, l macaron.Locale) binding.Errors {
-	log.Trace("Validating form")
+	log.Debug("Validating form")
 
 	if errs.Len() == 0 {
 		return errs

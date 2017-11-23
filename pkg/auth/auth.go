@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"github.com/go-macaron/session"
-	log "gopkg.in/clog.v1"
+	log "github.com/sirupsen/logrus"
 	"gopkg.in/macaron.v1"
 )
 

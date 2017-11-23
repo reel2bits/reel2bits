@@ -27,7 +27,7 @@
 
 [[constraint]]
   name = "github.com/RichardKnop/machinery"
-  version = "1.0.11"
+  revision = "c42d92ff7e860f492d8e62c11cb96911942cece8"
 
 [[constraint]]
   name = "github.com/Unknwon/com"
@@ -99,7 +99,7 @@
 
 [[constraint]]
   name = "github.com/gogits/cron"
-  version = "1.0.0"
+  branch = "master"
 
 [[constraint]]
   name = "github.com/gosimple/slug"

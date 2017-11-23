@@ -3,7 +3,10 @@ package setting
 import (
 	"github.com/Unknwon/com"
 	"github.com/go-macaron/session"
-	log "gopkg.in/clog.v1"
+	"github.com/gogap/logrus_mate"
+	_ "github.com/gogap/logrus_mate/hooks/file"
+	_ "github.com/gogap/logrus_mate/hooks/syslog"
+	log "github.com/sirupsen/logrus"
 	"gopkg.in/ini.v1"
 	"net/mail"
 	"net/url"
@@ -88,11 +91,6 @@ var (
 	HasRobotsTxt  bool
 	RobotsTxtPath string
 
-	// Log settings
-	LogRootPath string
-	LogModes    []string
-	LogConfigs  []interface{}
-
 	// Session settings
 	SessionConfig  session.Options
 	CSRFCookieName string
@@ -139,6 +137,9 @@ var (
 		MaxPageDisplay int64
 		MaxRawSize     int64
 	}
+
+	// Log settings
+	LoggerBdd *log.Logger
 )
 
 // DateLang transforms standard language locale name to corresponding value in datetime plugin.
@@ -161,7 +162,6 @@ func execPath() (string, error) {
 
 func init() {
 	IsWindows = runtime.GOOS == "windows"
-	log.New(log.CONSOLE, log.ConsoleConfig{})
 
 	var err error
 	if AppPath, err = execPath(); err != nil {
@@ -171,20 +171,6 @@ func init() {
 	// Note: we don't use path.Dir here because it does not handle case
 	//	which path starts with two "/" in Windows: "//psf/Home/..."
 	AppPath = strings.Replace(AppPath, "\\", "/", -1)
-}
-
-// WorkDir returns absolute path of work directory.
-func WorkDir() (string, error) {
-	wd := os.Getenv("GITXT_WORK_DIR")
-	if len(wd) > 0 {
-		return wd, nil
-	}
-
-	i := strings.LastIndex(AppPath, "/")
-	if i == -1 {
-		return AppPath, nil
-	}
-	return AppPath[:i], nil
 }
 
 func forcePathSeparator(path string) {
@@ -204,20 +190,20 @@ func InitConfig() {
 		CustomConf = workDir + "/conf/app.ini"
 	}
 
+	initLogging(workDir)
+
 	Cfg, err = ini.Load(CustomConf)
 	if err != nil {
 		log.Fatal(2, "Fail to parse '%s': %v", CustomConf, err)
 	}
 	Cfg.NameMapper = ini.AllCapsUnderscore
+	Cfg.BlockMode = false // We don't write anything, speedup cfg reading
 
 	homeDir, err := com.HomeDir()
 	if err != nil {
 		log.Fatal(2, "Fail to get home directory: %v", err)
 	}
 	homeDir = strings.Replace(homeDir, "\\", "/", -1)
-
-	LogRootPath = Cfg.Section("log").Key("ROOT_PATH").MustString(path.Join(workDir, "log"))
-	forcePathSeparator(LogRootPath)
 
 	sec := Cfg.Section("server")
 	AppName = Cfg.Section("").Key("APP_NAME").MustString("reel2bits")
@@ -293,8 +279,6 @@ func InitConfig() {
 
 	ProdMode = Cfg.Section("").Key("RUN_MODE").String() == "prod"
 
-	initLogging()
-
 	if err = Cfg.Section("cron").MapTo(&Cron); err != nil {
 		log.Fatal(2, "Fail to map Cron settings: %v", err)
 	}
@@ -316,93 +300,21 @@ func InitConfig() {
 	// Max RAW size authorized (20M)
 	Bloby.MaxRawSize = 1000000 * 20
 
-	initSession()
-	initCache()
-	initMailer()
-}
-
-func initLogging() {
 	if len(BuildTime) > 0 {
-		log.Trace("Build Time: %s", BuildTime)
-		log.Trace("Build Git Hash: %s", BuildGitHash)
-	}
-
-	// Because we always create a console logger as primary logger before all settings are loaded,
-	// thus if user doesn't set console logger, we should remove it after other loggers are created.
-	hasConsole := false
-
-	// Get and check log modes.
-	LogModes = strings.Split(Cfg.Section("log").Key("MODE").MustString("console"), ",")
-	LogConfigs = make([]interface{}, len(LogModes))
-	levelNames := map[string]log.LEVEL{
-		"trace": log.TRACE,
-		"info":  log.INFO,
-		"warn":  log.WARN,
-		"error": log.ERROR,
-		"fatal": log.FATAL,
-	}
-	for i, mode := range LogModes {
-		mode = strings.ToLower(strings.TrimSpace(mode))
-		sec, err := Cfg.GetSection("log." + mode)
-		if err != nil {
-			log.Fatal(2, "Unknown logger mode: %s", mode)
-		}
-
-		validLevels := []string{"trace", "info", "warn", "error", "fatal"}
-		name := Cfg.Section("log." + mode).Key("LEVEL").Validate(func(v string) string {
-			v = strings.ToLower(v)
-			if com.IsSliceContainsStr(validLevels, v) {
-				return v
-			}
-			return "trace"
-		})
-		level := levelNames[name]
-
-		// Generate log configuration.
-		switch log.MODE(mode) {
-		case log.CONSOLE:
-			hasConsole = true
-			LogConfigs[i] = log.ConsoleConfig{
-				Level:      level,
-				BufferSize: Cfg.Section("log").Key("BUFFER_LEN").MustInt64(100),
-			}
-
-		case log.FILE:
-			logPath := path.Join(LogRootPath, "gogs.log")
-			if err = os.MkdirAll(path.Dir(logPath), os.ModePerm); err != nil {
-				log.Fatal(2, "Fail to create log directory '%s': %v", path.Dir(logPath), err)
-			}
-
-			LogConfigs[i] = log.FileConfig{
-				Level:      level,
-				BufferSize: Cfg.Section("log").Key("BUFFER_LEN").MustInt64(100),
-				Filename:   logPath,
-				FileRotationConfig: log.FileRotationConfig{
-					Rotate:   sec.Key("LOG_ROTATE").MustBool(true),
-					Daily:    sec.Key("DAILY_ROTATE").MustBool(true),
-					MaxSize:  1 << uint(sec.Key("MAX_SIZE_SHIFT").MustInt(28)),
-					MaxLines: sec.Key("MAX_LINES").MustInt64(1000000),
-					MaxDays:  sec.Key("MAX_DAYS").MustInt64(7),
-				},
-			}
-
-		case log.SLACK:
-			LogConfigs[i] = log.SlackConfig{
-				Level:      level,
-				BufferSize: Cfg.Section("log").Key("BUFFER_LEN").MustInt64(100),
-				URL:        sec.Key("URL").String(),
-			}
-		}
-
-		log.New(log.MODE(mode), LogConfigs[i])
-		log.Trace("Log Mode: %s (%s)", strings.Title(mode), strings.Title(name))
+		log.WithFields(log.Fields{
+			"Build Time": BuildTime,
+			"Build Hash": BuildGitHash,
+		}).Info("Logging enabled")
+	} else {
+		log.Info("Logging enabled")
 	}
 
 	// Make sure everyone gets version info printed.
 	log.Info("%s %s", AppName, AppVer)
-	if !hasConsole {
-		log.Delete(log.CONSOLE)
-	}
+
+	initSession()
+	initCache()
+	initMailer()
 }
 
 func initSession() {
@@ -487,4 +399,31 @@ func initMailer() {
 	}
 
 	log.Info("Mail Service Enabled")
+}
+
+func initLogging(workDir string) {
+	mate, _ := logrus_mate.NewLogrusMate(logrus_mate.ConfigFile(workDir + "/conf/logging.cfg"))
+
+	// Set the base logger
+	mate.Hijack(
+		log.StandardLogger(),
+		"app",
+	)
+
+	// Set the Database Logger
+	LoggerBdd = mate.Logger("bdd")
+}
+
+// WorkDir returns absolute path of work directory.
+func WorkDir() (string, error) {
+	wd := os.Getenv("REEL2BITS_WORK_DIR")
+	if len(wd) > 0 {
+		return wd, nil
+	}
+
+	i := strings.LastIndex(AppPath, "/")
+	if i == -1 {
+		return AppPath, nil
+	}
+	return AppPath[:i], nil
 }

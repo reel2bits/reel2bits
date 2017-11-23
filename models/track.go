@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"github.com/go-xorm/xorm"
 	"github.com/gosimple/slug"
-	log "gopkg.in/clog.v1"
+	log "github.com/sirupsen/logrus"
 	"io"
 	"io/ioutil"
 	"mime/multipart"
@@ -130,7 +130,7 @@ func GenerateHash(title string, userID int64) string {
 // SaveTrackFile to filesystem
 func SaveTrackFile(file *multipart.FileHeader, filename string, username string) (string, error) {
 	storDir := filepath.Join(setting.Storage.Path, "tracks", username)
-	log.Trace("Track will be uploaded to to: %s", storDir)
+	log.Debug("Track will be uploaded to to: %s", storDir)
 	err := os.MkdirAll(storDir, os.ModePerm)
 	if err != nil {
 		log.Error(2, "Cannot create directory '%s': %s", storDir, err)

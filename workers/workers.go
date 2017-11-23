@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/RichardKnop/machinery/v1"
 	"github.com/RichardKnop/machinery/v1/config"
-	log "gopkg.in/clog.v1"
+	log "github.com/sirupsen/logrus"
 )
 
 // CreateServer initiate the machinery server

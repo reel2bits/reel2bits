@@ -1,7 +1,5 @@
 [1]: https://raw.githubusercontent.com/RichardKnop/assets/master/machinery/example_worker.png
 [2]: https://raw.githubusercontent.com/RichardKnop/assets/master/machinery/example_worker_receives_tasks.png
-[3]: http://patreon_public_assets.s3.amazonaws.com/sized/becomeAPatronBanner.png
-[4]: http://richardknop.com/images/btcaddress.png
 
 ## Machinery
 
@@ -11,6 +9,7 @@ Machinery is an asynchronous task queue/job queue based on distributed message p
 [![godoc for RichardKnop/machinery](https://godoc.org/github.com/nathany/looper?status.svg)](http://godoc.org/github.com/RichardKnop/machinery/v1)
 [![goreportcard for RichardKnop/machinery](https://goreportcard.com/badge/github.com/RichardKnop/machinery)](https://goreportcard.com/report/RichardKnop/machinery)
 [![codecov for RichardKnop/machinery](https://codecov.io/gh/RichardKnop/machinery/branch/master/graph/badge.svg)](https://codecov.io/gh/RichardKnop/machinery)
+[![Codeship Status for RichardKnop/machinery](https://app.codeship.com/projects/35dc5880-71a7-0133-ec05-06b1c29ec1d7/status?branch=master)](https://app.codeship.com/projects/116961)
 
 [![Sourcegraph for RichardKnop/machinery](https://sourcegraph.com/github.com/RichardKnop/machinery/-/badge.svg)](https://sourcegraph.com/github.com/RichardKnop/machinery?badge)
 [![Donate Bitcoin](https://img.shields.io/badge/donate-bitcoin-orange.svg)](https://richardknop.github.io/donate/)
@@ -39,7 +38,6 @@ Machinery is an asynchronous task queue/job queue based on distributed message p
   * [Requirements](#requirements)
   * [Dependencies](#dependencies)
   * [Testing](#testing)
-* [Supporting the project](#supporting-the-project)
 
 ### First Steps
 
@@ -74,16 +72,16 @@ You will be able to see the tasks being processed asynchronously by the worker:
 The [config](/v1/config/config.go) package has convenience methods for loading configuration from environment variables or a YAML file. For example, load configuration from environment variables:
 
 ```go
-cnf, err := config.NewFromEnvironment(true)
+cnf := config.NewFromEnvironment(true, true)
 ```
 
 Or load from YAML file:
 
 ```go
-cnf := config.NewFromFile("config.yml", true)
+cnf := config.NewFromFile("config.yml", true, true)
 ```
 
-Second boolean flag enables live reloading of configuration every 10 seconds. Use `false` to disable live reloading.
+The first boolean flag signals whether configuration must be loaded successfully at least one time. Second flag enables live reloading of configuration every 10 seconds.
 
 Machinery configuration is encapsulated by a `Config` struct and injected as a dependency to objects that need it.
 
@@ -232,18 +230,19 @@ import (
   "github.com/RichardKnop/machinery/v1"
 )
 
-var cnf = &config.Config{
+var cnf = config.Config{
   Broker:             "amqp://guest:guest@localhost:5672/",
-  DefaultQueue:       "machinery_tasks",
   ResultBackend:      "amqp://guest:guest@localhost:5672/",
-  AMQP:               &config.AMQPConfig{
+  MaxWorkerInstances: 0,
+  AMQP:               config.AMQPConfig{
     Exchange:     "machinery_exchange",
     ExchangeType: "direct",
+    DefaultQueue: "machinery_tasks",
     BindingKey:   "machinery_task",
   },
 }
 
-server, err := machinery.NewServer(cnf)
+server, err := machinery.NewServer(&cnf)
 if err != nil {
   // do something with the error
 }
@@ -254,7 +253,7 @@ if err != nil {
 In order to consume tasks, you need to have one or more workers running. All you need to run a worker is a `Server` instance with registered tasks. E.g.:
 
 ```go
-worker := server.NewWorker("worker_name", 10)
+worker := server.NewWorker("worker_name")
 err := worker.Launch()
 if err != nil {
   // do something with the error
@@ -262,8 +261,9 @@ if err != nil {
 ```
 
 Each worker will only consume registered tasks. For each task on the queue the Worker.Process() method will will be run
-in a goroutine. Use the second parameter of `server.NewWorker` to limit the number of concurrently running Worker.Process()
-calls (per worker). Example: 1 will serialize task execution while 0 makes the number of concurrently executed tasks unlimited (default).
+in a goroutine. Use the `MaxWorkerInstances` config option to limit the number of concurrently running Worker.Process()
+calls (per worker). `MaxWorkerInstances = 1` will serialize task execution. `MaxWorkerInstances = 0` makes the number of
+concurrently executed tasks unlimited (default).
 
 ### Tasks
 
@@ -825,10 +825,16 @@ brew install mongodb
 
 According to [Go 1.5 Vendor experiment](https://docs.google.com/document/d/1Bz5-UB7g2uPBdOx-rw5t9MxJwkfpx90cqG9AFL0JAYo), all dependencies are stored in the vendor directory. This approach is called `vendoring` and is the best practice for Go projects to lock versions of dependencies in order to achieve reproducible builds.
 
-This project uses [dep](https://github.com/golang/dep) for dependency management. To update dependencies during development:
+To update dependencies during development:
 
 ```sh
-dep ensure
+make update-deps
+```
+
+To install dependencies:
+
+```sh
+make install-deps
 ```
 
 #### Testing
@@ -863,13 +869,3 @@ make test
 ```
 
 If the environment variables are not exported, `make test` will only run unit tests.
-
-### Supporting the project
-
-Become a patreon:
-
-[![http://patreon.com/richardknop][3]](http://patreon.com/richardknop)
-
-Or donate BTC to my wallet: `12iFVjQ5n3Qdmiai4Mp9EG93NSvDipyRKV`
-
-![Donate BTC][4]

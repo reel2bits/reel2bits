@@ -27,7 +27,7 @@ func TestAmqpRedis(t *testing.T) {
 			PrefetchCount: 1,
 		},
 	})
-	worker := server.NewWorker("test_worker", 0)
+	worker := server.NewWorker("test_worker")
 	go worker.Launch()
 	testAll(server, t)
 	worker.Quit()

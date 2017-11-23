@@ -11,7 +11,7 @@ import (
 	"fmt"
 	"github.com/RichardKnop/machinery/v1/tasks"
 	"github.com/Unknwon/paginater"
-	log "gopkg.in/clog.v1"
+	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -104,7 +104,7 @@ func UploadPost(ctx *context.Context, f form.TrackUpload) {
 		}
 		return
 	}
-	log.Trace("Track created: %d/%s", t.ID, t.Title)
+	log.Debug("Track created: %d/%s", t.ID, t.Title)
 
 	sig := &tasks.Signature{
 		Name: "TranscodeAndFetchInfos",

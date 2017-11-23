@@ -5,8 +5,8 @@ import (
 	"dev.sigpipe.me/dashie/reel2bits/pkg/mailer"
 	"dev.sigpipe.me/dashie/reel2bits/setting"
 	"dev.sigpipe.me/dashie/reel2bits/workers"
+	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
-	log "gopkg.in/clog.v1"
 )
 
 // Worker cli target

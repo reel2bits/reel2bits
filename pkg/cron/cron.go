@@ -3,7 +3,7 @@ package cron
 import (
 	"dev.sigpipe.me/dashie/reel2bits/workers"
 	"github.com/gogits/cron"
-	log "gopkg.in/clog.v1"
+	log "github.com/sirupsen/logrus"
 	"time"
 )
 
@@ -18,7 +18,7 @@ func NewContext() {
 
 	// Add crons here
 
-	log.Trace("Enabling TranscodingWatchdog")
+	log.Debug("Enabling TranscodingWatchdog")
 	entry, err = c.AddFunc("Transcoding Watchdog", "@every 5m", workers.TranscodingWatchdog)
 	if err != nil {
 		log.Fatal(2, "Cron.(transcoding watchdog): %v", err)

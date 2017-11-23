@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"html/template"
 
-	log "gopkg.in/clog.v1"
+	log "github.com/sirupsen/logrus"
 	"gopkg.in/gomail.v2"
 	"gopkg.in/macaron.v1"
 )

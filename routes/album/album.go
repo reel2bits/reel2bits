@@ -7,7 +7,7 @@ import (
 	"dev.sigpipe.me/dashie/reel2bits/setting"
 	"fmt"
 	"github.com/Unknwon/paginater"
-	log "gopkg.in/clog.v1"
+	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -53,7 +53,7 @@ func NewPost(ctx *context.Context, f form.Album) {
 
 		return
 	}
-	log.Trace("Album created: %d/%s", a.ID, a.Name)
+	log.Debug("Album created: %d/%s", a.ID, a.Name)
 
 	ctx.Flash.Success(ctx.Tr("album.new_success"))
 	ctx.SubURLRedirect(ctx.URLFor("album_show", ":userSlug", ctx.User.Slug, ":albumSlug", a.Slug))

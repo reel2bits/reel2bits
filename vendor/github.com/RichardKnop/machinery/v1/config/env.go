@@ -8,13 +8,25 @@ import (
 )
 
 // NewFromEnvironment creates a config object from environment variables
-func NewFromEnvironment(keepReloading bool) (*Config, error) {
-	cnf, err := fromEnvironment()
-	if err != nil {
-		return nil, err
+func NewFromEnvironment(mustLoadOnce, keepReloading bool) *Config {
+	if configLoaded {
+		return cnf
 	}
 
-	log.INFO.Print("Successfully loaded config from the environment")
+	// If the config must be loaded once successfully
+	if mustLoadOnce && !configLoaded {
+		newCnf, err := fromEnvironment()
+		if err != nil {
+			log.FATAL.Fatal(err)
+		}
+
+		// Refresh the config
+		Refresh(newCnf)
+
+		// Set configLoaded to true
+		configLoaded = true
+		log.INFO.Print("Successfully loaded config from environment for the first time")
+	}
 
 	if keepReloading {
 		// Open a goroutine to watch remote changes forever
@@ -24,28 +36,31 @@ func NewFromEnvironment(keepReloading bool) (*Config, error) {
 				<-time.After(reloadDelay)
 
 				// Attempt to reload the config
-				newCnf, newErr := fromEnvironment()
-				if newErr != nil {
-					log.WARNING.Printf("Failed to reload config from the environment: %v", newErr)
+				newCnf, err := fromEnvironment()
+				if err != nil {
+					log.WARNING.Print("Failed to reload config from environment: ", err)
 					continue
 				}
 
-				*cnf = *newCnf
-				log.INFO.Printf("Successfully reloaded config from the environment")
+				// Refresh the config
+				Refresh(newCnf)
+
+				// Set configLoaded to true
+				configLoaded = true
 			}
 		}()
 	}
 
-	return cnf, nil
+	return cnf
 }
 
 func fromEnvironment() (*Config, error) {
-	cnf := new(Config)
-	*cnf = *defaultCnf
+	var newCnf Config
+	newCnf = *cnf
 
-	if err := envconfig.Process("", cnf); err != nil {
+	if err := envconfig.Process("", &newCnf); err != nil {
 		return nil, err
 	}
 
-	return cnf, nil
+	return &newCnf, nil
 }

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"time"
@@ -45,57 +44,48 @@ func main() {
 			Name:  "worker",
 			Usage: "launch machinery worker",
 			Action: func(c *cli.Context) error {
-				if err := worker(); err != nil {
-					return cli.NewExitError(err.Error(), 1)
-				}
-				return nil
+				return worker()
 			},
 		},
 		{
 			Name:  "send",
 			Usage: "send example tasks ",
 			Action: func(c *cli.Context) error {
-				if err := send(); err != nil {
-					return cli.NewExitError(err.Error(), 1)
-				}
-				return nil
+				return send()
 			},
 		},
 	}
 
 	// Run the CLI app
-	app.Run(os.Args)
+	if err := app.Run(os.Args); err != nil {
+		log.FATAL.Print(err)
+	}
 }
 
-func loadConfig() (*config.Config, error) {
+func loadConfig() *config.Config {
 	if configPath != "" {
-		return config.NewFromYaml(configPath, true)
+		return config.NewFromYaml(configPath, true, true)
 	}
 
-	return config.NewFromEnvironment(true)
+	return config.NewFromEnvironment(true, true)
 }
 
-func startServer() (*machinery.Server, error) {
-	cnf, err := loadConfig()
-	if err != nil {
-		return nil, err
-	}
-
+func startServer() (server *machinery.Server, err error) {
 	// Create server instance
-	server, err := machinery.NewServer(cnf)
+	server, err = machinery.NewServer(loadConfig())
 	if err != nil {
-		return nil, err
+		return
 	}
 
 	// Register tasks
 	tasks := map[string]interface{}{
-		"add":               exampletasks.Add,
-		"multiply":          exampletasks.Multiply,
-		"panic_task":        exampletasks.PanicTask,
-		"long_running_task": exampletasks.LongRunningTask,
+		"add":        exampletasks.Add,
+		"multiply":   exampletasks.Multiply,
+		"panic_task": exampletasks.PanicTask,
 	}
 
-	return server, server.RegisterTasks(tasks)
+	err = server.RegisterTasks(tasks)
+	return
 }
 
 func worker() error {
@@ -106,9 +96,13 @@ func worker() error {
 
 	// The second argument is a consumer tag
 	// Ideally, each worker should have a unique tag (worker1, worker2 etc)
-	worker := server.NewWorker("machinery_worker", 0)
+	worker := server.NewWorker("machinery_worker")
 
-	return worker.Launch()
+	if err := worker.Launch(); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func send() error {
@@ -117,15 +111,10 @@ func send() error {
 		return err
 	}
 
-	var (
-		addTask0, addTask1, addTask2 tasks.Signature
-		multiplyTask0, multiplyTask1 tasks.Signature
-		panicTask                    tasks.Signature
-		longRunningTask              tasks.Signature
-	)
+	var task0, task1, task2, task3, task4, task5 tasks.Signature
 
 	var initTasks = func() {
-		addTask0 = tasks.Signature{
+		task0 = tasks.Signature{
 			Name: "add",
 			Args: []tasks.Arg{
 				{
@@ -139,7 +128,7 @@ func send() error {
 			},
 		}
 
-		addTask1 = tasks.Signature{
+		task1 = tasks.Signature{
 			Name: "add",
 			Args: []tasks.Arg{
 				{
@@ -153,7 +142,7 @@ func send() error {
 			},
 		}
 
-		addTask2 = tasks.Signature{
+		task2 = tasks.Signature{
 			Name: "add",
 			Args: []tasks.Arg{
 				{
@@ -167,7 +156,7 @@ func send() error {
 			},
 		}
 
-		multiplyTask0 = tasks.Signature{
+		task3 = tasks.Signature{
 			Name: "multiply",
 			Args: []tasks.Arg{
 				{
@@ -177,16 +166,12 @@ func send() error {
 			},
 		}
 
-		multiplyTask1 = tasks.Signature{
+		task4 = tasks.Signature{
 			Name: "multiply",
 		}
 
-		panicTask = tasks.Signature{
+		task5 = tasks.Signature{
 			Name: "panic_task",
-		}
-
-		longRunningTask = tasks.Signature{
-			Name: "long_running_task",
 		}
 	}
 
@@ -196,7 +181,7 @@ func send() error {
 	initTasks()
 	log.INFO.Println("Single task:")
 
-	asyncResult, err := server.SendTask(&addTask0)
+	asyncResult, err := server.SendTask(&task0)
 	if err != nil {
 		return fmt.Errorf("Could not send task: %s", err.Error())
 	}
@@ -205,7 +190,7 @@ func send() error {
 	if err != nil {
 		return fmt.Errorf("Getting task result failed with error: %s", err.Error())
 	}
-	log.INFO.Printf("1 + 1 = %v\n", tasks.HumanReadableResults(results))
+	log.INFO.Printf("1 + 1 = %v\n", results[0].Interface())
 
 	/*
 	 * Now let's explore ways of sending multiple tasks
@@ -215,8 +200,8 @@ func send() error {
 	initTasks()
 	log.INFO.Println("Group of tasks (parallel execution):")
 
-	group := tasks.NewGroup(&addTask0, &addTask1, &addTask2)
-	asyncResults, err := server.SendGroup(group, 10)
+	group := tasks.NewGroup(&task0, &task1, &task2)
+	asyncResults, err := server.SendGroup(group)
 	if err != nil {
 		return fmt.Errorf("Could not send group: %s", err.Error())
 	}
@@ -230,7 +215,7 @@ func send() error {
 			"%v + %v = %v\n",
 			asyncResult.Signature.Args[0].Value,
 			asyncResult.Signature.Args[1].Value,
-			tasks.HumanReadableResults(results),
+			results[0].Interface(),
 		)
 	}
 
@@ -238,9 +223,9 @@ func send() error {
 	initTasks()
 	log.INFO.Println("Group of tasks with a callback (chord):")
 
-	group = tasks.NewGroup(&addTask0, &addTask1, &addTask2)
-	chord := tasks.NewChord(group, &multiplyTask1)
-	chordAsyncResult, err := server.SendChord(chord, 10)
+	group = tasks.NewGroup(&task0, &task1, &task2)
+	chord := tasks.NewChord(group, &task4)
+	chordAsyncResult, err := server.SendChord(chord)
 	if err != nil {
 		return fmt.Errorf("Could not send chord: %s", err.Error())
 	}
@@ -249,13 +234,13 @@ func send() error {
 	if err != nil {
 		return fmt.Errorf("Getting chord result failed with error: %s", err.Error())
 	}
-	log.INFO.Printf("(1 + 1) * (2 + 2) * (5 + 6) = %v\n", tasks.HumanReadableResults(results))
+	log.INFO.Printf("(1 + 1) * (2 + 2) * (5 + 6) = %v\n", results[0].Interface())
 
 	// Now let's try chaining task results
 	initTasks()
 	log.INFO.Println("Chain of tasks:")
 
-	chain := tasks.NewChain(&addTask0, &addTask1, &addTask2, &multiplyTask0)
+	chain := tasks.NewChain(&task0, &task1, &task2, &task3)
 	chainAsyncResult, err := server.SendChain(chain)
 	if err != nil {
 		return fmt.Errorf("Could not send chain: %s", err.Error())
@@ -265,33 +250,14 @@ func send() error {
 	if err != nil {
 		return fmt.Errorf("Getting chain result failed with error: %s", err.Error())
 	}
-	log.INFO.Printf("(((1 + 1) + (2 + 2)) + (5 + 6)) * 4 = %v\n", tasks.HumanReadableResults(results))
+	log.INFO.Printf("(((1 + 1) + (2 + 2)) + (5 + 6)) * 4 = %v\n", results[0].Interface())
 
 	// Let's try a task which throws panic to make sure stack trace is not lost
 	initTasks()
-	asyncResult, err = server.SendTask(&panicTask)
+	asyncResult, err = server.SendTask(&task5)
 	if err != nil {
 		return fmt.Errorf("Could not send task: %s", err.Error())
 	}
-
-	_, err = asyncResult.Get(time.Duration(time.Millisecond * 5))
-	if err == nil {
-		return errors.New("Error should not be nil if task panicked")
-	}
-	log.INFO.Printf("Task panicked and returned error = %v\n", err.Error())
-
-	// Let's try a long running task
-	initTasks()
-	asyncResult, err = server.SendTask(&longRunningTask)
-	if err != nil {
-		return fmt.Errorf("Could not send task: %s", err.Error())
-	}
-
-	results, err = asyncResult.Get(time.Duration(time.Millisecond * 5))
-	if err != nil {
-		return fmt.Errorf("Getting long running task result failed with error: %s", err.Error())
-	}
-	log.INFO.Printf("Long running task returned = %v\n", tasks.HumanReadableResults(results))
 
 	return nil
 }

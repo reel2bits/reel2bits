@@ -10,35 +10,50 @@ import (
 )
 
 // NewFromYaml creates a config object from YAML file
-func NewFromYaml(cnfPath string, keepReloading bool) (*Config, error) {
-	cnf, err := fromFile(cnfPath)
-	if err != nil {
-		return nil, err
+func NewFromYaml(cnfPath string, mustLoadOnce, keepReloading bool) *Config {
+	if configLoaded {
+		return cnf
 	}
 
-	log.INFO.Printf("Successfully loaded config from file %s", cnfPath)
+	// If the config must be loaded once successfully
+	if mustLoadOnce && !configLoaded {
+		newCnf, err := fromFile(cnfPath)
+		if err != nil {
+			log.FATAL.Fatal(err)
+		}
+
+		// Refresh the config
+		Refresh(newCnf)
+
+		// Set configLoaded to true
+		configLoaded = true
+		log.INFO.Print("Successfully loaded config from file for the first time")
+	}
 
 	if keepReloading {
 		// Open a goroutine to watch remote changes forever
-		go func() {
+		go func(theConfigPath string) {
 			for {
 				// Delay after each request
 				<-time.After(reloadDelay)
 
 				// Attempt to reload the config
-				newCnf, newErr := fromFile(cnfPath)
-				if newErr != nil {
-					log.WARNING.Printf("Failed to reload config from file %s: %v", cnfPath, newErr)
+				newCnf, err := fromFile(theConfigPath)
+				if err != nil {
+					log.WARNING.Print("Failed to reload config from file: ", err)
 					continue
 				}
 
-				*cnf = *newCnf
-				log.INFO.Printf("Successfully reloaded config from file %s", cnfPath)
+				// Refresh the config
+				Refresh(newCnf)
+
+				// Set configLoaded to true
+				configLoaded = true
 			}
-		}()
+		}(cnfPath)
 	}
 
-	return cnf, nil
+	return cnf
 }
 
 // ReadFromFile reads data from a file
@@ -61,17 +76,17 @@ func ReadFromFile(cnfPath string) ([]byte, error) {
 }
 
 func fromFile(cnfPath string) (*Config, error) {
-	cnf := new(Config)
-	*cnf = *defaultCnf
+	var newCnf Config
+	newCnf = *cnf
 
 	data, err := ReadFromFile(cnfPath)
 	if err != nil {
 		return nil, err
 	}
 
-	if err := yaml.Unmarshal(data, cnf); err != nil {
+	if err := yaml.Unmarshal(data, &newCnf); err != nil {
 		return nil, fmt.Errorf("Unmarshal YAML error: %s", err)
 	}
 
-	return cnf, nil
+	return &newCnf, nil
 }

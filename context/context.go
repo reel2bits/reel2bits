@@ -10,7 +10,7 @@ import (
 	"github.com/go-macaron/csrf"
 	"github.com/go-macaron/i18n"
 	"github.com/go-macaron/session"
-	log "gopkg.in/clog.v1"
+	log "github.com/sirupsen/logrus"
 	"gopkg.in/macaron.v1"
 	"html/template"
 	"io"
@@ -45,7 +45,7 @@ func (c *Context) PageIs(name string) {
 
 // HTML responses template with given status.
 func (c *Context) HTML(status int, name string) {
-	log.Trace("Template: %s", name)
+	log.Debug("Template: %s", name)
 	c.Context.HTML(status, name)
 }
 
@@ -207,8 +207,8 @@ func Contexter() macaron.Handler {
 
 		ctx.Data["CSRFToken"] = x.GetToken()
 		ctx.Data["CSRFTokenHTML"] = template.HTML(`<input type="hidden" name="_csrf" value="` + x.GetToken() + `">`)
-		log.Trace("Session ID: %s", sess.ID())
-		log.Trace("CSRF Token: %v", ctx.Data["CSRFToken"])
+		log.Debug("Session ID: %s", sess.ID())
+		log.Debug("CSRF Token: %v", ctx.Data["CSRFToken"])
 
 		c.Map(ctx)
 	}

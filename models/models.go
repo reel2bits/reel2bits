@@ -12,7 +12,7 @@ import (
 	"github.com/go-xorm/xorm"
 	// blah
 	_ "github.com/lib/pq"
-	log "gopkg.in/clog.v1"
+	log "github.com/sirupsen/logrus"
 	"net/url"
 	"os"
 	"path"
@@ -173,19 +173,7 @@ func SetEngine() (err error) {
 
 	// WARNING: for serv command, MUST remove the output to os.stdout,
 	// so use log file to instead print to stdout.
-	sec := setting.Cfg.Section("log.xorm")
-	logger, err := log.NewFileWriter(path.Join(setting.LogRootPath, "xorm.log"),
-		log.FileRotationConfig{
-			Rotate:  sec.Key("ROTATE").MustBool(true),
-			Daily:   sec.Key("ROTATE_DAILY").MustBool(true),
-			MaxSize: sec.Key("MAX_SIZE").MustInt64(100) * 1024 * 1024,
-			MaxDays: sec.Key("MAX_DAYS").MustInt64(3),
-		})
-	if err != nil {
-		return fmt.Errorf("Fail to create 'xorm.log': %v", err)
-	}
-
-	x.SetLogger(xorm.NewSimpleLogger3(logger, xorm.DEFAULT_LOG_PREFIX, xorm.DEFAULT_LOG_FLAG, core.LOG_DEBUG))
+	x.SetLogger(xorm.NewSimpleLogger3(setting.LoggerBdd.Writer(), xorm.DEFAULT_LOG_PREFIX, xorm.DEFAULT_LOG_FLAG, core.LOG_DEBUG))
 	x.ShowSQL(true)
 	return nil
 }

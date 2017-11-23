@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/go-xorm/xorm"
 	"github.com/gosimple/slug"
-	log "gopkg.in/clog.v1"
+	log "github.com/sirupsen/logrus"
 	"time"
 )
 

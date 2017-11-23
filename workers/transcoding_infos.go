@@ -5,8 +5,8 @@ import (
 	"dev.sigpipe.me/dashie/reel2bits/setting"
 	"fmt"
 	"github.com/krig/go-sox"
+	log "github.com/sirupsen/logrus"
 	"github.com/wtolson/go-taglib"
-	log "gopkg.in/clog.v1"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -239,11 +239,11 @@ func generateTranscode(trackID int64) (err error) {
 
 // TranscodeAndFetchInfos will do all the processing in one func
 func TranscodeAndFetchInfos(trackID int64) error {
-	log.Trace("Starting processing track %d", trackID)
+	log.Debug("Starting processing track %d", trackID)
 
 	_, err := models.GetTrackByID(trackID)
 	if err != nil {
-		log.Trace("Track deleted before we run the job, exiting this job.")
+		log.Debug("Track deleted before we run the job, exiting this job.")
 		return nil
 	}
 

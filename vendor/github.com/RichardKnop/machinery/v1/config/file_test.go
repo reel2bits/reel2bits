@@ -10,15 +10,16 @@ import (
 )
 
 var configYAMLData = `---
-broker: broker
-default_queue: default_queue
-result_backend: result_backend
-results_expire_in: 123456
+broker: "amqp://guest:guest@localhost:5672/"
+default_queue: machinery_tasks
+max_worker_instances: 10
+result_backend: amqp
+results_expire_in: 3600000
 amqp:
-  binding_key: binding_key
-  exchange: exchange
-  exchange_type: exchange_type
-  prefetch_count: 123
+  binding_key: machinery_task
+  exchange: machinery_exchange
+  exchange_type: direct
+  prefetch_count: 3
   queue_binding_args:
     image-type: png
     x-match: any
@@ -26,9 +27,6 @@ amqp:
 
 func TestReadFromFile(t *testing.T) {
 	data, err := config.ReadFromFile("testconfig.yml")
-	if err != nil {
-		t.Fatal(err)
-	}
 
 	if string(data) == configYAMLData && err == nil {
 		return
@@ -43,19 +41,19 @@ func TestReadFromFile(t *testing.T) {
 }
 
 func TestNewFromYaml(t *testing.T) {
-	cnf, err := config.NewFromYaml("testconfig.yml", false)
-	if err != nil {
-		t.Fatal(err)
-	}
+	config.Reset()
 
-	assert.Equal(t, "broker", cnf.Broker)
-	assert.Equal(t, "default_queue", cnf.DefaultQueue)
-	assert.Equal(t, "result_backend", cnf.ResultBackend)
-	assert.Equal(t, 123456, cnf.ResultsExpireIn)
-	assert.Equal(t, "exchange", cnf.AMQP.Exchange)
-	assert.Equal(t, "exchange_type", cnf.AMQP.ExchangeType)
-	assert.Equal(t, "binding_key", cnf.AMQP.BindingKey)
+	cnf := config.NewFromYaml("testconfig.yml", true, false)
+
+	assert.Equal(t, "amqp://guest:guest@localhost:5672/", cnf.Broker)
+	assert.Equal(t, "machinery_tasks", cnf.DefaultQueue)
+	assert.Equal(t, "amqp", cnf.ResultBackend)
+	assert.Equal(t, 3600000, cnf.ResultsExpireIn)
+	assert.Equal(t, 10, cnf.MaxWorkerInstances)
+	assert.Equal(t, "machinery_exchange", cnf.AMQP.Exchange)
+	assert.Equal(t, "direct", cnf.AMQP.ExchangeType)
+	assert.Equal(t, "machinery_task", cnf.AMQP.BindingKey)
 	assert.Equal(t, "any", cnf.AMQP.QueueBindingArgs["x-match"])
 	assert.Equal(t, "png", cnf.AMQP.QueueBindingArgs["image-type"])
-	assert.Equal(t, 123, cnf.AMQP.PrefetchCount)
+	assert.Equal(t, 3, cnf.AMQP.PrefetchCount)
 }

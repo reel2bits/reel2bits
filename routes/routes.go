@@ -18,7 +18,7 @@ import (
 	"github.com/go-macaron/i18n"
 	"github.com/go-macaron/session"
 	"github.com/go-macaron/toolbox"
-	log "gopkg.in/clog.v1"
+	log "github.com/sirupsen/logrus"
 	"gopkg.in/macaron.v1"
 	"path"
 	"strings"

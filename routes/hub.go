@@ -4,7 +4,7 @@ import (
 	"dev.sigpipe.me/dashie/reel2bits/context"
 	"dev.sigpipe.me/dashie/reel2bits/models"
 	"github.com/Unknwon/paginater"
-	log "gopkg.in/clog.v1"
+	log "github.com/sirupsen/logrus"
 )
 
 const (

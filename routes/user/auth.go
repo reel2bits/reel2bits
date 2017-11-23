@@ -8,7 +8,7 @@ import (
 	"dev.sigpipe.me/dashie/reel2bits/pkg/mailer"
 	"dev.sigpipe.me/dashie/reel2bits/setting"
 	"fmt"
-	log "gopkg.in/clog.v1"
+	log "github.com/sirupsen/logrus"
 	"net/url"
 )
 
@@ -40,7 +40,7 @@ func AutoLogin(c *context.Context) (bool, error) {
 	isSucceed := false
 	defer func() {
 		if !isSucceed {
-			log.Trace("auto-login cookie cleared: %s", uname)
+			log.Debug("auto-login cookie cleared: %s", uname)
 			c.SetCookie(setting.CookieUserName, "", -1, setting.AppSubURL)
 			c.SetCookie(setting.CookieRememberName, "", -1, setting.AppSubURL)
 			c.SetCookie(setting.LoginStatusCookieName, "", -1, setting.AppSubURL)
@@ -206,7 +206,7 @@ func RegisterPost(ctx *context.Context, f form.Register) {
 		}
 		return
 	}
-	log.Trace("Account created: %s", u.UserName)
+	log.Debug("Account created: %s", u.UserName)
 
 	// Auto set Admin if first user
 	if models.CountUsers() == 1 {
@@ -284,7 +284,7 @@ func ResetPasswdPost(ctx *context.Context) {
 			return
 		}
 
-		log.Trace("User password reset: %s", u.UserName)
+		log.Debug("User password reset: %s", u.UserName)
 		ctx.SubURLRedirect(ctx.URLFor("user_login"))
 		return
 	}
@@ -326,7 +326,7 @@ func ForgotPasswdPost(ctx *context.Context) {
 			// HARDCODED
 			ctx.Data["Hours"] = 180 / 60
 			ctx.Data["IsResetSent"] = true
-			log.Trace("User doesn't exists")
+			log.Debug("User doesn't exists")
 			ctx.HTML(200, forgotPassword)
 			return
 		}
@@ -336,7 +336,7 @@ func ForgotPasswdPost(ctx *context.Context) {
 	}
 
 	if ctx.Cache.IsExist("MailResendLimit_" + u.LowerName) {
-		log.Trace("Mail Resend limited")
+		log.Debug("Mail Resend limited")
 		ctx.Data["ResendLimited"] = true
 		ctx.HTML(200, forgotPassword)
 		return

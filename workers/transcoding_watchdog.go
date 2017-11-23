@@ -5,7 +5,7 @@ import (
 	"dev.sigpipe.me/dashie/reel2bits/pkg/sync"
 	"fmt"
 	"github.com/RichardKnop/machinery/v1/tasks"
-	log "gopkg.in/clog.v1"
+	log "github.com/sirupsen/logrus"
 	"strings"
 )
 
@@ -26,7 +26,7 @@ func TranscodingWatchdog() {
 	taskStatusTable.Start(transcodingWatchdog)
 	defer taskStatusTable.Stop(transcodingWatchdog)
 
-	log.Trace("Running cron: TranscodingWatchdog")
+	log.Debug("Running cron: TranscodingWatchdog")
 
 	// First case : empty workers list
 	server, err := CreateServer()
@@ -88,7 +88,7 @@ func TranscodingWatchdog() {
 
 		// Found it ?
 		if !trackFound {
-			log.Trace("Cannot found track %d in transcoding queue", t.ID)
+			log.Debug("Cannot found track %d in transcoding queue", t.ID)
 			// Add it
 			sig := &tasks.Signature{
 				Name: "TranscodeAndFetchInfos",

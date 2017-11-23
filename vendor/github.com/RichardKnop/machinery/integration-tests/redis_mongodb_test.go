@@ -21,7 +21,7 @@ func TestRedisMongodb(t *testing.T) {
 		DefaultQueue:  "test_queue",
 		ResultBackend: fmt.Sprintf("mongodb://%v", mongodbURL),
 	})
-	worker := server.NewWorker("test_worker", 0)
+	worker := server.NewWorker("test_worker")
 	go worker.Launch()
 	testAll(server, t)
 	worker.Quit()

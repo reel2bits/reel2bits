@@ -3,7 +3,7 @@ package context
 import (
 	"dev.sigpipe.me/dashie/reel2bits/setting"
 	"github.com/go-macaron/csrf"
-	log "gopkg.in/clog.v1"
+	log "github.com/sirupsen/logrus"
 	"gopkg.in/macaron.v1"
 	"net/url"
 )
@@ -25,9 +25,9 @@ func Toggle(options *ToggleOptions) macaron.Handler {
 			return
 		}
 
-		log.Trace("SignOutRequired: %s, DisableCSRF: %s, Req Method: %s", options.SignOutRequired, options.DisableCSRF, ctx.Req.Method)
+		log.Debug("SignOutRequired: %s, DisableCSRF: %s, Req Method: %s", options.SignOutRequired, options.DisableCSRF, ctx.Req.Method)
 		if !options.SignOutRequired && !options.DisableCSRF && ctx.Req.Method == "POST" {
-			log.Trace("Validating CSRF")
+			log.Debug("Validating CSRF")
 			csrf.Validate(ctx.Context, ctx.csrf)
 			if ctx.Written() {
 				return
