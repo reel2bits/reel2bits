@@ -242,6 +242,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/onrik/logrus"
+  packages = ["filename"]
+  revision = "06004e29fa0ca7b8c57042a8e75076da856615ba"
+
+[[projects]]
+  branch = "master"
   name = "github.com/orcaman/concurrent-map"
   packages = ["."]
   revision = "d4c23bd0e01134806215ffe65ba3fd22ec6721f7"
@@ -399,6 +405,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "22e1acda0ad94b6b1786dcfc163d23f27f447578a6c9bf03b14161cb5c3a5c23"
+  inputs-digest = "c97f2814bb3ad81c49bad17c545639917cf0e695402b08f93fa25d3c2a0aa6dc"
   solver-name = "gps-cdcl"
   solver-version = 1
