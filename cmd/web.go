@@ -46,7 +46,7 @@ func runWeb(ctx *cli.Context) error {
 	} else {
 		listenAddr = fmt.Sprintf("%s:%s", setting.HTTPAddr, setting.HTTPPort)
 	}
-	log.Info("Listen: %v://%s%s", setting.Protocol, listenAddr, setting.AppSubURL)
+	log.Infof("Listen: %v://%s%s", setting.Protocol, listenAddr, setting.AppSubURL)
 
 	var err error
 	switch setting.Protocol {
@@ -68,15 +68,15 @@ func runWeb(ctx *cli.Context) error {
 		// FIXME: add proper implementation of signal capture on all protocols
 		// execute this on SIGTERM or SIGINT: listener.Close()
 		if err = os.Chmod(listenAddr, os.FileMode(setting.UnixSocketPermission)); err != nil {
-			log.Fatal(4, "Failed to set permission of unix socket: %v", err)
+			log.Fatalf("Failed to set permission of unix socket: %v", err)
 		}
 		err = http.Serve(listener, m)
 	default:
-		log.Fatal(4, "Invalid protocol: %s", setting.Protocol)
+		log.Fatalf("Invalid protocol: %s", setting.Protocol)
 	}
 
 	if err != nil {
-		log.Fatal(4, "Fail to start server: %v", err)
+		log.Fatalf("Fail to start server: %v", err)
 	}
 
 	return nil

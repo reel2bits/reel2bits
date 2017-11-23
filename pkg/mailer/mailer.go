@@ -29,7 +29,7 @@ type Message struct {
 
 // NewMessageFrom creates new mail message object with custom From header.
 func NewMessageFrom(to []string, from, subject, htmlBody string) *Message {
-	log.Debug("NewMessageFrom (htmlBody):\n%s", htmlBody)
+	log.Debugf("NewMessageFrom (htmlBody):\n%s", htmlBody)
 
 	msg := gomail.NewMessage()
 	msg.SetHeader("From", from)
@@ -42,7 +42,7 @@ func NewMessageFrom(to []string, from, subject, htmlBody string) *Message {
 	if setting.MailService.UsePlainText {
 		plainBody, err := html2text.FromString(htmlBody)
 		if err != nil {
-			log.Error(2, "html2text.FromString: %v", err)
+			log.Errorf("html2text.FromString: %v", err)
 		} else {
 			contentType = "text/plain"
 			body = plainBody
@@ -203,11 +203,11 @@ func processMailQueue() {
 	for {
 		select {
 		case msg := <-mailQueue:
-			log.Debug("New e-mail sending request %s: %s", msg.GetHeader("To"), msg.Info)
+			log.Debugf("New e-mail sending request %s: %s", msg.GetHeader("To"), msg.Info)
 			if err := gomail.Send(sender, msg.Message); err != nil {
-				log.Error(3, "Fail to send emails %s: %s - %v", msg.GetHeader("To"), msg.Info, err)
+				log.Errorf("Fail to send emails %s: %s - %v", msg.GetHeader("To"), msg.Info, err)
 			} else {
-				log.Debug("E-mails sent %s: %s", msg.GetHeader("To"), msg.Info)
+				log.Debugf("E-mails sent %s: %s", msg.GetHeader("To"), msg.Info)
 			}
 		}
 	}

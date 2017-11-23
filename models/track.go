@@ -130,24 +130,24 @@ func GenerateHash(title string, userID int64) string {
 // SaveTrackFile to filesystem
 func SaveTrackFile(file *multipart.FileHeader, filename string, username string) (string, error) {
 	storDir := filepath.Join(setting.Storage.Path, "tracks", username)
-	log.Debug("Track will be uploaded to to: %s", storDir)
+	log.Debugf("Track will be uploaded to to: %s", storDir)
 	err := os.MkdirAll(storDir, os.ModePerm)
 	if err != nil {
-		log.Error(2, "Cannot create directory '%s': %s", storDir, err)
+		log.Errorf("Cannot create directory '%s': %s", storDir, err)
 		return "", err
 	}
 
 	fPath := filepath.Join(storDir, filename)
 	fw, err := os.Create(fPath)
 	if err != nil {
-		log.Error(2, "Error opening file '%s' to write track: %s", fPath, err)
+		log.Errorf("Error opening file '%s' to write track: %s", fPath, err)
 		return "", err
 	}
 	defer fw.Close()
 
 	fr, err := file.Open()
 	if err != nil {
-		log.Error(2, "Error opening uploaded file to read content: %s", err)
+		log.Errorf("Error opening uploaded file to read content: %s", err)
 		return "", err
 	}
 	defer fr.Close()
@@ -159,17 +159,17 @@ func SaveTrackFile(file *multipart.FileHeader, filename string, username string)
 
 	_, err = fw.Write(data)
 	if err != nil {
-		log.Error(2, "Error writing data to track file %s: %s", fPath, err)
+		log.Errorf("Error writing data to track file %s: %s", fPath, err)
 		return "", err
 	}
 
 	mimetype, err := tool.GetBlobMimeType(data)
 	if err != nil {
-		log.Error(2, "Error reading temp uploaded file: %s", err)
+		log.Errorf("Error reading temp uploaded file: %s", err)
 		return "", err
 	}
 
-	log.Info("Track saved to %s", fPath)
+	log.Infof("Track saved to %s", fPath)
 	return mimetype, nil
 }
 
@@ -385,7 +385,7 @@ func GetTracks(opts *TrackOptions) (tracks []*TrackWithInfo, _ int64, _ error) {
 func GetNotReadyTracks() (tracks []*Track, err error) {
 	err = x.Table(&Track{}).Cols("ID").Where("ready=?", false).Find(&tracks)
 	if err != nil {
-		log.Error(2, "Cannot get un-ready tracks: %s", err)
+		log.Errorf("Cannot get un-ready tracks: %s", err)
 	}
 	return tracks, err
 }
@@ -416,23 +416,23 @@ func removeTrackFiles(transcode bool, trackFilename string, userSlug string) err
 
 	err := os.RemoveAll(fName)
 	if err != nil {
-		log.Error(2, "Cannot remove orig file '%s': %s", fName, err)
+		log.Errorf("Cannot remove orig file '%s': %s", fName, err)
 	} else {
-		log.Info("File removed: %s", fName)
+		log.Infof("File removed: %s", fName)
 	}
 
 	err = os.RemoveAll(fJSON)
 	if err != nil {
-		log.Error(2, "Cannot remove json file '%s': %s", fJSON, err)
+		log.Errorf("Cannot remove json file '%s': %s", fJSON, err)
 	} else {
-		log.Info("File removed: %s", fJSON)
+		log.Infof("File removed: %s", fJSON)
 	}
 
 	err = os.RemoveAll(fPNG)
 	if err != nil {
-		log.Error(2, "Cannot remove png file '%s': %s", fPNG, err)
+		log.Errorf("Cannot remove png file '%s': %s", fPNG, err)
 	} else {
-		log.Info("File removed: %s", fPNG)
+		log.Infof("File removed: %s", fPNG)
 	}
 
 	if transcode {
@@ -440,9 +440,9 @@ func removeTrackFiles(transcode bool, trackFilename string, userSlug string) err
 
 		err = os.RemoveAll(fTranscode)
 		if err != nil {
-			log.Error(2, "Cannot remove transcode file '%s': %s", fTranscode, err)
+			log.Errorf("Cannot remove transcode file '%s': %s", fTranscode, err)
 		} else {
-			log.Info("File removed: %s", fTranscode)
+			log.Infof("File removed: %s", fTranscode)
 		}
 	}
 
@@ -506,7 +506,7 @@ func DeleteTrack(trackID int64, userID int64) error {
 		return fmt.Errorf("Commit: %v", err)
 	}
 
-	log.Info("Deleted track record for %d/%s", track.ID, track.Title)
+	log.Infof("Deleted track record for %d/%s", track.ID, track.Title)
 
 	removeTrackFiles(trackTranscoded, trackFilename, trackUser.Slug)
 

@@ -194,7 +194,7 @@ func getTracksAndDeassociate(albumID int64) error {
 		track.Track.AlbumOrder = -1
 		err := UpdateTrack(&track.Track)
 		if err != nil {
-			log.Error(2, "Deassociating album %d from track %d: %s", albumID, track.Track.ID, err)
+			log.Errorf("Deassociating album %d from track %d: %s", albumID, track.Track.ID, err)
 		}
 	}
 	return nil
@@ -212,7 +212,7 @@ func DeleteAlbum(albumID int64, userID int64) error {
 	}
 
 	if err = getTracksAndDeassociate(album.ID); err != nil {
-		log.Error(2, "Error while deassociating tracks of album %d: %s", albumID, err)
+		log.Errorf("Error while deassociating tracks of album %d: %s", albumID, err)
 	}
 
 	sess := x.NewSession()
@@ -229,7 +229,7 @@ func DeleteAlbum(albumID int64, userID int64) error {
 		return fmt.Errorf("Commit: %v", err)
 	}
 
-	log.Info("Deleted album for %d/%s", album.ID, album.Name)
+	log.Infof("Deleted album for %d/%s", album.ID, album.Name)
 
 	return nil
 }
@@ -238,7 +238,7 @@ func DeleteAlbum(albumID int64, userID int64) error {
 func GetMapNameIDOfAlbums(userID int64) (sets []Album, err error) {
 	err = x.Table(&Album{}).Cols("id", "name").Where("user_id=?", userID).Find(&sets)
 	if err != nil {
-		log.Error(2, "Cannot get albums for user id %d: %s", userID, err)
+		log.Errorf("Cannot get albums for user id %d: %s", userID, err)
 	}
 	return sets, err
 }

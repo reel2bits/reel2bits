@@ -70,7 +70,7 @@ func SendUserMail(c *macaron.Context, u User, tpl, code, subject, info string) {
 	}
 	body, err := mailRender.HTMLString(string(tpl), data)
 	if err != nil {
-		log.Error(3, "HTMLString: %v", err)
+		log.Errorf("HTMLString: %v", err)
 		return
 	}
 
@@ -100,7 +100,7 @@ func SendActivateEmailMail(c *macaron.Context, u User, email string) {
 	}
 	body, err := mailRender.HTMLString(string(tmplMailAuthActivateEmail), data)
 	if err != nil {
-		log.Error(3, "HTMLString: %v", err)
+		log.Errorf("HTMLString: %v", err)
 		return
 	}
 

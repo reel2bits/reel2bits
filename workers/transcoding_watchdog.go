@@ -31,7 +31,7 @@ func TranscodingWatchdog() {
 	// First case : empty workers list
 	server, err := CreateServer()
 	if err != nil {
-		log.Error(2, "Cannot initiate the worker connection, please retry again.")
+		log.Errorf("Cannot initiate the worker connection, please retry again.")
 	}
 
 	queueTranscodingInfos, _ := server.GetBroker().GetPendingTasks("reel2bits_queue")
@@ -39,7 +39,7 @@ func TranscodingWatchdog() {
 	// get all un-ready tracks
 	tracks, err := models.GetNotReadyTracks()
 	if err != nil {
-		log.Error(2, "Cannot get un-ready tracks: %s", err)
+		log.Errorf("Cannot get un-ready tracks: %s", err)
 	}
 	if len(tracks) <= 0 {
 		return
@@ -47,7 +47,7 @@ func TranscodingWatchdog() {
 
 	if len(queueTranscodingInfos) <= 0 {
 		log.Info("Workers queue is empty, checking for un-ready tracks.")
-		log.Info("Found %d un-ready tracks to process.", len(tracks))
+		log.Infof("Found %d un-ready tracks to process.", len(tracks))
 		// Add them to the worker queue
 		for _, t := range tracks {
 			sig := &tasks.Signature{
@@ -57,7 +57,7 @@ func TranscodingWatchdog() {
 
 			_, err = server.SendTask(sig)
 			if err != nil {
-				log.Error(2, "Cannot push the worker job for %d, please retry again. %s", t.ID, err)
+				log.Errorf("Cannot push the worker job for %d, please retry again. %s", t.ID, err)
 			}
 		}
 		return
@@ -75,7 +75,7 @@ func TranscodingWatchdog() {
 			if strings.HasPrefix(fmt.Sprintf("%T", arg.Value), "float") {
 				n, ok := arg.Value.(float64)
 				if !ok {
-					log.Error(2, "Cannot convert to float64")
+					log.Errorf("Cannot convert to float64")
 					continue
 				}
 				argValue = int64(n)
@@ -88,7 +88,7 @@ func TranscodingWatchdog() {
 
 		// Found it ?
 		if !trackFound {
-			log.Debug("Cannot found track %d in transcoding queue", t.ID)
+			log.Debugf("Cannot found track %d in transcoding queue", t.ID)
 			// Add it
 			sig := &tasks.Signature{
 				Name: "TranscodeAndFetchInfos",
@@ -97,7 +97,7 @@ func TranscodingWatchdog() {
 
 			_, err = server.SendTask(sig)
 			if err != nil {
-				log.Error(2, "Cannot push the worker job for %d, please retry again. %s", t.ID, err)
+				log.Errorf("Cannot push the worker job for %d, please retry again. %s", t.ID, err)
 			}
 		}
 	}

@@ -40,7 +40,7 @@ func AutoLogin(c *context.Context) (bool, error) {
 	isSucceed := false
 	defer func() {
 		if !isSucceed {
-			log.Debug("auto-login cookie cleared: %s", uname)
+			log.Debugf("auto-login cookie cleared: %s", uname)
 			c.SetCookie(setting.CookieUserName, "", -1, setting.AppSubURL)
 			c.SetCookie(setting.CookieRememberName, "", -1, setting.AppSubURL)
 			c.SetCookie(setting.LoginStatusCookieName, "", -1, setting.AppSubURL)
@@ -206,7 +206,7 @@ func RegisterPost(ctx *context.Context, f form.Register) {
 		}
 		return
 	}
-	log.Debug("Account created: %s", u.UserName)
+	log.Debugf("Account created: %s", u.UserName)
 
 	// Auto set Admin if first user
 	if models.CountUsers() == 1 {
@@ -284,7 +284,7 @@ func ResetPasswdPost(ctx *context.Context) {
 			return
 		}
 
-		log.Debug("User password reset: %s", u.UserName)
+		log.Debugf("User password reset: %s", u.UserName)
 		ctx.SubURLRedirect(ctx.URLFor("user_login"))
 		return
 	}
@@ -344,7 +344,7 @@ func ForgotPasswdPost(ctx *context.Context) {
 
 	mailer.SendResetPasswordMail(ctx.Context, models.NewMailerUser(u))
 	if err = ctx.Cache.Put("MailResendLimit_"+u.LowerName, u.LowerName, 180); err != nil {
-		log.Error(4, "Set cache(MailResendLimit) fail: %v", err)
+		log.Errorf("Set cache(MailResendLimit) fail: %v", err)
 	}
 
 	// HARDCODED

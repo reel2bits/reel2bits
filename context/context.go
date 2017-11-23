@@ -45,7 +45,7 @@ func (c *Context) PageIs(name string) {
 
 // HTML responses template with given status.
 func (c *Context) HTML(status int, name string) {
-	log.Debug("Template: %s", name)
+	log.Debugf("Template: %s", name)
 	c.Context.HTML(status, name)
 }
 
@@ -92,7 +92,7 @@ func (c *Context) Handle(status int, title string, err error) {
 		c.Data["Title"] = c.Tr("error.page_not_found")
 	case http.StatusInternalServerError:
 		c.Data["Title"] = c.Tr("internal_server_error")
-		log.Error(2, "%s: %v", title, err)
+		log.Errorf("%s: %v", title, err)
 	}
 	c.HTML(status, fmt.Sprintf("status/%d", status))
 }
@@ -207,8 +207,8 @@ func Contexter() macaron.Handler {
 
 		ctx.Data["CSRFToken"] = x.GetToken()
 		ctx.Data["CSRFTokenHTML"] = template.HTML(`<input type="hidden" name="_csrf" value="` + x.GetToken() + `">`)
-		log.Debug("Session ID: %s", sess.ID())
-		log.Debug("CSRF Token: %v", ctx.Data["CSRFToken"])
+		log.Debugf("Session ID: %s", sess.ID())
+		log.Debugf("CSRF Token: %v", ctx.Data["CSRFToken"])
 
 		c.Map(ctx)
 	}

@@ -53,7 +53,7 @@ func NewPost(ctx *context.Context, f form.Album) {
 
 		return
 	}
-	log.Debug("Album created: %d/%s", a.ID, a.Name)
+	log.Debugf("Album created: %d/%s", a.ID, a.Name)
 
 	ctx.Flash.Success(ctx.Tr("album.new_success"))
 	ctx.SubURLRedirect(ctx.URLFor("album_show", ":userSlug", ctx.User.Slug, ":albumSlug", a.Slug))
@@ -71,7 +71,7 @@ func ListFromUser(ctx *context.Context) {
 
 	user, err := models.GetUserBySlug(ctx.Params(":userSlug"))
 	if err != nil {
-		log.Error(2, "Cannot get User from slug %s: %s", ctx.Params(":userSlug"), err)
+		log.Errorf("Cannot get User from slug %s: %s", ctx.Params(":userSlug"), err)
 		ctx.ServerError("Unknown user.", err)
 		return
 	}
@@ -98,7 +98,7 @@ func ListFromUser(ctx *context.Context) {
 
 	listOfAlbums, albumsCount, err := models.GetAlbums(opts)
 	if err != nil {
-		log.Warn("Cannot get Albums with opts %v, %s", opts, err)
+		log.Warnf("Cannot get Albums with opts %v, %s", opts, err)
 		ctx.Flash.Error(ctx.Tr("album_list.error_getting_list"))
 		ctx.Handle(500, "ListAlbums", err)
 		return
@@ -124,7 +124,7 @@ func Show(ctx *context.Context) {
 
 	user, err := models.GetUserBySlug(ctx.Params(":userSlug"))
 	if err != nil {
-		log.Error(2, "Cannot get User from slug %s: %s", ctx.Params(":userSlug"), err)
+		log.Errorf("Cannot get User from slug %s: %s", ctx.Params(":userSlug"), err)
 		ctx.Flash.Error("Unknown user.")
 		ctx.SubURLRedirect(ctx.URLFor("home"), 404)
 		return
@@ -132,7 +132,7 @@ func Show(ctx *context.Context) {
 
 	album, err := models.GetAlbumBySlugAndUserID(user.ID, ctx.Params(":albumSlug"))
 	if err != nil {
-		log.Error(2, "Cannot get Album from slug %s and user %d: %s", ctx.Params(":albumSlug"), user.ID, err)
+		log.Errorf("Cannot get Album from slug %s and user %d: %s", ctx.Params(":albumSlug"), user.ID, err)
 		ctx.Flash.Error("Unknown album.")
 		ctx.SubURLRedirect(ctx.URLFor("home"), 404)
 		return
@@ -150,7 +150,7 @@ func Show(ctx *context.Context) {
 	sound, err := models.GetFirstTrackOfAlbum(album.ID, onlyReady)
 	if err != nil {
 		//ctx.Flash.Warning("Album is empty.")
-		log.Error(2, "Album %d cannot get track at order 1: %s", err)
+		log.Errorf("Album %d cannot get track at order 1: %s", err)
 		//ctx.SubURLRedirect(ctx.URLFor("home"), 404)
 		//return
 		ctx.Data["sound"] = nil
@@ -160,7 +160,7 @@ func Show(ctx *context.Context) {
 
 	tracks, err := models.GetAlbumTracks(album.ID, onlyReady)
 	if err != nil {
-		log.Error(2, "Cannot get album %d tracks: %s", album.ID, err)
+		log.Errorf("Cannot get album %d tracks: %s", album.ID, err)
 		ctx.Flash.Error("Cannot get album tracks.")
 		ctx.SubURLRedirect(ctx.URLFor("home"), 503)
 		return
@@ -184,7 +184,7 @@ func Edit(ctx *context.Context) {
 
 	user, err := models.GetUserBySlug(ctx.Params(":userSlug"))
 	if err != nil {
-		log.Error(2, "Cannot get User from slug %s: %s", ctx.Params(":userSlug"), err)
+		log.Errorf("Cannot get User from slug %s: %s", ctx.Params(":userSlug"), err)
 		ctx.Flash.Error("Unknown user.")
 		ctx.SubURLRedirect(ctx.URLFor("home"), 404)
 		return
@@ -192,7 +192,7 @@ func Edit(ctx *context.Context) {
 
 	album, err := models.GetAlbumBySlugAndUserID(user.ID, ctx.Params(":albumSlug"))
 	if err != nil {
-		log.Error(2, "Cannot get Album from slug %s and user %d: %s", ctx.Params(":albumSlug"), user.ID, err)
+		log.Errorf("Cannot get Album from slug %s and user %d: %s", ctx.Params(":albumSlug"), user.ID, err)
 		ctx.Flash.Error("Unknown album.")
 		ctx.SubURLRedirect(ctx.URLFor("home"), 404)
 		return
@@ -220,7 +220,7 @@ func EditPost(ctx *context.Context, f form.Album) {
 
 	user, err := models.GetUserBySlug(ctx.Params(":userSlug"))
 	if err != nil {
-		log.Error(2, "Cannot get User from slug %s: %s", ctx.Params(":userSlug"), err)
+		log.Errorf("Cannot get User from slug %s: %s", ctx.Params(":userSlug"), err)
 		ctx.Flash.Error("Unknown user.")
 		ctx.SubURLRedirect(ctx.URLFor("home"), 404)
 		return
@@ -228,7 +228,7 @@ func EditPost(ctx *context.Context, f form.Album) {
 
 	album, err := models.GetAlbumBySlugAndUserID(user.ID, ctx.Params(":albumSlug"))
 	if err != nil {
-		log.Error(2, "Cannot get Album from slug %s and user %d: %s", ctx.Params(":albumSlug"), user.ID, err)
+		log.Errorf("Cannot get Album from slug %s and user %d: %s", ctx.Params(":albumSlug"), user.ID, err)
 		ctx.Flash.Error("Unknown album.")
 		ctx.SubURLRedirect(ctx.URLFor("home"), 404)
 		return
@@ -273,14 +273,14 @@ func DeleteAlbum(ctx *context.Context, f form.AlbumDelete) {
 	// Get user and album
 	user, err := models.GetUserBySlug(ctx.Params(":userSlug"))
 	if err != nil {
-		log.Error(2, "Cannot get User from slug %s: %s", ctx.Params(":userSlug"), err)
+		log.Errorf("Cannot get User from slug %s: %s", ctx.Params(":userSlug"), err)
 		ctx.ServerError("Unknown user.", err)
 		return
 	}
 
 	album, err := models.GetAlbumBySlugAndUserID(user.ID, ctx.Params(":albumSlug"))
 	if err != nil {
-		log.Error(2, "Cannot get Album from slug %s and user %d: %s", ctx.Params(":albumSlug"), user.ID, err)
+		log.Errorf("Cannot get Album from slug %s and user %d: %s", ctx.Params(":albumSlug"), user.ID, err)
 		ctx.ServerError("Unknown album.", err)
 		return
 	}
@@ -295,7 +295,7 @@ func DeleteAlbum(ctx *context.Context, f form.AlbumDelete) {
 	err = models.DeleteAlbum(album.ID, album.UserID)
 	if err != nil {
 		ctx.Flash.Error(ctx.Tr("album_delete.error_deleting"))
-		log.Warn("DeleteAlbum.Delete: %v", err)
+		log.Warnf("DeleteAlbum.Delete: %v", err)
 		ctx.JSONSuccess(map[string]interface{}{
 			"error":    ctx.Tr("album_delete.error_deleting"),
 			"redirect": false,

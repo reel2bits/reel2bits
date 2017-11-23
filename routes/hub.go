@@ -45,7 +45,7 @@ func Home(ctx *context.Context) {
 
 	listOfTracks, tracksCount, err := models.GetTracks(opts)
 	if err != nil {
-		log.Warn("Cannot get Tracks with opts %v, %s", opts, err)
+		log.Warnf("Cannot get Tracks with opts %v, %s", opts, err)
 		ctx.Flash.Error(ctx.Tr("track_list.error_getting_list"))
 		ctx.Handle(500, "ListTracks", err)
 		return

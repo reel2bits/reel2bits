@@ -23,7 +23,7 @@ const (
 
 func check(cond bool, test string) {
 	if !cond {
-		log.Error(2, "check(): "+test+" failed")
+		log.Errorf("check(): " + test + " failed")
 	}
 }
 
@@ -32,13 +32,13 @@ func fetchMetadatasAndCommit(idx int64) (int64, error) {
 
 	track, err := models.GetTrackByID(idx)
 	if err != nil {
-		log.Error(2, "Cannot get Track from index %d: %s", idx, err)
+		log.Errorf("Cannot get Track from index %d: %s", idx, err)
 		return 0, err
 	}
 
 	user, err := models.GetUserByID(track.UserID)
 	if err != nil {
-		log.Error(2, "Cannot get User from ID %d: %s", track.UserID, err)
+		log.Errorf("Cannot get User from ID %d: %s", track.UserID, err)
 		return 0, err
 	}
 
@@ -48,7 +48,7 @@ func fetchMetadatasAndCommit(idx int64) (int64, error) {
 	// Metadatas
 	md, err := taglib.Read(fName)
 	if err != nil {
-		log.Error(2, "Cannot open file %s for taglib reading: %s", fName, err)
+		log.Errorf("Cannot open file %s for taglib reading: %s", fName, err)
 		return 0, err
 	}
 
@@ -91,7 +91,7 @@ func fetchMetadatasAndCommit(idx int64) (int64, error) {
 
 	err = models.CreateTrackInfo(&ti)
 	if err != nil {
-		log.Error(2, "Cannot create TrackInfo: %s", err)
+		log.Errorf("Cannot create TrackInfo: %s", err)
 		return 0, err
 	}
 
@@ -100,19 +100,19 @@ func fetchMetadatasAndCommit(idx int64) (int64, error) {
 
 func generateWaveforms(trackID int64) (waveform string, err error) {
 	if _, err := os.Stat(setting.AudiowaveformBin); os.IsNotExist(err) {
-		log.Error(2, "Error: %s doesn't exists", setting.AudiowaveformBin)
+		log.Errorf("Error: %s doesn't exists", setting.AudiowaveformBin)
 		return "", fmt.Errorf("Error: %s doesn't exists", setting.AudiowaveformBin)
 	}
 
 	track, err := models.GetTrackByID(trackID)
 	if err != nil {
-		log.Error(2, "Cannot get Track from index %d: %s", trackID, err)
+		log.Errorf("Cannot get Track from index %d: %s", trackID, err)
 		return "", err
 	}
 
 	user, err := models.GetUserByID(track.UserID)
 	if err != nil {
-		log.Error(2, "Cannot get User from ID %d: %s", track.UserID, err)
+		log.Errorf("Cannot get User from ID %d: %s", track.UserID, err)
 		return "", err
 	}
 
@@ -129,19 +129,19 @@ func generateWaveforms(trackID int64) (waveform string, err error) {
 	// Json
 	out, err := exec.Command(setting.AudiowaveformBin, "-i", fName, "--pixels-per-second", "10", "-b", "8", "-o", fJSON).Output()
 	if err != nil {
-		log.Error(2, "JSON: Can't execute Audiowaveform: %s", err)
+		log.Errorf("JSON: Can't execute Audiowaveform: %s", err)
 		return "", err
 	}
 
 	if strings.Contains(string(out), "Can't generate") {
-		log.Error(2, "JSON: Audiowaveform returned Can't generate. Output: %s", out)
+		log.Errorf("JSON: Audiowaveform returned Can't generate. Output: %s", out)
 		return "", fmt.Errorf("JSON: Audiowaveform returned Can't generate. Output: %s", out)
 	}
 
 	// Get back the json
 	wf, err := ioutil.ReadFile(fJSON)
 	if err != nil {
-		log.Error(2, "JSON: Cannot open %s: %s", fJSON, err)
+		log.Errorf("JSON: Cannot open %s: %s", fJSON, err)
 		return "", err
 	}
 	waveform = string(wf)
@@ -149,12 +149,12 @@ func generateWaveforms(trackID int64) (waveform string, err error) {
 	// Png
 	out, err = exec.Command(setting.AudiowaveformBin, "-i", fName, "--width", "384", "--height", "64", "--no-axis-labels", "-o", fPNG).Output()
 	if err != nil {
-		log.Error(2, "PNG: Can't execute Audiowaveform: %s", err)
+		log.Errorf("PNG: Can't execute Audiowaveform: %s", err)
 		return waveform, err
 	}
 
 	if strings.Contains(string(out), "Can't generate") {
-		log.Error(2, "PNG: Audiowaveform returned Can't generate. Output: %s", out)
+		log.Errorf("PNG: Audiowaveform returned Can't generate. Output: %s", out)
 		return waveform, fmt.Errorf("PNG: Audiowaveform returned Can't generate. Output: %s", out)
 	}
 
@@ -166,7 +166,7 @@ func generateTranscode(trackID int64) (err error) {
 
 	track, err := models.GetTrackByID(trackID)
 	if err != nil {
-		log.Error(2, "Cannot get Track from index %d: %s", trackID, err)
+		log.Errorf("Cannot get Track from index %d: %s", trackID, err)
 		return err
 	}
 
@@ -177,7 +177,7 @@ func generateTranscode(trackID int64) (err error) {
 
 	user, err := models.GetUserByID(track.UserID)
 	if err != nil {
-		log.Error(2, "Cannot get User from ID %d: %s", track.UserID, err)
+		log.Errorf("Cannot get User from ID %d: %s", track.UserID, err)
 		return err
 	}
 
@@ -191,7 +191,7 @@ func generateTranscode(trackID int64) (err error) {
 
 	// Do some transcoding here from <fName> to <fName>-ext.mp3
 	if !sox.Init() {
-		log.Error(2, "Cannot init SOX library")
+		log.Errorf("Cannot init SOX library")
 		return fmt.Errorf("Cannot init SOX library")
 	}
 	// Make sure to call Quit before terminating
@@ -203,7 +203,7 @@ func generateTranscode(trackID int64) (err error) {
 
 	input = sox.OpenRead(fName)
 	if input == nil {
-		log.Error(2, "Cannot open file %s for read", fName)
+		log.Errorf("Cannot open file %s for read", fName)
 		return fmt.Errorf("Cannot open file %s for read", fName)
 	}
 
@@ -212,7 +212,7 @@ func generateTranscode(trackID int64) (err error) {
 	dfName := fmt.Sprintf("%s.mp3", strings.TrimSuffix(fName, filepath.Ext(fName)))
 	output = sox.OpenWrite(dfName, input.Signal(), input.Encoding(), nil)
 	if output == nil {
-		log.Error(2, "Cannot open file %s for write", dfName)
+		log.Errorf("Cannot open file %s for write", dfName)
 		return fmt.Errorf("Cannot open file %s for write", dfName)
 	}
 	defer output.Release()
@@ -230,7 +230,7 @@ func generateTranscode(trackID int64) (err error) {
 	track.TranscodeState = models.ProcessingFinished
 	err = models.UpdateTrack(track)
 	if err != nil {
-		log.Error(2, "Cannot update Track %d: %s", trackID, err)
+		log.Errorf("Cannot update Track %d: %s", trackID, err)
 		return err
 	}
 
@@ -239,7 +239,7 @@ func generateTranscode(trackID int64) (err error) {
 
 // TranscodeAndFetchInfos will do all the processing in one func
 func TranscodeAndFetchInfos(trackID int64) error {
-	log.Debug("Starting processing track %d", trackID)
+	log.Debugf("Starting processing track %d", trackID)
 
 	_, err := models.GetTrackByID(trackID)
 	if err != nil {
@@ -250,7 +250,7 @@ func TranscodeAndFetchInfos(trackID int64) error {
 	// Fetch metadatas
 	trackInfoID, err := fetchMetadatasAndCommit(trackID)
 	if err != nil {
-		log.Error(2, "Cannot create TrackInfo: %s", err)
+		log.Errorf("Cannot create TrackInfo: %s", err)
 		// We cannot update the state here 'cause if we get nil the record could probably not be inserted
 		return err
 	}
@@ -258,7 +258,7 @@ func TranscodeAndFetchInfos(trackID int64) error {
 	// Fetch the created TrackInfo
 	ti, err := models.GetTrackInfoByID(trackInfoID)
 	if err != nil {
-		log.Error(2, "Cannot get TrackInfo id %d: %s", trackInfoID, err)
+		log.Errorf("Cannot get TrackInfo id %d: %s", trackInfoID, err)
 		// TODO state
 		return err
 	}
@@ -266,7 +266,7 @@ func TranscodeAndFetchInfos(trackID int64) error {
 	// Generate transcode file
 	err = generateTranscode(trackID)
 	if err != nil {
-		log.Error(2, "Cannot transcode %d: %s", trackID, err)
+		log.Errorf("Cannot transcode %d: %s", trackID, err)
 		return err
 	}
 
@@ -274,7 +274,7 @@ func TranscodeAndFetchInfos(trackID int64) error {
 	// Generate Waveforms
 	wf, err := generateWaveforms(trackID)
 	if err != nil {
-		log.Error(2, "Cannot create Waveforms: %s", err)
+		log.Errorf("Cannot create Waveforms: %s", err)
 		ti.ProcessedWaveform = models.ProcessingFailed
 		ti.WaveformErr = fmt.Sprintf("%s", err)
 	} else {
@@ -286,7 +286,7 @@ func TranscodeAndFetchInfos(trackID int64) error {
 	ti.ProcessingStopUnix = time.Now().Unix()
 	err = models.UpdateTrackInfo(ti)
 	if err != nil {
-		log.Error(2, "Cannot update TrackInfo %d: %s", trackInfoID, err)
+		log.Errorf("Cannot update TrackInfo %d: %s", trackInfoID, err)
 		return err
 	}
 

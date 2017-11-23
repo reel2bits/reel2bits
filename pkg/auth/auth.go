@@ -32,7 +32,7 @@ func SignedInID(ctx *macaron.Context, sess session.Store) int64 {
 	if id, ok := uid.(int64); ok {
 		if _, err := models.GetUserByID(id); err != nil {
 			if !errors.IsUserNotExist(err) {
-				log.Error(2, "GetUserByID: %v", err)
+				log.Errorf("GetUserByID: %v", err)
 			}
 			return 0
 		}
@@ -56,7 +56,7 @@ func SignedInUser(ctx *macaron.Context, sess session.Store) (*models.User, bool)
 
 	u, err := models.GetUserByID(uid)
 	if err != nil {
-		log.Error(4, "GetUserById: %v", err)
+		log.Errorf("GetUserById: %v", err)
 		return nil, false
 	}
 	return u, false

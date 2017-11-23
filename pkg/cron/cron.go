@@ -21,7 +21,7 @@ func NewContext() {
 	log.Debug("Enabling TranscodingWatchdog")
 	entry, err = c.AddFunc("Transcoding Watchdog", "@every 5m", workers.TranscodingWatchdog)
 	if err != nil {
-		log.Fatal(2, "Cron.(transcoding watchdog): %v", err)
+		log.Fatalf("Cron.(transcoding watchdog): %v", err)
 	}
 	entry.Next = time.Now().Add(1 * time.Minute)
 

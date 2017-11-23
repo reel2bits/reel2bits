@@ -41,7 +41,7 @@ func init() {
 		IsValid: func(errs binding.Errors, name string, v interface{}) (bool, binding.Errors) {
 			fr, err := v.(*multipart.FileHeader).Open()
 			if err != nil {
-				log.Error(2, "Error opening temp uploaded file to read content: %s", err)
+				log.Errorf("Error opening temp uploaded file to read content: %s", err)
 				errs.Add([]string{name}, errOnlyAudioFile, "OnlyAudioFile")
 				return false, errs
 			}
@@ -49,18 +49,18 @@ func init() {
 
 			data, err := ioutil.ReadAll(fr)
 			if err != nil {
-				log.Error(2, "Error reading temp uploaded file: %s", err)
+				log.Errorf("Error reading temp uploaded file: %s", err)
 				errs.Add([]string{name}, errOnlyAudioFile, "OnlyAudioFile")
 				return false, errs
 			}
 
 			mimetype, err := tool.GetBlobMimeType(data)
 			if err != nil {
-				log.Error(2, "Error reading temp uploaded file: %s", err)
+				log.Errorf("Error reading temp uploaded file: %s", err)
 				errs.Add([]string{name}, errOnlyAudioFile, "OnlyAudioFile")
 				return false, errs
 			}
-			log.Debug("Got mimetype %s for file %s", mimetype, v.(*multipart.FileHeader).Filename)
+			log.Debugf("Got mimetype %s for file %s", mimetype, v.(*multipart.FileHeader).Filename)
 
 			if mimetype != "audio/mpeg" && mimetype != "audio/x-wav" && mimetype != "audio/ogg" && mimetype != "audio/x-flac" {
 				errs.Add([]string{name}, errOnlyAudioFile, "OnlyAudioFile")

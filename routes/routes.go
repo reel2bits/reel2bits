@@ -31,7 +31,7 @@ func checkRunMode() {
 	} else {
 		macaron.Env = macaron.DEV
 	}
-	log.Info("Run Mode: %s", strings.Title(macaron.Env))
+	log.Infof("Run Mode: %s", strings.Title(macaron.Env))
 }
 
 // GlobalInit is global init

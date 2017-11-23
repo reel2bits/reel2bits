@@ -19,7 +19,7 @@ func CreateServer() (*machinery.Server, error) {
 
 	server, err := machinery.NewServer(&cnf)
 	if err != nil {
-		log.Error(2, "Workers error: %s", err)
+		log.Errorf("Workers error: %s", err)
 		return nil, err
 	}
 

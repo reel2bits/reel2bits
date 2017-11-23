@@ -287,7 +287,7 @@ func getVerifyUser(code string) (user *User) {
 		if user, err = GetUserByName(string(b)); user != nil {
 			return user
 		} else if !errors.IsUserNotExist(err) {
-			log.Error(2, "GetUserByName: %v", err)
+			log.Errorf("GetUserByName: %v", err)
 		}
 	}
 

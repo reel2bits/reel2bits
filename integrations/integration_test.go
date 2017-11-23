@@ -88,22 +88,22 @@ func initIntegrationTest() {
 			models.DbCfg.User, models.DbCfg.Passwd, models.DbCfg.Host))
 		defer db.Close()
 		if err != nil {
-			log.Fatal(2, "sql.Open: %v", err)
+			log.Fatalf("sql.Open: %v", err)
 		}
 		if _, err = db.Exec("CREATE DATABASE IF NOT EXISTS testreel2bits"); err != nil {
-			log.Fatal(2, "db.Exec: %v", err)
+			log.Fatalf("db.Exec: %v", err)
 		}
 	case setting.UsePostgreSQL:
 		db, err := sql.Open("postgres", fmt.Sprintf("postgres://%s:%s@%s/?sslmode=%s",
 			models.DbCfg.User, models.DbCfg.Passwd, models.DbCfg.Host, models.DbCfg.SSLMode))
 		defer db.Close()
 		if err != nil {
-			log.Fatal(2, "sql.Open: %v", err)
+			log.Fatalf("sql.Open: %v", err)
 		}
 		rows, err := db.Query(fmt.Sprintf("SELECT 1 FROM pg_database WHERE datname = '%s'",
 			models.DbCfg.Name))
 		if err != nil {
-			log.Fatal(2, "db.Query: %v", err)
+			log.Fatalf("db.Query: %v", err)
 		}
 		defer rows.Close()
 
@@ -111,7 +111,7 @@ func initIntegrationTest() {
 			break
 		}
 		if _, err = db.Exec("CREATE DATABASE testreel2bits"); err != nil {
-			log.Fatal(2, "db.Exec: %v", err)
+			log.Fatalf("db.Exec: %v", err)
 		}
 	}
 	routes.GlobalInit()

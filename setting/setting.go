@@ -168,7 +168,7 @@ func init() {
 
 	var err error
 	if AppPath, err = execPath(); err != nil {
-		log.Fatal(2, "Fail to get app path: %v\n", err)
+		log.Fatalf("Fail to get app path: %v\n", err)
 	}
 
 	// Note: we don't use path.Dir here because it does not handle case
@@ -178,7 +178,7 @@ func init() {
 
 func forcePathSeparator(path string) {
 	if strings.Contains(path, "\\") {
-		log.Fatal(2, "Do not use '\\' or '\\\\' in paths, instead, please use '/' in all places")
+		log.Fatalf("Do not use '\\' or '\\\\' in paths, instead, please use '/' in all places")
 	}
 }
 
@@ -186,7 +186,7 @@ func forcePathSeparator(path string) {
 func InitConfig() {
 	workDir, err := WorkDir()
 	if err != nil {
-		log.Fatal(2, "Fail to get work directory: %v", err)
+		log.Fatalf("Fail to get work directory: %v", err)
 	}
 
 	if len(CustomConf) == 0 {
@@ -197,14 +197,14 @@ func InitConfig() {
 
 	Cfg, err = ini.Load(CustomConf)
 	if err != nil {
-		log.Fatal(2, "Fail to parse '%s': %v", CustomConf, err)
+		log.Fatalf("Fail to parse '%s': %v", CustomConf, err)
 	}
 	Cfg.NameMapper = ini.AllCapsUnderscore
 	Cfg.BlockMode = false // We don't write anything, speedup cfg reading
 
 	homeDir, err := com.HomeDir()
 	if err != nil {
-		log.Fatal(2, "Fail to get home directory: %v", err)
+		log.Fatalf("Fail to get home directory: %v", err)
 	}
 	homeDir = strings.Replace(homeDir, "\\", "/", -1)
 
@@ -220,7 +220,7 @@ func InitConfig() {
 	// Check if has app suburl.
 	appURL, err := url.Parse(AppURL)
 	if err != nil {
-		log.Fatal(2, "Invalid ROOT_URL '%s': %s", AppURL, err)
+		log.Fatalf("Invalid ROOT_URL '%s': %s", AppURL, err)
 	}
 	// Suburl should start with '/' and end without '/', such as '/{subpath}'.
 	// This value is empty if site does not have sub-url.
@@ -242,7 +242,7 @@ func InitConfig() {
 		UnixSocketPermissionRaw := sec.Key("UNIX_SOCKET_PERMISSION").MustString("666")
 		UnixSocketPermissionParsed, err := strconv.ParseUint(UnixSocketPermissionRaw, 8, 32)
 		if err != nil || UnixSocketPermissionParsed > 0777 {
-			log.Fatal(2, "Fail to parse unixSocketPermission: %s", UnixSocketPermissionRaw)
+			log.Fatalf("Fail to parse unixSocketPermission: %s", UnixSocketPermissionRaw)
 		}
 		UnixSocketPermission = uint32(UnixSocketPermissionParsed)
 	}
@@ -283,16 +283,16 @@ func InitConfig() {
 	ProdMode = Cfg.Section("").Key("RUN_MODE").String() == "prod"
 
 	if err = Cfg.Section("cron").MapTo(&Cron); err != nil {
-		log.Fatal(2, "Fail to map Cron settings: %v", err)
+		log.Fatalf("Fail to map Cron settings: %v", err)
 	}
 	if err = Cfg.Section("markdown").MapTo(&Markdown); err != nil {
-		log.Fatal(2, "Fail to map Markdown settings: %v", err)
+		log.Fatalf("Fail to map Markdown settings: %v", err)
 	}
 	if err = Cfg.Section("smartypants").MapTo(&Smartypants); err != nil {
-		log.Fatal(2, "Fail to map Smartypants settings: %v", err)
+		log.Fatalf("Fail to map Smartypants settings: %v", err)
 	}
 	if err = Cfg.Section("worker").MapTo(&Worker); err != nil {
-		log.Fatal(2, "Fail to map Worker settings: %v", err)
+		log.Fatalf("Fail to map Worker settings: %v", err)
 	}
 
 	// Static
@@ -313,7 +313,9 @@ func InitConfig() {
 	}
 
 	// Make sure everyone gets version info printed.
-	log.Info("%s %s", AppName, AppVer)
+	log.WithFields(log.Fields{
+		"Version": AppVer,
+	}).Infof("%s started", AppName)
 
 	initSession()
 	initCache()
@@ -342,7 +344,7 @@ func initCache() {
 	case "redis", "memcache":
 		CacheConn = strings.Trim(Cfg.Section("cache").Key("HOST").String(), "\" ")
 	default:
-		log.Fatal(2, "Unknown cache adapter: %s", CacheAdapter)
+		log.Fatalf("Unknown cache adapter: %s", CacheAdapter)
 	}
 
 	log.Info("Cache Service Enabled")
@@ -396,7 +398,7 @@ func initMailer() {
 	if len(MailService.From) > 0 {
 		parsed, err := mail.ParseAddress(MailService.From)
 		if err != nil {
-			log.Fatal(2, "Invalid mailer.FROM (%s): %v", MailService.From, err)
+			log.Fatalf("Invalid mailer.FROM (%s): %v", MailService.From, err)
 		}
 		MailService.FromEmail = parsed.Address
 	}

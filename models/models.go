@@ -203,7 +203,7 @@ func InitDb() {
 	LoadConfigs()
 
 	if err := NewEngine(); err != nil {
-		log.Fatal(2, "Fail to initialize ORM engine: %v", err)
+		log.Fatalf("Fail to initialize ORM engine: %v", err)
 	}
 	HasEngine = true
 
