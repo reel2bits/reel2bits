@@ -112,4 +112,27 @@ func DeleteTimelineItem(userID int64, trackID int64, albumID int64) error {
 	return nil
 }
 
-// GetTimelineItems
+// TimelineItemsOpts structure
+type TimelineItemsOpts struct {
+	Page     int
+	PageSize int
+}
+
+// GetTimelineItems with options for pagination
+func GetTimelineItems(opts *TimelineItemsOpts) (timelineItems []*TimelineItem, _ int64, _ error) {
+	if opts.Page <= 0 {
+		opts.Page = 1
+	}
+	timelineItems = make([]*TimelineItem, 0, opts.PageSize)
+
+	sess := x.Desc("created_unix")
+
+	var countSess xorm.Session
+	countSess = *sess
+	count, err := countSess.Count(new(Track))
+	if err != nil {
+		return nil, 0, fmt.Errorf("Count: %v", err)
+	}
+
+	return timelineItems, count, sess.Limit(opts.PageSize, (opts.Page-1)*opts.PageSize).Find(&timelineItems)
+}

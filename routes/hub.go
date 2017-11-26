@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	tmplTracksList = "tracks_list"
-	tmplImpressum  = "impressum"
+	tmplTimeline  = "timeline"
+	tmplImpressum = "impressum"
 )
 
 // NotFound [GET]
@@ -35,27 +35,24 @@ func Home(ctx *context.Context) {
 	}
 	ctx.Data["PageNumber"] = page
 
-	opts := &models.TrackOptions{
-		PageSize:    10, // TODO: put this in config
-		Page:        page,
-		GetAll:      true,
-		WithPrivate: false,
-		OnlyReady:   true,
+	opts := &models.TimelineItemsOpts{
+		PageSize: 10, // TODO: put this in config
+		Page:     page,
 	}
 
-	listOfTracks, tracksCount, err := models.GetTracks(opts)
+	listOfItems, itemsCount, err := models.GetTimelineItems(opts)
 	if err != nil {
-		log.Warnf("Cannot get Tracks with opts %v, %s", opts, err)
+		log.Warnf("Cannot get TimelineItems with opts %v, %s", opts, err)
 		ctx.Flash.Error(ctx.Tr("track_list.error_getting_list"))
-		ctx.Handle(500, "ListTracks", err)
+		ctx.Handle(500, "ListTimelineItems", err)
 		return
 	}
 
-	ctx.Data["tracks"] = listOfTracks
-	ctx.Data["tracks_count"] = tracksCount
+	ctx.Data["items"] = listOfItems
+	ctx.Data["items_count"] = itemsCount
 
-	ctx.Data["Total"] = tracksCount
-	ctx.Data["Page"] = paginater.New(int(tracksCount), opts.PageSize, page, 5)
+	ctx.Data["Total"] = itemsCount
+	ctx.Data["Page"] = paginater.New(int(itemsCount), opts.PageSize, page, 5)
 
-	ctx.Success(tmplTracksList)
+	ctx.Success(tmplTimeline)
 }

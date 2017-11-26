@@ -49,6 +49,7 @@ var (
 )
 
 func init() {
+	log.Info("Initializing models")
 	tables = append(tables,
 		new(User),
 		new(Track),

@@ -1,0 +1,51 @@
+{{template "base/head" .}}
+
+{{ if not .tracks }}
+<div class="row">
+    <div class="col-lg-9 col-lg-offset-1">
+        <h4>Looks like there is no items to show !</h4>
+    </div>
+</div>
+{{ else }}
+    <div class="row">
+        <div class="col-lg-9 col-lg-offset-1">
+            {{range $track := .tracks}}
+                <div class="row single_track_list">
+                    <div class="col-lg-6">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                {{ if not $track.IsPrivate }}<i class="fa fa-music" aria-hidden="true"></i>{{ else }}<i class="fa fa-lock" aria-hidden="true"></i>{{ end }}&nbsp;
+                                <a href="{{ URLFor "track_show" ":userSlug" $track.User.Slug ":trackSlug" $track.Track.Slug }}">{{ $track.Title }}</a>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <i class="fa fa-clock-o" aria-hidden="true"></i> {{ ElapsedToHuman $track.Track.CreatedUnix }}
+                            </div>
+                            <div class="col-lg-6">
+                                <i class="fa fa-play" aria-hidden="true"></i>
+                                {{ DurationToHuman $track.TrackInfo.Duration }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <i class="fa fa-user-o" aria-hidden="true"></i> by <a href="{{ URLFor "track_list" ":userSlug" $track.User.Slug }}">{{ $track.User.UserName }}</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        {{ if $track.TrackInfo.Waveform }}
+                        <img src="{{ URLFor "media_track_waveform" ":userSlug" $track.User.Slug ":trackSlug" $track.Track.Slug }}"/>
+                        {{ else }}
+                        <span class="label label-info">Please wait, song metadatas are processing...</span>
+                        {{ end }}
+                    </div>
+                </div>
+            {{end}}
+        </div>
+    </div>
+{{ end }}
+
+{{template "base/footer" .}}
