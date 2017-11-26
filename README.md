@@ -31,6 +31,24 @@ Edit config: conf/app.ini
 Launch how you want the "./reel2bits web" and "./reel2bits worker"
 Or use the Systemd Unit files in "conf/" directory and adapt them
 
+## Docker
+
+There is two docker images provided actually:
+
+- dashie/reel2bits-worker:latest
+- dashie/reel2bits-web:latest
+
+No tag/stable release yet.
+
+Volumes/bind to use:
+
+- /data for both images
+- /app/conf/app.ini and /app/conf/logging.cfg for both, default will probably doesn't works.
+
+No ports for worker, 4000 for web.
+
+Worker and web needs access to redis, database, and local access to files.
+
 ## Contact, issues
 
 - Main contact: Dashie: dashie (at) sigpipe (dot) me
