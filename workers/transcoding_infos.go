@@ -239,18 +239,25 @@ func generateTranscode(trackID int64) (err error) {
 
 // TranscodeAndFetchInfos will do all the processing in one func
 func TranscodeAndFetchInfos(trackID int64) error {
-	log.Debugf("Starting processing track %d", trackID)
+	log.WithFields(log.Fields{
+		"trackID": trackID,
+	}).Error("Starting processing track.")
 
-	_, err := models.GetTrackByID(trackID)
+	trackInfosDb, err := models.GetTrackByID(trackID)
 	if err != nil {
-		log.Debug("Track deleted before we run the job, exiting this job.")
+		log.WithFields(log.Fields{
+			"trackID": trackID,
+		}).Error("Track deleted before we run the job, exiting this job.")
 		return nil
 	}
 
 	// Fetch metadatas
 	trackInfoID, err := fetchMetadatasAndCommit(trackID)
 	if err != nil {
-		log.Errorf("Cannot create TrackInfo: %s", err)
+		log.WithFields(log.Fields{
+			"trackID": trackID,
+			"err":     err,
+		}).Error("Cannot create TrackInfo")
 		// We cannot update the state here 'cause if we get nil the record could probably not be inserted
 		return err
 	}
@@ -258,7 +265,11 @@ func TranscodeAndFetchInfos(trackID int64) error {
 	// Fetch the created TrackInfo
 	ti, err := models.GetTrackInfoByID(trackInfoID)
 	if err != nil {
-		log.Errorf("Cannot get TrackInfo id %d: %s", trackInfoID, err)
+		log.WithFields(log.Fields{
+			"trackID":     trackID,
+			"trackInfoID": trackInfoID,
+			"err":         err,
+		}).Error("Cannot get TrackInfo")
 		// TODO state
 		return err
 	}
@@ -266,7 +277,10 @@ func TranscodeAndFetchInfos(trackID int64) error {
 	// Generate transcode file
 	err = generateTranscode(trackID)
 	if err != nil {
-		log.Errorf("Cannot transcode %d: %s", trackID, err)
+		log.WithFields(log.Fields{
+			"trackID": trackID,
+			"err":     err,
+		}).Error("Cannot transcode")
 		return err
 	}
 
@@ -274,7 +288,10 @@ func TranscodeAndFetchInfos(trackID int64) error {
 	// Generate Waveforms
 	wf, err := generateWaveforms(trackID)
 	if err != nil {
-		log.Errorf("Cannot create Waveforms: %s", err)
+		log.WithFields(log.Fields{
+			"trackID": trackID,
+			"err":     err,
+		}).Error("Cannot create Waveforms")
 		ti.ProcessedWaveform = models.ProcessingFailed
 		ti.WaveformErr = fmt.Sprintf("%s", err)
 	} else {
@@ -286,12 +303,30 @@ func TranscodeAndFetchInfos(trackID int64) error {
 	ti.ProcessingStopUnix = time.Now().Unix()
 	err = models.UpdateTrackInfo(ti)
 	if err != nil {
-		log.Errorf("Cannot update TrackInfo %d: %s", trackInfoID, err)
+		log.WithFields(log.Fields{
+			"trackID":     trackID,
+			"trackInfoID": trackInfoID,
+			"err":         err,
+		}).Error("Cannot update TrackInfo")
 		return err
 	}
 
 	// Track is now ready
 	models.SetTrackReadyness(trackID, true)
+
+	// Push Track to Timeline if not private
+	if !trackInfosDb.IsPrivate {
+		tli := &models.TimelineItem{
+			TrackID: trackInfosDb.ID,
+			UserID:  trackInfosDb.UserID,
+		}
+		err := models.CreateTimelineItem(tli)
+		if err != nil {
+			log.WithFields(log.Fields{
+				"track": trackID,
+			}).Error("Cannot add track to timeline")
+		}
+	}
 
 	return nil
 }
