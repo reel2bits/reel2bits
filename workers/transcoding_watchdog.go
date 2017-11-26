@@ -39,7 +39,9 @@ func TranscodingWatchdog() {
 	// get all un-ready tracks
 	tracks, err := models.GetNotReadyTracks()
 	if err != nil {
-		log.Errorf("Cannot get un-ready tracks: %s", err)
+		log.WithFields(log.Fields{
+			"err": err,
+		}).Error("Cannot get un-ready tracks.")
 	}
 	if len(tracks) <= 0 {
 		return
@@ -57,7 +59,10 @@ func TranscodingWatchdog() {
 
 			_, err = server.SendTask(sig)
 			if err != nil {
-				log.Errorf("Cannot push the worker job for %d, please retry again. %s", t.ID, err)
+				log.WithFields(log.Fields{
+					"trackID": t.ID,
+					"err":     err,
+				}).Error("Cannot push the worker job, please retry again.")
 			}
 		}
 		return
@@ -97,7 +102,10 @@ func TranscodingWatchdog() {
 
 			_, err = server.SendTask(sig)
 			if err != nil {
-				log.Errorf("Cannot push the worker job for %d, please retry again. %s", t.ID, err)
+				log.WithFields(log.Fields{
+					"trackID": t.ID,
+					"err":     err,
+				}).Error("Cannot push the worker job, please retry again.")
 			}
 		}
 	}
