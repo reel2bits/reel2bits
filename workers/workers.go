@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/RichardKnop/machinery/v1"
 	"github.com/RichardKnop/machinery/v1/config"
+	mlog "github.com/RichardKnop/machinery/v1/log"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -16,6 +17,8 @@ func CreateServer() (*machinery.Server, error) {
 		MaxWorkerInstances: 0,
 		DefaultQueue:       "reel2bits_queue",
 	}
+
+	mlog.Set(log.StandardLogger())
 
 	server, err := machinery.NewServer(&cnf)
 	if err != nil {
