@@ -2,6 +2,7 @@ package tasks
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"reflect"
 	"strings"
@@ -9,6 +10,7 @@ import (
 
 var (
 	typesMap = map[string]reflect.Type{
+		// base types
 		"bool":    reflect.TypeOf(true),
 		"int":     reflect.TypeOf(int(1)),
 		"int8":    reflect.TypeOf(int8(1)),
@@ -23,6 +25,21 @@ var (
 		"float32": reflect.TypeOf(float32(0.5)),
 		"float64": reflect.TypeOf(float64(0.5)),
 		"string":  reflect.TypeOf(string("")),
+		// slices
+		"[]bool":    reflect.TypeOf(make([]bool, 0)),
+		"[]int":     reflect.TypeOf(make([]int, 0)),
+		"[]int8":    reflect.TypeOf(make([]int8, 0)),
+		"[]int16":   reflect.TypeOf(make([]int16, 0)),
+		"[]int32":   reflect.TypeOf(make([]int32, 0)),
+		"[]int64":   reflect.TypeOf(make([]int64, 0)),
+		"[]uint":    reflect.TypeOf(make([]uint, 0)),
+		"[]uint8":   reflect.TypeOf(make([]uint8, 0)),
+		"[]uint16":  reflect.TypeOf(make([]uint16, 0)),
+		"[]uint32":  reflect.TypeOf(make([]uint32, 0)),
+		"[]uint64":  reflect.TypeOf(make([]uint64, 0)),
+		"[]float32": reflect.TypeOf(make([]float32, 0)),
+		"[]float64": reflect.TypeOf(make([]float64, 0)),
+		"[]string":  reflect.TypeOf([]string{""}),
 	}
 
 	ctxType = reflect.TypeOf((*context.Context)(nil)).Elem()
@@ -49,6 +66,16 @@ func (e ErrUnsupportedType) Error() string {
 
 // ReflectValue converts interface{} to reflect.Value based on string type
 func ReflectValue(valueType string, value interface{}) (reflect.Value, error) {
+	if strings.HasPrefix(valueType, "[]") {
+		return reflectValues(valueType, value)
+	}
+
+	return reflectValue(valueType, value)
+}
+
+// reflectValue converts interface{} to reflect.Value based on string type
+// representing a base type (not a slice)
+func reflectValue(valueType string, value interface{}) (reflect.Value, error) {
 	theType, ok := typesMap[valueType]
 	if !ok {
 		return reflect.Value{}, NewErrUnsupportedType(valueType)
@@ -57,9 +84,9 @@ func ReflectValue(valueType string, value interface{}) (reflect.Value, error) {
 
 	// Booleans
 	if theType.String() == "bool" {
-		boolValue, ok := value.(bool)
-		if !ok {
-			return reflect.Value{}, typeConversionError(value, theType.String())
+		boolValue, err := getBoolValue(theType.String(), value)
+		if err != nil {
+			return reflect.Value{}, err
 		}
 
 		theValue.Elem().SetBool(boolValue)
@@ -77,7 +104,7 @@ func ReflectValue(valueType string, value interface{}) (reflect.Value, error) {
 		return theValue.Elem(), err
 	}
 
-	// Unbound integers
+	// Unsigned integers
 	if strings.HasPrefix(theType.String(), "uint") {
 		uintValue, err := getUintValue(theType.String(), value)
 		if err != nil {
@@ -101,9 +128,9 @@ func ReflectValue(valueType string, value interface{}) (reflect.Value, error) {
 
 	// Strings
 	if theType.String() == "string" {
-		stringValue, ok := value.(string)
-		if !ok {
-			return reflect.Value{}, typeConversionError(value, theType.String())
+		stringValue, err := getStringValue(theType.String(), value)
+		if err != nil {
+			return reflect.Value{}, err
 		}
 
 		theValue.Elem().SetString(stringValue)
@@ -113,17 +140,129 @@ func ReflectValue(valueType string, value interface{}) (reflect.Value, error) {
 	return reflect.Value{}, NewErrUnsupportedType(valueType)
 }
 
+// reflectValues converts interface{} to reflect.Value based on string type
+// representing a slice of values
+func reflectValues(valueType string, value interface{}) (reflect.Value, error) {
+	theType, ok := typesMap[valueType]
+	if !ok {
+		return reflect.Value{}, NewErrUnsupportedType(valueType)
+	}
+
+	// For NULL we return an empty slice
+	if value == nil {
+		return reflect.MakeSlice(theType, 0, 0), nil
+	}
+
+	var theValue reflect.Value
+
+	// Booleans
+	if theType.String() == "[]bool" {
+		bools := reflect.ValueOf(value)
+
+		theValue = reflect.MakeSlice(theType, bools.Len(), bools.Len())
+		for i := 0; i < bools.Len(); i++ {
+			boolValue, err := getBoolValue(strings.Split(theType.String(), "[]")[1], bools.Index(i).Interface())
+			if err != nil {
+				return reflect.Value{}, err
+			}
+
+			theValue.Index(i).SetBool(boolValue)
+		}
+
+		return theValue, nil
+	}
+
+	// Integers
+	if strings.HasPrefix(theType.String(), "[]int") {
+		ints := reflect.ValueOf(value)
+
+		theValue = reflect.MakeSlice(theType, ints.Len(), ints.Len())
+		for i := 0; i < ints.Len(); i++ {
+			intValue, err := getIntValue(strings.Split(theType.String(), "[]")[1], ints.Index(i).Interface())
+			if err != nil {
+				return reflect.Value{}, err
+			}
+
+			theValue.Index(i).SetInt(intValue)
+		}
+
+		return theValue, nil
+	}
+
+	// Unsigned integers
+	if strings.HasPrefix(theType.String(), "[]uint") {
+		uints := reflect.ValueOf(value)
+
+		theValue = reflect.MakeSlice(theType, uints.Len(), uints.Len())
+		for i := 0; i < uints.Len(); i++ {
+			uintValue, err := getUintValue(strings.Split(theType.String(), "[]")[1], uints.Index(i).Interface())
+			if err != nil {
+				return reflect.Value{}, err
+			}
+
+			theValue.Index(i).SetUint(uintValue)
+		}
+
+		return theValue, nil
+	}
+
+	// Floating point numbers
+	if strings.HasPrefix(theType.String(), "[]float") {
+		floats := reflect.ValueOf(value)
+
+		theValue = reflect.MakeSlice(theType, floats.Len(), floats.Len())
+		for i := 0; i < floats.Len(); i++ {
+			floatValue, err := getFloatValue(strings.Split(theType.String(), "[]")[1], floats.Index(i).Interface())
+			if err != nil {
+				return reflect.Value{}, err
+			}
+
+			theValue.Index(i).SetFloat(floatValue)
+		}
+
+		return theValue, nil
+	}
+
+	// Strings
+	if theType.String() == "[]string" {
+		strs := reflect.ValueOf(value)
+
+		theValue = reflect.MakeSlice(theType, strs.Len(), strs.Len())
+		for i := 0; i < strs.Len(); i++ {
+			strValue, err := getStringValue(strings.Split(theType.String(), "[]")[1], strs.Index(i).Interface())
+			if err != nil {
+				return reflect.Value{}, err
+			}
+
+			theValue.Index(i).SetString(strValue)
+		}
+
+		return theValue, nil
+	}
+
+	return reflect.Value{}, NewErrUnsupportedType(valueType)
+}
+
+func getBoolValue(theType string, value interface{}) (bool, error) {
+	b, ok := value.(bool)
+	if !ok {
+		return false, typeConversionError(value, typesMap[theType].String())
+	}
+
+	return b, nil
+}
+
 func getIntValue(theType string, value interface{}) (int64, error) {
-	if strings.HasPrefix(fmt.Sprintf("%T", value), "float") {
-		// Any numbers from unmarshalled JSON will be float64 by default
-		// So we first need to do a type conversion to float64
-		n, ok := value.(float64)
+	// We use https://golang.org/pkg/encoding/json/#Decoder.UseNumber when unmarshaling signatures.
+	// This is because JSON only supports 64-bit floating point numbers and we could lose precision
+	// when converting from float64 to signed integer
+	if strings.HasPrefix(fmt.Sprintf("%T", value), "json.Number") {
+		n, ok := value.(json.Number)
 		if !ok {
 			return 0, typeConversionError(value, typesMap[theType].String())
 		}
 
-		// Now we can cast the float64 to int64
-		return int64(n), nil
+		return n.Int64()
 	}
 
 	n, ok := value.(int64)
@@ -135,16 +274,21 @@ func getIntValue(theType string, value interface{}) (int64, error) {
 }
 
 func getUintValue(theType string, value interface{}) (uint64, error) {
-	if strings.HasPrefix(fmt.Sprintf("%T", value), "float") {
-		// Any numbers from unmarshalled JSON will be float64 by default
-		// So we first need to do a type conversion to float64
-		n, ok := value.(float64)
+	// We use https://golang.org/pkg/encoding/json/#Decoder.UseNumber when unmarshaling signatures.
+	// This is because JSON only supports 64-bit floating point numbers and we could lose precision
+	// when converting from float64 to unsigned integer
+	if strings.HasPrefix(fmt.Sprintf("%T", value), "json.Number") {
+		n, ok := value.(json.Number)
 		if !ok {
 			return 0, typeConversionError(value, typesMap[theType].String())
 		}
 
-		// Now we can cast the float64 to uint64
-		return uint64(n), nil
+		intVal, err := n.Int64()
+		if err != nil {
+			return 0, err
+		}
+
+		return uint64(intVal), nil
 	}
 
 	n, ok := value.(uint64)
@@ -156,12 +300,32 @@ func getUintValue(theType string, value interface{}) (uint64, error) {
 }
 
 func getFloatValue(theType string, value interface{}) (float64, error) {
-	n, ok := value.(float64)
+	// We use https://golang.org/pkg/encoding/json/#Decoder.UseNumber when unmarshaling signatures.
+	// This is because JSON only supports 64-bit floating point numbers and we could lose precision
+	if strings.HasPrefix(fmt.Sprintf("%T", value), "json.Number") {
+		n, ok := value.(json.Number)
+		if !ok {
+			return 0, typeConversionError(value, typesMap[theType].String())
+		}
+
+		return n.Float64()
+	}
+
+	f, ok := value.(float64)
 	if !ok {
 		return 0, typeConversionError(value, typesMap[theType].String())
 	}
 
-	return n, nil
+	return f, nil
+}
+
+func getStringValue(theType string, value interface{}) (string, error) {
+	s, ok := value.(string)
+	if !ok {
+		return "", typeConversionError(value, typesMap[theType].String())
+	}
+
+	return s, nil
 }
 
 // IsContextType checks to see if the type is a context.Context

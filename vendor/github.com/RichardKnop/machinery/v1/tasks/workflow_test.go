@@ -8,6 +8,8 @@ import (
 )
 
 func TestNewChain(t *testing.T) {
+	t.Parallel()
+
 	task1 := tasks.Signature{
 		Name: "foo",
 		Args: []tasks.Arg{
@@ -46,7 +48,10 @@ func TestNewChain(t *testing.T) {
 		},
 	}
 
-	chain := tasks.NewChain(&task1, &task2, &task3)
+	chain, err := tasks.NewChain(&task1, &task2, &task3)
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	firstTask := chain.Tasks[0]
 

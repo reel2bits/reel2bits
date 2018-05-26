@@ -11,8 +11,11 @@ import (
 func TestAmqpRedis(t *testing.T) {
 	amqpURL := os.Getenv("AMQP_URL")
 	redisURL := os.Getenv("REDIS_URL")
-	if amqpURL == "" || redisURL == "" {
-		return
+	if amqpURL == "" {
+		t.Skip("AMQP_URL is not defined")
+	}
+	if redisURL == "" {
+		t.Skip("REDIS_URL is not defined")
 	}
 
 	// AMQP broker, Redis result backend
@@ -27,7 +30,7 @@ func TestAmqpRedis(t *testing.T) {
 			PrefetchCount: 1,
 		},
 	})
-	worker := server.NewWorker("test_worker")
+	worker := server.NewWorker("test_worker", 0)
 	go worker.Launch()
 	testAll(server, t)
 	worker.Quit()

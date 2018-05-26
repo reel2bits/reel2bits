@@ -15,6 +15,7 @@ package backends
 // It is important to consume the queue exclusively to avoid race conditions.
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -28,13 +29,13 @@ import (
 
 // AMQPBackend represents an AMQP result backend
 type AMQPBackend struct {
-	cnf *config.Config
+	Backend
 	common.AMQPConnector
 }
 
 // NewAMQPBackend creates AMQPBackend instance
 func NewAMQPBackend(cnf *config.Config) Interface {
-	return &AMQPBackend{cnf: cnf, AMQPConnector: common.AMQPConnector{}}
+	return &AMQPBackend{Backend: New(cnf), AMQPConnector: common.AMQPConnector{}}
 }
 
 // InitGroup creates and saves a group meta data object
@@ -95,8 +96,9 @@ func (b *AMQPBackend) GroupTaskStates(groupUUID string, groupTaskCount int) ([]*
 		d := <-deliveries
 
 		state := new(tasks.TaskState)
-
-		if err := json.Unmarshal([]byte(d.Body), state); err != nil {
+		decoder := json.NewDecoder(bytes.NewReader([]byte(d.Body)))
+		decoder.UseNumber()
+		if err := decoder.Decode(state); err != nil {
 			d.Nack(false, false) // multiple, requeue
 			return nil, err
 		}
@@ -186,9 +188,13 @@ func (b *AMQPBackend) SetStateFailure(signature *tasks.Signature, err string) er
 // as the message will get consumed and removed from the queue.
 func (b *AMQPBackend) GetState(taskUUID string) (*tasks.TaskState, error) {
 	declareQueueArgs := amqp.Table{
+		// Time in milliseconds
+		// after that message will expire
 		"x-message-ttl": int32(b.getExpiresIn()),
+		// Time after that the queue will be deleted.
+		"x-expires": int32(b.getExpiresIn()),
 	}
-	conn, channel, _, _, err := b.Connect(
+	conn, channel, _, _, _, err := b.Connect(
 		b.cnf.Broker,
 		b.cnf.TLSConfig,
 		b.cnf.AMQP.Exchange,     // exchange name
@@ -220,7 +226,9 @@ func (b *AMQPBackend) GetState(taskUUID string) (*tasks.TaskState, error) {
 	d.Ack(false)
 
 	state := new(tasks.TaskState)
-	if err := json.Unmarshal([]byte(d.Body), state); err != nil {
+	decoder := json.NewDecoder(bytes.NewReader([]byte(d.Body)))
+	decoder.UseNumber()
+	if err := decoder.Decode(state); err != nil {
 		log.ERROR.Printf("Failed to unmarshal task state: %s", string(d.Body))
 		log.ERROR.Print(err)
 		return nil, err
@@ -261,9 +269,13 @@ func (b *AMQPBackend) updateState(taskState *tasks.TaskState) error {
 	}
 
 	declareQueueArgs := amqp.Table{
+		// Time in milliseconds
+		// after that message will expire
 		"x-message-ttl": int32(b.getExpiresIn()),
+		// Time after that the queue will be deleted.
+		"x-expires": int32(b.getExpiresIn()),
 	}
-	conn, channel, queue, confirmsChan, err := b.Connect(
+	conn, channel, queue, confirmsChan, _, err := b.Connect(
 		b.cnf.Broker,
 		b.cnf.TLSConfig,
 		b.cnf.AMQP.Exchange,     // exchange name
@@ -328,9 +340,13 @@ func (b *AMQPBackend) markTaskCompleted(signature *tasks.Signature, taskState *t
 	}
 
 	declareQueueArgs := amqp.Table{
+		// Time in milliseconds
+		// after that message will expire
 		"x-message-ttl": int32(b.getExpiresIn()),
+		// Time after that the queue will be deleted.
+		"x-expires": int32(b.getExpiresIn()),
 	}
-	conn, channel, queue, confirmsChan, err := b.Connect(
+	conn, channel, queue, confirmsChan, _, err := b.Connect(
 		b.cnf.Broker,
 		b.cnf.TLSConfig,
 		b.cnf.AMQP.Exchange,     // exchange name

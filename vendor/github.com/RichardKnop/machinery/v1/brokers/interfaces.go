@@ -1,14 +1,16 @@
 package brokers
 
 import (
+	"github.com/RichardKnop/machinery/v1/config"
 	"github.com/RichardKnop/machinery/v1/tasks"
 )
 
 // Interface - a common interface for all brokers
 type Interface interface {
+	GetConfig() *config.Config
 	SetRegisteredTaskNames(names []string)
 	IsTaskRegistered(name string) bool
-	StartConsuming(consumerTag string, p TaskProcessor) (bool, error)
+	StartConsuming(consumerTag string, concurrency int, p TaskProcessor) (bool, error)
 	StopConsuming()
 	Publish(task *tasks.Signature) error
 	GetPendingTasks(queue string) ([]*tasks.Signature, error)

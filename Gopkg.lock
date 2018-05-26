@@ -29,9 +29,17 @@
     "v1/config",
     "v1/log",
     "v1/retry",
-    "v1/tasks"
+    "v1/tasks",
+    "v1/tracing"
   ]
-  revision = "c42d92ff7e860f492d8e62c11cb96911942cece8"
+  revision = "41d81167d33d6399bb54087fa64510799dca3e74"
+  version = "v1.3.6"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/RichardKnop/redsync"
+  packages = ["."]
+  revision = "54b27db64c180751e7049321a2e109ff220ccdcc"
 
 [[projects]]
   branch = "master"
@@ -50,6 +58,45 @@
   name = "github.com/andybalholm/cascadia"
   packages = ["."]
   revision = "349dd0209470eabd9514242c688c403c0926d266"
+
+[[projects]]
+  name = "github.com/aws/aws-sdk-go"
+  packages = [
+    "aws",
+    "aws/awserr",
+    "aws/awsutil",
+    "aws/client",
+    "aws/client/metadata",
+    "aws/corehandlers",
+    "aws/credentials",
+    "aws/credentials/ec2rolecreds",
+    "aws/credentials/endpointcreds",
+    "aws/credentials/stscreds",
+    "aws/defaults",
+    "aws/ec2metadata",
+    "aws/endpoints",
+    "aws/request",
+    "aws/session",
+    "aws/signer/v4",
+    "internal/sdkio",
+    "internal/sdkrand",
+    "internal/shareddefaults",
+    "private/protocol",
+    "private/protocol/json/jsonutil",
+    "private/protocol/jsonrpc",
+    "private/protocol/query",
+    "private/protocol/query/queryutil",
+    "private/protocol/rest",
+    "private/protocol/xml/xmlutil",
+    "service/dynamodb",
+    "service/dynamodb/dynamodbattribute",
+    "service/dynamodb/dynamodbiface",
+    "service/sqs",
+    "service/sqs/sqsiface",
+    "service/sts"
+  ]
+  revision = "854f9d07a932452f1552955e127e50ba5ebb25cc"
+  version = "v1.13.56"
 
 [[projects]]
   branch = "master"
@@ -82,15 +129,6 @@
   revision = "bb3d318650d48840a39aa21a027c6630e198e626"
 
 [[projects]]
-  name = "github.com/garyburd/redigo"
-  packages = [
-    "internal",
-    "redis"
-  ]
-  revision = "47dc60e71eed504e3ef8e77ee3c6fe720f3be57f"
-  version = "v1.3.0"
-
-[[projects]]
   branch = "master"
   name = "github.com/getsentry/raven-go"
   packages = ["."]
@@ -104,6 +142,12 @@
     "hocon"
   ]
   revision = "755180b9a146a94d76051113e9624bdc8327c499"
+
+[[projects]]
+  name = "github.com/go-ini/ini"
+  packages = ["."]
+  revision = "6529cf7c58879c08d927016dde4477f18a0634cb"
+  version = "v1.36.0"
 
 [[projects]]
   branch = "master"
@@ -171,6 +215,15 @@
   revision = "9f6c956d3e147cf00f540e31a13bce128fd2fe2d"
 
 [[projects]]
+  name = "github.com/gomodule/redigo"
+  packages = [
+    "internal",
+    "redis"
+  ]
+  revision = "9c11da706d9b7902c6da69c592f75637793fe121"
+  version = "v2.0.0"
+
+[[projects]]
   branch = "master"
   name = "github.com/gopherjs/gopherjs"
   packages = ["js"]
@@ -205,6 +258,11 @@
   name = "github.com/jinzhu/inflection"
   packages = ["."]
   revision = "04140366298a54a039076d798123ffa108fff46c"
+
+[[projects]]
+  name = "github.com/jmespath/go-jmespath"
+  packages = ["."]
+  revision = "0b12d6b5"
 
 [[projects]]
   name = "github.com/jtolds/gls"
@@ -281,6 +339,16 @@
   revision = "06004e29fa0ca7b8c57042a8e75076da856615ba"
 
 [[projects]]
+  name = "github.com/opentracing/opentracing-go"
+  packages = [
+    ".",
+    "ext",
+    "log"
+  ]
+  revision = "1949ddbfd147afd4d964a9f00b24eb291e0e7c38"
+  version = "v1.0.2"
+
+[[projects]]
   branch = "master"
   name = "github.com/orcaman/concurrent-map"
   packages = ["."]
@@ -317,10 +385,10 @@
   version = "v1.5"
 
 [[projects]]
+  branch = "master"
   name = "github.com/satori/go.uuid"
   packages = ["."]
-  revision = "879c5887cd475cd7864858769793b2ceb0d44feb"
-  version = "v1.1.0"
+  revision = "36e9d2ebbde5e3f13ab2e25625fd453271d6522e"
 
 [[projects]]
   name = "github.com/sirupsen/logrus"
@@ -447,20 +515,14 @@
   revision = "3f83fa5005286a7fe593b055f0d7771a7dce4655"
 
 [[projects]]
-  name = "gopkg.in/redsync.v1"
-  packages = ["."]
-  revision = "98dabdf1c8574561bf976911c14ff652c47b1ddf"
-  version = "v1.0.1"
-
-[[projects]]
-  branch = "v2"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
-  revision = "287cf08546ab5e7e37d55a84f7ed3fd1db036de5"
+  revision = "5420a8b6744d3b0345ab293f6fcba19c978f1183"
+  version = "v2.2.1"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "231064da4ca971c12f75f6ac100e1cab4c782157d2869101ed0e64c28b871c8d"
+  inputs-digest = "8696dfe7184221adbfa60a93cefd57389139ff7e98b7db0e827f9b3a12822990"
   solver-name = "gps-cdcl"
   solver-version = 1

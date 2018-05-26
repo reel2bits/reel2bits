@@ -27,7 +27,7 @@
 
 [[constraint]]
   name = "github.com/RichardKnop/machinery"
-  revision = "c42d92ff7e860f492d8e62c11cb96911942cece8"
+  version = "1.3.6"
 
 [[constraint]]
   name = "github.com/Unknwon/com"

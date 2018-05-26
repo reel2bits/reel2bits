@@ -1,1 +1,6 @@
 coverage*
+_vendor-*
+.idea/
+.env
+.DS_Store
+dump.rdb

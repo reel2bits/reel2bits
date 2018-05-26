@@ -1,5 +1,7 @@
 [1]: https://raw.githubusercontent.com/RichardKnop/assets/master/machinery/example_worker.png
 [2]: https://raw.githubusercontent.com/RichardKnop/assets/master/machinery/example_worker_receives_tasks.png
+[3]: http://patreon_public_assets.s3.amazonaws.com/sized/becomeAPatronBanner.png
+[4]: http://richardknop.com/images/btcaddress.png
 
 ## Machinery
 
@@ -7,9 +9,11 @@ Machinery is an asynchronous task queue/job queue based on distributed message p
 
 [![Travis Status for RichardKnop/machinery](https://travis-ci.org/RichardKnop/machinery.svg?branch=master&label=linux+build)](https://travis-ci.org/RichardKnop/machinery)
 [![godoc for RichardKnop/machinery](https://godoc.org/github.com/nathany/looper?status.svg)](http://godoc.org/github.com/RichardKnop/machinery/v1)
-[![goreportcard for RichardKnop/machinery](https://goreportcard.com/badge/github.com/RichardKnop/machinery)](https://goreportcard.com/report/RichardKnop/machinery)
 [![codecov for RichardKnop/machinery](https://codecov.io/gh/RichardKnop/machinery/branch/master/graph/badge.svg)](https://codecov.io/gh/RichardKnop/machinery)
-[![Codeship Status for RichardKnop/machinery](https://app.codeship.com/projects/35dc5880-71a7-0133-ec05-06b1c29ec1d7/status?branch=master)](https://app.codeship.com/projects/116961)
+
+[![Go Report Card](https://goreportcard.com/badge/github.com/RichardKnop/machinery)](https://goreportcard.com/report/github.com/RichardKnop/machinery)
+[![GolangCI](https://golangci.com/badges/github.com/RichardKnop/machinery.svg)](https://golangci.com)
+[![OpenTracing Badge](https://img.shields.io/badge/OpenTracing-enabled-blue.svg)](http://opentracing.io)
 
 [![Sourcegraph for RichardKnop/machinery](https://sourcegraph.com/github.com/RichardKnop/machinery/-/badge.svg)](https://sourcegraph.com/github.com/RichardKnop/machinery?badge)
 [![Donate Bitcoin](https://img.shields.io/badge/donate-bitcoin-orange.svg)](https://richardknop.github.io/donate/)
@@ -38,6 +42,7 @@ Machinery is an asynchronous task queue/job queue based on distributed message p
   * [Requirements](#requirements)
   * [Dependencies](#dependencies)
   * [Testing](#testing)
+* [Supporting the project](#supporting-the-project)
 
 ### First Steps
 
@@ -52,7 +57,7 @@ First, you will need to define some tasks. Look at sample tasks in `example/task
 Second, you will need to launch a worker process:
 
 ```sh
-go run example/machinery.go worker
+go run example/machinery.go -c example/config.yml worker
 ```
 
 ![Example worker][1]
@@ -60,7 +65,7 @@ go run example/machinery.go worker
 Finally, once you have a worker running and waiting for tasks to consume, send some tasks:
 
 ```sh
-go run example/machinery.go send
+go run example/machinery.go -c example/config.yml send
 ```
 
 You will be able to see the tasks being processed asynchronously by the worker:
@@ -72,16 +77,16 @@ You will be able to see the tasks being processed asynchronously by the worker:
 The [config](/v1/config/config.go) package has convenience methods for loading configuration from environment variables or a YAML file. For example, load configuration from environment variables:
 
 ```go
-cnf := config.NewFromEnvironment(true, true)
+cnf, err := config.NewFromEnvironment(true)
 ```
 
 Or load from YAML file:
 
 ```go
-cnf := config.NewFromFile("config.yml", true, true)
+cnf, err := config.NewFromYaml("config.yml", true)
 ```
 
-The first boolean flag signals whether configuration must be loaded successfully at least one time. Second flag enables live reloading of configuration every 10 seconds.
+Second boolean flag enables live reloading of configuration every 10 seconds. Use `false` to disable live reloading.
 
 Machinery configuration is encapsulated by a `Config` struct and injected as a dependency to objects that need it.
 
@@ -112,8 +117,44 @@ redis+socket://[password@]/path/to/file.sock[:/db_num]
 
 For example:
 
-1. `redis://127.0.0.1:6379`, or with password `redis://password@127.0.0.1:6379`
+1. `redis://localhost:6379`, or with password `redis://password@localhost:6379`
 2. `redis+socket://password@/path/to/file.sock:/0`
+
+##### AWS SQS
+
+Use AWS SQS URL in the format:
+
+```
+https://sqs.us-east-2.amazonaws.com/123456789012
+```
+
+See [AWS SQS docs](https://docs.aws.amazon.com/sdk-for-go/v1/developer-guide/configuring-sdk.html) for more information.
+Also, configuring `AWS_REGION` is required, or an error would be thrown.
+
+To use a manually configured SQS Client:
+
+```go
+var sqsClient = sqs.New(session.Must(session.NewSession(&aws.Config{
+  Region:         aws.String("YOUR_AWS_REGION"),
+  Credentials:    credentials.NewStaticCredentials("YOUR_AWS_ACCESS_KEY", "YOUR_AWS_ACCESS_SECRET", ""),
+  HTTPClient:     &http.Client{
+    Timeout: time.Second * 120,
+  },
+})))
+var visibilityTimeout = 20
+var cnf = &config.Config{
+  Broker:          "YOUR_SQS_URL"
+  DefaultQueue:    "machinery_tasks",
+  ResultBackend:   "YOUR_BACKEND_URL",
+  SQS: &config.SQSConfig{
+    Client: sqsClient,
+    // if VisibilityTimeout is nil default to the overall visibility timeout setting for the queue
+    // https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html
+    VisibilityTimeout: &visibilityTimeout,
+    WaitTimeSeconds: 30,
+  },
+}
+```
 
 #### DefaultQueue
 
@@ -136,7 +177,7 @@ redis+socket://[password@]/path/to/file.sock[:/db_num]
 
 For example:
 
-1. `redis://127.0.0.1:6379`, or with password `redis://password@127.0.0.1:6379`
+1. `redis://localhost:6379`, or with password `redis://password@localhost:6379`
 2. `redis+socket://password@/path/to/file.sock:/0`
 
 ##### Memcache
@@ -149,7 +190,7 @@ memcache://host1[:port1][,host2[:port2],...[,hostN[:portN]]]
 
 For example:
 
-1. `memcache://127.0.0.1:11211` for a single instance, or
+1. `memcache://localhost:11211` for a single instance, or
 2. `memcache://10.0.0.1:11211,10.0.0.2:11211` for a cluster
 
 ##### AMQP
@@ -176,23 +217,37 @@ mongodb://[username:password@]host1[:port1][,host2[:port2],...[,hostN[:portN]]][
 
 For example:
 
-1. `mongodb://127.0.0.1:27017/taskresults`
+1. `mongodb://localhost:27017/taskresults`
 
 See [MongoDB docs](https://docs.mongodb.org/manual/reference/connection-string/) for more information.
 
+
 #### ResultsExpireIn
 
-How long to store task results for in seconds. Defaults to `3600` (1 hour).
+How long to store task results for in seconds. Defaults to `3600000` (1 hour).
 
 #### AMQP
 
-RabbitMQ related configuration. Not neccessarry if you are using other broker/backend.
+RabbitMQ related configuration. Not necessary if you are using other broker/backend.
 
 * `Exchange`: exchange name, e.g. `machinery_exchange`
 * `ExchangeType`: exchange type, e.g. `direct`
 * `QueueBindingArguments`: an optional map of additional arguments used when binding to an AMQP queue
 * `BindingKey`: The queue is bind to the exchange with this key, e.g. `machinery_task`
 * `PrefetchCount`: How many tasks to prefetch (set to `1` if you have long running tasks)
+
+#### Dynamodb
+Dynamodb related configuration. Not necessary if you are using other backend.
+* `task_states_table`: Custom table name for saving task states. Default one is `task_states`, and make sure to create this table in your AWS admin first, using `TaskUUID` as table's primary key.
+* `group_metas_table`: Custom table name for saving group metas. Default one is `group_metas`, and make sure to create this table in your AWS admin first, using `GroupUUID` as table's primary key.
+For example:
+
+```
+dynamodb:
+  task_states_table: 'task_states'
+  group_metas_table: 'group_metas'
+```
+If these tables are not found, an fatal error would be thrown.
 
 ### Custom Logger
 
@@ -230,19 +285,18 @@ import (
   "github.com/RichardKnop/machinery/v1"
 )
 
-var cnf = config.Config{
+var cnf = &config.Config{
   Broker:             "amqp://guest:guest@localhost:5672/",
+  DefaultQueue:       "machinery_tasks",
   ResultBackend:      "amqp://guest:guest@localhost:5672/",
-  MaxWorkerInstances: 0,
-  AMQP:               config.AMQPConfig{
+  AMQP:               &config.AMQPConfig{
     Exchange:     "machinery_exchange",
     ExchangeType: "direct",
-    DefaultQueue: "machinery_tasks",
     BindingKey:   "machinery_task",
   },
 }
 
-server, err := machinery.NewServer(&cnf)
+server, err := machinery.NewServer(cnf)
 if err != nil {
   // do something with the error
 }
@@ -253,7 +307,7 @@ if err != nil {
 In order to consume tasks, you need to have one or more workers running. All you need to run a worker is a `Server` instance with registered tasks. E.g.:
 
 ```go
-worker := server.NewWorker("worker_name")
+worker := server.NewWorker("worker_name", 10)
 err := worker.Launch()
 if err != nil {
   // do something with the error
@@ -261,9 +315,8 @@ if err != nil {
 ```
 
 Each worker will only consume registered tasks. For each task on the queue the Worker.Process() method will will be run
-in a goroutine. Use the `MaxWorkerInstances` config option to limit the number of concurrently running Worker.Process()
-calls (per worker). `MaxWorkerInstances = 1` will serialize task execution. `MaxWorkerInstances = 0` makes the number of
-concurrently executed tasks unlimited (default).
+in a goroutine. Use the second parameter of `server.NewWorker` to limit the number of concurrently running Worker.Process()
+calls (per worker). Example: 1 will serialize task execution while 0 makes the number of concurrently executed tasks unlimited (default).
 
 ### Tasks
 
@@ -302,7 +355,7 @@ func DummyTask(arg string) error {
 }
 
 // You can also return multiple results from the task
-func DummyTask2(arg1, arg2 string) (string, string error) {
+func DummyTask2(arg1, arg2 string) (string, string, error) {
   return arg1, arg2, nil
 }
 ```
@@ -435,6 +488,20 @@ Machinery encodes tasks to JSON before sending them to the broker. Task results 
 * `float32`
 * `float64`
 * `string`
+* `[]bool`
+* `[]int`
+* `[]int8`
+* `[]int16`
+* `[]int32`
+* `[]int64`
+* `[]uint`
+* `[]uint8`
+* `[]uint16`
+* `[]uint32`
+* `[]uint64`
+* `[]float32`
+* `[]float64`
+* `[]string`
 
 #### Sending Tasks
 
@@ -483,6 +550,12 @@ You can set a number of retry attempts before declaring task as failed. Fibonacc
 ```go
 // If the task fails, retry it up to 3 times
 signature.RetryCount = 3
+```
+
+Alternatively, you can return `tasks.ErrRetryTaskLater` from your task and specify duration after which the task should be retried, e.g.:
+
+```go
+return tasks.NewErrRetryTaskLater("some error", 4 * time.Hour)
 ```
 
 #### Get Pending Tasks
@@ -539,7 +612,7 @@ type TaskState struct {
 type GroupMeta struct {
   GroupUUID      string   `bson:"_id"`
   TaskUUIDs      []string `bson:"task_uuids"`
-  ChordTriggered bool     `bson:"chord_trigerred"`
+  ChordTriggered bool     `bson:"chord_triggered"`
   Lock           bool     `bson:"lock"`
 }
 ```
@@ -577,6 +650,18 @@ if err != nil {
 for _, result := range results {
   fmt.Println(result.Interface())
 }
+```
+
+#### Error Handling
+
+When a task returns with an error, the default behavior is to first attempty to retry the task if it's retriable, otherwise log the error and then eventually call any error callbacks.
+
+To customize this, you can set a custom error handler on the worker which can do more than just logging after retries fail and error callbacks are trigerred:
+
+```go
+worker.SetErrorHandler(func (err error) {
+  customHandler(err)
+})
 ```
 
 ### Workflows
@@ -621,7 +706,7 @@ signature2 := tasks.Signature{
   },
 }
 
-group := tasks.NewGroup(&signature1, &signature2)
+group, _ := tasks.NewGroup(&signature1, &signature2)
 asyncResults, err := server.SendGroup(group)
 if err != nil {
   // failed to send the group
@@ -687,7 +772,7 @@ signature3 := tasks.Signature{
 }
 
 group := tasks.NewGroup(&signature1, &signature2)
-chord := tasks.NewChord(group, &signature3)
+chord, _ := tasks.NewChord(group, &signature3)
 chordAsyncResult, err := server.SendChord(chord)
 if err != nil {
   // failed to send the chord
@@ -768,7 +853,7 @@ signature3 := tasks.Signature{
   },
 }
 
-chain := tasks.NewChain(&signature1, &signature2, &signature3)
+chain, _ := tasks.NewChain(&signature1, &signature2, &signature3)
 chainAsyncResult, err := server.SendChain(chain)
 if err != nil {
   // failed to send the chain
@@ -806,7 +891,7 @@ for _, result := range results {
 #### Requirements
 
 * Go
-* RabbitMQ
+* RabbitMQ (optional)
 * Redis (optional)
 * Memcached (optional)
 * MongoDB (optional)
@@ -821,20 +906,25 @@ brew install memcached
 brew install mongodb
 ```
 
+Or optionally use the corresponding [Docker](http://docker.io/) containers:
+
+```
+docker run -d -p 5672:5672 rabbitmq
+docker run -d -p 6379:6379 redis
+docker run -d -p 11211:11211 memcached
+docker run -d -p 27017:27017 mongo
+docker run -d -p 6831:6831/udp -p 16686:16686 jaegertracing/all-in-one:latest
+```
+
+
 #### Dependencies
 
 According to [Go 1.5 Vendor experiment](https://docs.google.com/document/d/1Bz5-UB7g2uPBdOx-rw5t9MxJwkfpx90cqG9AFL0JAYo), all dependencies are stored in the vendor directory. This approach is called `vendoring` and is the best practice for Go projects to lock versions of dependencies in order to achieve reproducible builds.
 
-To update dependencies during development:
+This project uses [dep](https://github.com/golang/dep) for dependency management. To update dependencies during development:
 
 ```sh
-make update-deps
-```
-
-To install dependencies:
-
-```sh
-make install-deps
+dep ensure
 ```
 
 #### Testing
@@ -857,9 +947,18 @@ In order to enable integration tests, you will need to install all required serv
 
 ```sh
 export AMQP_URL=amqp://guest:guest@localhost:5672/
-export REDIS_URL=127.0.0.1:6379
-export MEMCACHE_URL=127.0.0.1:11211
-export MONGODB_URL=127.0.0.1:27017
+export REDIS_URL=localhost:6379
+export MEMCACHE_URL=localhost:11211
+export MONGODB_URL=localhost:27017
+```
+
+To run integration tests against an SQS instance, you will need to create a "test_queue" in SQS and export these environment variables:
+
+```sh
+export SQS_URL=https://YOUR_SQS_URL
+export AWS_ACCESS_KEY_ID=YOUR_AWS_ACCESS_KEY_ID
+export AWS_SECRET_ACCESS_KEY=YOUR_AWS_SECRET_ACCESS_KEY
+export AWS_DEFAULT_REGION=YOUR_AWS_DEFAULT_REGION
 ```
 
 Then just run:
@@ -869,3 +968,9 @@ make test
 ```
 
 If the environment variables are not exported, `make test` will only run unit tests.
+
+### Supporting the project
+
+Donate BTC to my wallet if you find this project useful: `12iFVjQ5n3Qdmiai4Mp9EG93NSvDipyRKV`
+
+![Donate BTC][4]

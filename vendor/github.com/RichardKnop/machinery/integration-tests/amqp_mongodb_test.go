@@ -11,8 +11,11 @@ import (
 func TestAmqpMongodb(t *testing.T) {
 	amqpURL := os.Getenv("AMQP_URL")
 	mongodbURL := os.Getenv("MONGODB_URL")
-	if amqpURL == "" || mongodbURL == "" {
-		return
+	if amqpURL == "" {
+		t.Skip("AMQP_URL is not defined")
+	}
+	if mongodbURL == "" {
+		t.Skip("MONGODB_URL is not defined")
 	}
 
 	// AMQP broker, MongoDB result backend
@@ -27,7 +30,7 @@ func TestAmqpMongodb(t *testing.T) {
 			PrefetchCount: 1,
 		},
 	})
-	worker := server.NewWorker("test_worker")
+	worker := server.NewWorker("test_worker", 0)
 	go worker.Launch()
 	testAll(server, t)
 	worker.Quit()

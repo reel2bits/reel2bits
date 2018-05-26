@@ -11,8 +11,11 @@ import (
 func TestAmqpMemcache(t *testing.T) {
 	amqpURL := os.Getenv("AMQP_URL")
 	memcacheURL := os.Getenv("MEMCACHE_URL")
-	if amqpURL == "" || memcacheURL == "" {
-		return
+	if amqpURL == "" {
+		t.Skip("AMQP_URL is not defined")
+	}
+	if memcacheURL == "" {
+		t.Skip("MEMCACHE_URL is not defined")
 	}
 
 	// AMQP broker, Memcache result backend
@@ -27,7 +30,7 @@ func TestAmqpMemcache(t *testing.T) {
 			PrefetchCount: 1,
 		},
 	})
-	worker := server.NewWorker("test_worker")
+	worker := server.NewWorker("test_worker", 0)
 	go worker.Launch()
 	testAll(server, t)
 	worker.Quit()

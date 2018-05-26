@@ -22,7 +22,8 @@ func (a ascendingInt64s) Less(i, j int) bool { return a[i] < a[j] }
 
 func testAll(server *machinery.Server, t *testing.T) {
 	testSendTask(server, t)
-	testSendGroup(server, t)
+	testSendGroup(server, t, 0) // with unlimited concurrency
+	testSendGroup(server, t, 2) // with limited concurrency (2 parallel tasks at the most)
 	testSendChord(server, t)
 	testSendChain(server, t)
 	testReturnJustError(server, t)
@@ -55,13 +56,40 @@ func testSendTask(server *machinery.Server, t *testing.T) {
 			results[0].Interface(),
 		)
 	}
+
+	sumTask := newSumTask([]int64{1, 2})
+	asyncResult, err = server.SendTask(sumTask)
+	if err != nil {
+		t.Error(err)
+	}
+
+	results, err = asyncResult.Get(time.Duration(time.Millisecond * 5))
+	if err != nil {
+		t.Error(err)
+	}
+
+	if len(results) != 1 {
+		t.Errorf("Number of results returned = %d. Wanted %d", len(results), 1)
+	}
+
+	if results[0].Interface() != int64(3) {
+		t.Errorf(
+			"result = %v(%v), want int64(3)",
+			results[0].Type().String(),
+			results[0].Interface(),
+		)
+	}
 }
 
-func testSendGroup(server *machinery.Server, t *testing.T) {
+func testSendGroup(server *machinery.Server, t *testing.T, sendConcurrency int) {
 	t1, t2, t3 := newAddTask(1, 1), newAddTask(2, 2), newAddTask(5, 6)
 
-	group := tasks.NewGroup(t1, t2, t3)
-	asyncResults, err := server.SendGroup(group)
+	group, err := tasks.NewGroup(t1, t2, t3)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	asyncResults, err := server.SendGroup(group, sendConcurrency)
 	if err != nil {
 		t.Error(err)
 	}
@@ -101,7 +129,11 @@ func testSendGroup(server *machinery.Server, t *testing.T) {
 func testSendChain(server *machinery.Server, t *testing.T) {
 	t1, t2, t3 := newAddTask(2, 2), newAddTask(5, 6), newMultipleTask(4)
 
-	chain := tasks.NewChain(t1, t2, t3)
+	chain, err := tasks.NewChain(t1, t2, t3)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	chainAsyncResult, err := server.SendChain(chain)
 	if err != nil {
 		t.Error(err)
@@ -128,9 +160,17 @@ func testSendChain(server *machinery.Server, t *testing.T) {
 func testSendChord(server *machinery.Server, t *testing.T) {
 	t1, t2, t3, t4 := newAddTask(1, 1), newAddTask(2, 2), newAddTask(5, 6), newMultipleTask()
 
-	group := tasks.NewGroup(t1, t2, t3)
-	chord := tasks.NewChord(group, t4)
-	chordAsyncResult, err := server.SendChord(chord)
+	group, err := tasks.NewGroup(t1, t2, t3)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	chord, err := tasks.NewChord(group, t4)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	chordAsyncResult, err := server.SendChord(chord, 10)
 	if err != nil {
 		t.Error(err)
 	}
@@ -246,14 +286,14 @@ func testPanic(server *machinery.Server, t *testing.T) {
 
 func testDelay(server *machinery.Server, t *testing.T) {
 	now := time.Now().UTC()
-	eta := now.Add(100 * (time.Millisecond))
+	eta := now.Add(100 * time.Millisecond)
 	task := newDelayTask(eta)
 	asyncResult, err := server.SendTask(task)
 	if err != nil {
 		t.Error(err)
 	}
 
-	results, err := asyncResult.Get(time.Duration(time.Millisecond * 5))
+	results, err := asyncResult.Get(time.Duration(5 * time.Millisecond))
 	if err != nil {
 		t.Error(err)
 	}
@@ -299,6 +339,13 @@ func testSetup(cnf *config.Config) *machinery.Server {
 			sum := int64(1)
 			for _, arg := range args {
 				sum *= arg
+			}
+			return sum, nil
+		},
+		"sum": func(numbers []int64) (int64, error) {
+			var sum int64
+			for _, num := range numbers {
+				sum += num
 			}
 			return sum, nil
 		},
@@ -356,6 +403,18 @@ func newMultipleTask(nums ...int) *tasks.Signature {
 	return &tasks.Signature{
 		Name: "multiply",
 		Args: args,
+	}
+}
+
+func newSumTask(nums []int64) *tasks.Signature {
+	return &tasks.Signature{
+		Name: "sum",
+		Args: []tasks.Arg{
+			{
+				Type:  "[]int64",
+				Value: nums,
+			},
+		},
 	}
 }
 

@@ -11,7 +11,7 @@ import (
 func TestRedisSocket(t *testing.T) {
 	redisSocket := os.Getenv("REDIS_SOCKET")
 	if redisSocket == "" {
-		return
+		t.Skip("REDIS_SOCKET is not defined")
 	}
 
 	// Redis broker, Redis result backend
@@ -20,7 +20,7 @@ func TestRedisSocket(t *testing.T) {
 		DefaultQueue:  "test_queue",
 		ResultBackend: fmt.Sprintf("redis+socket://%v", redisSocket),
 	})
-	worker := server.NewWorker("test_worker")
+	worker := server.NewWorker("test_worker", 0)
 	go worker.Launch()
 	testAll(server, t)
 	worker.Quit()

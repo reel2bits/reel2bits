@@ -16,7 +16,7 @@ import (
 func TestWorkerOnlyConsumesRegisteredTaskAMQP(t *testing.T) {
 	amqpURL := os.Getenv("AMQP_URL")
 	if amqpURL == "" {
-		return
+		t.Skip("AMQP_URL is not defined")
 	}
 
 	cnf := config.Config{
@@ -85,13 +85,17 @@ func TestWorkerOnlyConsumesRegisteredTaskAMQP(t *testing.T) {
 		},
 	}
 
-	worker1 := server1.NewWorker("test_worker")
-	worker2 := server2.NewWorker("test_worker2")
+	worker1 := server1.NewWorker("test_worker", 0)
+	worker2 := server2.NewWorker("test_worker2", 0)
 	go worker1.Launch()
 	go worker2.Launch()
 
-	group := tasks.NewGroup(&task2, &task1)
-	asyncResults, err := server1.SendGroup(group)
+	group, err := tasks.NewGroup(&task2, &task1)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	asyncResults, err := server1.SendGroup(group, 10)
 	if err != nil {
 		t.Error(err)
 	}
@@ -133,7 +137,7 @@ func TestWorkerOnlyConsumesRegisteredTaskAMQP(t *testing.T) {
 func TestWorkerOnlyConsumesRegisteredTaskRedis(t *testing.T) {
 	redisURL := os.Getenv("REDIS_URL")
 	if redisURL == "" {
-		return
+		t.Skip("REDIS_URL is not defined")
 	}
 
 	cnf := config.Config{
@@ -196,13 +200,17 @@ func TestWorkerOnlyConsumesRegisteredTaskRedis(t *testing.T) {
 		},
 	}
 
-	worker1 := server1.NewWorker("test_worker")
-	worker2 := server2.NewWorker("test_worker2")
+	worker1 := server1.NewWorker("test_worker", 0)
+	worker2 := server2.NewWorker("test_worker2", 0)
 	go worker1.Launch()
 	go worker2.Launch()
 
-	group := tasks.NewGroup(&task2, &task1)
-	asyncResults, err := server1.SendGroup(group)
+	group, err := tasks.NewGroup(&task2, &task1)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	asyncResults, err := server1.SendGroup(group, 10)
 	if err != nil {
 		t.Error(err)
 	}

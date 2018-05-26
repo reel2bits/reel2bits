@@ -1,6 +1,7 @@
 package backends
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"time"
@@ -9,13 +10,13 @@ import (
 	"github.com/RichardKnop/machinery/v1/config"
 	"github.com/RichardKnop/machinery/v1/log"
 	"github.com/RichardKnop/machinery/v1/tasks"
-	"github.com/garyburd/redigo/redis"
-	"gopkg.in/redsync.v1"
+	"github.com/RichardKnop/redsync"
+	"github.com/gomodule/redigo/redis"
 )
 
-// RedisBackend represents a Memcache result backend
+// RedisBackend represents a Redis result backend
 type RedisBackend struct {
-	cnf      *config.Config
+	Backend
 	host     string
 	password string
 	db       int
@@ -29,7 +30,7 @@ type RedisBackend struct {
 // NewRedisBackend creates RedisBackend instance
 func NewRedisBackend(cnf *config.Config, host, password, socketPath string, db int) Interface {
 	return &RedisBackend{
-		cnf:        cnf,
+		Backend:    New(cnf),
 		host:       host,
 		db:         db,
 		password:   password,
@@ -42,6 +43,7 @@ func (b *RedisBackend) InitGroup(groupUUID string, taskUUIDs []string) error {
 	groupMeta := &tasks.GroupMeta{
 		GroupUUID: groupUUID,
 		TaskUUIDs: taskUUIDs,
+		CreatedAt: time.Now().UTC(),
 	}
 
 	encoded, err := json.Marshal(groupMeta)
@@ -180,7 +182,9 @@ func (b *RedisBackend) GetState(taskUUID string) (*tasks.TaskState, error) {
 	}
 
 	state := new(tasks.TaskState)
-	if err := json.Unmarshal(item, state); err != nil {
+	decoder := json.NewDecoder(bytes.NewReader(item))
+	decoder.UseNumber()
+	if err := decoder.Decode(state); err != nil {
 		return nil, err
 	}
 
@@ -224,7 +228,9 @@ func (b *RedisBackend) getGroupMeta(groupUUID string) (*tasks.GroupMeta, error) 
 	}
 
 	groupMeta := new(tasks.GroupMeta)
-	if err := json.Unmarshal(item, groupMeta); err != nil {
+	decoder := json.NewDecoder(bytes.NewReader(item))
+	decoder.UseNumber()
+	if err := decoder.Decode(groupMeta); err != nil {
 		return nil, err
 	}
 
@@ -250,13 +256,15 @@ func (b *RedisBackend) getStates(taskUUIDs ...string) ([]*tasks.TaskState, error
 	}
 
 	for i, value := range reply {
-		bytes, ok := value.([]byte)
+		stateBytes, ok := value.([]byte)
 		if !ok {
 			return taskStates, fmt.Errorf("Expected byte array, instead got: %v", value)
 		}
 
 		taskState := new(tasks.TaskState)
-		if err := json.Unmarshal(bytes, taskState); err != nil {
+		decoder := json.NewDecoder(bytes.NewReader(stateBytes))
+		decoder.UseNumber()
+		if err := decoder.Decode(taskState); err != nil {
 			log.ERROR.Print(err)
 			return taskStates, err
 		}
@@ -308,7 +316,7 @@ func (b *RedisBackend) setExpirationTime(key string) error {
 // open returns or creates instance of Redis connection
 func (b *RedisBackend) open() redis.Conn {
 	if b.pool == nil {
-		b.pool = b.NewPool(b.socketPath, b.host, b.password, b.db)
+		b.pool = b.NewPool(b.socketPath, b.host, b.password, b.db, b.cnf.Redis)
 	}
 	if b.redsync == nil {
 		var pools = []redsync.Pool{b.pool}

@@ -1,6 +1,7 @@
 package machinery_test
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"testing"
@@ -12,7 +13,71 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+var (
+	redisSchemeTestCases = []struct {
+		desc      string
+		url       string
+		host, pwd string
+		db        int
+		err       error
+	}{
+		{
+			desc: "invalid redis scheme",
+			url:  "non_redis://127.0.0.1:5672",
+			err:  errors.New("invalid redis scheme"),
+		},
+		{
+			desc: "empty redis scheme",
+			url:  "redis:/",
+		},
+		{
+			desc: "redis host",
+			url:  "redis://127.0.0.1:5672",
+			host: "127.0.0.1:5672",
+		},
+		{
+			desc: "redis password and host",
+			url:  "redis://pwd@127.0.0.1:5672",
+			host: "127.0.0.1:5672",
+			pwd:  "pwd",
+		},
+		{
+			desc: "redis password, host and db",
+			url:  "redis://pwd@127.0.0.1:5672/2",
+			host: "127.0.0.1:5672",
+			pwd:  "pwd",
+			db:   2,
+		},
+		{
+			desc: "redis user, password host",
+			url:  "redis://user:pwd@127.0.0.1:5672",
+			host: "127.0.0.1:5672",
+			pwd:  "pwd",
+		},
+		{
+			desc: "redis user, password with colon host",
+			url:  "redis://user:pwd:with:colon@127.0.0.1:5672",
+			host: "127.0.0.1:5672",
+			pwd:  "pwd:with:colon",
+		},
+		{
+			desc: "redis user, empty password and host",
+			url:  "redis://user:@127.0.0.1:5672",
+			host: "127.0.0.1:5672",
+			pwd:  "",
+		},
+		{
+			desc: "redis empty user, password and host",
+			url:  "redis://:pwd@127.0.0.1:5672",
+			host: "127.0.0.1:5672",
+			pwd:  "pwd",
+		},
+	}
+)
+
 func TestBrokerFactory(t *testing.T) {
+	t.Parallel()
+
 	var cnf config.Config
 
 	// 1) AMQP broker test
@@ -30,6 +95,12 @@ func TestBrokerFactory(t *testing.T) {
 
 	actual, err := machinery.BrokerFactory(&cnf)
 	if assert.NoError(t, err) {
+		_, isAMQPBroker := actual.(*brokers.AMQPBroker)
+		assert.True(
+			t,
+			isAMQPBroker,
+			"Broker should be instance of *brokers.AMQPBroker",
+		)
 		expected := brokers.NewAMQPBroker(&cnf)
 		assert.True(
 			t,
@@ -38,7 +109,7 @@ func TestBrokerFactory(t *testing.T) {
 		)
 	}
 
-	// 1) Redis broker test
+	// 2) Redis broker test
 
 	// with password
 	cnf = config.Config{
@@ -48,6 +119,12 @@ func TestBrokerFactory(t *testing.T) {
 
 	actual, err = machinery.BrokerFactory(&cnf)
 	if assert.NoError(t, err) {
+		_, isRedisBroker := actual.(*brokers.RedisBroker)
+		assert.True(
+			t,
+			isRedisBroker,
+			"Broker should be instance of *brokers.RedisBroker",
+		)
 		expected := brokers.NewRedisBroker(&cnf, "localhost:6379", "password", "", 0)
 		assert.True(
 			t,
@@ -64,6 +141,12 @@ func TestBrokerFactory(t *testing.T) {
 
 	actual, err = machinery.BrokerFactory(&cnf)
 	if assert.NoError(t, err) {
+		_, isRedisBroker := actual.(*brokers.RedisBroker)
+		assert.True(
+			t,
+			isRedisBroker,
+			"Broker should be instance of *brokers.RedisBroker",
+		)
 		expected := brokers.NewRedisBroker(&cnf, "localhost:6379", "", "", 0)
 		assert.True(
 			t,
@@ -80,16 +163,40 @@ func TestBrokerFactory(t *testing.T) {
 
 	actual, err = machinery.BrokerFactory(&cnf)
 	if assert.NoError(t, err) {
+		_, isRedisBroker := actual.(*brokers.RedisBroker)
+		assert.True(
+			t,
+			isRedisBroker,
+			"Broker should be instance of *brokers.RedisBroker",
+		)
 		expected := brokers.NewRedisBroker(&cnf, "", "", "/tmp/redis.sock", 0)
 		assert.True(
 			t,
 			reflect.DeepEqual(actual, expected),
-			fmt.Sprintf("conn = %v, want %v, actual, expected"),
+			fmt.Sprintf("conn = %v, want %v", actual, expected),
+		)
+	}
+
+	// 3) AWS SQS
+	cnf = config.Config{
+		Broker:       "https://sqs.us-east-2.amazonaws.com/123456789012",
+		DefaultQueue: "machinery_tasks",
+	}
+
+	actual, err = machinery.BrokerFactory(&cnf)
+	if assert.NoError(t, err) {
+		_, isAWSSQSBroker := actual.(*brokers.AWSSQSBroker)
+		assert.True(
+			t,
+			isAWSSQSBroker,
+			"Broker should be instance of *brokers.AWSSQSBroker",
 		)
 	}
 }
 
 func TestBrokerFactoryError(t *testing.T) {
+	t.Parallel()
+
 	cnf := config.Config{
 		Broker: "BOGUS",
 	}
@@ -102,6 +209,8 @@ func TestBrokerFactoryError(t *testing.T) {
 }
 
 func TestBackendFactory(t *testing.T) {
+	t.Parallel()
+
 	var cnf config.Config
 
 	// 1) AMQP backend test
@@ -200,6 +309,8 @@ func TestBackendFactory(t *testing.T) {
 }
 
 func TestBackendFactoryError(t *testing.T) {
+	t.Parallel()
+
 	cnf := config.Config{
 		ResultBackend: "BOGUS",
 	}
@@ -216,47 +327,36 @@ func TestBackendFactoryError(t *testing.T) {
 }
 
 func TestParseRedisURL(t *testing.T) {
-	var host, pwd, url string
-	var db int
-	var err error
+	t.Parallel()
 
-	url = "non_redis://127.0.0.1:5672"
-	_, _, _, err = machinery.ParseRedisURL(url)
-	assert.Error(t, err, "invalid redis scheme")
+	for _, tc := range redisSchemeTestCases {
+		tc := tc // capture range variable
+		t.Run(tc.desc, func(t *testing.T) {
+			t.Parallel()
 
-	url = "redis:/"
-	_, _, _, err = machinery.ParseRedisURL(url)
-	assert.Error(t, err, "invalid redis url scheme")
+			host, pwd, db, err := machinery.ParseRedisURL(tc.url)
+			if tc.err != nil {
+				assert.Error(t, err, tc.err)
+				return
+			}
 
-	url = "redis://127.0.0.1:5672"
-	host, pwd, db, err = machinery.ParseRedisURL(url)
-	if assert.NoError(t, err) {
-		assert.Equal(t, "127.0.0.1:5672", host)
-		assert.Equal(t, "", pwd)
-		assert.Equal(t, 0, db)
-	}
-
-	url = "redis://pwd@127.0.0.1:5672"
-	host, pwd, db, _ = machinery.ParseRedisURL(url)
-	if assert.NoError(t, err) {
-		assert.Equal(t, "127.0.0.1:5672", host)
-		assert.Equal(t, "pwd", pwd)
-		assert.Equal(t, 0, db)
-	}
-
-	url = "redis://pwd@127.0.0.1:5672/2"
-	host, pwd, db, err = machinery.ParseRedisURL(url)
-	if assert.NoError(t, err) {
-		assert.Equal(t, "127.0.0.1:5672", host)
-		assert.Equal(t, "pwd", pwd)
-		assert.Equal(t, 2, db)
+			if assert.NoError(t, err) {
+				assert.Equal(t, tc.host, host)
+				assert.Equal(t, tc.pwd, pwd)
+				assert.Equal(t, tc.db, db)
+			}
+		})
 	}
 }
 
 func TestParseRedisSocketURL(t *testing.T) {
-	var path, pwd, url string
-	var db int
-	var err error
+	t.Parallel()
+
+	var (
+		path, pwd, url string
+		db             int
+		err            error
+	)
 
 	url = "non_redissock:///tmp/redis.sock"
 	_, _, _, err = machinery.ParseRedisSocketURL(url)
