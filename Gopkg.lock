@@ -15,7 +15,16 @@
 
 [[projects]]
   name = "github.com/RichardKnop/machinery"
-  packages = ["v1","v1/backends","v1/brokers","v1/common","v1/config","v1/log","v1/retry","v1/tasks"]
+  packages = [
+    "v1",
+    "v1/backends",
+    "v1/brokers",
+    "v1/common",
+    "v1/config",
+    "v1/log",
+    "v1/retry",
+    "v1/tasks"
+  ]
   revision = "c42d92ff7e860f492d8e62c11cb96911942cece8"
 
 [[projects]]
@@ -74,7 +83,10 @@
 
 [[projects]]
   name = "github.com/garyburd/redigo"
-  packages = ["internal","redis"]
+  packages = [
+    "internal",
+    "redis"
+  ]
   revision = "47dc60e71eed504e3ef8e77ee3c6fe720f3be57f"
   version = "v1.3.0"
 
@@ -87,7 +99,10 @@
 [[projects]]
   branch = "master"
   name = "github.com/go-akka/configuration"
-  packages = [".","hocon"]
+  packages = [
+    ".",
+    "hocon"
+  ]
   revision = "755180b9a146a94d76051113e9624bdc8327c499"
 
 [[projects]]
@@ -165,7 +180,12 @@
 [[projects]]
   branch = "master"
   name = "github.com/gogap/logrus_mate"
-  packages = [".","hooks/file","hooks/syslog","hooks/utils/caller"]
+  packages = [
+    ".",
+    "hooks/file",
+    "hooks/syslog",
+    "hooks/utils/caller"
+  ]
   revision = "e0cf2531d6c27c75074c7cb643c099341e78e3ed"
 
 [[projects]]
@@ -213,7 +233,10 @@
 [[projects]]
   branch = "master"
   name = "github.com/lib/pq"
-  packages = [".","oid"]
+  packages = [
+    ".",
+    "oid"
+  ]
   revision = "8c6ee72f3e6bcb1542298dd5f76cb74af9742cec"
 
 [[projects]]
@@ -290,19 +313,30 @@
 
 [[projects]]
   name = "github.com/sirupsen/logrus"
-  packages = [".","hooks/syslog"]
+  packages = [
+    ".",
+    "hooks/syslog"
+  ]
   revision = "f006c2ac4710855cf0f916dd6b77acf6b048dc6e"
   version = "v1.0.3"
 
 [[projects]]
   name = "github.com/smartystreets/assertions"
-  packages = [".","internal/go-render/render","internal/oglematchers"]
+  packages = [
+    ".",
+    "internal/go-render/render",
+    "internal/oglematchers"
+  ]
   revision = "ff1918e1e5a13a74014644ae7c1e0ba2f791364d"
   version = "1.8.0"
 
 [[projects]]
   name = "github.com/smartystreets/goconvey"
-  packages = ["convey","convey/gotest","convey/reporting"]
+  packages = [
+    "convey",
+    "convey/gotest",
+    "convey/reporting"
+  ]
   revision = "9e8dc3f972df6c8fcc0375ef492c24d0bb204857"
   version = "1.6.3"
 
@@ -339,25 +373,41 @@
 [[projects]]
   branch = "master"
   name = "golang.org/x/crypto"
-  packages = ["md4","pbkdf2","ssh/terminal"]
+  packages = [
+    "md4",
+    "pbkdf2",
+    "ssh/terminal"
+  ]
   revision = "9f005a07e0d31d45e6656d241bb5c0f2efd4bc94"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/net"
-  packages = ["context","html","html/atom"]
+  packages = [
+    "context",
+    "html",
+    "html/atom"
+  ]
   revision = "c7086645de248775cbf2373cf5ca4d2fa664b8c1"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
-  packages = ["unix","windows"]
+  packages = [
+    "unix",
+    "windows"
+  ]
   revision = "82aafbf43bf885069dc71b7e7c2f9d7a614d47da"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/text"
-  packages = ["internal/gen","internal/tag","language","unicode/cldr"]
+  packages = [
+    "internal/gen",
+    "internal/tag",
+    "language",
+    "unicode/cldr"
+  ]
   revision = "88f656faf3f37f690df1a32515b479415e1a6769"
 
 [[projects]]
@@ -387,7 +437,13 @@
 [[projects]]
   branch = "v2"
   name = "gopkg.in/mgo.v2"
-  packages = [".","bson","internal/json","internal/sasl","internal/scram"]
+  packages = [
+    ".",
+    "bson",
+    "internal/json",
+    "internal/sasl",
+    "internal/scram"
+  ]
   revision = "3f83fa5005286a7fe593b055f0d7771a7dce4655"
 
 [[projects]]
@@ -405,6 +461,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "c97f2814bb3ad81c49bad17c545639917cf0e695402b08f93fa25d3c2a0aa6dc"
+  inputs-digest = "17e06ebb87e89478c4d0132e598c1e58af73f06598fd74e4c1b549d2f5d06092"
   solver-name = "gps-cdcl"
   solver-version = 1
