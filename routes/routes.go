@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"dev.sigpipe.me/dashie/macaron-i18n"
 	"dev.sigpipe.me/dashie/reel2bits/context"
 	"dev.sigpipe.me/dashie/reel2bits/models"
 	"dev.sigpipe.me/dashie/reel2bits/pkg/cron"
@@ -15,7 +16,6 @@ import (
 	"github.com/go-macaron/binding"
 	"github.com/go-macaron/cache"
 	"github.com/go-macaron/csrf"
-	"github.com/go-macaron/i18n"
 	"github.com/go-macaron/session"
 	"github.com/go-macaron/toolbox"
 	log "github.com/sirupsen/logrus"
@@ -65,6 +65,14 @@ func NewMacaron() *macaron.Macaron {
 		},
 	))
 
+	m.Use(i18n.I18n(i18n.Options{
+		SubURL:      setting.AppSubURL,
+		DefaultLang: "en_US",
+		Redirect:    true,
+		Domain:      "reel2bits",
+		Directory:   path.Join(setting.StaticRootPath, "locale"),
+	}))
+
 	funcMap := template.NewFuncMap(m)
 	m.Use(macaron.Renderer(macaron.RenderOptions{
 		Directory:  path.Join(setting.StaticRootPath, "templates"),
@@ -72,15 +80,6 @@ func NewMacaron() *macaron.Macaron {
 		IndentJSON: macaron.Env != macaron.PROD,
 	}))
 	mailer.InitMailRender(path.Join(setting.StaticRootPath, "templates/mail"), funcMap)
-
-	m.Use(i18n.I18n(i18n.Options{
-		SubURL: setting.AppSubURL,
-		//Files:           localFiles,
-		Langs:       setting.Langs,
-		Names:       setting.Names,
-		DefaultLang: "en-US",
-		Redirect:    true,
-	}))
 
 	m.Use(cache.Cacher(cache.Options{
 		Adapter:       setting.CacheAdapter,

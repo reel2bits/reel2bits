@@ -238,7 +238,7 @@ func EditPost(ctx *context.Context, f form.Album) {
 	album.Description = f.Description
 	album.IsPrivate = f.IsPrivate
 
-	err = models.UpdateAlbum(album)
+	err = models.UpdateAlbum(&album)
 	if err != nil {
 		switch {
 		default:

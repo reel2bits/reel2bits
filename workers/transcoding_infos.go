@@ -28,7 +28,7 @@ func check(cond bool, test string) {
 	}
 }
 
-func fetchMetadatasAndCommit(idx int64) (int64, error) {
+func fetchMetadatasAndCommit(idx uint) (uint, error) {
 	timeStart := time.Now().Unix()
 
 	track, err := models.GetTrackByID(idx)
@@ -65,8 +65,7 @@ func fetchMetadatasAndCommit(idx int64) (int64, error) {
 	}
 
 	ti := models.TrackInfo{
-		TrackID: track.ID,
-		Hash:    track.Hash,
+		Hash: track.Hash,
 
 		Duration: md.Length().Seconds(),
 		Rate:     md.Samplerate(),
@@ -110,10 +109,22 @@ func fetchMetadatasAndCommit(idx int64) (int64, error) {
 		return 0, err
 	}
 
+	// Update the Track to set the TrackInfoID
+	track.TrackInfoID = ti.ID
+	err = models.UpdateTrack(&track)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"trackID":     track.ID,
+			"err":         err,
+			"trackInfoID": ti.ID,
+		}).Error("Cannot update Track with TrackInfoID.")
+		return 0, err
+	}
+
 	return ti.ID, nil
 }
 
-func generateWaveforms(trackID int64) (waveform string, err error) {
+func generateWaveforms(trackID uint) (waveform string, err error) {
 	if _, err := os.Stat(setting.AudiowaveformBin); os.IsNotExist(err) {
 		log.WithFields(log.Fields{
 			"trackID": trackID,
@@ -203,7 +214,7 @@ func generateWaveforms(trackID int64) (waveform string, err error) {
 	return waveform, nil
 }
 
-func generateTranscode(trackID int64) (err error) {
+func generateTranscode(trackID uint) (err error) {
 	startTime := time.Now().Unix()
 
 	track, err := models.GetTrackByID(trackID)
@@ -234,7 +245,10 @@ func generateTranscode(trackID int64) (err error) {
 	fName := filepath.Join(storDir, track.Filename)
 
 	// sox -i
-	// AUDIO FILE FORMATS: 8svx aif aifc aiff aiffc al amb amr-nb amr-wb anb au avr awb caf cdda cdr cvs cvsd cvu dat dvms f32 f4 f64 f8 fap flac fssd gsm gsrt hcom htk ima ircam la lpc lpc10 lu mat mat4 mat5 maud mp2 mp3 nist ogg paf prc pvf raw s1 s16 s2 s24 s3 s32 s4 s8 sb sd2 sds sf sl sln smp snd sndfile sndr sndt sou sox sph sw txw u1 u16 u2 u24 u3 u32 u4 u8 ub ul uw vms voc vorbis vox w64 wav wavpcm wv wve xa xi
+	// AUDIO FILE FORMATS: 8svx aif aifc aiff aiffc al amb amr-nb amr-wb anb au avr awb caf cdda cdr cvs cvsd cvu dat
+	// dvms f32 f4 f64 f8 fap flac fssd gsm gsrt hcom htk ima ircam la lpc lpc10 lu mat mat4 mat5 maud mp2 mp3 nist ogg
+	// paf prc pvf raw s1 s16 s2 s24 s3 s32 s4 s8 sb sd2 sds sf sl sln smp snd sndfile sndr sndt sou sox sph sw txw u1
+	// u16 u2 u24 u3 u32 u4 u8 ub ul uw vms voc vorbis vox w64 wav wavpcm wv wve xa xi
 	// Check for mp3, flac, vorbis, wav
 	// TODO
 
@@ -285,7 +299,7 @@ func generateTranscode(trackID int64) (err error) {
 	track.TranscodeStopUnix = time.Now().Unix()
 	track.TranscodeNeeded = false // it's now done
 	track.TranscodeState = models.ProcessingFinished
-	err = models.UpdateTrack(track)
+	err = models.UpdateTrack(&track)
 	if err != nil {
 		log.WithFields(log.Fields{
 			"trackID": trackID,
@@ -298,7 +312,7 @@ func generateTranscode(trackID int64) (err error) {
 }
 
 // TranscodeAndFetchInfos will do all the processing in one func
-func TranscodeAndFetchInfos(trackID int64) error {
+func TranscodeAndFetchInfos(trackID uint) error {
 	log.WithFields(log.Fields{
 		"trackID": trackID,
 	}).Debug("Starting processing track.")
@@ -361,7 +375,7 @@ func TranscodeAndFetchInfos(trackID int64) error {
 
 	// Update TrackInfo
 	ti.ProcessingStopUnix = time.Now().Unix()
-	err = models.UpdateTrackInfo(ti)
+	err = models.UpdateTrackInfo(&ti)
 	if err != nil {
 		log.WithFields(log.Fields{
 			"trackID":     trackID,

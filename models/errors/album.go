@@ -19,7 +19,7 @@ func (err AlbumAlreadyExist) Error() string {
 
 // AlbumNotExist struct
 type AlbumNotExist struct {
-	AlbumID int64
+	AlbumID uint
 	Name    string
 }
 

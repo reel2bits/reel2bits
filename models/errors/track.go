@@ -34,7 +34,7 @@ func (err TrackAlreadyExist) Error() string {
 
 // TrackNotExist struct
 type TrackNotExist struct {
-	TrackID int64
+	TrackID uint
 	Title   string
 }
 
@@ -46,7 +46,7 @@ func (err TrackNotExist) Error() string {
 
 // TrackInfoNotExist struct
 type TrackInfoNotExist struct {
-	TrackInfoID int64
+	TrackInfoID uint
 }
 
 func (err TrackInfoNotExist) Error() string {

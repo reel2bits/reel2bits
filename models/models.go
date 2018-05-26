@@ -1,69 +1,39 @@
 package models
 
 import (
-	"database/sql"
 	"dev.sigpipe.me/dashie/reel2bits/setting"
 	"errors"
 	"fmt"
-	// blah
-	_ "github.com/denisenkom/go-mssqldb"
-	_ "github.com/go-sql-driver/mysql"
-	"github.com/go-xorm/core"
-	"github.com/go-xorm/xorm"
-	// blah
-	_ "github.com/lib/pq"
+	"github.com/jinzhu/gorm"
 	log "github.com/sirupsen/logrus"
 	"net/url"
 	"os"
 	"path"
 	"strings"
+	// mysql
+	_ "github.com/jinzhu/gorm/dialects/mysql"
+	// postgresql
+	_ "github.com/jinzhu/gorm/dialects/postgres"
+	// sqlite
+	_ "github.com/jinzhu/gorm/dialects/sqlite"
+	// mssql
+	_ "github.com/jinzhu/gorm/dialects/mssql"
 )
 
-// Engine represents a XORM engine or session.
-type Engine interface {
-	Delete(interface{}) (int64, error)
-	Exec(string, ...interface{}) (sql.Result, error)
-	Find(interface{}, ...interface{}) error
-	Get(interface{}) (bool, error)
-	Id(interface{}) *xorm.Session
-	In(string, ...interface{}) *xorm.Session
-	Insert(...interface{}) (int64, error)
-	InsertOne(interface{}) (int64, error)
-	Iterate(interface{}, xorm.IterFunc) error
-	Sql(string, ...interface{}) *xorm.Session
-	Table(interface{}) *xorm.Session
-	Where(interface{}, ...interface{}) *xorm.Session
-}
-
-// Things
+// Vars
 var (
-	x         *xorm.Engine
-	tables    []interface{}
+	db        *gorm.DB
 	HasEngine bool
 
 	DbCfg struct {
 		Type, Host, Name, User, Passwd, Path, SSLMode string
+		Logging                                       bool
 	}
 
 	EnableSQLite3 bool
 )
 
-func init() {
-	log.Info("Initializing models")
-	tables = append(tables,
-		new(User),
-		new(Track),
-		new(TrackInfo),
-		new(Album),
-		new(TimelineItem))
-
-	gonicNames := []string{"SSL"}
-	for _, name := range gonicNames {
-		core.LintGonicMapper[name] = true
-	}
-}
-
-// LoadConfigs from setting
+// LoadConfigs to init db
 func LoadConfigs() {
 	sec := setting.Cfg.Section("database")
 	DbCfg.Type = sec.Key("DB_TYPE").String()
@@ -84,7 +54,8 @@ func LoadConfigs() {
 		DbCfg.Passwd = sec.Key("PASSWD").String()
 	}
 	DbCfg.SSLMode = sec.Key("SSL_MODE").String()
-	DbCfg.Path = sec.Key("PATH").MustString("reel2bits.db")
+	DbCfg.Path = sec.Key("PATH").MustString("bleurg.db")
+	DbCfg.Logging = sec.Key("LOGGING").MustBool(true)
 }
 
 // parsePostgreSQLHostPort parses given input in various forms defined in
@@ -116,7 +87,7 @@ func parseMSSQLHostPort(info string) (string, string) {
 	return host, port
 }
 
-func getEngine() (*xorm.Engine, error) {
+func getEngine() (*gorm.DB, error) {
 	connStr := ""
 	var Param = "?"
 	if strings.Contains(DbCfg.Name, Param) {
@@ -124,6 +95,7 @@ func getEngine() (*xorm.Engine, error) {
 	}
 	switch DbCfg.Type {
 	case "mysql":
+		// "user:password@/dbname?charset=utf8&parseTime=True&loc=Local"
 		if DbCfg.Host[0] == '/' { // looks like a unix socket
 			connStr = fmt.Sprintf("%s:%s@unix(%s)/%s%scharset=utf8&parseTime=true",
 				DbCfg.User, DbCfg.Passwd, DbCfg.Host, DbCfg.Name, Param)
@@ -132,6 +104,7 @@ func getEngine() (*xorm.Engine, error) {
 				DbCfg.User, DbCfg.Passwd, DbCfg.Host, DbCfg.Name, Param)
 		}
 	case "postgres":
+		// "host=myhost port=myport user=gorm dbname=gorm password=mypassword"
 		host, port := parsePostgreSQLHostPort(DbCfg.Host)
 		if host[0] == '/' { // looks like a unix socket
 			connStr = fmt.Sprintf("postgres://%s:%s@:%s/%s%ssslmode=%s&host=%s",
@@ -141,6 +114,7 @@ func getEngine() (*xorm.Engine, error) {
 				url.QueryEscape(DbCfg.User), url.QueryEscape(DbCfg.Passwd), host, port, DbCfg.Name, Param, DbCfg.SSLMode)
 		}
 	case "mssql":
+		// "sqlserver://username:password@localhost:1433?database=dbname"
 		host, port := parseMSSQLHostPort(DbCfg.Host)
 		connStr = fmt.Sprintf("server=%s; port=%s; database=%s; user id=%s; password=%s;", host, port, DbCfg.Name, DbCfg.User, DbCfg.Passwd)
 	case "sqlite3":
@@ -148,63 +122,54 @@ func getEngine() (*xorm.Engine, error) {
 			return nil, errors.New("this binary version does not build support for SQLite3")
 		}
 		if err := os.MkdirAll(path.Dir(DbCfg.Path), os.ModePerm); err != nil {
-			return nil, fmt.Errorf("Fail to create directories: %v", err)
+			return nil, fmt.Errorf("fail to create directories: %v", err)
 		}
 		connStr = "file:" + DbCfg.Path + "?cache=shared&mode=rwc"
 	default:
-		return nil, fmt.Errorf("Unknown database type: %s", DbCfg.Type)
+		return nil, fmt.Errorf("unknown database type: %s", DbCfg.Type)
 	}
-	return xorm.NewEngine(DbCfg.Type, connStr)
+	return gorm.Open(DbCfg.Type, connStr)
 }
 
-// NewTestEngine for tests
-func NewTestEngine(x *xorm.Engine) (err error) {
-	x, err = getEngine()
+// NewTestEngine to test
+func NewTestEngine(db *gorm.DB) (err error) {
+	db, err = getEngine()
 	if err != nil {
-		return fmt.Errorf("Connect to database: %v", err)
+		return fmt.Errorf("connect to database: %v", err)
 	}
 
-	x.SetMapper(core.GonicMapper{})
-	return x.StoreEngine("InnoDB").Sync2(tables...)
+	return err
 }
 
-// SetEngine to connect to db
+// SetEngine to use
 func SetEngine() (err error) {
-	x, err = getEngine()
+	db, err = getEngine()
 	if err != nil {
-		return fmt.Errorf("Fail to connect to database: %v", err)
+		return fmt.Errorf("fail to connect to database: %v", err)
 	}
 
-	x.SetMapper(core.GonicMapper{})
-
-	// WARNING: for serv command, MUST remove the output to os.stdout,
-	// so use log file to instead print to stdout.
-	x.SetLogger(xorm.NewSimpleLogger3(setting.LoggerBdd.Writer(), xorm.DEFAULT_LOG_PREFIX, xorm.DEFAULT_LOG_FLAG, core.LOG_DEBUG))
-	x.ShowSQL(true)
+	db.LogMode(DbCfg.Logging)
+	//db.SetLogger(setting.LoggerBdd)
 	return nil
 }
 
-// NewEngine for db
+// NewEngine to use
 func NewEngine() (err error) {
 	if err = SetEngine(); err != nil {
 		return err
 	}
 
-	// TODO: here do migrations if any
-
-	if err = x.StoreEngine("InnoDB").Sync2(tables...); err != nil {
-		return fmt.Errorf("sync database struct error: %v", err)
-	}
+	db.AutoMigrate(&User{}, &Album{}, &Track{}, &TrackInfo{}, &TimelineItem{})
 
 	return nil
 }
 
-// Ping Pong
+// Ping pong
 func Ping() error {
-	return x.Ping()
+	return db.DB().Ping()
 }
 
-// InitDb after engine creation
+// InitDb from config
 func InitDb() {
 	LoadConfigs()
 

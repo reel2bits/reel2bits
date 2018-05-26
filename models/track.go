@@ -7,8 +7,8 @@ import (
 	"dev.sigpipe.me/dashie/reel2bits/setting"
 	"encoding/hex"
 	"fmt"
-	"github.com/go-xorm/xorm"
 	"github.com/gosimple/slug"
+	"github.com/jinzhu/gorm"
 	log "github.com/sirupsen/logrus"
 	"io"
 	"io/ioutil"
@@ -37,12 +37,14 @@ const (
 
 // Track database structure
 type Track struct {
-	ID     int64  `xorm:"pk autoincr"`
-	Hash   string `xorm:"UNIQUE NOT NULL"`
-	UserID int64  `xorm:"INDEX"`
+	gorm.Model
+
+	Hash   string `gorm:"UNIQUE NOT NULL"`
+	UserID uint   `gorm:"INDEX"`
+	User   User
 
 	Title       string
-	Description string `xorm:"TEXT"`
+	Description string `gorm:"TEXT"`
 	Slug        string
 
 	Filename     string // crafted from hash, filename on filesystem, used for original file, with extension.
@@ -50,7 +52,8 @@ type Track struct {
 
 	Mimetype string
 
-	AlbumID    int64
+	AlbumID    uint
+	Album      Album
 	AlbumOrder int64
 
 	// Transcode state is also used for the worker job to fetch infos
@@ -58,38 +61,23 @@ type Track struct {
 	TranscodeState  int
 	MetadatasState  int
 
-	TranscodeStart     time.Time `xorm:"-"`
+	TranscodeStart     time.Time `gorm:"-"`
 	TranscodeStartUnix int64
-	TranscodeStop      time.Time `xorm:"-"`
+	TranscodeStop      time.Time `gorm:"-"`
 	TranscodeStopUnix  int64
 
-	Ready bool `xorm:"DEFAULT 0"` // ready means "can be shown to public, if not IsPrivate anyway
+	TrackInfoID uint `gorm:"INDEX"`
+	TrackInfo   TrackInfo
+
+	Ready bool `gorm:"DEFAULT 0"` // ready means "can be shown to public, if not IsPrivate anyway
 
 	// Permissions
-	IsPrivate  bool `xorm:"DEFAULT 0"`
-	ShowDlLink bool `xorm:"DEFAULT 1"`
-
-	Created     time.Time `xorm:"-"`
-	CreatedUnix int64
-	Updated     time.Time `xorm:"-"`
-	UpdatedUnix int64
-
-	// Relations
-	// 	UserID
-	//  AlbumID
+	IsPrivate  bool `gorm:"DEFAULT 0"`
+	ShowDlLink bool `gorm:"DEFAULT 1"`
 }
 
-// TrackWithInfo to be used for JOINs
-type TrackWithInfo struct {
-	Track     `xorm:"extends"`
-	TrackInfo `xorm:"extends"`
-	User      `xorm:"extends"`
-}
-
-// BeforeInsert set times and default states
-func (track *Track) BeforeInsert() {
-	track.CreatedUnix = time.Now().Unix()
-	track.UpdatedUnix = track.CreatedUnix
+// BeforeSave set default states
+func (track *Track) BeforeSave() (err error) {
 	track.Slug = slug.Make(track.Title)
 
 	if track.TranscodeNeeded {
@@ -98,30 +86,23 @@ func (track *Track) BeforeInsert() {
 		track.TranscodeState = ProcessingNotNeeded
 	}
 	track.MetadatasState = ProcessingWaiting
+	return
 }
 
-// BeforeUpdate set times
+// BeforeUpdate set slug
 func (track *Track) BeforeUpdate() {
-	track.UpdatedUnix = time.Now().Unix()
 	track.Slug = slug.Make(track.Title)
 }
 
-// AfterSet set times
-func (track *Track) AfterSet(colName string, _ xorm.Cell) {
-	switch colName {
-	case "created_unix":
-		track.Created = time.Unix(track.CreatedUnix, 0).Local()
-	case "updated_unix":
-		track.Updated = time.Unix(track.UpdatedUnix, 0).Local()
-	case "transcode_start_unix":
-		track.TranscodeStart = time.Unix(track.TranscodeStartUnix, 0).Local()
-	case "transcode_stop_unix":
-		track.TranscodeStop = time.Unix(track.TranscodeStopUnix, 0).Local()
-	}
+// AfterFind set times
+func (track *Track) AfterFind() (err error) {
+	track.TranscodeStart = time.Unix(track.TranscodeStartUnix, 0).Local()
+	track.TranscodeStop = time.Unix(track.TranscodeStopUnix, 0).Local()
+	return
 }
 
 // GenerateHash of the track
-func GenerateHash(title string, userID int64) string {
+func GenerateHash(title string, userID uint) string {
 	h := sha1.New()
 	io.WriteString(h, fmt.Sprintf("%s %d %d", title, time.Now().Unix(), userID))
 	return hex.EncodeToString(h.Sum(nil))
@@ -173,24 +154,22 @@ func SaveTrackFile(file *multipart.FileHeader, filename string, username string)
 	return mimetype, nil
 }
 
-func isTrackTitleAlreadyExist(title string, userID int64) (bool, error) {
+func isTrackTitleAlreadyExist(title string, userID uint) (exist bool, err error) {
 	if len(title) == 0 {
 		return true, fmt.Errorf("title is empty")
 	}
 	if userID < 0 {
-		return true, fmt.Errorf("wtf are you doing ?")
+		return true, fmt.Errorf("wtf are you doing")
 	}
 
-	exists, err := x.Get(&Track{UserID: userID, Title: title})
-	if err != nil {
-		return true, err
+	track := Track{}
+	err = db.Where(&Track{UserID: userID, Title: title}).First(&track).Error
+	if gorm.IsRecordNotFoundError(err) || track.ID == 0 {
+		return false, ErrTrackTitleAlreadyExist{Title: title}
+	} else if err != nil {
+		return false, nil
 	}
-
-	if exists {
-		return true, nil
-	}
-
-	return false, nil
+	return true, nil
 }
 
 // CreateTrack or error
@@ -203,39 +182,68 @@ func CreateTrack(t *Track) (err error) {
 		return ErrTrackTitleAlreadyExist{}
 	}
 
-	sess := x.NewSession()
-	defer sess.Close()
-	if err = sess.Begin(); err != nil {
+	tx := db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if tx.Error != nil {
 		return err
 	}
 
-	if _, err = sess.Insert(t); err != nil {
+	if err := tx.Create(t).Error; err != nil {
+		tx.Rollback()
 		return err
 	}
 
-	return sess.Commit()
+	if err := tx.Commit().Error; err != nil {
+		return err
+	}
+
+	return err
 }
 
-func updateTrack(e Engine, t *Track) error {
-	_, err := e.Id(t.ID).AllCols().Update(t)
+func updateTrack(t *Track) (err error) {
+	tx := db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if tx.Error != nil {
+		return err
+	}
+
+	if err := tx.Save(t).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return err
+	}
+
 	return err
 }
 
 // UpdateTrack Update a Track
 func UpdateTrack(t *Track) error {
-	return updateTrack(x, t)
+	return updateTrack(t)
 }
 
 // UpdateTrackState Update track states
-func UpdateTrackState(t *Track, what int) error {
+func UpdateTrackState(trackID uint, t *Track, what int) (err error) {
 	switch what {
 	case TrackTranscoding:
-		_, err := x.Id(t.ID).Cols("transcode_state").Update(t)
+		err = db.Model(&Track{}).Where("id = ?", trackID).UpdateColumn(t).Error
 		if err != nil {
 			return err
 		}
 	case TrackMetadatas:
-		_, err := x.Id(t.ID).Cols("metadatas_state").Update(t)
+		err = db.Model(&Track{}).Where("id = ?", trackID).UpdateColumn(t).Error
 		if err != nil {
 			return err
 		}
@@ -243,25 +251,30 @@ func UpdateTrackState(t *Track, what int) error {
 	return nil
 }
 
-func getTrackByID(e Engine, id int64) (*Track, error) {
-	t := new(Track)
-	has, err := e.Id(id).Get(t)
-	if err != nil {
-		return nil, err
-	} else if !has {
-		return nil, errors.TrackNotExist{TrackID: id, Title: ""}
+func getTrackByID(id uint) (track Track, err error) {
+	err = db.Where("id = ?", id).First(&track).Error
+	if gorm.IsRecordNotFoundError(err) || track.ID == 0 {
+		return track, errors.TrackNotExist{TrackID: id, Title: ""}
+	} else if err != nil {
+		return track, err
 	}
-	return t, nil
+	return
 }
 
 // GetTrackByID or error
-func GetTrackByID(id int64) (*Track, error) {
-	return getTrackByID(x, id)
+func GetTrackByID(id uint) (Track, error) {
+	return getTrackByID(id)
 }
 
 // SetTrackReadyness or not
-func SetTrackReadyness(id int64, state bool) error {
-	_, err := x.Id(id).Cols("ready").Update(&Track{Ready: state})
+func SetTrackReadyness(id uint, state bool) (err error) {
+	t, err := getTrackByID(id)
+	if err != nil {
+		return err
+	}
+	t.Ready = state
+
+	err = db.Model(&Track{}).Update(t).Error
 	if err != nil {
 		return err
 	}
@@ -269,76 +282,49 @@ func SetTrackReadyness(id int64, state bool) error {
 }
 
 // GetTrackWithInfoBySlugAndUserID or error
-func GetTrackWithInfoBySlugAndUserID(id int64, slug string) ([]TrackWithInfo, error) {
-	track := make([]TrackWithInfo, 0)
-	err := x.Table("track").Join("INNER", "track_info", "track_info.track_id = track.id").Where("track.user_id = ? AND track.slug = ?", id, slug).Find(&track)
-	if err != nil {
-		return nil, err
-	}
+func GetTrackWithInfoBySlugAndUserID(id uint, slug string) (track Track, err error) {
+	err = db.Preload("TrackInfo").Where("track.user_id = ? AND track.slug = ?", id, slug).Find(&track).Error
 	return track, nil
 }
 
 // GetTrackBySlugAndUserID or error
-func GetTrackBySlugAndUserID(id int64, slug string) (*Track, error) {
-	track := &Track{Slug: slug, UserID: id}
-	has, err := x.Get(track)
-	if err != nil {
-		return nil, err
-	} else if !has {
-		return nil, errors.TrackNotExist{TrackID: id, Title: ""}
+func GetTrackBySlugAndUserID(id uint, slug string) (track Track, err error) {
+	err = db.Where(&Album{UserID: id, Slug: slug}).First(&track).Error
+	if gorm.IsRecordNotFoundError(err) || track.ID == 0 {
+		return track, errors.TrackNotExist{TrackID: id, Title: ""}
+	} else if err != nil {
+		return track, err
 	}
-	return track, nil
+	return
 }
 
 // GetTrackByAlbumIDAndOrder like it's said
-func GetTrackByAlbumIDAndOrder(albumID int64, albumOrder int64) (*Track, error) {
-	track := &Track{AlbumID: albumID, AlbumOrder: albumOrder}
-	has, err := x.Get(track)
-	if err != nil {
-		return nil, err
-	} else if !has {
-		return nil, errors.TrackNotExist{TrackID: albumID, Title: ""}
+func GetTrackByAlbumIDAndOrder(albumID uint, albumOrder int64) (track Track, err error) {
+	err = db.Where(&Track{AlbumID: albumID, AlbumOrder: albumOrder}).First(&track).Error
+	if gorm.IsRecordNotFoundError(err) || track.ID == 0 {
+		return track, errors.TrackNotExist{TrackID: albumID, Title: ""}
+	} else if err != nil {
+		return track, err
 	}
-	return track, nil
+	return
 }
 
 // GetFirstTrackOfAlbum and not the last
-func GetFirstTrackOfAlbum(albumID int64, onlyPublic bool) (*TrackWithInfo, error) {
-	tracks := make([]*TrackWithInfo, 0)
-
-	sess := x.Where("album_id=?", albumID)
+// IF the album is empty, an error will be thrown by the .Find()
+func GetFirstTrackOfAlbum(albumID uint, onlyPublic bool) (track *Track, err error) {
+	tx := db.Preload("track_info", "user").Where("album_id = ?", albumID)
 
 	if onlyPublic {
-		sess.And("ready=?", true).And("is_private=?", false)
+		tx = tx.Where("ready = ? AND is_private = ?", true, false)
 	}
 
-	sess.Asc("track.album_order")
-
-	var countSess xorm.Session
-	countSess = *sess
-	count, err := countSess.Count(new(Track))
-	if err != nil {
-		return nil, fmt.Errorf("Count: %v", err)
-	}
-
-	sess.Table(&Track{}).Join("LEFT", "track_info", "track_info.track_id = track.id").Join(
-		"LEFT", "user", "user.id = track.user_id")
-
-	err = sess.Limit(1).Find(&tracks)
-
-	if err != nil {
-		return nil, fmt.Errorf("LimitFind: %v", err)
-	}
-	if count >= 1 {
-		return tracks[0], nil
-	}
-
-	return nil, fmt.Errorf("Album is empty")
+	err = tx.Order("track.album_order ASC").Limit(1).Find(&track).Error
+	return
 }
 
 // TrackOptions structure
 type TrackOptions struct {
-	UserID      int64
+	UserID      uint
 	WithPrivate bool
 	GetAll      bool
 	Page        int
@@ -347,43 +333,36 @@ type TrackOptions struct {
 }
 
 // GetTracks or nothing
-func GetTracks(opts *TrackOptions) (tracks []*TrackWithInfo, _ int64, _ error) {
+func GetTracks(opts *TrackOptions) (tracks []Track, count int64, err error) {
 	if opts.Page <= 0 {
 		opts.Page = 1
 	}
-	tracks = make([]*TrackWithInfo, 0, opts.PageSize)
+	tracks = make([]Track, 0, opts.PageSize)
 
-	sess := x.Where("is_private=?", false)
+	tx := db.Preload("track_info", "user").Order("track.created_at DESC").Offset((opts.Page - 1) * opts.PageSize).Limit(opts.PageSize)
+
+	tx = tx.Where("is_private = ?", false)
 
 	if opts.WithPrivate && !opts.GetAll {
-		sess.Or("is_private=?", true)
+		tx = tx.Or("is_private = ?", true)
 	}
 
 	if !opts.GetAll {
-		sess.And("user_id=?", opts.UserID)
+		tx = tx.Where("user_id = ?", opts.UserID)
 	}
 	if opts.OnlyReady {
-		sess.And("ready=?", true)
+		tx = tx.Where("ready = ?", true)
 	}
 
-	sess.Desc("track.created_unix")
+	err = tx.Find(&tracks).Error
+	tx.Count(&count)
 
-	var countSess xorm.Session
-	countSess = *sess
-	count, err := countSess.Count(new(Track))
-	if err != nil {
-		return nil, 0, fmt.Errorf("Count: %v", err)
-	}
-
-	sess.Table(&Track{}).Join("LEFT", "track_info", "track_info.track_id = track.id").Join(
-		"LEFT", "user", "user.id = track.user_id")
-
-	return tracks, count, sess.Limit(opts.PageSize, (opts.Page-1)*opts.PageSize).Find(&tracks)
+	return tracks, count, err
 }
 
 // GetNotReadyTracks and only that
-func GetNotReadyTracks() (tracks []*Track, err error) {
-	err = x.Table(&Track{}).Cols("ID").Where("ready=?", false).Find(&tracks)
+func GetNotReadyTracks() (tracks []Track, err error) {
+	err = db.Model(&Track{}).Where("ready = ?", false).Find(&tracks).Error
 	if err != nil {
 		log.Errorf("Cannot get un-ready tracks: %s", err)
 	}
@@ -391,21 +370,20 @@ func GetNotReadyTracks() (tracks []*Track, err error) {
 }
 
 // GetAlbumTracks will get album tracks
-func GetAlbumTracks(albumID int64, onlyPublic bool) (tracks []*TrackWithInfo, err error) {
-	tracks = make([]*TrackWithInfo, 0)
+func GetAlbumTracks(albumID uint, onlyPublic bool) (tracks []Track, err error) {
+	tracks = make([]Track, 0)
 
-	sess := x.Where("album_id=?", albumID)
+	tx := db.Preload("track_user", "user").Where("album_id = ?", albumID)
 
 	if onlyPublic {
-		sess.And("ready=?", true).And("is_private=?", false)
+		tx = tx.Where("ready = ? AND is_private = ?", true, false)
 	}
 
-	sess.Asc("track.album_order")
+	tx = tx.Order("track.album_order ASC")
 
-	sess.Table(&Track{}).Join("LEFT", "track_info", "track_info.track_id = track.id").Join(
-		"LEFT", "user", "user.id = track.user_id")
+	err = tx.Find(&tracks).Error
 
-	return tracks, sess.Find(&tracks)
+	return tracks, err
 }
 
 func removeTrackFiles(transcode bool, trackFilename string, userSlug string) error {
@@ -450,7 +428,7 @@ func removeTrackFiles(transcode bool, trackFilename string, userSlug string) err
 }
 
 // DeleteTrack will delete a track
-func DeleteTrack(trackID int64, userID int64) error {
+func DeleteTrack(trackID uint, userID uint) (err error) {
 
 	// With session
 
@@ -463,20 +441,23 @@ func DeleteTrack(trackID int64, userID int64) error {
 	// Commit
 
 	// Get track
-	track := &Track{ID: trackID, UserID: userID}
-	hasTrack, err := x.Get(track)
-	if err != nil {
-		return err
-	} else if !hasTrack {
+	track := &Track{}
+	err = db.Where("id = ?", trackID).First(&track).Error
+	if gorm.IsRecordNotFoundError(err) || track.ID == 0 {
 		return errors.TrackNotExist{TrackID: trackID, Title: ""}
+	} else if err != nil {
+		return err
 	}
+
 	trackFilename := track.Filename
 	trackTranscoded := track.TranscodeState != ProcessingNotNeeded
 
 	// Get track info
-	trackInfo := &TrackInfo{TrackID: track.ID}
-	hasTrackInfo, err := x.Get(trackInfo)
-	if err != nil {
+	trackInfo := &TrackInfo{}
+	err = db.Where("track_id = ?", trackID).First(&trackInfo).Error
+	if gorm.IsRecordNotFoundError(err) || trackInfo.ID == 0 {
+		// do nothing
+	} else if err != nil {
 		return err
 	}
 	// We don't care if the trackInfo does not exists
@@ -486,24 +467,14 @@ func DeleteTrack(trackID int64, userID int64) error {
 		return fmt.Errorf("GetUserByID: %v", err)
 	}
 
-	sess := x.NewSession()
-	defer sess.Close()
-	if err = sess.Begin(); err != nil {
-		return err
+	err = db.Delete(track).Error
+	if err != nil {
+		return fmt.Errorf("Delete track: %v", err)
 	}
 
-	if _, err = sess.Delete(&Track{ID: trackID}); err != nil {
-		return fmt.Errorf("sess.Delete Track: %v", err)
-	}
-
-	if hasTrackInfo {
-		if _, err = sess.Delete(&TrackInfo{ID: trackInfo.ID}); err != nil {
-			return fmt.Errorf("sess.Delete TrackInfo: %v", err)
-		}
-	}
-
-	if err = sess.Commit(); err != nil {
-		return fmt.Errorf("Commit: %v", err)
+	err = db.Delete(trackInfo).Error
+	if err != nil {
+		return fmt.Errorf("Delete track info: %v", err)
 	}
 
 	log.Infof("Deleted track record for %d/%s", track.ID, track.Title)

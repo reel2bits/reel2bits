@@ -3,89 +3,69 @@ package models
 import (
 	"dev.sigpipe.me/dashie/reel2bits/models/errors"
 	"fmt"
-	"github.com/go-xorm/xorm"
 	"github.com/gosimple/slug"
+	"github.com/jinzhu/gorm"
 	log "github.com/sirupsen/logrus"
-	"time"
 )
 
 // Album database structure
 type Album struct {
-	ID     int64 `xorm:"pk autoincr"`
-	UserID int64
+	gorm.Model
+
+	UserID uint
+	User   User
 
 	Name        string
-	Description string `xorm:"TEXT"`
+	Description string `gorm:"TEXT"`
 	Slug        string
 
 	// Permissions
-	IsPrivate bool `xorm:"DEFAULT 0"`
-
-	Created     time.Time `xorm:"-"`
-	CreatedUnix int64
-	Updated     time.Time `xorm:"-"`
-	UpdatedUnix int64
-
-	// Relations
-	// 	UserID
+	IsPrivate bool `gorm:"DEFAULT 0"`
 }
 
-// BeforeInsert set times and default states
-func (album *Album) BeforeInsert() {
-	album.CreatedUnix = time.Now().Unix()
-	album.UpdatedUnix = album.CreatedUnix
+// BeforeSave Create slug
+func (album *Album) BeforeSave() (err error) {
 	album.Slug = slug.Make(album.Name)
-
+	return nil
 }
 
-// BeforeUpdate set times
-func (album *Album) BeforeUpdate() {
-	album.UpdatedUnix = time.Now().Unix()
+// BeforeUpdate Update slug
+func (album *Album) BeforeUpdate() (err error) {
 	album.Slug = slug.Make(album.Name)
+	return nil
 }
 
-// AfterSet set times
-func (album *Album) AfterSet(colName string, _ xorm.Cell) {
-	switch colName {
-	case "created_unix":
-		album.Created = time.Unix(album.CreatedUnix, 0).Local()
-	case "updated_unix":
-		album.Updated = time.Unix(album.UpdatedUnix, 0).Local()
-	}
-}
-
-func (album *Album) getTracksCount(e Engine) (int64, error) {
-	return e.Where("album_id=?", album.ID).Count(new(Track))
+func (album *Album) getTracksCount(db *gorm.DB) (count int64, err error) {
+	db.Model(&Album{}).Select("id").Where("album_id = ?", album.ID).Count(&count)
+	return
 }
 
 // GetTracksCount 1+1=2
 func (album *Album) GetTracksCount() (int64, error) {
-	return album.getTracksCount(x)
+	return album.getTracksCount(db)
 }
 
-func isAlbumNameAlreadyExist(name string, userID int64) (bool, error) {
+func isAlbumNameAlreadyExist(db *gorm.DB, name string, userID uint) (exist bool, err error) {
 	if len(name) == 0 {
 		return true, fmt.Errorf("name is empty")
 	}
 	if userID < 0 {
-		return true, fmt.Errorf("wtf are you doing ?")
+		return true, fmt.Errorf("wtf are you doing")
 	}
 
-	exists, err := x.Get(&Album{UserID: userID, Name: name})
-	if err != nil {
-		return true, err
+	album := Album{}
+	err = db.Where(&Album{UserID: userID, Name: name}).First(&album).Error
+	if gorm.IsRecordNotFoundError(err) || album.ID == 0 {
+		return false, nil
+	} else if err != nil {
+		return false, nil
 	}
-
-	if exists {
-		return true, nil
-	}
-
-	return false, nil
+	return true, nil
 }
 
 // CreateAlbum or error
 func CreateAlbum(a *Album) (err error) {
-	albumNameAlreadyExist, err := isAlbumNameAlreadyExist(a.Name, a.UserID)
+	albumNameAlreadyExist, err := isAlbumNameAlreadyExist(db, a.Name, a.UserID)
 	if err != nil {
 		return err
 	}
@@ -93,60 +73,87 @@ func CreateAlbum(a *Album) (err error) {
 		return ErrAlbumNameAlreadyExist{}
 	}
 
-	sess := x.NewSession()
-	defer sess.Close()
-	if err = sess.Begin(); err != nil {
+	tx := db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if tx.Error != nil {
 		return err
 	}
 
-	if _, err = sess.Insert(a); err != nil {
+	if err := tx.Create(a).Error; err != nil {
+		tx.Rollback()
 		return err
 	}
 
-	return sess.Commit()
+	if err := tx.Commit().Error; err != nil {
+		return err
+	}
+
+	return err
 }
 
-func updateAlbum(e Engine, a *Album) error {
-	_, err := e.Id(a.ID).AllCols().Update(a)
+func updateAlbum(db *gorm.DB, a *Album) (err error) {
+	tx := db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if tx.Error != nil {
+		return err
+	}
+
+	if err := tx.Save(a).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return err
+	}
+
 	return err
 }
 
 // UpdateAlbum Update an Album
 func UpdateAlbum(a *Album) error {
-	return updateAlbum(x, a)
+	return updateAlbum(db, a)
 }
 
-func getAlbumByID(e Engine, id int64) (*Album, error) {
-	t := new(Album)
-	has, err := e.Id(id).Get(t)
-	if err != nil {
-		return nil, err
-	} else if !has {
-		return nil, errors.AlbumNotExist{AlbumID: id, Name: ""}
+func getAlbumByID(id uint) (album Album, err error) {
+	err = db.Preload("User").Where("id = ?", id).First(&album).Error
+	if gorm.IsRecordNotFoundError(err) || album.ID == 0 {
+		return album, errors.AlbumNotExist{AlbumID: id, Name: ""}
+	} else if err != nil {
+		return album, err
 	}
-	return t, nil
+	return
 }
 
 // GetAlbumByID or error
-func GetAlbumByID(id int64) (*Album, error) {
-	return getAlbumByID(x, id)
+func GetAlbumByID(id uint) (Album, error) {
+	return getAlbumByID(id)
 }
 
 // GetAlbumBySlugAndUserID or error
-func GetAlbumBySlugAndUserID(id int64, slug string) (*Album, error) {
-	album := &Album{Slug: slug, UserID: id}
-	has, err := x.Get(album)
-	if err != nil {
-		return nil, err
-	} else if !has {
-		return nil, errors.AlbumNotExist{AlbumID: id, Name: ""}
+func GetAlbumBySlugAndUserID(id uint, slug string) (album Album, err error) {
+	err = db.Where(&Album{UserID: id, Slug: slug}).First(&album).Error
+	if gorm.IsRecordNotFoundError(err) || album.ID == 0 {
+		return album, errors.AlbumNotExist{AlbumID: id, Name: ""}
+	} else if err != nil {
+		return album, err
 	}
-	return album, nil
+	return
 }
 
 // AlbumOptions structure
 type AlbumOptions struct {
-	UserID      int64
+	UserID      uint
 	WithPrivate bool
 	GetAll      bool
 	Page        int
@@ -154,99 +161,74 @@ type AlbumOptions struct {
 }
 
 // GetAlbums or nothing
-func GetAlbums(opts *AlbumOptions) (albums []*Album, _ int64, _ error) {
+func GetAlbums(opts *AlbumOptions) (albums []Album, itemsCount int64, err error) {
 	if opts.Page <= 0 {
 		opts.Page = 1
 	}
-	albums = make([]*Album, 0, opts.PageSize)
 
-	sess := x.Where("is_private=?", false)
+	albums = make([]Album, 0, opts.PageSize)
+
+	tx := db.Preload("User").Order("created_at ASC").Offset((opts.Page - 1) * opts.PageSize).Limit(opts.PageSize)
 
 	if opts.WithPrivate && !opts.GetAll {
-		sess.Or("is_private=?", true)
+		tx = tx.Or("is_private = ?", true)
 	}
 
 	if !opts.GetAll {
-		sess.And("user_id=?", opts.UserID)
+		tx = tx.Where("user_id = ?", opts.UserID)
 	}
 
-	sess.Desc("album.created_unix")
+	err = tx.Find(&albums).Error
+	tx.Count(&itemsCount)
 
-	var countSess xorm.Session
-	countSess = *sess
-	count, err := countSess.Count(new(Album))
-	if err != nil {
-		return nil, 0, fmt.Errorf("Count: %v", err)
-	}
-
-	sess.Table(&Album{})
-
-	return albums, count, sess.Limit(opts.PageSize, (opts.Page-1)*opts.PageSize).Find(&albums)
+	return albums, itemsCount, err
 }
 
-func getTracksAndDeassociate(albumID int64) error {
+func getTracksAndDeassociate(albumID uint) error {
 	tracks, err := GetAlbumTracks(albumID, false)
 	if err != nil {
 		return err
 	}
+	// 0 should be considered as "deassociated"
 	for _, track := range tracks {
-		track.Track.AlbumID = -1
-		track.Track.AlbumOrder = -1
-		err := UpdateTrack(&track.Track)
+		track.AlbumID = 0
+		track.AlbumOrder = 0
+		err := UpdateTrack(&track)
 		if err != nil {
-			log.Errorf("Deassociating album %d from track %d: %s", albumID, track.Track.ID, err)
+			log.Errorf("Deassociating album %d from track %d: %s", albumID, track.ID, err)
 		}
 	}
 	return nil
 }
 
 // DeleteAlbum delete album
-func DeleteAlbum(albumID int64, userID int64) error {
+func DeleteAlbum(albumID uint, userID uint) (err error) {
 	// Get album
-	album := &Album{ID: albumID, UserID: userID}
-	hasAlbum, err := x.Get(album)
-	if err != nil {
-		return err
-	} else if !hasAlbum {
+	album := &Album{}
+	err = db.Preload("User").Where("id = ? AND user_id = ?", albumID, userID).First(&album).Error
+	if gorm.IsRecordNotFoundError(err) || album.ID == 0 {
 		return errors.AlbumNotExist{AlbumID: albumID, Name: ""}
+	} else if err != nil {
+		return err
 	}
 
 	if err = getTracksAndDeassociate(album.ID); err != nil {
 		log.Errorf("Error while deassociating tracks of album %d: %s", albumID, err)
 	}
 
-	sess := x.NewSession()
-	defer sess.Close()
-	if err = sess.Begin(); err != nil {
-		return err
-	}
-
-	if _, err = sess.Delete(&Album{ID: albumID}); err != nil {
-		return fmt.Errorf("sess.Delete Album: %v", err)
-	}
-
-	if err = sess.Commit(); err != nil {
-		return fmt.Errorf("Commit: %v", err)
-	}
-
-	log.Infof("Deleted album for %d/%s", album.ID, album.Name)
-
-	return nil
+	log.Infof("Deleted album %d/%s", album.ID, album.Name)
+	return db.Delete(album).Error
 }
 
 // GetMapNameIDOfAlbums returns a []Album of albums
-func GetMapNameIDOfAlbums(userID int64) (sets []Album, err error) {
-	err = x.Table(&Album{}).Cols("id", "name").Where("user_id=?", userID).Find(&sets)
-	if err != nil {
-		log.Errorf("Cannot get albums for user id %d: %s", userID, err)
-	}
-	return sets, err
+func GetMapNameIDOfAlbums(userID uint) (sets []Album, err error) {
+	err = db.Model(&Album{}).Select("id", "name").Where("user_id = ?", userID).Find(&sets).Error
+	return
 }
 
 // GetCountOfAlbumTracks to be used when album.CountTracksblahblah() cannot be used
 // To be deprecated at some point
-func GetCountOfAlbumTracks(albumID int64) (count int64, err error) {
-	track := new(Track)
-	count, err = x.Where("album_id=?", albumID).Count(track)
+func GetCountOfAlbumTracks(albumID uint) (count int64, err error) {
+	err = db.Model(&Track{}).Where("album_id = ?", albumID).Count(&count).Error
 	return
 }

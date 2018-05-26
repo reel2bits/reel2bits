@@ -12,7 +12,7 @@ type TrackUpload struct {
 	Description string `form:"description"`
 	IsPrivate   bool
 	ShowDlLink  bool
-	Album       int64
+	Album       uint
 	File        *multipart.FileHeader `form:"file" binding:"Required;OnlyAudioFile"`
 }
 
@@ -38,7 +38,7 @@ type TrackEdit struct {
 	Description string `form:"description"`
 	IsPrivate   bool
 	ShowDlLink  bool
-	Album       int64
+	Album       uint
 }
 
 // Validate the form

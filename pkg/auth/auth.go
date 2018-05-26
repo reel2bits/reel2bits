@@ -14,13 +14,13 @@ import (
 	"gopkg.in/macaron.v1"
 )
 
-// IsAPIPath bool if url is API path /api/
+// IsAPIPath or not ?
 func IsAPIPath(url string) bool {
 	return strings.HasPrefix(url, "/api/")
 }
 
 // SignedInID returns the id of signed in user.
-func SignedInID(ctx *macaron.Context, sess session.Store) int64 {
+func SignedInID(ctx *macaron.Context, sess session.Store) uint {
 	if !models.HasEngine {
 		return 0
 	}
@@ -29,7 +29,7 @@ func SignedInID(ctx *macaron.Context, sess session.Store) int64 {
 	if uid == nil {
 		return 0
 	}
-	if id, ok := uid.(int64); ok {
+	if id, ok := uid.(uint); ok {
 		if _, err := models.GetUserByID(id); err != nil {
 			if !errors.IsUserNotExist(err) {
 				log.Errorf("GetUserByID: %v", err)
@@ -43,21 +43,21 @@ func SignedInID(ctx *macaron.Context, sess session.Store) int64 {
 
 // SignedInUser returns the user object of signed user.
 // It returns a bool value to indicate whether user uses basic auth or not.
-func SignedInUser(ctx *macaron.Context, sess session.Store) (*models.User, bool) {
+func SignedInUser(ctx *macaron.Context, sess session.Store) (user models.User, basicAuth bool) {
 	if !models.HasEngine {
-		return nil, false
+		return user, false
 	}
 
 	uid := SignedInID(ctx, sess)
 
 	if uid <= 0 {
-		return nil, false
+		return user, false
 	}
 
 	u, err := models.GetUserByID(uid)
 	if err != nil {
 		log.Errorf("GetUserById: %v", err)
-		return nil, false
+		return u, false
 	}
 	return u, false
 }

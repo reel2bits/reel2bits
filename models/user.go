@@ -10,146 +10,140 @@ import (
 	"fmt"
 	"github.com/Unknwon/com"
 	"github.com/gosimple/slug"
+	"github.com/jinzhu/gorm"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/crypto/pbkdf2"
 	"strings"
-	"time"
 	"unicode/utf8"
 )
 
-// User database structure
+// User struct
 type User struct {
-	ID        int64  `xorm:"pk autoincr"`
-	UserName  string `xorm:"UNIQUE NOT NULL"`
-	LowerName string `xorm:"UNIQUE NOT NULL"`
-	Email     string `xorm:"NOT NULL"`
+	gorm.Model
+	UserName  string `gorm:"UNIQUE;NOT NULL"`
+	LowerName string `gorm:"UNIQUE;NOT NULL"`
+	Email     string `gorm:"NOT NULL"`
 
-	Slug string `xorm:"UNIQUE"`
+	Password string `gorm:"NOT NULL"`
+	Rands    string `gorm:"Size:10"`
+	Salt     string `gorm:"Size:10"`
 
-	Password string `xorm:"NOT NULL"`
-	Rands    string `xorm:"VARCHAR(10)"`
-	Salt     string `xorm:"VARCHAR(10)"`
+	Slug string `gorm:"UNIQUE"`
 
 	// Permissions
-	IsAdmin  bool `xorm:"DEFAULT 0"`
-	IsActive bool `xorm:"DEFAULT 0"`
-
-	Created     time.Time `xorm:"-"`
-	CreatedUnix int64
-	Updated     time.Time `xorm:"-"`
-	UpdatedUnix int64
-
-	// Relations
-	// 	Track
+	IsAdmin  bool `gorm:"DEFAULT:0"`
+	IsActive bool `gorm:"DEFAULT:0"`
 }
 
-// BeforeInsert set times and slug
-func (user *User) BeforeInsert() {
-	user.CreatedUnix = time.Now().Unix()
-	user.UpdatedUnix = user.CreatedUnix
+// BeforeSave Create slug
+func (user *User) BeforeSave() (err error) {
 	user.Slug = slug.Make(user.UserName)
+	return nil
 }
 
-// BeforeUpdate set times
-func (user *User) BeforeUpdate() {
-	user.UpdatedUnix = time.Now().Unix()
+// BeforeUpdate Update slug
+func (user *User) BeforeUpdate() (err error) {
 	user.Slug = slug.Make(user.UserName)
+	return nil
 }
 
-func countUsers(e Engine) int64 {
-	count, _ := x.Count(new(User))
-	return count
+func countUsers(db *gorm.DB) (count int64) {
+	db.Model(&User{}).Select("id").Count(&count)
+	return
 }
 
 // CountUsers returns number of users.
 func CountUsers() int64 {
-	return countUsers(x)
-}
-
-func getUserByID(e Engine, id int64) (*User, error) {
-	u := new(User)
-	has, err := e.Id(id).Get(u)
-	if err != nil {
-		return nil, err
-	} else if !has {
-		return nil, errors.UserNotExist{UserID: id, Name: ""}
-	}
-	return u, nil
-}
-
-// GetUserByID returns the user object by given ID if exists.
-func GetUserByID(id int64) (*User, error) {
-	return getUserByID(x, id)
-}
-
-// GetUserByName returns user by given name.
-func GetUserByName(name string) (*User, error) {
-	if len(name) == 0 {
-		return nil, errors.UserNotExist{UserID: 0, Name: name}
-	}
-	u := &User{LowerName: strings.ToLower(name)}
-	has, err := x.Get(u)
-	if err != nil {
-		return nil, err
-	} else if !has {
-		return nil, errors.UserNotExist{UserID: 0, Name: name}
-	}
-	return u, nil
-}
-
-// GetUserByEmail returns the user object by given e-mail if exists.
-func GetUserByEmail(email string) (*User, error) {
-	if len(email) == 0 {
-		return nil, errors.UserNotExist{UserID: 0, Name: "email"}
-	}
-
-	email = strings.ToLower(email)
-	user := &User{Email: email}
-	has, err := x.Get(user)
-	if err != nil {
-		return nil, err
-	}
-	if has {
-		return user, nil
-	}
-
-	return nil, errors.UserNotExist{UserID: 0, Name: email}
+	return countUsers(db)
 }
 
 // GetUserBySlug or error
-func GetUserBySlug(slug string) (*User, error) {
-	if len(slug) == 0 {
-		return nil, errors.UserNotExist{UserID: 0, Name: "slug"}
+func GetUserBySlug(slug string) (user User, err error) {
+	err = db.Where(&User{Slug: slug}).First(&user).Error
+	if gorm.IsRecordNotFoundError(err) || user.ID == 0 {
+		return user, errors.UserNotExist{UserID: 0, Name: slug}
+	} else if err != nil {
+		return user, err
 	}
+	return
+}
 
-	user := &User{Slug: slug}
-	has, err := x.Get(user)
-	if err != nil {
-		return nil, err
+func getUserByID(id uint) (user User, err error) {
+	err = db.Where("id = ?", id).First(&user).Error
+	if gorm.IsRecordNotFoundError(err) || user.ID == 0 {
+		return user, errors.UserNotExist{UserID: id, Name: ""}
+	} else if err != nil {
+		return user, err
 	}
-	if has {
-		return user, nil
-	}
+	return
+}
 
-	return nil, errors.UserNotExist{UserID: 0, Name: slug}
+// GetUserByID returns the user object by given ID if exists.
+func GetUserByID(id uint) (User, error) {
+	return getUserByID(id)
+}
+
+// GetUserByName returns user by given name.
+func GetUserByName(name string) (user User, err error) {
+	if len(name) == 0 {
+		return user, errors.UserNotExist{UserID: 0, Name: name}
+	}
+	err = db.Where("lower_name = ?", strings.ToLower(name)).First(&user).Error
+	if gorm.IsRecordNotFoundError(err) || user.ID == 0 {
+		return user, errors.UserNotExist{UserID: 0, Name: name}
+	} else if err != nil {
+		return user, err
+	}
+	return
+}
+
+// GetUserByEmail returns the user object by given e-mail if exists.
+func GetUserByEmail(email string) (user User, err error) {
+	if len(email) == 0 {
+		return user, errors.UserNotExist{UserID: 0, Name: email}
+	}
+	err = db.Where("email = ?", strings.ToLower(email)).First(&user).Error
+	if gorm.IsRecordNotFoundError(err) || user.ID == 0 {
+		return user, errors.UserNotExist{UserID: 0, Name: email}
+	} else if err != nil {
+		return user, err
+	}
+	return
 }
 
 // IsUserExist checks if given user name exist,
 // the user name should be noncased unique.
 // If uid is presented, then check will rule out that one,
 // it is used when update a user name in settings page.
-func IsUserExist(uid int64, name string) (bool, error) {
+func IsUserExist(uid int64, name string) (exist bool, err error) {
 	if len(name) == 0 {
 		return false, nil
 	}
-	return x.Where("id != ?", uid).Get(&User{LowerName: strings.ToLower(name)})
+	user := User{}
+	err = db.Where("id != ?", uid).Where(&User{LowerName: strings.ToLower(name)}).First(&user).Error
+	if gorm.IsRecordNotFoundError(err) || user.ID == 0 {
+		return false, nil
+	} else if err != nil {
+		return false, nil
+	}
+	return true, nil
+}
+
+// GetFirstUser only
+func GetFirstUser() (user User, err error) {
+	err = db.Order("id ASC").First(&user).Error
+	if gorm.IsRecordNotFoundError(err) || user.ID == 0 {
+		return user, errors.UserNotExist{UserID: 1, Name: ""}
+	} else if err != nil {
+		return user, err
+	}
+	return
 }
 
 var (
-	reservedUsernames = []string{"anon", "anonymous", "private", "assets", "css", "img", "js", "less",
-		"plugins", "debug", "raw", "install", "api", "avatar", "user", "org", "help", "stars", "issues",
-		"pulls", "commits", "repo", "template", "admin", "new", "track", "album", "set", "upload",
-		".", ".."}
+	reservedUsernames = []string{"anon", "anonymous", "private", "assets", "css", "img", "js", "less", "plugins",
+		"debug", "raw", "install", "api", "avatar", "user", "org", "help", "stars", "issues", "pulls",
+		"commits", "repo", "template", "admin", "new", ".", ".."}
 	reservedUserPatterns = []string{"*.keys"}
 )
 
@@ -201,105 +195,131 @@ func GetUserSalt() (string, error) {
 	return tool.RandomString(10)
 }
 
-// CreateUser a new user and do some validation
-func CreateUser(u *User) (err error) {
-	if err = IsUsableUsername(u.UserName); err != nil {
+// CreateUser and do some validation
+func CreateUser(user *User) (err error) {
+	if err = IsUsableUsername(user.UserName); err != nil {
 		return err
 	}
 
-	isExist, err := IsUserExist(0, u.UserName)
+	isExist, err := IsUserExist(0, user.UserName)
 	if err != nil {
 		return err
 	} else if isExist {
-		return ErrUserAlreadyExist{u.UserName}
+		return ErrUserAlreadyExist{user.UserName}
 	}
 
-	u.Email = strings.ToLower(u.Email)
-	u.LowerName = strings.ToLower(u.UserName)
+	user.Email = strings.ToLower(user.Email)
+	user.LowerName = strings.ToLower(user.UserName)
 
-	if u.Rands, err = GetUserSalt(); err != nil {
+	if user.Rands, err = GetUserSalt(); err != nil {
 		return err
 	}
-	if u.Salt, err = GetUserSalt(); err != nil {
+	if user.Salt, err = GetUserSalt(); err != nil {
 		return err
 	}
-	u.EncodePasswd()
+	user.EncodePasswd()
 
-	sess := x.NewSession()
-	defer sess.Close()
-	if err = sess.Begin(); err != nil {
+	tx := db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if tx.Error != nil {
 		return err
 	}
 
-	if _, err = sess.Insert(u); err != nil {
+	if err := tx.Create(user).Error; err != nil {
+		tx.Rollback()
 		return err
 	}
 
-	return sess.Commit()
-}
+	if err := tx.Commit().Error; err != nil {
+		return err
+	}
 
-func updateUser(e Engine, u *User) error {
-	u.LowerName = strings.ToLower(u.UserName)
-	u.Email = strings.ToLower(u.Email)
-	_, err := e.Id(u.ID).AllCols().Update(u)
 	return err
 }
 
-// UpdateUser an user
+// Update an user
+func updateUser(db *gorm.DB, user *User) (err error) {
+	tx := db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if tx.Error != nil {
+		return err
+	}
+
+	if err := tx.Save(user).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return err
+	}
+
+	return err
+}
+
+// UpdateUser with datas
 func UpdateUser(u *User) error {
-	return updateUser(x, u)
+	return updateUser(db, u)
 }
 
 // UserLogin validates user name and password.
-func UserLogin(username, password string) (*User, error) {
-	var user *User
+func UserLogin(username, password string) (user *User, err error) {
 	if strings.Contains(username, "@") {
 		user = &User{Email: strings.ToLower(username)}
 	} else {
 		user = &User{LowerName: strings.ToLower(username)}
 	}
 
-	hasUser, err := x.Get(user)
-	if err != nil {
+	err = db.Where(user).First(&user).Error
+	if gorm.IsRecordNotFoundError(err) {
+		return nil, errors.UserNotExist{UserID: user.ID, Name: user.UserName}
+	} else if err != nil {
 		return nil, err
 	}
 
-	if hasUser {
-		if user.ValidatePassword(password) {
-			return user, nil
-		}
-
-		return nil, errors.UserNotExist{UserID: user.ID, Name: user.UserName}
+	if user.ValidatePassword(password) {
+		return user, nil
 	}
 
 	return nil, errors.UserNotExist{UserID: user.ID, Name: user.UserName}
+
 }
 
 // get user by verify code
-func getVerifyUser(code string) (user *User) {
+func getVerifyUser(code string) (user User) {
 	if len(code) <= tool.TimeLimitCodeLength {
-		return nil
+		return user
 	}
 
 	// use tail hex username query user
 	hexStr := code[tool.TimeLimitCodeLength:]
 	if b, err := hex.DecodeString(hexStr); err == nil {
-		if user, err = GetUserByName(string(b)); user != nil {
+		if user, err = GetUserByName(string(b)); user.ID > 0 {
 			return user
 		} else if !errors.IsUserNotExist(err) {
 			log.Errorf("GetUserByName: %v", err)
 		}
 	}
 
-	return nil
+	return user
 }
 
 // VerifyUserActiveCode when active account
-func VerifyUserActiveCode(code string) (user *User) {
+func VerifyUserActiveCode(code string) (user User) {
 	// HARDCODED
 	minutes := 180
 
-	if user = getVerifyUser(code); user != nil {
+	if user = getVerifyUser(code); user.ID > 0 {
 		// time limit code
 		prefix := code[:tool.TimeLimitCodeLength]
 		data := com.ToStr(user.ID) + user.Email + user.LowerName + user.Password + user.Rands
@@ -308,7 +328,7 @@ func VerifyUserActiveCode(code string) (user *User) {
 			return user
 		}
 	}
-	return nil
+	return user
 }
 
 // GenerateEmailActivateCode generates an activate code based on user information and given e-mail.
@@ -331,27 +351,32 @@ type mailerUser struct {
 	user *User
 }
 
-func (mu mailerUser) ID() int64 {
-	return mu.user.ID
+// ID id
+func (mUser mailerUser) ID() uint {
+	return mUser.user.ID
 }
 
-func (mu mailerUser) Email() string {
-	return mu.user.Email
+// Email func
+func (mUser mailerUser) Email() string {
+	return mUser.user.Email
 }
 
-func (mu mailerUser) DisplayName() string {
-	return mu.user.UserName
+// DisplayName func
+func (mUser mailerUser) DisplayName() string {
+	return mUser.user.UserName
 }
 
-func (mu mailerUser) GenerateActivateCode() string {
-	return mu.user.GenerateActivateCode()
+// GenerateActivateCode func
+func (mUser mailerUser) GenerateActivateCode() string {
+	return mUser.user.GenerateActivateCode()
 }
 
-func (mu mailerUser) GenerateEmailActivateCode(email string) string {
-	return mu.user.GenerateEmailActivateCode(email)
+// GenerateEmailActivateCode func
+func (mUser mailerUser) GenerateEmailActivateCode(email string) string {
+	return mUser.user.GenerateEmailActivateCode(email)
 }
 
-// NewMailerUser initiate a new mailer for the user
+// NewMailerUser mail user
 func NewMailerUser(u *User) mailer.User {
 	return mailerUser{u}
 }

@@ -2,22 +2,22 @@ package models
 
 import (
 	"dev.sigpipe.me/dashie/reel2bits/models/errors"
-	"github.com/go-xorm/xorm"
+	"github.com/jinzhu/gorm"
 	"time"
 )
 
 // TrackInfo database structure
 type TrackInfo struct {
-	ID      int64  `xorm:"pk autoincr"`
-	Hash    string `xorm:"UNIQUE NOT NULL"`
-	TrackID int64  `xorm:"INDEX"`
+	gorm.Model
+
+	Hash string `gorm:"UNIQUE NOT NULL"`
 
 	Duration    float64
 	Format      string // used only for wave, samplewidth * 8
 	Rate        int    // samplerate, all
 	Channels    int    // all
 	Codec       string // WAV: PCM, Mp3: encoder infos
-	Waveform    string `xorm:"TEXT"`
+	Waveform    string `gorm:"TEXT"`
 	WaveformErr string
 	Bitrate     int    // 320, 128, etc.
 	BitrateMode string // VBR, CBR, ... ?
@@ -25,21 +25,13 @@ type TrackInfo struct {
 	TypeHuman   string // Mpeg 3, Ogg Vorbis, ...
 
 	// Theses two uses the ProcessingX const states
-	ProcessedBasic    int `xorm:"DEFAULT 0"`
-	ProcessedWaveform int `xorm:"DEFAULT 0"`
+	ProcessedBasic    int `gorm:"DEFAULT 0"`
+	ProcessedWaveform int `gorm:"DEFAULT 0"`
 
-	ProcessingStart     time.Time `xorm:"-"`
+	ProcessingStart     time.Time `gorm:"-"`
 	ProcessingStartUnix int64
-	ProcessingStop      time.Time `xorm:"-"`
+	ProcessingStop      time.Time `gorm:"-"`
 	ProcessingStopUnix  int64
-
-	Created     time.Time `xorm:"-"`
-	CreatedUnix int64
-	Updated     time.Time `xorm:"-"`
-	UpdatedUnix int64
-
-	// Relations
-	// 	TrackID
 }
 
 // Waveform is the JSON reflected structure
@@ -51,68 +43,78 @@ type Waveform struct {
 	Data            []int64
 }
 
-// BeforeInsert set times
-func (track *TrackInfo) BeforeInsert() {
-	track.CreatedUnix = time.Now().Unix()
-	track.UpdatedUnix = track.CreatedUnix
-}
-
-// BeforeUpdate set times
-func (track *TrackInfo) BeforeUpdate() {
-	track.UpdatedUnix = time.Now().Unix()
-}
-
-// AfterSet set times
-func (track *TrackInfo) AfterSet(colName string, _ xorm.Cell) {
-	switch colName {
-	case "created_unix":
-		track.Created = time.Unix(track.CreatedUnix, 0).Local()
-	case "updated_unix":
-		track.Updated = time.Unix(track.UpdatedUnix, 0).Local()
-	case "processing_start_unix":
-		track.ProcessingStart = time.Unix(track.ProcessingStartUnix, 0).Local()
-	case "processing_stop_unix":
-		track.ProcessingStop = time.Unix(track.ProcessingStopUnix, 0).Local()
-	}
+// AfterFind set times
+func (track *TrackInfo) AfterFind() {
+	track.ProcessingStart = time.Unix(track.ProcessingStartUnix, 0).Local()
+	track.ProcessingStop = time.Unix(track.ProcessingStopUnix, 0).Local()
+	return
 }
 
 // CreateTrackInfo or error
 func CreateTrackInfo(t *TrackInfo) (err error) {
-	sess := x.NewSession()
-	defer sess.Close()
-	if err = sess.Begin(); err != nil {
+	tx := db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if tx.Error != nil {
 		return err
 	}
 
-	if _, err = sess.Insert(t); err != nil {
+	if err := tx.Create(t).Error; err != nil {
+		tx.Rollback()
 		return err
 	}
 
-	return sess.Commit()
+	if err := tx.Commit().Error; err != nil {
+		return err
+	}
+
+	return err
 }
 
-func updateTrackInfo(e Engine, t *TrackInfo) error {
-	_, err := e.Id(t.ID).AllCols().Update(t)
+func updateTrackInfo(t *TrackInfo) (err error) {
+	tx := db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if tx.Error != nil {
+		return err
+	}
+
+	if err := tx.Save(t).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return err
+	}
+
 	return err
 }
 
 // UpdateTrackInfo a TrackInfo
 func UpdateTrackInfo(t *TrackInfo) error {
-	return updateTrackInfo(x, t)
+	return updateTrackInfo(t)
 }
 
-func getTrackInfoByID(e Engine, id int64) (*TrackInfo, error) {
-	t := new(TrackInfo)
-	has, err := e.Id(id).Get(t)
-	if err != nil {
-		return nil, err
-	} else if !has {
-		return nil, errors.TrackInfoNotExist{TrackInfoID: id}
+func getTrackInfoByID(id uint) (trackInfo TrackInfo, err error) {
+	err = db.Where("id = ?", id).First(&trackInfo).Error
+	if gorm.IsRecordNotFoundError(err) || trackInfo.ID == 0 {
+		return trackInfo, errors.TrackInfoNotExist{TrackInfoID: id}
+	} else if err != nil {
+		return trackInfo, err
 	}
-	return t, nil
+	return
 }
 
 // GetTrackInfoByID or error
-func GetTrackInfoByID(id int64) (*TrackInfo, error) {
-	return getTrackInfoByID(x, id)
+func GetTrackInfoByID(id uint) (TrackInfo, error) {
+	return getTrackInfoByID(id)
 }

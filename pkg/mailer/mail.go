@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"html/template"
 
+	"github.com/leonelquinteros/gotext"
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/gomail.v2"
 	"gopkg.in/macaron.v1"
@@ -53,7 +54,7 @@ func SendTestMail(email string) error {
 
 // User is email user
 type User interface {
-	ID() int64
+	ID() uint
 	DisplayName() string
 	Email() string
 	GenerateActivateCode() string
@@ -82,12 +83,12 @@ func SendUserMail(c *macaron.Context, u User, tpl, code, subject, info string) {
 
 // SendActivateAccountMail when activating account
 func SendActivateAccountMail(c *macaron.Context, u User) {
-	SendUserMail(c, u, tmplMailAuthActivate, u.GenerateActivateCode(), c.Tr("mail.activate_account"), "activate account")
+	SendUserMail(c, u, tmplMailAuthActivate, u.GenerateActivateCode(), gotext.Get("Please activate your account"), "activate account")
 }
 
 // SendResetPasswordMail when resetting password
 func SendResetPasswordMail(c *macaron.Context, u User) {
-	SendUserMail(c, u, tmplMailAuthResetPassword, u.GenerateActivateCode(), c.Tr("mail.reset_password"), "reset password")
+	SendUserMail(c, u, tmplMailAuthResetPassword, u.GenerateActivateCode(), gotext.Get("Reset your password"), "reset password")
 }
 
 // SendActivateEmailMail sends confirmation email.
@@ -104,7 +105,7 @@ func SendActivateEmailMail(c *macaron.Context, u User, email string) {
 		return
 	}
 
-	msg := NewMessage([]string{email}, c.Tr("mail.activate_email"), body)
+	msg := NewMessage([]string{email}, gotext.Get("Verify your email address"), body)
 	msg.Info = fmt.Sprintf("UID: %d, activate email", u.ID())
 
 	SendAsync(msg)

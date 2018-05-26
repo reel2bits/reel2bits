@@ -17,7 +17,7 @@ func (err EmptyName) Error() string {
 
 // UserNotExist struct
 type UserNotExist struct {
-	UserID int64
+	UserID uint
 	Name   string
 }
 
@@ -29,19 +29,4 @@ func IsUserNotExist(err error) bool {
 
 func (err UserNotExist) Error() string {
 	return fmt.Sprintf("user does not exist [user_id: %d, name: %s]", err.UserID, err.Name)
-}
-
-// UserNotKeyOwner struct
-type UserNotKeyOwner struct {
-	KeyID int64
-}
-
-// IsUserNotKeyOwner bool
-func IsUserNotKeyOwner(err error) bool {
-	_, ok := err.(UserNotKeyOwner)
-	return ok
-}
-
-func (err UserNotKeyOwner) Error() string {
-	return fmt.Sprintf("user is not the owner of public key [key_id: %d]", err.KeyID)
 }

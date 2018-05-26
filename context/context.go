@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"github.com/go-macaron/cache"
 	"github.com/go-macaron/csrf"
-	"github.com/go-macaron/i18n"
 	"github.com/go-macaron/session"
+	"github.com/leonelquinteros/gotext"
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/macaron.v1"
 	"html/template"
@@ -27,15 +27,15 @@ type Context struct {
 	Flash   *session.Flash
 	Session session.Store
 
-	User *models.User // logged in user
+	User models.User // logged in user
 
 	IsLogged    bool
 	IsBasicAuth bool
 }
 
 // Title sets "Title" field in template data.
-func (c *Context) Title(locale string) {
-	c.Data["Title"] = c.Tr(locale) + " - " + setting.AppName
+func (c *Context) Title(title string) {
+	c.Data["Title"] = title
 }
 
 // PageIs sets "PageIsxxx" field in template data.
@@ -89,15 +89,15 @@ func (c *Context) RenderWithErr(msg, tpl string, f interface{}) {
 func (c *Context) Handle(status int, title string, err error) {
 	switch status {
 	case http.StatusNotFound:
-		c.Data["Title"] = c.Tr("error.page_not_found")
+		c.Data["Title"] = c.Gettext("Page Not Found")
 	case http.StatusInternalServerError:
-		c.Data["Title"] = c.Tr("internal_server_error")
+		c.Data["Title"] = c.Gettext("Internal Server Error")
 		log.Errorf("%s: %v", title, err)
 	}
 	c.HTML(status, fmt.Sprintf("status/%d", status))
 }
 
-// HandleText and not unicorns
+// HandleText only
 func (c *Context) HandleText(status int, title string) {
 	c.PlainText(status, []byte(title))
 }
@@ -129,7 +129,7 @@ func (c *Context) NotFoundOrServerError(title string, errck func(error) bool, er
 	c.ServerError(title, err)
 }
 
-// ServeContent serve contents, right
+// ServeContent headers
 func (c *Context) ServeContent(name string, r io.ReadSeeker, params ...interface{}) {
 	modtime := time.Now()
 	for _, p := range params {
@@ -148,7 +148,7 @@ func (c *Context) ServeContent(name string, r io.ReadSeeker, params ...interface
 	http.ServeContent(c.Resp, c.Req.Request, name, modtime, r)
 }
 
-// ServeContentNoDownload no download requested from browser
+// ServeContentNoDownload headers
 func (c *Context) ServeContentNoDownload(name string, mime string, r io.ReadSeeker, params ...interface{}) {
 	modtime := time.Now()
 	for _, p := range params {
@@ -165,9 +165,20 @@ func (c *Context) ServeContentNoDownload(name string, mime string, r io.ReadSeek
 	http.ServeContent(c.Resp, c.Req.Request, name, modtime, r)
 }
 
+// NGettext with plural
+func (c *Context) NGettext(str, plural string, n int, vars ...interface{}) string {
+	return gotext.GetN(str, plural, n, vars...)
+}
+
+// Gettext wraps around gotext.Get
+func (c *Context) Gettext(str string, vars ...interface{}) string {
+	return gotext.Get(str, vars...)
+}
+
 // Contexter initializes a classic context for a request.
 func Contexter() macaron.Handler {
-	return func(c *macaron.Context, l i18n.Locale, cache cache.Cache, sess session.Store, f *session.Flash, x csrf.CSRF) {
+	//return func(c *macaron.Context, l i18n.Locale, cache cache.Cache, sess session.Store, f *session.Flash, x csrf.CSRF) {
+	return func(c *macaron.Context, cache cache.Cache, sess session.Store, f *session.Flash, x csrf.CSRF) {
 		ctx := &Context{
 			Context: c,
 			Cache:   cache,
@@ -191,7 +202,9 @@ func Contexter() macaron.Handler {
 		// Get user from session if logined.
 		ctx.User, ctx.IsBasicAuth = auth.SignedInUser(ctx.Context, ctx.Session)
 
-		if ctx.User != nil {
+		log.Infof("user ID %d", ctx.User.ID)
+
+		if ctx.User.ID > 0 {
 			ctx.IsLogged = true
 			ctx.Data["IsLogged"] = ctx.IsLogged
 			ctx.Data["UserIsAdmin"] = ctx.User.IsAdmin

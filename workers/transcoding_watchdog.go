@@ -75,7 +75,7 @@ func TranscodingWatchdog() {
 		for _, qi := range queueTranscodingInfos {
 			arg := qi.Args[0]
 
-			var argValue int64
+			var argValue uint
 
 			if strings.HasPrefix(fmt.Sprintf("%T", arg.Value), "float") {
 				n, ok := arg.Value.(float64)
@@ -83,7 +83,7 @@ func TranscodingWatchdog() {
 					log.Errorf("Cannot convert to float64")
 					continue
 				}
-				argValue = int64(n)
+				argValue = uint(n)
 			}
 
 			if t.ID == argValue {

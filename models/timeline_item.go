@@ -2,58 +2,31 @@ package models
 
 import (
 	"dev.sigpipe.me/dashie/reel2bits/models/errors"
-	"fmt"
-	"github.com/go-xorm/xorm"
+	"github.com/jinzhu/gorm"
 	log "github.com/sirupsen/logrus"
-	"time"
 )
 
 // TimelineItem database structure
 type TimelineItem struct {
-	ID int64 `xorm:"pk autoincr"`
+	gorm.Model
 
-	UserID  int64 `xorm:"INDEX"`
-	TrackID int64 `xorm:"INDEX"`
-	AlbumID int64 `xorm:"INDEX"`
-
-	Created     time.Time `xorm:"-"`
-	CreatedUnix int64
-	Updated     time.Time `xorm:"-"`
-	UpdatedUnix int64
+	UserID  uint `gorm:"INDEX"`
+	User    User
+	TrackID uint `gorm:"INDEX"`
+	Track   Track
+	AlbumID uint `gorm:"INDEX"`
+	Album   Album
 }
 
-// BeforeInsert set times and slug
-func (timelineItem *TimelineItem) BeforeInsert() {
-	timelineItem.CreatedUnix = time.Now().Unix()
-	timelineItem.UpdatedUnix = timelineItem.CreatedUnix
-}
-
-// BeforeUpdate set times
-func (timelineItem *TimelineItem) BeforeUpdate() {
-	timelineItem.UpdatedUnix = time.Now().Unix()
-}
-
-// AfterSet set times
-func (timelineItem *TimelineItem) AfterSet(colName string, _ xorm.Cell) {
-	switch colName {
-	case "created_unix":
-		timelineItem.Created = time.Unix(timelineItem.CreatedUnix, 0).Local()
-	case "updated_unix":
-		timelineItem.Updated = time.Unix(timelineItem.UpdatedUnix, 0).Local()
+func isTimelineItemAlreadyExist(userID uint, trackID uint, albumID uint) (exist bool, err error) {
+	tli := TimelineItem{}
+	err = db.Where(&TimelineItem{UserID: userID, TrackID: trackID, AlbumID: albumID}).First(&tli).Error
+	if gorm.IsRecordNotFoundError(err) || tli.ID == 0 {
+		return false, nil
+	} else if err != nil {
+		return false, nil
 	}
-}
-
-func isTimelineItemAlreadyExist(userID int64, trackID int64, albumID int64) (bool, error) {
-	exists, err := x.Get(&TimelineItem{UserID: userID, TrackID: trackID, AlbumID: albumID})
-	if err != nil {
-		return true, err
-	}
-
-	if exists {
-		return true, nil
-	}
-
-	return false, nil
+	return true, nil
 }
 
 // CreateTimelineItem or error
@@ -66,50 +39,46 @@ func CreateTimelineItem(ti *TimelineItem) (err error) {
 		return ErrTimelineItemAlreadyExist{}
 	}
 
-	sess := x.NewSession()
-	defer sess.Close()
-	if err = sess.Begin(); err != nil {
+	tx := db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if tx.Error != nil {
 		return err
 	}
 
-	if _, err = sess.Insert(ti); err != nil {
+	if err := tx.Create(ti).Error; err != nil {
+		tx.Rollback()
 		return err
 	}
 
-	return sess.Commit()
+	if err := tx.Commit().Error; err != nil {
+		return err
+	}
+
+	return err
 }
 
 // DeleteTimelineItem delete an item from the timeline
-func DeleteTimelineItem(userID int64, trackID int64, albumID int64) error {
-	timelineItem := &TimelineItem{UserID: userID, TrackID: trackID, AlbumID: albumID}
-	hasTimelineItem, err := x.Get(timelineItem)
-	if err != nil {
-		return err
-	} else if !hasTimelineItem {
+func DeleteTimelineItem(userID uint, trackID uint, albumID uint) (err error) {
+	tli := TimelineItem{}
+	err = db.Where(&TimelineItem{UserID: userID, TrackID: trackID, AlbumID: albumID}).First(&tli).Error
+	if gorm.IsRecordNotFoundError(err) || tli.ID == 0 {
 		return errors.TimelineItemNotExist{UserID: userID, TrackID: trackID, AlbumID: albumID}
-	}
-
-	sess := x.NewSession()
-	defer sess.Close()
-	if err = sess.Begin(); err != nil {
+	} else if err != nil {
 		return err
-	}
-
-	if _, err = sess.Delete(&TimelineItem{UserID: userID, TrackID: trackID, AlbumID: albumID}); err != nil {
-		return fmt.Errorf("sess.Delete TimelineItem: %v", err)
-	}
-
-	if err = sess.Commit(); err != nil {
-		return fmt.Errorf("Commit: %v", err)
 	}
 
 	log.WithFields(log.Fields{
-		"UserID":  timelineItem.UserID,
-		"TrackID": timelineItem.TrackID,
-		"AlbumID": timelineItem.AlbumID,
+		"UserID":  tli.UserID,
+		"TrackID": tli.TrackID,
+		"AlbumID": tli.AlbumID,
 	}).Info("Deleted timeline item")
 
-	return nil
+	return db.Delete(tli).Error
 }
 
 // TimelineItemsOpts structure
@@ -119,20 +88,13 @@ type TimelineItemsOpts struct {
 }
 
 // GetTimelineItems with options for pagination
-func GetTimelineItems(opts *TimelineItemsOpts) (timelineItems []*TimelineItem, _ int64, _ error) {
+func GetTimelineItems(opts *TimelineItemsOpts) (timelineItems []TimelineItem, count int64, err error) {
 	if opts.Page <= 0 {
 		opts.Page = 1
 	}
-	timelineItems = make([]*TimelineItem, 0, opts.PageSize)
+	timelineItems = make([]TimelineItem, 0, opts.PageSize)
 
-	sess := x.Desc("created_unix")
-
-	var countSess xorm.Session
-	countSess = *sess
-	count, err := countSess.Count(new(Track))
-	if err != nil {
-		return nil, 0, fmt.Errorf("Count: %v", err)
-	}
-
-	return timelineItems, count, sess.Limit(opts.PageSize, (opts.Page-1)*opts.PageSize).Find(&timelineItems)
+	err = db.Order("created_at ASC").Offset((opts.Page - 1) * opts.PageSize).Limit(opts.PageSize).Find(&timelineItems).Error
+	db.Model(&TimelineItem{}).Select("id").Count(&count)
+	return timelineItems, count, err
 }

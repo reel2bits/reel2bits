@@ -114,13 +114,13 @@ func UploadPost(ctx *context.Context, f form.TrackUpload) {
 	if err != nil {
 		ctx.Flash.Error("Cannot initiate the worker connection, please retry again.")
 		if t.TranscodeNeeded {
-			err = models.UpdateTrackState(&models.Track{ID: t.ID, TranscodeState: models.ProcessingRetrying}, models.TrackTranscoding)
+			err = models.UpdateTrackState(t.ID, &models.Track{TranscodeState: models.ProcessingRetrying}, models.TrackTranscoding)
 			if err != nil {
 				log.Errorf("CreateServer: Error setting TranscodeState to ProcessingRetry for track %d: %s", t.ID, err)
 			}
 		}
 
-		err = models.UpdateTrackState(&models.Track{ID: t.ID, MetadatasState: models.ProcessingRetrying}, models.TrackMetadatas)
+		err = models.UpdateTrackState(t.ID, &models.Track{MetadatasState: models.ProcessingRetrying}, models.TrackMetadatas)
 		if err != nil {
 			log.Errorf("CreateServer: Error setting MetadatasState to ProcessingRetry for track %d: %s", t.ID, err)
 		}
@@ -129,12 +129,12 @@ func UploadPost(ctx *context.Context, f form.TrackUpload) {
 	if err != nil {
 		ctx.Flash.Error("Cannot push the worker job, the watchdog should take care of it.")
 		if t.TranscodeNeeded {
-			err = models.UpdateTrackState(&models.Track{ID: t.ID, TranscodeState: models.ProcessingRetrying}, models.TrackTranscoding)
+			err = models.UpdateTrackState(t.ID, &models.Track{TranscodeState: models.ProcessingRetrying}, models.TrackTranscoding)
 			if err != nil {
 				log.Errorf("SendTask: Error setting TranscodeState to ProcessingRetry for track %d: %s", t.ID, err)
 			}
 		}
-		err = models.UpdateTrackState(&models.Track{ID: t.ID, MetadatasState: models.ProcessingRetrying}, models.TrackMetadatas)
+		err = models.UpdateTrackState(t.ID, &models.Track{MetadatasState: models.ProcessingRetrying}, models.TrackMetadatas)
 		if err != nil {
 			log.Errorf("SendTask: Error setting MetadatasState to ProcessingRetry for track %d: %s", t.ID, err)
 		}
@@ -170,50 +170,24 @@ func Show(ctx *context.Context) {
 
 	// TODO check for track.ready
 
-	if len(track) < 1 {
-		track, err := models.GetTrackBySlugAndUserID(user.ID, ctx.Params(":trackSlug"))
-		if err != nil {
-			log.Errorf("Cannot get Track from slug %s and user %d: %s", ctx.Params(":trackSlug"), user.ID, err)
-			ctx.Flash.Error("Unknown track.")
-			ctx.SubURLRedirect(ctx.URLFor("home"), 404)
-			return
-		}
-		ctx.Data["track"] = track
-		ctx.Data["user"] = user
-		ctx.Data["Title"] = fmt.Sprintf("%s by %s - %s", track.Title, user.UserName, setting.AppName)
-		ctx.PageIs("TrackShowWait")
+	ctx.Data["track"] = track
+	ctx.Data["user"] = user
+	ctx.Data["Title"] = fmt.Sprintf("%s by %s - %s", track.Title, user.UserName, setting.AppName)
+	ctx.PageIs("TrackShow")
 
-		if track.AlbumID > 0 && track.AlbumOrder > 0 {
-			album, err := models.GetAlbumByID(track.AlbumID)
-			if err != nil {
-				log.Errorf("Cannot get album %d for track %d: %s", track.AlbumID, track.ID, err)
-				ctx.Flash.Error("Album error.")
-				ctx.SubURLRedirect(ctx.URLFor("home"), 404)
-			}
+	if track.AlbumID > 0 && track.AlbumOrder > 0 {
+		album, err := models.GetAlbumByID(track.AlbumID)
+		if err != nil {
+			log.Errorf("Cannot get album %d for track %d: %s", track.AlbumID, track.ID, err)
+			ctx.Flash.Error("Invalid album.")
+			//ctx.SubURLRedirect(ctx.URLFor("home"), 404)
+			ctx.Data["album"] = nil
+		} else {
 			ctx.Data["album"] = album
 		}
-
-		ctx.HTML(200, tmplShowWait)
-	} else {
-		ctx.Data["track"] = track[0]
-		ctx.Data["user"] = user
-		ctx.Data["Title"] = fmt.Sprintf("%s by %s - %s", track[0].Track.Title, user.UserName, setting.AppName)
-		ctx.PageIs("TrackShow")
-
-		if track[0].Track.AlbumID > 0 && track[0].Track.AlbumOrder > 0 {
-			album, err := models.GetAlbumByID(track[0].AlbumID)
-			if err != nil {
-				log.Errorf("Cannot get album %d for track %d: %s", track[0].AlbumID, track[0].Track.ID, err)
-				ctx.Flash.Error("Invalid album.")
-				//ctx.SubURLRedirect(ctx.URLFor("home"), 404)
-				ctx.Data["album"] = nil
-			} else {
-				ctx.Data["album"] = album
-			}
-		}
-
-		ctx.HTML(200, tmplShow)
 	}
+
+	ctx.HTML(200, tmplShow)
 }
 
 // DevGetMediaTrack [GET] DEV ONLY !
@@ -386,6 +360,7 @@ func ListUserTracks(ctx *context.Context) {
 }
 
 // DeleteTrack [POST]
+// FIXME: why is the form not used ?
 func DeleteTrack(ctx *context.Context, f form.TrackDelete) {
 	if ctx.HasError() {
 		ctx.JSONSuccess(map[string]interface{}{
@@ -458,24 +433,17 @@ func GetJSONWaveform(ctx *context.Context) {
 		return
 	}
 
-	soundInfos, err := models.GetTrackWithInfoBySlugAndUserID(user.ID, ctx.Params(":trackSlug"))
+	soundInfo, err := models.GetTrackWithInfoBySlugAndUserID(user.ID, ctx.Params(":trackSlug"))
 	if err != nil {
 		log.Errorf("Cannot get Track from slug %s and user %d: %s", ctx.Params(":trackSlug"), user.ID, err)
 		ctx.ServerError("Unknown track.", err)
 		return
 	}
 
-	if len(soundInfos) < 1 {
-		ctx.JSONSuccess(map[string]interface{}{
-			"error": "Cannot get Waveform",
-		})
-		return
-	}
-
-	if soundInfos[0].TrackInfo.Waveform != "" && soundInfos[0].TrackInfo.WaveformErr == "" {
+	if soundInfo.TrackInfo.Waveform != "" && soundInfo.TrackInfo.WaveformErr == "" {
 		// MERGE json from .TrackInfo.Waveform
 		var w models.Waveform
-		err := json.Unmarshal([]byte(soundInfos[0].TrackInfo.Waveform), &w)
+		err := json.Unmarshal([]byte(soundInfo.TrackInfo.Waveform), &w)
 
 		if err != nil {
 			log.Errorf("Cannot unmarshal waveform: %s", err)
@@ -486,15 +454,15 @@ func GetJSONWaveform(ctx *context.Context) {
 		}
 
 		soundType := "orig"
-		if soundInfos[0].Track.Mimetype != "audio/mpeg" {
+		if soundInfo.Mimetype != "audio/mpeg" {
 			soundType = "mp3"
 		}
 		ctx.JSONSuccess(map[string]interface{}{
 			"waveform":    w,
-			"track_url":   ctx.URLFor("media_track_stream", ":userSlug", user.Slug, ":trackSlug", soundInfos[0].Track.Slug, ":type", soundType),
-			"wf_png":      ctx.URLFor("media_track_waveform", ":userSlug", user.Slug, ":trackSlug", soundInfos[0].Track.Slug),
-			"title":       soundInfos[0].Track.Title,
-			"description": soundInfos[0].Track.Description,
+			"track_url":   ctx.URLFor("media_track_stream", ":userSlug", user.Slug, ":trackSlug", soundInfo.Slug, ":type", soundType),
+			"wf_png":      ctx.URLFor("media_track_waveform", ":userSlug", user.Slug, ":trackSlug", soundInfo.Slug),
+			"title":       soundInfo.Title,
+			"description": soundInfo.Description,
 		})
 		return
 	}
@@ -542,34 +510,13 @@ func Edit(ctx *context.Context) {
 	albums, _ := models.GetMapNameIDOfAlbums(ctx.User.ID)
 
 	ctx.Data["albums"] = albums
+	ctx.Data["track"] = track
+	ctx.Data["user"] = user
+	ctx.Data["Title"] = fmt.Sprintf("%s by %s - %s", track.Title, user.UserName, setting.AppName)
+	ctx.Data["cur_album"] = track.AlbumID
+	ctx.PageIs("TrackShowWait")
 
-	if len(track) < 1 {
-		track, err := models.GetTrackBySlugAndUserID(user.ID, ctx.Params(":trackSlug"))
-		if err != nil {
-			log.Errorf("Cannot get Track from slug %s and user %d: %s", ctx.Params(":trackSlug"), user.ID, err)
-			ctx.Flash.Error("Unknown track.")
-			ctx.SubURLRedirect(ctx.URLFor("home"), 404)
-			return
-		}
-		ctx.Data["track"] = track
-		ctx.Data["user"] = user
-		ctx.Data["Title"] = fmt.Sprintf("%s by %s - %s", track.Title, user.UserName, setting.AppName)
-		ctx.Data["cur_album"] = track.AlbumID
-		ctx.PageIs("TrackShowWait")
-
-		ctx.HTML(200, tmplShowWait)
-	} else {
-		ctx.Data["title"] = track[0].Title
-		ctx.Data["description"] = track[0].Description
-		ctx.Data["is_private"] = track[0].IsPrivate
-		ctx.Data["show_dl_link"] = track[0].ShowDlLink
-
-		ctx.Data["Title"] = fmt.Sprintf("%s by %s - %s", track[0].Track.Title, user.UserName, setting.AppName)
-		ctx.Data["cur_album"] = track[0].AlbumID
-		ctx.PageIs("TrackEdit")
-
-		ctx.HTML(200, tmplEdit)
-	}
+	ctx.HTML(200, tmplShowWait)
 }
 
 // EditPost [POST]
@@ -614,11 +561,12 @@ func EditPost(ctx *context.Context, f form.TrackEdit) {
 		}
 		track.AlbumOrder = count + 1 // if zero it will be Track 1, etc.
 	} else {
-		track.AlbumID = -1
-		track.AlbumOrder = -1
+		// zéro is considered as "unassociated"
+		track.AlbumID = 0
+		track.AlbumOrder = 0
 	}
 
-	err = models.UpdateTrack(track)
+	err = models.UpdateTrack(&track)
 	if err != nil {
 		switch {
 		default:

@@ -7,34 +7,34 @@ import (
 )
 
 const (
-	settingsProfile = "user/settings/profile"
+	tmplSettingsProfile = "user/settings/profile"
 )
 
-// Settings [GET]
+// Settings GET
 func Settings(ctx *context.Context) {
-	ctx.Title("settings.title")
+	ctx.Title(ctx.Gettext("User settings"))
 	ctx.PageIs("SettingsProfile")
 	ctx.Data["email"] = ctx.User.Email
-	ctx.Success(settingsProfile)
+	ctx.Success(tmplSettingsProfile)
 }
 
-// SettingsPost [POST]
+// SettingsPost POST
 func SettingsPost(ctx *context.Context, f form.UpdateSettingsProfile) {
-	ctx.Title("settings.title")
+	ctx.Title(ctx.Gettext("User settings"))
 	ctx.PageIs("SettingsProfile")
 	ctx.Data["origin_name"] = ctx.User.UserName
 
 	if ctx.HasError() {
-		ctx.Success(settingsProfile)
+		ctx.Success(tmplSettingsProfile)
 		return
 	}
 
 	ctx.User.Email = f.Email
-	if err := models.UpdateUser(ctx.User); err != nil {
+	if err := models.UpdateUser(&ctx.User); err != nil {
 		ctx.ServerError("UpdateUser", err)
 		return
 	}
 
-	ctx.Flash.Success(ctx.Tr("settings.update_profile_success"))
-	ctx.SubURLRedirect(ctx.URLFor("user_settings"))
+	ctx.Flash.Success(ctx.Gettext("Profile saved successfully"))
+	ctx.SubURLRedirect("/user/settings")
 }

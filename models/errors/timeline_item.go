@@ -19,9 +19,9 @@ func (err TimelineItemAlreadyExist) Error() string {
 
 // TimelineItemNotExist struct
 type TimelineItemNotExist struct {
-	UserID  int64
-	TrackID int64
-	AlbumID int64
+	UserID  uint
+	TrackID uint
+	AlbumID uint
 }
 
 func (err TimelineItemNotExist) Error() string {

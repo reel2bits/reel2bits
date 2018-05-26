@@ -13,10 +13,10 @@ import (
 )
 
 const (
-	login          = "user/auth/login"
-	register       = "user/auth/register"
-	forgotPassword = "user/auth/forgot_password"
-	resetPassword  = "user/auth/reset_password"
+	tmplLogin          = "user/auth/login"
+	tmplRegister       = "user/auth/register"
+	tmplForgotPassword = "user/auth/forgot_password"
+	tmplResetPassword  = "user/auth/reset_password"
 )
 
 // isValidRedirect returns false if the URL does not redirect to same site.
@@ -69,9 +69,9 @@ func AutoLogin(c *context.Context) (bool, error) {
 	return true, nil
 }
 
-// Login [GET]
+// Login GET
 func Login(ctx *context.Context) {
-	ctx.Title("login.title")
+	ctx.Title(ctx.Gettext("Sign In"))
 
 	// check for auto-login
 	isSucceed, err := AutoLogin(ctx)
@@ -92,27 +92,27 @@ func Login(ctx *context.Context) {
 		if isValidRedirect(redirectTo) {
 			ctx.Redirect(redirectTo)
 		} else {
-			ctx.SubURLRedirect(ctx.URLFor("home"))
+			ctx.Redirect(setting.AppSubURL + "/")
 		}
 		return
 	}
 
-	ctx.HTML(200, login)
+	ctx.HTML(200, tmplLogin)
 }
 
-// LoginPost [POST]
+// LoginPost POST
 func LoginPost(ctx *context.Context, f form.Login) {
-	ctx.Title("login.title")
+	ctx.Title(ctx.Gettext("Sign In"))
 
 	if ctx.HasError() {
-		ctx.Success(login)
+		ctx.Success(tmplLogin)
 		return
 	}
 
 	u, err := models.UserLogin(f.UserName, f.Password)
 	if err != nil {
 		if errors.IsUserNotExist(err) {
-			ctx.RenderWithErr(ctx.Tr("form.username_password_incorrect"), login, &f)
+			ctx.RenderWithErr(ctx.Gettext("Invalid username or password"), tmplLogin, &f)
 		} else {
 			ctx.ServerError("UserSignIn", err)
 		}
@@ -147,40 +147,40 @@ func afterLogin(ctx *context.Context, u *models.User, remember bool) {
 		return
 	}
 
-	ctx.SubURLRedirect(ctx.URLFor("home"))
+	ctx.Redirect(setting.AppSubURL + "/")
 }
 
-// Register [GET]
+// Register GET
 func Register(ctx *context.Context) {
-	ctx.Title("register.title")
+	ctx.Title(ctx.Gettext("Register"))
 	if !setting.CanRegister {
-		ctx.Flash.Error(ctx.Tr("register.not_allowed"))
-		ctx.SubURLRedirect(ctx.URLFor("home"))
+		ctx.Flash.Error(ctx.Gettext("Registration not allowed"))
+		ctx.Redirect(setting.AppSubURL + "/")
 		return
 	}
 
-	ctx.HTML(200, register)
+	ctx.HTML(200, tmplRegister)
 }
 
-// RegisterPost [POST]
+// RegisterPost POST
 func RegisterPost(ctx *context.Context, f form.Register) {
-	ctx.Title("register.title")
+	ctx.Title(ctx.Gettext("Register"))
 
 	if !setting.CanRegister {
-		ctx.Flash.Error(ctx.Tr("register.not_allowed"))
-		ctx.SubURLRedirect(ctx.URLFor("home"))
+		ctx.Flash.Error(ctx.Gettext("Registration not allowed"))
+		ctx.Redirect(setting.AppSubURL + "/")
 		return
 	}
 
 	if ctx.HasError() {
-		ctx.HTML(200, register)
+		ctx.HTML(200, tmplRegister)
 		return
 	}
 
 	if f.Password != f.Repeat {
 		ctx.Data["Err_Password"] = true
 		ctx.Data["Err_Retype"] = true
-		ctx.RenderWithErr(ctx.Tr("form.password_not_match"), register, &f)
+		ctx.RenderWithErr(ctx.Gettext("Passwords doesn't match"), tmplRegister, &f)
 		return
 	}
 
@@ -194,19 +194,19 @@ func RegisterPost(ctx *context.Context, f form.Register) {
 		switch {
 		case models.IsErrUserAlreadyExist(err):
 			ctx.Data["Err_UserName"] = true
-			ctx.RenderWithErr(ctx.Tr("form.username_been_taken"), register, &f)
+			ctx.RenderWithErr(ctx.Gettext("Username already taken, sorry"), tmplRegister, &f)
 		case models.IsErrNameReserved(err):
 			ctx.Data["Err_UserName"] = true
-			ctx.RenderWithErr(ctx.Tr("form.username_reserved"), register, &f)
+			ctx.RenderWithErr(ctx.Gettext("Username reserved, please choose another username"), tmplRegister, &f)
 		case models.IsErrNamePatternNotAllowed(err):
 			ctx.Data["Err_UserName"] = true
-			ctx.RenderWithErr(ctx.Tr("form.username_pattern_not_allowed"), register, &f)
+			ctx.RenderWithErr(ctx.Gettext("Invalid username pattern"), tmplRegister, &f)
 		default:
 			ctx.Handle(500, "CreateUser", err)
 		}
 		return
 	}
-	log.Debugf("Account created: %s", u.UserName)
+	log.Debugf("Account created: %d/%s", u.ID, u.UserName)
 
 	// Auto set Admin if first user
 	if models.CountUsers() == 1 {
@@ -220,23 +220,23 @@ func RegisterPost(ctx *context.Context, f form.Register) {
 
 	// TODO: send activation email
 
-	ctx.Flash.Success(ctx.Tr("register.successfull"))
-	ctx.SubURLRedirect(ctx.URLFor("user_login"))
+	ctx.Flash.Success(ctx.Gettext("Register succesfull"))
+	ctx.Redirect(setting.AppSubURL + "/user/login")
 }
 
-// Logout [GET]
+// Logout GET
 func Logout(ctx *context.Context) {
 	ctx.Session.Delete("uid")
 	ctx.Session.Delete("uname")
 	ctx.SetCookie(setting.CookieUserName, "", -1, setting.AppSubURL)
 	ctx.SetCookie(setting.CookieRememberName, "", -1, setting.AppSubURL)
 	ctx.SetCookie(setting.CSRFCookieName, "", -1, setting.AppSubURL)
-	ctx.SubURLRedirect(ctx.URLFor("home"))
+	ctx.Redirect(setting.AppSubURL + "/")
 }
 
-// ResetPasswd [GET]
+// ResetPasswd GET
 func ResetPasswd(ctx *context.Context) {
-	ctx.Title("auth.reset_password")
+	ctx.Title(ctx.Gettext("Reset Your Password"))
 	code := ctx.Query("code")
 	if len(code) == 0 {
 		ctx.Error(404)
@@ -244,12 +244,12 @@ func ResetPasswd(ctx *context.Context) {
 	}
 	ctx.Data["Code"] = code
 	ctx.Data["IsResetForm"] = true
-	ctx.HTML(200, resetPassword)
+	ctx.HTML(200, tmplResetPassword)
 }
 
-// ResetPasswdPost [POST]
+// ResetPasswdPost POST
 func ResetPasswdPost(ctx *context.Context) {
-	ctx.Title("auth.reset_password")
+	ctx.Title(ctx.Gettext("Reset Your Password"))
 
 	code := ctx.Query("code")
 	if len(code) == 0 {
@@ -258,13 +258,13 @@ func ResetPasswdPost(ctx *context.Context) {
 	}
 	ctx.Data["Code"] = code
 
-	if u := models.VerifyUserActiveCode(code); u != nil {
+	if u := models.VerifyUserActiveCode(code); u.ID > 0 {
 		// Validate password length.
 		passwd := ctx.Query("password")
 		if len(passwd) < 6 {
 			ctx.Data["IsResetForm"] = true
 			ctx.Data["Err_Password"] = true
-			ctx.RenderWithErr(ctx.Tr("auth.password_too_short"), resetPassword, nil)
+			ctx.RenderWithErr(ctx.Gettext("Password length cannot be less then 6."), tmplResetPassword, nil)
 			return
 		}
 
@@ -279,37 +279,37 @@ func ResetPasswdPost(ctx *context.Context) {
 			return
 		}
 		u.EncodePasswd()
-		if err := models.UpdateUser(u); err != nil {
+		if err := models.UpdateUser(&u); err != nil {
 			ctx.Handle(500, "UpdateUser", err)
 			return
 		}
 
 		log.Debugf("User password reset: %s", u.UserName)
-		ctx.SubURLRedirect(ctx.URLFor("user_login"))
+		ctx.Redirect(setting.AppSubURL + "/user/login")
 		return
 	}
 	ctx.Data["IsResetFailed"] = true
-	ctx.HTML(200, resetPassword)
+	ctx.HTML(200, tmplResetPassword)
 }
 
-// ForgotPasswd [GET]
+// ForgotPasswd GET
 func ForgotPasswd(ctx *context.Context) {
-	ctx.Title("auth.forgot_password")
+	ctx.Title(ctx.Gettext("Forgot Password"))
 
 	if setting.MailService == nil {
 		ctx.Data["IsResetDisable"] = true
-		ctx.HTML(200, forgotPassword)
+		ctx.HTML(200, tmplForgotPassword)
 		return
 	}
 
 	ctx.Data["IsResetRequest"] = true
 
-	ctx.HTML(200, forgotPassword)
+	ctx.HTML(200, tmplForgotPassword)
 }
 
-// ForgotPasswdPost [POST]
+// ForgotPasswdPost POST
 func ForgotPasswdPost(ctx *context.Context) {
-	ctx.Title("auth.forgot_password")
+	ctx.Title(ctx.Gettext("Forgot Password"))
 
 	if setting.MailService == nil {
 		ctx.Handle(403, "ForgotPasswdPost", nil)
@@ -327,7 +327,7 @@ func ForgotPasswdPost(ctx *context.Context) {
 			ctx.Data["Hours"] = 180 / 60
 			ctx.Data["IsResetSent"] = true
 			log.Debug("User doesn't exists")
-			ctx.HTML(200, forgotPassword)
+			ctx.HTML(200, tmplForgotPassword)
 			return
 		}
 
@@ -338,11 +338,11 @@ func ForgotPasswdPost(ctx *context.Context) {
 	if ctx.Cache.IsExist("MailResendLimit_" + u.LowerName) {
 		log.Debug("Mail Resend limited")
 		ctx.Data["ResendLimited"] = true
-		ctx.HTML(200, forgotPassword)
+		ctx.HTML(200, tmplForgotPassword)
 		return
 	}
 
-	mailer.SendResetPasswordMail(ctx.Context, models.NewMailerUser(u))
+	mailer.SendResetPasswordMail(ctx.Context, models.NewMailerUser(&u))
 	if err = ctx.Cache.Put("MailResendLimit_"+u.LowerName, u.LowerName, 180); err != nil {
 		log.Errorf("Set cache(MailResendLimit) fail: %v", err)
 	}
@@ -350,5 +350,5 @@ func ForgotPasswdPost(ctx *context.Context) {
 	// HARDCODED
 	ctx.Data["Hours"] = 180 / 60
 	ctx.Data["IsResetSent"] = true
-	ctx.HTML(200, forgotPassword)
+	ctx.HTML(200, tmplForgotPassword)
 }
