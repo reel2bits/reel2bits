@@ -3,9 +3,10 @@ workspace:
   path: src/dev.sigpipe.me/dashie/reel2bits
 
 clone:
-  image: plugins/git
-  depth: 50
-  tags: true
+  git:
+    image: plugins/git
+    depth: 50
+    tags: true
 
 pipeline:
   linters:
