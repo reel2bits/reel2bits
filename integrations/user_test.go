@@ -1,9 +1,8 @@
 package integrations
 
 import (
-	"dev.sigpipe.me/dashie/reel2bits/setting"
 	"fmt"
-	"github.com/Unknwon/i18n"
+	"github.com/leonelquinteros/gotext"
 	. "github.com/smartystreets/goconvey/convey"
 	"net/http"
 	"testing"
@@ -19,10 +18,10 @@ func TestLogin(t *testing.T) {
 		req := NewRequest(t, "GET", "/user/settings")
 		resp := session.MakeRequest(t, req, http.StatusOK)
 
-		title := fmt.Sprintf("<title>%s - %s</title>", i18n.Tr("en", "settings.title"), setting.AppName)
+		title := fmt.Sprintf("<title>%s - reel2bits</title>", gotext.Get("User settings"))
 
 		So(string(resp.Body), ShouldContainSubstring, title)
-		So(string(resp.Body), ShouldContainSubstring, "userA")
+		So(string(resp.Body), ShouldContainSubstring, "usera@example.com")
 	})
 }
 
@@ -35,9 +34,10 @@ func TestLogout(t *testing.T) {
 		req := NewRequest(t, "GET", "/user/logout")
 		resp := session.MakeRequest(t, req, http.StatusFound)
 
-		var found = "<a href=\"/\">Found</a>"
+		var redirectTo = "<a href=\"/\">Found</a>"
 
-		So(string(resp.Body), ShouldContainSubstring, found)
+		So(resp.HeaderCode, ShouldEqual, 302)
+		So(string(resp.Body), ShouldContainSubstring, redirectTo)
 	})
 }
 
@@ -68,9 +68,9 @@ func TestRegister(t *testing.T) {
 		req = NewRequest(t, "GET", "/user/settings")
 		resp = session.MakeRequest(t, req, http.StatusOK)
 
-		title := fmt.Sprintf("<title>%s - %s</title>", i18n.Tr("en", "settings.title"), setting.AppName)
+		title := fmt.Sprintf("<title>%s - reel2bits</title>", gotext.Get("User settings"))
 
 		So(string(resp.Body), ShouldContainSubstring, title)
-		So(string(resp.Body), ShouldContainSubstring, "userC")
+		So(string(resp.Body), ShouldContainSubstring, "userc@example.com")
 	})
 }

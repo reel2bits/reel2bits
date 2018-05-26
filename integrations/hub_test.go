@@ -1,9 +1,8 @@
 package integrations
 
 import (
-	"dev.sigpipe.me/dashie/reel2bits/setting"
 	"fmt"
-	"github.com/Unknwon/i18n"
+	"github.com/leonelquinteros/gotext"
 	. "github.com/smartystreets/goconvey/convey"
 	"net/http"
 	"testing"
@@ -16,7 +15,7 @@ func TestHome(t *testing.T) {
 		req := NewRequest(t, "GET", "/")
 		resp := MakeRequest(t, req, http.StatusOK)
 
-		title := fmt.Sprintf("<title>%s - %s</title>", i18n.Tr("en", "app.home_title"), setting.AppName)
+		title := fmt.Sprintf("<title>%s - reel2bits</title>", gotext.Get("Home Page"))
 
 		So(string(resp.Body), ShouldContainSubstring, title)
 	})

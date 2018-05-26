@@ -14,14 +14,12 @@ package integrations
 
 import (
 	"bytes"
-	"database/sql"
 	"dev.sigpipe.me/dashie/reel2bits/models"
 	"dev.sigpipe.me/dashie/reel2bits/routes"
 	"dev.sigpipe.me/dashie/reel2bits/setting"
 	"encoding/json"
 	"fmt"
 	"github.com/go-testfixtures/testfixtures"
-	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/macaron.v1"
 	"io"
@@ -67,11 +65,11 @@ func initIntegrationTest() {
 		fmt.Println("Environment variable $APP_ROOT is not set")
 		os.Exit(1)
 	}
-	setting.AppPath = path.Join(appRoot, "reel2bit")
+	setting.AppPath = path.Join(appRoot, "bleurg")
 
 	appConf := os.Getenv("APP_CONF")
 	if appConf == "" {
-		fmt.Println("Environment variable $APP_CONF i snot set")
+		fmt.Println("Environment variable $APP_CONF is not set")
 		os.Exit(1)
 	} else if !path.IsAbs(appConf) {
 		setting.CustomConf = path.Join(appRoot, appConf)
@@ -80,40 +78,7 @@ func initIntegrationTest() {
 	}
 
 	setting.InitConfig()
-	models.LoadConfigs()
-
-	switch {
-	case setting.UseMySQL:
-		db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s)/",
-			models.DbCfg.User, models.DbCfg.Passwd, models.DbCfg.Host))
-		defer db.Close()
-		if err != nil {
-			log.Fatalf("sql.Open: %v", err)
-		}
-		if _, err = db.Exec("CREATE DATABASE IF NOT EXISTS testreel2bits"); err != nil {
-			log.Fatalf("db.Exec: %v", err)
-		}
-	case setting.UsePostgreSQL:
-		db, err := sql.Open("postgres", fmt.Sprintf("postgres://%s:%s@%s/?sslmode=%s",
-			models.DbCfg.User, models.DbCfg.Passwd, models.DbCfg.Host, models.DbCfg.SSLMode))
-		defer db.Close()
-		if err != nil {
-			log.Fatalf("sql.Open: %v", err)
-		}
-		rows, err := db.Query(fmt.Sprintf("SELECT 1 FROM pg_database WHERE datname = '%s'",
-			models.DbCfg.Name))
-		if err != nil {
-			log.Fatalf("db.Query: %v", err)
-		}
-		defer rows.Close()
-
-		if rows.Next() {
-			break
-		}
-		if _, err = db.Exec("CREATE DATABASE testreel2bits"); err != nil {
-			log.Fatalf("db.Exec: %v", err)
-		}
-	}
+	models.InitDb()
 	routes.GlobalInit()
 }
 

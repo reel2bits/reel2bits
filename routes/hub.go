@@ -14,19 +14,19 @@ const (
 
 // NotFound [GET]
 func NotFound(ctx *context.Context) {
-	ctx.Title(ctx.Tr("error.page_not_found"))
+	ctx.Title(ctx.Gettext("error.page_not_found"))
 	ctx.Handle(404, "home.NotFound", nil)
 }
 
 // Impressum [GET]
 func Impressum(ctx *context.Context) {
-	ctx.Title(ctx.Tr("impressum.title"))
+	ctx.Title(ctx.Gettext("impressum.title"))
 	ctx.Success(tmplImpressum)
 }
 
 // Home [GET]
 func Home(ctx *context.Context) {
-	ctx.Title("app.home_title")
+	ctx.Title(ctx.Gettext("Home Page"))
 	ctx.PageIs("HubHome")
 
 	page := ctx.QueryInt("page")

@@ -41,12 +41,6 @@
 
 [[projects]]
   branch = "master"
-  name = "github.com/Unknwon/i18n"
-  packages = ["."]
-  revision = "b64d336589669d317928070e70ba0ae558f16633"
-
-[[projects]]
-  branch = "master"
   name = "github.com/Unknwon/paginater"
   packages = ["."]
   revision = "45e5d631308ea359946e761484147982c978d0df"
@@ -467,6 +461,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "deaf509a99ae502f59b4cc80e114fea363173eeaa99bc59876d61a0a6c375429"
+  inputs-digest = "231064da4ca971c12f75f6ac100e1cab4c782157d2869101ed0e64c28b871c8d"
   solver-name = "gps-cdcl"
   solver-version = 1
