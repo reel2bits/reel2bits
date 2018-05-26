@@ -2,6 +2,12 @@
 
 
 [[projects]]
+  branch = "master"
+  name = "dev.sigpipe.me/dashie/macaron-i18n"
+  packages = ["."]
+  revision = "39b6db0ec3170480c36c7173fbef00efc9a3ed45"
+
+[[projects]]
   name = "github.com/PuerkitoBio/goquery"
   packages = ["."]
   revision = "e1271ee34c6a305e38566ecd27ae374944907ee9"
@@ -125,12 +131,6 @@
 
 [[projects]]
   branch = "master"
-  name = "github.com/go-macaron/i18n"
-  packages = ["."]
-  revision = "ef57533c3b0fc2d8581deda14937e52f11a203ab"
-
-[[projects]]
-  branch = "master"
   name = "github.com/go-macaron/inject"
   packages = ["."]
   revision = "d8a0b8677191f4380287cfebd08e462217bac7ad"
@@ -158,24 +158,6 @@
   packages = ["."]
   revision = "f79bf941e2785516a66bcf4de9a21b0b827ed716"
   version = "v2.4.3"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/go-xorm/builder"
-  packages = ["."]
-  revision = "a4a881a4e552fcb5473f39e8b9f7d9f3457a7fb0"
-
-[[projects]]
-  name = "github.com/go-xorm/core"
-  packages = ["."]
-  revision = "da1adaf7a28ca792961721a34e6e04945200c890"
-  version = "v0.5.7"
-
-[[projects]]
-  name = "github.com/go-xorm/xorm"
-  packages = ["."]
-  revision = "d7f04c3cecff8d8c9321b2c39940e1992ce9f01a"
-  version = "v0.6.3"
 
 [[projects]]
   branch = "master"
@@ -213,6 +195,24 @@
   revision = "0ee88d3006305456b84cad14a24b2576f9411965"
 
 [[projects]]
+  name = "github.com/jinzhu/gorm"
+  packages = [
+    ".",
+    "dialects/mssql",
+    "dialects/mysql",
+    "dialects/postgres",
+    "dialects/sqlite"
+  ]
+  revision = "6ed508ec6a4ecb3531899a69cbc746ccf65a4166"
+  version = "v1.9.1"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/jinzhu/inflection"
+  packages = ["."]
+  revision = "04140366298a54a039076d798123ffa108fff46c"
+
+[[projects]]
   name = "github.com/jtolds/gls"
   packages = ["."]
   revision = "77f18212c9c7edc9bd6a33d383a7b545ce62f064"
@@ -231,10 +231,17 @@
   revision = "2995aa087f0edbce66f25037af7ca6771a74da74"
 
 [[projects]]
+  name = "github.com/leonelquinteros/gotext"
+  packages = ["."]
+  revision = "92b69ffa4cc0895b83b42f50065e9de5a3c32960"
+  version = "v1.3.1"
+
+[[projects]]
   branch = "master"
   name = "github.com/lib/pq"
   packages = [
     ".",
+    "hstore",
     "oid"
   ]
   revision = "8c6ee72f3e6bcb1542298dd5f76cb74af9742cec"
@@ -250,6 +257,16 @@
   packages = ["."]
   revision = "ed69081a91fd053f17672236b0dd52ba7485e1a3"
   version = "v1.4.0"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/mattn/kinako"
+  packages = [
+    "ast",
+    "parser",
+    "vm"
+  ]
+  revision = "332c0a7e205a29536e672337a4bea6c7a96b04c1"
 
 [[projects]]
   branch = "master"
@@ -400,17 +417,6 @@
   revision = "82aafbf43bf885069dc71b7e7c2f9d7a614d47da"
 
 [[projects]]
-  branch = "master"
-  name = "golang.org/x/text"
-  packages = [
-    "internal/gen",
-    "internal/tag",
-    "language",
-    "unicode/cldr"
-  ]
-  revision = "88f656faf3f37f690df1a32515b479415e1a6769"
-
-[[projects]]
   branch = "v3"
   name = "gopkg.in/alexcesaro/quotedprintable.v3"
   packages = ["."]
@@ -461,6 +467,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "17e06ebb87e89478c4d0132e598c1e58af73f06598fd74e4c1b549d2f5d06092"
+  inputs-digest = "deaf509a99ae502f59b4cc80e114fea363173eeaa99bc59876d61a0a6c375429"
   solver-name = "gps-cdcl"
   solver-version = 1
