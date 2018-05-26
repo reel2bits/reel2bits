@@ -1,0 +1,15 @@
+datatables broken ???
+the "Timeline", albums plus tracks mixed on one page
+
+more tests for sec (not UT)
+
+implementer l'ajout a la TLITEM lors:
+- ajout track
+- private -> public
+remove TLITEM:
+- rm track
+- public -> private
+
+
+report de bug :
+    ^C le worker ne fonctionne pas...
