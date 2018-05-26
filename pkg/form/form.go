@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/Unknwon/com"
 	"github.com/go-macaron/binding"
+	"github.com/leonelquinteros/gotext"
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/macaron.v1"
 	"io/ioutil"
@@ -163,38 +164,38 @@ func validate(errs binding.Errors, data map[string]interface{}, f Form, l macaro
 
 			trName := field.Tag.Get("locale")
 			if len(trName) == 0 {
-				trName = l.Tr("form." + field.Name)
+				trName = gotext.Get("form." + field.Name)
 			} else {
-				trName = l.Tr(trName)
+				trName = gotext.Get(trName)
 			}
 
 			switch errs[0].Classification {
 			case binding.ERR_REQUIRED:
-				data["ErrorMsg"] = trName + l.Tr("form.require_error")
+				data["ErrorMsg"] = trName + gotext.Get(" cannot be empty.")
 			case binding.ERR_ALPHA_DASH:
-				data["ErrorMsg"] = trName + l.Tr("form.alpha_dash_error")
+				data["ErrorMsg"] = trName + gotext.Get(" must be valid alpha or numeric or dash(-_) characters.")
 			case binding.ERR_ALPHA_DASH_DOT:
-				data["ErrorMsg"] = trName + l.Tr("form.alpha_dash_dot_error")
+				data["ErrorMsg"] = trName + gotext.Get(" must be valid alpha or numeric or dash(-_) or dot characters.")
 			case errAlphaDashDotSlash:
-				data["ErrorMsg"] = trName + l.Tr("form.alpha_dash_dot_slash_error")
+				data["ErrorMsg"] = trName + gotext.Get(" must be valid alpha or numeric or dash(-_) or dot characters or slashes.")
 			case errOnlyAudioFile:
-				data["ErrorMsg"] = trName + l.Tr("form.audio_not_supported")
+				data["ErrorMsg"] = trName + gotext.Get(" must be a supported audio file")
 			case binding.ERR_SIZE:
-				data["ErrorMsg"] = trName + l.Tr("form.size_error", getSize(field))
+				data["ErrorMsg"] = trName + gotext.Get(" must be size %s.", getSize(field))
 			case binding.ERR_MIN_SIZE:
-				data["ErrorMsg"] = trName + l.Tr("form.min_size_error", getMinSize(field))
+				data["ErrorMsg"] = trName + gotext.Get(" must contain at least %s characters.", getMinSize(field))
 			case binding.ERR_MAX_SIZE:
-				data["ErrorMsg"] = trName + l.Tr("form.max_size_error", getMaxSize(field))
+				data["ErrorMsg"] = trName + gotext.Get(" must contain at most %s characters.", getMaxSize(field))
 			case binding.ERR_EMAIL:
-				data["ErrorMsg"] = trName + l.Tr("form.email_error")
+				data["ErrorMsg"] = trName + gotext.Get("Invalid email format.")
 			case binding.ERR_URL:
-				data["ErrorMsg"] = trName + l.Tr("form.url_error")
+				data["ErrorMsg"] = trName + gotext.Get(" is not a valid URL.")
 			case binding.ERR_INCLUDE:
-				data["ErrorMsg"] = trName + l.Tr("form.include_error", getInclude(field))
+				data["ErrorMsg"] = trName + gotext.Get(" must contain substring '%s'.", getInclude(field))
 			case binding.ERR_IN:
-				data["ErrorMsg"] = trName + l.Tr("form.in_error", getIn(field))
+				data["ErrorMsg"] = trName + gotext.Get(" must be one of: %s.", getIn(field))
 			default:
-				data["ErrorMsg"] = l.Tr("form.unknown_error") + " " + errs[0].Classification
+				data["ErrorMsg"] = gotext.Get("Unknown error: ") + " " + errs[0].Classification
 			}
 			return errs
 		}
