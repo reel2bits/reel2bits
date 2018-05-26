@@ -139,8 +139,7 @@ func Str2html(raw string) template.HTML {
 }
 
 // ElapsedToHuman to get "xx days ago"
-func ElapsedToHuman(dateUnix int64) string {
-	date := time.Unix(dateUnix, 0).Local()
+func ElapsedToHuman(date time.Time) string {
 	return humanize.Time(date)
 }
 

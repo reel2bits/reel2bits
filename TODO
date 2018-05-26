@@ -10,8 +10,3 @@ remove TLITEM:
 - rm track
 - public -> private
 
-
-report de bug :
-    ^C le worker ne fonctionne pas...
-
-Upgrade machinery ?

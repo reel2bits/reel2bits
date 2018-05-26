@@ -54,7 +54,7 @@ func TranscodingWatchdog() {
 		for _, t := range tracks {
 			sig := &tasks.Signature{
 				Name: "TranscodeAndFetchInfos",
-				Args: []tasks.Arg{{Type: "int64", Value: t.ID}},
+				Args: []tasks.Arg{{Type: "uint", Value: t.ID}},
 			}
 
 			_, err = server.SendTask(sig)
@@ -97,7 +97,7 @@ func TranscodingWatchdog() {
 			// Add it
 			sig := &tasks.Signature{
 				Name: "TranscodeAndFetchInfos",
-				Args: []tasks.Arg{{Type: "int64", Value: t.ID}},
+				Args: []tasks.Arg{{Type: "uint", Value: t.ID}},
 			}
 
 			_, err = server.SendTask(sig)

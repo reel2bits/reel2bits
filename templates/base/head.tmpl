@@ -43,7 +43,7 @@
         <meta content="Track {{.track.Title}} of {{.user.UserName}}" property="og:title" />
         <meta content="Track {{.track.Title}} of {{.user.UserName}}" property="og:description" />
         {{end}}
-        <meta content="{{URLFor "track_show" ":userSlug" .user.Slug ":trackSlug" .track.Track.Slug }}" property="og:url" />
+        <meta content="{{URLFor "track_show" ":userSlug" .user.Slug ":trackSlug" .track.Slug }}" property="og:url" />
     {{else if .PageIsUserListTracks}}
         <meta property="og:url" content="{{URLFor "track_list" ":userSlug" .user.Slug}}">
         <meta property="og:type" content="profile">

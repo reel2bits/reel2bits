@@ -165,7 +165,7 @@ func isTrackTitleAlreadyExist(title string, userID uint) (exist bool, err error)
 	track := Track{}
 	err = db.Where(&Track{UserID: userID, Title: title}).First(&track).Error
 	if gorm.IsRecordNotFoundError(err) || track.ID == 0 {
-		return false, ErrTrackTitleAlreadyExist{Title: title}
+		return false, nil
 	} else if err != nil {
 		return false, nil
 	}
@@ -283,7 +283,7 @@ func SetTrackReadyness(id uint, state bool) (err error) {
 
 // GetTrackWithInfoBySlugAndUserID or error
 func GetTrackWithInfoBySlugAndUserID(id uint, slug string) (track Track, err error) {
-	err = db.Preload("TrackInfo").Where("track.user_id = ? AND track.slug = ?", id, slug).Find(&track).Error
+	err = db.Preload("TrackInfo").Preload("User").Where("user_id = ? AND slug = ?", id, slug).Find(&track).Error
 	return track, nil
 }
 
@@ -312,7 +312,7 @@ func GetTrackByAlbumIDAndOrder(albumID uint, albumOrder int64) (track Track, err
 // GetFirstTrackOfAlbum and not the last
 // IF the album is empty, an error will be thrown by the .Find()
 func GetFirstTrackOfAlbum(albumID uint, onlyPublic bool) (track *Track, err error) {
-	tx := db.Preload("track_info", "user").Where("album_id = ?", albumID)
+	tx := db.Preload("TrackInfo").Preload("User").Where("album_id = ?", albumID)
 
 	if onlyPublic {
 		tx = tx.Where("ready = ? AND is_private = ?", true, false)
@@ -339,7 +339,7 @@ func GetTracks(opts *TrackOptions) (tracks []Track, count int64, err error) {
 	}
 	tracks = make([]Track, 0, opts.PageSize)
 
-	tx := db.Preload("track_info", "user").Order("track.created_at DESC").Offset((opts.Page - 1) * opts.PageSize).Limit(opts.PageSize)
+	tx := db.Preload("TrackInfo").Preload("User").Order("created_at DESC").Offset((opts.Page - 1) * opts.PageSize).Limit(opts.PageSize)
 
 	tx = tx.Where("is_private = ?", false)
 
@@ -373,13 +373,13 @@ func GetNotReadyTracks() (tracks []Track, err error) {
 func GetAlbumTracks(albumID uint, onlyPublic bool) (tracks []Track, err error) {
 	tracks = make([]Track, 0)
 
-	tx := db.Preload("track_user", "user").Where("album_id = ?", albumID)
+	tx := db.Preload("User").Where("album_id = ?", albumID)
 
 	if onlyPublic {
 		tx = tx.Where("ready = ? AND is_private = ?", true, false)
 	}
 
-	tx = tx.Order("track.album_order ASC")
+	tx = tx.Order("album_order ASC")
 
 	err = tx.Find(&tracks).Error
 
