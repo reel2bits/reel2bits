@@ -12,9 +12,9 @@ import (
 // CreateServer initiate the machinery server
 func CreateServer() (*machinery.Server, error) {
 	cnf := config.Config{
-		Broker:             fmt.Sprintf("redis://%s:%s/%s", setting.Worker.RedisHost, setting.Worker.RedisPort, setting.Worker.RedisDb),
-		ResultBackend:      fmt.Sprintf("redis://%s:%s/%s", setting.Worker.RedisHost, setting.Worker.RedisPort, setting.Worker.RedisDb),
-		DefaultQueue:       "reel2bits_queue",
+		Broker:        fmt.Sprintf("redis://%s:%s/%s", setting.Worker.RedisHost, setting.Worker.RedisPort, setting.Worker.RedisDb),
+		ResultBackend: fmt.Sprintf("redis://%s:%s/%s", setting.Worker.RedisHost, setting.Worker.RedisPort, setting.Worker.RedisDb),
+		DefaultQueue:  "reel2bits_queue",
 	}
 
 	mlog.Set(log.StandardLogger())
