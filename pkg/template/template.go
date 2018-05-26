@@ -7,6 +7,7 @@ import (
 	"dev.sigpipe.me/dashie/reel2bits/setting"
 	"fmt"
 	"github.com/dustin/go-humanize"
+	"github.com/leonelquinteros/gotext"
 	"github.com/microcosm-cc/bluemonday"
 	"gopkg.in/macaron.v1"
 	"html/template"
@@ -94,6 +95,12 @@ func NewFuncMap(m *macaron.Macaron) []template.FuncMap {
 		},
 		"URLForRelative": m.URLFor,
 		"NeedsImpressum": func() bool { return setting.NeedsImpressum },
+		"Gettext": func(str string, vars ...interface{}) string {
+			return gotext.GetD("bleurg", str, vars...)
+		},
+		"NGettext": func(str, plural string, n int, vars ...interface{}) string {
+			return gotext.GetN(str, plural, n, vars...)
+		},
 	}}
 }
 

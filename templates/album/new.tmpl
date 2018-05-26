@@ -4,28 +4,28 @@
     <div class="col-lg-9 col-lg-offset-1">
         <form class="form" action="{{.Link}}" method="post">
             {{.CSRFTokenHTML}}
-            <h4 class="header">{{.i18n.Tr "album.title_new"}}</h4>
+            <h4 class="header">{{Gettext ("Create a new album")}}</h4>
 
             <div class="row">
                 <div class="col-lg-6">
                     <div class="content">
                         <div class="form-group {{if .Err_Title}}has-error{{end}}">
-                            <label for="name" class="">{{.i18n.Tr "album.form_name"}}</label>
-                            <input type="text" name="name" id="name" class="form-control" value="{{.name}}" placeholder='{{.i18n.Tr "album.form_ph_name"}}' required>
+                            <label for="name" class="">{{Gettext ("Name")}}</label>
+                            <input type="text" name="name" id="name" class="form-control" value="{{.name}}" placeholder='{{Gettext ("Name of album")}}' required>
                         </div>
 
                         <div class="form-group {{if .Err_Description}}has-error{{end}}">
-                            <label for="description" class="">{{.i18n.Tr "album.form_description"}}</label>
-                            <textarea name="description" id="description" class="form-control" placeholder='{{.i18n.Tr "album.form_ph_description"}}'>{{.description}}</textarea>
+                            <label for="description" class="">{{Gettext ("Description")}}</label>
+                            <textarea name="description" id="description" class="form-control" placeholder='{{Gettext ("Description of album")}}'>{{.description}}</textarea>
                         </div>
 
                         <div class="checkbox {{if .Err_IsPrivate}}has-error{{end}}">
                             <label>
-                                <input type="checkbox" name="is_private" id="is_private" class="" value="true">{{.i18n.Tr "album.form_is_private"}}
+                                <input type="checkbox" name="is_private" id="is_private" class="" value="true">{{Gettext ("Private album ?")}}
                             </label>
                         </div>
 
-                        <button class="btn btn-sm btn-success" type="submit">{{.i18n.Tr "form.save"}}</button>
+                        <button class="btn btn-sm btn-success" type="submit">{{Gettext ("Save")}}</button>
                     </div>
                 </div>
             </div>

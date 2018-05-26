@@ -4,23 +4,23 @@
     <div class="col-lg-9 col-lg-offset-1">
         <form class="form" action="{{.Link}}" method="post">
             {{.CSRFTokenHTML}}
-            <h4 class="header">{{.i18n.Tr "track.title_edit"}}</h4>
+            <h4 class="header">{{Gettext ("Edit track")}}</h4>
 
             <div class="row">
                 <div class="col-lg-6">
                     <div class="content">
                         <div class="form-group {{if .Err_Title}}has-error{{end}}">
-                            <label for="title" class="">{{.i18n.Tr "track.form_title"}}</label>
-                            <input type="text" name="title" id="title" class="form-control" value="{{.title}}" placeholder='{{.i18n.Tr "track.form_ph_title"}}' required>
+                            <label for="title" class="">{{Gettext ("Title")}}</label>
+                            <input type="text" name="title" id="title" class="form-control" value="{{.title}}" placeholder='{{Gettext ("Track title")}}' required>
                         </div>
 
                         <div class="form-group {{if .Err_Description}}has-error{{end}}">
-                            <label for="description" class="">{{.i18n.Tr "track.form_description"}}</label>
-                            <textarea name="description" id="description" class="form-control" placeholder='{{.i18n.Tr "track.form_ph_description"}}'>{{.description}}</textarea>
+                            <label for="description" class="">{{Gettext ("Description")}}</label>
+                            <textarea name="description" id="description" class="form-control" placeholder='{{Gettext ("Track description")}}'>{{.description}}</textarea>
                         </div>
 
                         <div class="form-group {{if .Err_Album}}has-error{{end}}">
-                            <label for="album" class="">{{.i18n.Tr "track.form_album"}}</label>
+                            <label for="album" class="">{{Gettext ("Album")}}</label>
                             <select id="album" name="album">
                                 {{range .albums}}
                                 {{ if (eq .ID $.cur_album) }}
@@ -36,17 +36,17 @@
 
                         <div class="checkbox {{if .Err_IsPrivate}}has-error{{end}}">
                             <label>
-                                <input type="checkbox" name="is_private" id="is_private" class="" value="true" {{if .is_private}}checked{{end}}>{{.i18n.Tr "track.form_is_private"}}
+                                <input type="checkbox" name="is_private" id="is_private" class="" value="true" {{if .is_private}}checked{{end}}>{{Gettext ("Private track ?")}}
                             </label>
                         </div>
 
                         <div class="checkbox {{if .Err_ShowDlLink}}has-error{{end}}">
                             <label>
-                            <input type="checkbox" name="show_dl_link" id="show_dl_link" class="" value="true" {{if .show_dl_link}}checked{{end}}>{{.i18n.Tr "track.form_show_dl_link"}}
+                            <input type="checkbox" name="show_dl_link" id="show_dl_link" class="" value="true" {{if .show_dl_link}}checked{{end}}>{{Gettext ("Show downloads links ?")}}
                             </label>
                         </div>
 
-                        <button class="btn btn-sm btn-success" type="submit">{{.i18n.Tr "form.save"}}</button>
+                        <button class="btn btn-sm btn-success" type="submit">{{Gettext ("Save")}}</button>
                     </div>
                 </div>
             </div>

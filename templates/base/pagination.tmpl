@@ -3,7 +3,7 @@
         <div class="page_pagination">
             <ul class="pagination">
             <li class="{{if not .HasPrevious}}disabled{{end}}"><a {{if .HasPrevious}}href="{{$.Link}}?page={{.Previous}}&q={{$.Keyword}}"{{end}}>
-                    <i class="left arrow icon"></i> {{$.i18n.Tr "page.previous"}}
+                    <i class="left arrow icon"></i> {{Gettext ("Previous")}}
                 </a></li>
                 {{range .Pages}}
                 {{if eq .Num -1}}
@@ -13,7 +13,7 @@
                 {{end}}
                 {{end}}
                 <li class="{{if not .HasNext}}disabled{{end}}"><a {{if .HasNext}}href="{{$.Link}}?page={{.Next}}&q={{$.Keyword}}"{{end}}>
-                    {{$.i18n.Tr "page.next"}} <i class="icon right arrow"></i>
+                    {{Gettext ("Next")}} <i class="icon right arrow"></i>
                 </a></li>
             </ul>
         </div>

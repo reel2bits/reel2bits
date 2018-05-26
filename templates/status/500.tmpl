@@ -1,9 +1,9 @@
 {{template "base/head" .}}
 <div class="ui container center">
-	<h3>{{.i18n.Tr "error.error_occured"}}</h3>
+	<h3>{{Gettext ("An error occured.")}}</h3>
 	<div class="ui divider"></div>
 	<br>
-	{{if .ErrorMsg}}<p>{{.i18n.Tr "error.error_msg" .ErrorMsg}}</p>{{end}}
-	<p>{{.i18n.Tr "error.app_version" AppVer}}</p>
+	{{if .ErrorMsg}}<p>{{Gettext ("An error has occured:")}} {{.ErrorMsg}}</p>{{end}}
+	<p>{{Gettext ("Application Version:")}} {{AppVer}}</p>
 </div>
 {{template "base/footer" .}}

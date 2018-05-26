@@ -4,23 +4,23 @@
     <div class="col-lg-9 col-lg-offset-1">
         <form class="form" action="{{.Link}}" method="post" enctype="multipart/form-data">
             {{.CSRFTokenHTML}}
-            <h4 class="header">{{.i18n.Tr "track.title_upload"}}</h4>
+            <h4 class="header">{{Gettext ("Upload a new track")}}</h4>
 
             <div class="row">
                 <div class="col-lg-6">
                     <div class="content">
                         <div class="form-group {{if .Err_Title}}has-error{{end}}">
-                            <label for="title" class="">{{.i18n.Tr "track.form_title"}}</label>
-                            <input type="text" name="title" id="title" class="form-control" value="{{.title}}" placeholder='{{.i18n.Tr "track.form_ph_title"}}' required>
+                            <label for="title" class="">{{Gettext ("Title")}}</label>
+                            <input type="text" name="title" id="title" class="form-control" value="{{.title}}" placeholder='{{Gettext ("Track title")}}' required>
                         </div>
 
                         <div class="form-group {{if .Err_Description}}has-error{{end}}">
-                            <label for="description" class="">{{.i18n.Tr "track.form_description"}}</label>
-                            <textarea name="description" id="description" class="form-control" placeholder='{{.i18n.Tr "track.form_ph_description"}}'>{{.description}}</textarea>
+                            <label for="description" class="">{{Gettext ("Description")}}</label>
+                            <textarea name="description" id="description" class="form-control" placeholder='{{Gettext ("Track description")}}'>{{.description}}</textarea>
                         </div>
 
                         <div class="form-group {{if .Err_Album}}has-error{{end}}">
-                            <label for="album" class="">{{.i18n.Tr "track.form_album"}}</label>
+                            <label for="album" class="">{{Gettext ("Album")}}</label>
                             <select id="album" name="album">
                                 <option value="-1" selected>Select an album if you want.</option>
                                 {{range $album := .albums}}
@@ -30,23 +30,23 @@
                         </div>
 
                         <div class="form-group {{if .Err_File}}has-error{{end}}">
-                            <label for="file" class="">{{.i18n.Tr "track.form_file"}}</label>
-                            <input type="file" name="file" id="file" class="" value="{{.file}}" placeholder='{{.i18n.Tr "track.form_ph_file"}}' required accept=".mp3,.mp4,.wav,.ogg,.flac,audio/mpeg,audio/mp4,audio/wav,audio/vorbis,audio/flac">
+                            <label for="file" class="">{{Gettext ("File")}}</label>
+                            <input type="file" name="file" id="file" class="" value="{{.file}}" placeholder='{{Gettext ("Track file")}}' required accept=".mp3,.mp4,.wav,.ogg,.flac,audio/mpeg,audio/mp4,audio/wav,audio/vorbis,audio/flac">
                         </div>
 
                         <div class="checkbox {{if .Err_IsPrivate}}has-error{{end}}">
                             <label>
-                                <input type="checkbox" name="is_private" id="is_private" class="" value="true">{{.i18n.Tr "track.form_is_private"}}
+                                <input type="checkbox" name="is_private" id="is_private" class="" value="true">{{Gettext ("Private track ?")}}
                             </label>
                         </div>
 
                         <div class="checkbox {{if .Err_ShowDlLink}}has-error{{end}}">
                             <label>
-                            <input type="checkbox" name="show_dl_link" id="show_dl_link" class="" value="true" checked>{{.i18n.Tr "track.form_show_dl_link"}}
+                            <input type="checkbox" name="show_dl_link" id="show_dl_link" class="" value="true" checked>{{Gettext ("Show downloads links ?")}}
                             </label>
                         </div>
 
-                        <button class="btn btn-sm btn-success" type="submit">{{.i18n.Tr "form.upload"}}</button>
+                        <button class="btn btn-sm btn-success" type="submit">{{Gettext ("Upload")}}</button>
                     </div>
                 </div>
             </div>

@@ -6,14 +6,14 @@
 <footer>
     <div>
         <div class="left">
-            © 2017 reel2bits - {{.i18n.Tr "footer.version"}}: {{AppVer}} - {{.i18n.Tr "footer.page"}}: <strong>{{LoadTimes .PageStartTime}}</strong> - {{.i18n.Tr "footer.template"}}: <strong>{{call .TmplLoadTimes}}</strong>
+            &copy; 2017-2018 reel2bits - {{Gettext "version: %s" AppVer}} - {{Gettext "page: <strong>%s</strong>" (LoadTimes .PageStartTime) | Safe}} - {{Gettext "template: <strong>%s</strong>" (call .TmplLoadTimes) | Safe}}
         </div>
         <div class="right">
             {{if NeedsImpressum}}
             <a href="{{URLFor "impressum"}}">Impressum</a>
             -
             {{end}}
-            <a target="_blank" href="https://dev.sigpipe.me/dashie/reel2bits">{{.i18n.Tr "footer.sources"}}</a>
+            <a target="_blank" href="https://dev.sigpipe.me/dashie/reel2bits">{{Gettext ("Sources")}}</a>
             -
             <span class="version">{{GoVer}}</span>
         </div>

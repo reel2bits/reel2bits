@@ -1,21 +1,25 @@
 {{template "base/head" .}}
 
 <div class="row">
-    <div class="col-lg-11 col-lg-offset-1">
+    <div class="col-lg-2">
+        {{template "admin/sidebar" .}}
+    </div>
+
+    <div class="col-lg-9">
         <div class="page_modal admin-dashboard">
             <div class="header">
-                <h4>{{.i18n.Tr "admin.monitor.cron"}}</h4>
+                <h4>{{Gettext ("Cron Tasks")}}</h4>
             </div>
 
             <div class="content">
                 <table class="table table-stripped table-compact">
                     <thead>
                     <tr>
-                        <th>{{.i18n.Tr "admin.monitor.name"}}</th>
-                        <th>{{.i18n.Tr "admin.monitor.schedule"}}</th>
-                        <th>{{.i18n.Tr "admin.monitor.next"}}</th>
-                        <th>{{.i18n.Tr "admin.monitor.previous"}}</th>
-                        <th>{{.i18n.Tr "admin.monitor.execute_times"}}</th>
+                        <th>{{Gettext ("Name")}}</th>
+                        <th>{{Gettext ("Schedule")}}</th>
+                        <th>{{Gettext ("Next Time")}}</th>
+                        <th>{{Gettext ("Previous Time")}}</th>
+                        <th>{{Gettext ("Execute Times")}}</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -37,109 +41,73 @@
 </div>
 
 <div class="row">
-    <div class="col-lg-11 col-lg-offset-1">
+    <div class="col-lg-9 col-lg-offset-2">
         <div class="page_modal admin-dashboard">
             <div class="header">
-                <h4>{{.i18n.Tr "admin.worker.queue_transcoding_infos"}}</h4>
-            </div>
-
-            <div class="content">
-                <table class="table table-stripped table-compact">
-                    <thead>
-                    <tr>
-                        <th>{{.i18n.Tr "admin.worker.uuid"}}</th>
-                        <th>{{.i18n.Tr "admin.worker.name"}}</th>
-                        <th>{{.i18n.Tr "admin.worker.eta"}}</th>
-                        <th>{{.i18n.Tr "admin.worker.retry_count"}}</th>
-                        <th>{{.i18n.Tr "admin.worker.args"}}</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {{range .queue_transcoding_infos}}
-                    <tr>
-                        <td>{{.UUID}}</td>
-                        <td>{{.Name}}</td>
-                        <td>{{.ETA}}</td>
-                        <td>{{.RetryCount}}</td>
-                        <td>{{.Args}}</td>
-                    </tr>
-                    {{end}}
-                    </tbody>
-                </table>
-            </div>
-
-        </div>
-    </div>
-</div>
-
-<div class="row">
-    <div class="col-lg-11 col-lg-offset-1">
-        <div class="page_modal admin-dashboard">
-            <div class="header">
-                <h4>{{.i18n.Tr "admin.dashboard.system_status"}}</h4>
+                <h4>{{Gettext ("System Monitor Status")}}</h4>
             </div>
 
             <div class="content">
                 <dl class="sys-stats">
-                    <dt>{{.i18n.Tr "admin.dashboard.server_uptime"}}</dt>
+                    <dt>{{Gettext ("Server Uptime")}}</dt>
                     <dd>{{.SysStatus.Uptime}}</dd>
-                    <dt>{{.i18n.Tr "admin.dashboard.current_goroutine"}}</dt>
+                    <dt>{{Gettext ("Current Goroutines")}}</dt>
                     <dd>{{.SysStatus.NumGoroutine}}</dd>
                     <div class="ui divider"></div>
-                    <dt>{{.i18n.Tr "admin.dashboard.current_memory_usage"}}</dt>
+                    <dt>{{Gettext ("Current Memory Usage")}}</dt>
                     <dd>{{.SysStatus.MemAllocated}}</dd>
-                    <dt>{{.i18n.Tr "admin.dashboard.total_memory_allocated"}}</dt>
+                    <dt>{{Gettext ("Total Memory Allocated")}}</dt>
                     <dd>{{.SysStatus.MemTotal}}</dd>
-                    <dt>{{.i18n.Tr "admin.dashboard.memory_obtained"}}</dt>
+                    <dt>{{Gettext ("Memory Obtained")}}</dt>
                     <dd>{{.SysStatus.MemSys}}</dd>
-                    <dt>{{.i18n.Tr "admin.dashboard.pointer_lookup_times"}}</dt>
+                    <dt>{{Gettext ("Pointer Lookup Times")}}</dt>
                     <dd>{{.SysStatus.Lookups}}</dd>
-                    <dt>{{.i18n.Tr "admin.dashboard.memory_allocate_times"}}</dt>
+                    <dt>{{Gettext ("Memory Allocate Times")}}</dt>
                     <dd>{{.SysStatus.MemMallocs}}</dd>
-                    <dt>{{.i18n.Tr "admin.dashboard.memory_free_times"}}</dt>
+                    <dt>{{Gettext ("Memory Free Times")}}</dt>
                     <dd>{{.SysStatus.MemFrees}}</dd>
                     <div class="ui divider"></div>
-                    <dt>{{.i18n.Tr "admin.dashboard.current_heap_usage"}}</dt>
+                    <dt>{{Gettext ("Current Heap Usage")}}</dt>
                     <dd>{{.SysStatus.HeapAlloc}}</dd>
-                    <dt>{{.i18n.Tr "admin.dashboard.heap_memory_obtained"}}</dt>
+                    <dt>{{Gettext ("Heap Memory Obtained")}}</dt>
                     <dd>{{.SysStatus.HeapSys}}</dd>
-                    <dt>{{.i18n.Tr "admin.dashboard.heap_memory_idle"}}</dt>
+                    <dt>{{Gettext ("Heap Memory Idle")}}</dt>
                     <dd>{{.SysStatus.HeapIdle}}</dd>
-                    <dt>{{.i18n.Tr "admin.dashboard.heap_memory_in_use"}}</dt>
+                    <dt>{{Gettext ("Heap Memory In Use")}}</dt>
                     <dd>{{.SysStatus.HeapInuse}}</dd>
-                    <dt>{{.i18n.Tr "admin.dashboard.heap_memory_released"}}</dt>
+                    <dt>{{Gettext ("Heap Memory Released")}}</dt>
                     <dd>{{.SysStatus.HeapReleased}}</dd>
-                    <dt>{{.i18n.Tr "admin.dashboard.heap_objects"}}</dt>
+                    <dt>{{Gettext ("Heap Objects")}}</dt>
                     <dd>{{.SysStatus.HeapObjects}}</dd>
                     <div class="ui divider"></div>
-                    <dt>{{.i18n.Tr "admin.dashboard.bootstrap_stack_usage"}}</dt>
+                    <dt>{{Gettext ("Bootstrap Stack Usage")}}</dt>
                     <dd>{{.SysStatus.StackInuse}}</dd>
-                    <dt>{{.i18n.Tr "admin.dashboard.stack_memory_obtained"}}</dt>
+                    <dt>{{Gettext ("Stack Memory Obtained")}}</dt>
                     <dd>{{.SysStatus.StackSys}}</dd>
-                    <dt>{{.i18n.Tr "admin.dashboard.mspan_structures_usage"}}</dt>
+                    <dt>{{Gettext ("MSpan Structures Usage")}}</dt>
                     <dd>{{.SysStatus.MSpanInuse}}</dd>
-                    <dt>{{.i18n.Tr "admin.dashboard.mspan_structures_obtained"}}</dt>
+                    <dt>{{Gettext ("MSpan Structures Obtained")}}</dt>
                     <dd>{{.SysStatus.MSpanSys}}</dd>
-                    <dt>{{.i18n.Tr "admin.dashboard.mcache_structures_usage"}}</dt>
+                    <dt>{{Gettext ("MCache Structures Usage")}}</dt>
                     <dd>{{.SysStatus.MCacheInuse}}</dd>
-                    <dt>{{.i18n.Tr "admin.dashboard.mcache_structures_obtained"}}</dt>
+                    <dt>{{Gettext ("MCache Structures Obtained")}}</dt>
                     <dd>{{.SysStatus.MCacheSys}}</dd>
-                    <dt>{{.i18n.Tr "admin.dashboard.profiling_bucket_hash_table_obtained"}}</dt>
+                    <dt>{{Gettext ("Profiling Bucket Hash Table Obtained")}}</dt>
                     <dd>{{.SysStatus.BuckHashSys}}</dd>
-                    <dt>{{.i18n.Tr "admin.dashboard.gc_metadata_obtained"}}</dt>
+                    <dt>{{Gettext ("GC Metadata Obtained")}}</dt>
                     <dd>{{.SysStatus.GCSys}}</dd>
-                    <dt>{{.i18n.Tr "admin.dashboard.other_system_allocation_obtained"}}</dt>
+                    <dt>{{Gettext ("Other System Allocation Obtained")}}</dt>
                     <dd>{{.SysStatus.OtherSys}}</dd>
                     <div class="ui divider"></div>
-                    <dt>{{.i18n.Tr "admin.dashboard.next_gc_recycle"}}</dt>
+                    <dt>{{Gettext ("Next GC Recycle")}}</dt>
                     <dd>{{.SysStatus.NextGC}}</dd>
-                    <dt>{{.i18n.Tr "admin.dashboard.last_gc_time"}}</dt>
+                    <dt>{{Gettext ("Since Last GC Time")}}</dt>
                     <dd>{{.SysStatus.LastGC}}</dd>
-                    <dt>{{.i18n.Tr "admin.dashboard.total_gc_pause"}}</dt>
+                    <dt>{{Gettext ("Total GC Pause")}}</dt>
                     <dd>{{.SysStatus.PauseTotalNs}}</dd>
-                    <dt>{{.i18n.Tr "admin.dashboard.last_gc_pause"}}</dt>
+                    <dt>{{Gettext ("Last GC Pause")}}</dt>
                     <dd>{{.SysStatus.PauseNs}}</dd>
-                    <dt>{{.i18n.Tr "admin.dashboard.gc_times"}}</dt>
+                    <dt>{{Gettext ("GC Times")}}</dt>
                     <dd>{{.SysStatus.NumGC}}</dd>
                 </dl>
             </div>

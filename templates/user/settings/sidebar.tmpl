@@ -1,5 +1,5 @@
 <div class="settings_sidebar">
-    <div class="header item">Settings</div>
-    <a class="{{if .PageIsSettingsProfile}}active{{end}} item" href="{{ URLFor "user_settings"}}">{{.i18n.Tr "settings.sidebar.profile"}}</a>
-    <a class="item" href="{{ URLFor "user_forget_password"}}">{{.i18n.Tr "settings.sidebar.reset_password"}}</a>
+    <div class="header item">{{ Gettext ("Settings") }}</div>
+    <a class="{{if .PageIsSettingsProfile}}active{{end}} item" href="/user/settings">{{Gettext ("Profile")}}</a>
+    <a class="item" href="/user/forget_password">{{Gettext ("Reset Password")}}</a>
 </div>
