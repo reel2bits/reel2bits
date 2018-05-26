@@ -34,7 +34,7 @@ func runWorker(ctx *cli.Context) error {
 		return err
 	}
 
-	worker := server.NewWorker("transcoding_infos")
+	worker := server.NewWorker("transcoding_infos", 0)
 	err = worker.Launch()
 	if err != nil {
 		log.Errorf("Launching worker transcoding_infos error: %s", err)
