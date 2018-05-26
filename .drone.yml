@@ -2,12 +2,13 @@ workspace:
   base: /srv/app
   path: src/dev.sigpipe.me/dashie/reel2bits
 
+clone:
+  image: plugins/git
+  depth: 50
+  tags: true
+
 pipeline:
-  clone:
-    image: plugins/git
-    depth: 50
-    tags: true
-  build:
+  linters:
     image: webhippie/golang:edge
     pull: true
     environment:
@@ -15,16 +16,13 @@ pipeline:
       GOPATH: /srv/app
     commands:
       - apk -U add sox sox-dev taglib taglib-dev libmagic file-dev
-      - go get -u github.com/golang/dep/cmd/dep
-      - dep ensure
-      - git status
       - make clean
       - make vet
       - make lint
       - make misspell-check
-      - make build
     when:
       event: [ push, tag, pull_request ]
+
   test:
     image: webhippie/golang:edge
     pull: true
@@ -36,16 +34,31 @@ pipeline:
       - make test
     when:
       event: [ push, tag, pull_request ]
-  test-sqlite:
+
+  integration_sqlite:
     image: webhippie/golang:edge
     pull: true
     environment:
+      TAGS: sqlite
       GOPATH: /srv/app
     commands:
       - apk -U add sox sox-dev taglib taglib-dev libmagic file-dev
-      - make test-sqlite
+      - make integrations-sqlite
     when:
       event: [ push, tag, pull_request ]
+
+  build:
+    image: webhippie/golang:edge
+    pull: true
+    environment:
+      TAGS: sqlite
+      GOPATH: /srv/app
+    commands:
+      - apk -U add sox sox-dev taglib taglib-dev libmagic file-dev
+      - make build
+    when:
+      event: [ push, tag, pull_request ]
+
   publish:
     image: plugins/docker
     repo: dashie/reel2bits-web
@@ -63,6 +76,7 @@ pipeline:
     secrets:
         - DOCKER_USERNAME
         - DOCKER_PASSWORD
+
   notify:
     image: plugins/slack
     channel: gitea
