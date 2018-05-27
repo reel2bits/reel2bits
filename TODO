@@ -17,8 +17,6 @@ remove TLITEM:
 - album.tracks <= 0
 ***
 
-check pagination counts
-
 check ASC/DESC
 
 changer les suburl "/..." hardcodés en utilisant les .Name() dans les routes
