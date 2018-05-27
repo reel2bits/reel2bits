@@ -6,6 +6,7 @@ import (
 	"dev.sigpipe.me/dashie/reel2bits/pkg/form"
 	"dev.sigpipe.me/dashie/reel2bits/setting"
 	"fmt"
+	"github.com/getsentry/raven-go"
 	"github.com/go-macaron/cache"
 	"github.com/go-macaron/csrf"
 	"github.com/go-macaron/session"
@@ -109,6 +110,9 @@ func (c *Context) NotFound() {
 
 // ServerError renders the 500 page.
 func (c *Context) ServerError(title string, err error) {
+	if setting.UseRaven {
+		raven.CaptureError(err, nil)
+	}
 	c.Handle(http.StatusInternalServerError, title, err)
 }
 

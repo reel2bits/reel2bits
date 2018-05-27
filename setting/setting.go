@@ -39,6 +39,8 @@ var (
 	BuildTime    string
 	BuildGitHash string
 
+	UseRaven bool
+
 	// App Settings
 	AppVer         string
 	AppPath        string

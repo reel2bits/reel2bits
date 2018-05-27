@@ -7,6 +7,7 @@ import (
 	"dev.sigpipe.me/dashie/reel2bits/pkg/cron"
 	"dev.sigpipe.me/dashie/reel2bits/pkg/form"
 	"dev.sigpipe.me/dashie/reel2bits/pkg/mailer"
+	"dev.sigpipe.me/dashie/reel2bits/pkg/recovery"
 	"dev.sigpipe.me/dashie/reel2bits/pkg/template"
 	"dev.sigpipe.me/dashie/reel2bits/routes/admin"
 	"dev.sigpipe.me/dashie/reel2bits/routes/album"
@@ -52,7 +53,7 @@ func NewMacaron() *macaron.Macaron {
 		m.Use(macaron.Logger())
 	}
 
-	m.Use(macaron.Recovery())
+	m.Use(recovery.Recovery())
 
 	if setting.Protocol == setting.SchemeFcgi {
 		m.SetURLPrefix(setting.AppSubURL)
