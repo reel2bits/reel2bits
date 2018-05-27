@@ -454,7 +454,7 @@ func DeleteTrack(trackID uint, userID uint) (err error) {
 
 	// Get track info
 	trackInfo := &TrackInfo{}
-	err = db.Where("track_id = ?", trackID).First(&trackInfo).Error
+	err = db.Where("id = ?", track.TrackInfoID).First(&trackInfo).Error
 	if gorm.IsRecordNotFoundError(err) || trackInfo.ID == 0 {
 		// do nothing
 	} else if err != nil {
@@ -472,9 +472,12 @@ func DeleteTrack(trackID uint, userID uint) (err error) {
 		return fmt.Errorf("Delete track: %v", err)
 	}
 
-	err = db.Delete(trackInfo).Error
-	if err != nil {
-		return fmt.Errorf("Delete track info: %v", err)
+	// Don't do any delete if the trackInfo was not found (ID == 0)
+	if trackInfo.ID > 0 {
+		err = db.Delete(trackInfo).Error
+		if err != nil {
+			return fmt.Errorf("Delete track info: %v", err)
+		}
 	}
 
 	log.Infof("Deleted track record for %d/%s", track.ID, track.Title)
