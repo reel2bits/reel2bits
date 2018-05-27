@@ -36,7 +36,7 @@ func (album *Album) BeforeUpdate() (err error) {
 }
 
 func (album *Album) getTracksCount(db *gorm.DB) (count int64, err error) {
-	db.Model(&Album{}).Select("id").Where("id = ?", album.ID).Count(&count)
+	db.Model(&Track{}).Select("id").Where("album_id = ?", album.ID).Count(&count)
 	return
 }
 
