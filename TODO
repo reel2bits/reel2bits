@@ -1,9 +1,11 @@
 datatables broken ???
   -> what is broken ?
 
-the "Timeline", albums plus tracks mixed on one page
 
 more tests for sec (not UT)
+
+***
+the "Timeline", albums plus tracks mixed on one page
 
 implementer l'ajout a la TLITEM lors:
 - ajout track
@@ -11,4 +13,36 @@ implementer l'ajout a la TLITEM lors:
 remove TLITEM:
 - rm track
 - public -> private
+***
+
+check pagination counts
+
+check ASC/DESC
+
+readme: add BBC Audiowaveform
+
+changer les suburl "/..." hardcodés en utilisant les .Name() dans les routes
+
+Tr() des erreurs des routes -> gettext
+
+afficher sur la page que les infos sont indispos ...
+  -> et ne pas permettre l'affichage si non loggué+uploadeur
+  -> ne pas lister dans les albums si non loggué+uploadeur
+  [Macaron] 2018-05-27 00:11:54: Completed GET /medias/track/dashie//stream/mp3 500 Internal Server Error in 8.481017ms
+  -> avoid some calls when page not processed
+  -> pété depuis passage a gorm. besoin de checker vis-a-vis des colonnes de status
+
+ERRO[2018-05-27 00:11:54] No.: <nil>                                    source="context/context.go:95"
+  -> No.: <nil> ???
+
+ERRO[2018-05-27 00:14:44] Audiowaveform binary doesn't exists.          bin=/usr/local/bin/audiowaveform err="stat /usr/local/bin/audiowaveform: no such file or directory" source="workers/transcoding_infos.go:133" trackID=1
+ERRO[2018-05-27 00:14:44] Cannot create Waveforms                       err="Error: /usr/local/bin/audiowaveform doesn't exists" source="workers/transcoding_infos.go:368" trackID=1
+  -> retry ?
+  -> on dirait pas, voir pour rajouter un bouton pour relancer un transcoding / extract
+
+may uploading should trigger workers ?
+
+sox issue, from WAV, but not critical ?
+  formats: mp3 can't encode Signed Integer PCM
+  formats: mp3 can't encode to 16-bit
 
