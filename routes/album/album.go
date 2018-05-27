@@ -46,7 +46,7 @@ func NewPost(ctx *context.Context, f form.Album) {
 		switch {
 		case models.IsErrTrackTitleAlreadyExist(err):
 			ctx.Data["Err_Title"] = true
-			ctx.RenderWithErr(ctx.Gettext("form.track_title_exists"), tmplNew, &f)
+			ctx.RenderWithErr(ctx.Gettext("track title already exists"), tmplNew, &f)
 		default:
 			ctx.Handle(500, "CreateTrack", err)
 		}
@@ -55,7 +55,7 @@ func NewPost(ctx *context.Context, f form.Album) {
 	}
 	log.Debugf("Album created: %d/%s", a.ID, a.Name)
 
-	ctx.Flash.Success(ctx.Gettext("album.new_success"))
+	ctx.Flash.Success(ctx.Gettext("Album created"))
 	ctx.SubURLRedirect(ctx.URLFor("album_show", ":userSlug", ctx.User.Slug, ":albumSlug", a.Slug))
 }
 
@@ -99,7 +99,7 @@ func ListFromUser(ctx *context.Context) {
 	listOfAlbums, albumsCount, err := models.GetAlbums(opts)
 	if err != nil {
 		log.Warnf("Cannot get Albums with opts %v, %s", opts, err)
-		ctx.Flash.Error(ctx.Gettext("album_list.error_getting_list"))
+		ctx.Flash.Error(ctx.Gettext("Error getting list of albums"))
 		ctx.Handle(500, "ListAlbums", err)
 		return
 	}
@@ -247,7 +247,7 @@ func EditPost(ctx *context.Context, f form.Album) {
 		return
 	}
 
-	ctx.Flash.Success(ctx.Gettext("album.edit_success"))
+	ctx.Flash.Success(ctx.Gettext("Album edited"))
 	ctx.SubURLRedirect(ctx.URLFor("album_show", ":userSlug", user.Slug, ":albumSlug", album.Slug))
 
 }
@@ -287,23 +287,23 @@ func DeleteAlbum(ctx *context.Context, f form.AlbumDelete) {
 
 	if ctx.Data["LoggedUserID"] != album.UserID {
 		ctx.JSONSuccess(map[string]interface{}{
-			"error":    ctx.Gettext("user.unauthorized"),
+			"error":    ctx.Gettext("Unauthorized"),
 			"redirect": false,
 		})
 	}
 
 	err = models.DeleteAlbum(album.ID, album.UserID)
 	if err != nil {
-		ctx.Flash.Error(ctx.Gettext("album_delete.error_deleting"))
+		ctx.Flash.Error(ctx.Gettext("Error deleting album"))
 		log.Warnf("DeleteAlbum.Delete: %v", err)
 		ctx.JSONSuccess(map[string]interface{}{
-			"error":    ctx.Gettext("album_delete.error_deleting"),
+			"error":    ctx.Gettext("Error deleting album"),
 			"redirect": false,
 		})
 		return
 	}
 
-	ctx.Flash.Success(ctx.Gettext("album.delete_success"))
+	ctx.Flash.Success(ctx.Gettext("Album deleted"))
 	ctx.JSONSuccess(map[string]interface{}{
 		"error":    nil,
 		"redirect": ctx.SubURLFor("album_list", ":userSlug", user.Slug),

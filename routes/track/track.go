@@ -75,7 +75,7 @@ func UploadPost(ctx *context.Context, f form.TrackUpload) {
 	if err != nil {
 		log.Errorf("Cannot save track file: %s", err)
 		ctx.Flash.Error("Cannot save track file, please retry")
-		ctx.RenderWithErr(ctx.Gettext("form.track_file_error"), tmplUpload, &f)
+		ctx.RenderWithErr(ctx.Gettext("file is invalid"), tmplUpload, &f)
 		return
 	}
 
@@ -88,7 +88,7 @@ func UploadPost(ctx *context.Context, f form.TrackUpload) {
 		switch {
 		case models.IsErrTrackTitleAlreadyExist(err):
 			ctx.Data["Err_Title"] = true
-			ctx.RenderWithErr(ctx.Gettext("form.track_title_exists"), tmplUpload, &f)
+			ctx.RenderWithErr(ctx.Gettext("track title already exists"), tmplUpload, &f)
 		default:
 			ctx.Handle(500, "CreateTrack", err)
 		}
@@ -112,7 +112,7 @@ func UploadPost(ctx *context.Context, f form.TrackUpload) {
 	}
 	server, err := workers.CreateServer()
 	if err != nil {
-		ctx.Flash.Error("Cannot initiate the worker connection, please retry again.")
+		ctx.Flash.Error(ctx.Gettext("Cannot initiate the worker connection, please retry again."))
 		if t.TranscodeNeeded {
 			err = models.UpdateTrackState(t.ID, &models.Track{TranscodeState: models.ProcessingRetrying}, models.TrackTranscoding)
 			if err != nil {
@@ -127,7 +127,7 @@ func UploadPost(ctx *context.Context, f form.TrackUpload) {
 	}
 	_, err = server.SendTask(sig)
 	if err != nil {
-		ctx.Flash.Error("Cannot push the worker job, the watchdog should take care of it.")
+		ctx.Flash.Error(ctx.Gettext("Cannot push the worker job, the watchdog should take care of it."))
 		if t.TranscodeNeeded {
 			err = models.UpdateTrackState(t.ID, &models.Track{TranscodeState: models.ProcessingRetrying}, models.TrackTranscoding)
 			if err != nil {
@@ -140,7 +140,7 @@ func UploadPost(ctx *context.Context, f form.TrackUpload) {
 		}
 	}
 
-	ctx.Flash.Success(ctx.Gettext("track.upload_success"))
+	ctx.Flash.Success(ctx.Gettext("Track uploaded"))
 	ctx.SubURLRedirect(ctx.URLFor("track_show", ":userSlug", ctx.User.Slug, ":trackSlug", t.Slug))
 }
 
@@ -179,7 +179,7 @@ func Show(ctx *context.Context) {
 		album, err := models.GetAlbumByID(track.AlbumID)
 		if err != nil {
 			log.Errorf("Cannot get album %d for track %d: %s", track.AlbumID, track.ID, err)
-			ctx.Flash.Error("Invalid album.")
+			ctx.Flash.Error(ctx.Gettext("Invalid album."))
 			//ctx.SubURLRedirect(ctx.URLFor("home"), 404)
 			ctx.Data["album"] = nil
 		} else {
@@ -346,7 +346,7 @@ func ListUserTracks(ctx *context.Context) {
 	listOfTracks, tracksCount, err := models.GetTracks(opts)
 	if err != nil {
 		log.Warnf("Cannot get Tracks with opts %v, %s", opts, err)
-		ctx.Flash.Error(ctx.Gettext("track_list.error_getting_list"))
+		ctx.Flash.Error(ctx.Gettext("Error getting list of tracks"))
 		ctx.Handle(500, "ListTracks", err)
 		return
 	}
@@ -397,23 +397,23 @@ func DeleteTrack(ctx *context.Context, f form.TrackDelete) {
 
 	if ctx.Data["LoggedUserID"] != track.UserID {
 		ctx.JSONSuccess(map[string]interface{}{
-			"error":    ctx.Gettext("user.unauthorized"),
+			"error":    ctx.Gettext("Unauthorized"),
 			"redirect": false,
 		})
 	}
 
 	err = models.DeleteTrack(track.ID, track.UserID)
 	if err != nil {
-		ctx.Flash.Error(ctx.Gettext("track_delete.error_deleting"))
+		ctx.Flash.Error(ctx.Gettext("Error deleting track"))
 		log.Warnf("DeleteTrack.Delete: %v", err)
 		ctx.JSONSuccess(map[string]interface{}{
-			"error":    ctx.Gettext("track_delete.error_deleting"),
+			"error":    ctx.Gettext("Error deleting track"),
 			"redirect": false,
 		})
 		return
 	}
 
-	ctx.Flash.Success(ctx.Gettext("track.delete_success"))
+	ctx.Flash.Success(ctx.Gettext("Track deleted"))
 	ctx.JSONSuccess(map[string]interface{}{
 		"error":    nil,
 		"redirect": ctx.SubURLFor("track_list", ":userSlug", user.Slug),
@@ -584,6 +584,6 @@ func EditPost(ctx *context.Context, f form.TrackEdit) {
 		return
 	}
 
-	ctx.Flash.Success(ctx.Gettext("track.edit_success"))
+	ctx.Flash.Success(ctx.Gettext("Track edited"))
 	ctx.SubURLRedirect(ctx.URLFor("track_show", ":userSlug", user.Slug, ":trackSlug", track.Slug))
 }

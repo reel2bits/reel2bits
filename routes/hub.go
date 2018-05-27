@@ -14,13 +14,13 @@ const (
 
 // NotFound [GET]
 func NotFound(ctx *context.Context) {
-	ctx.Title(ctx.Gettext("error.page_not_found"))
+	ctx.Title(ctx.Gettext("Page Not Found"))
 	ctx.Handle(404, "home.NotFound", nil)
 }
 
 // Impressum [GET]
 func Impressum(ctx *context.Context) {
-	ctx.Title(ctx.Gettext("impressum.title"))
+	ctx.Title(ctx.Gettext("Impressum"))
 	ctx.Success(tmplImpressum)
 }
 
@@ -43,7 +43,7 @@ func Home(ctx *context.Context) {
 	listOfItems, itemsCount, err := models.GetTimelineItems(opts)
 	if err != nil {
 		log.Warnf("Cannot get TimelineItems with opts %v, %s", opts, err)
-		ctx.Flash.Error(ctx.Gettext("track_list.error_getting_list"))
+		ctx.Flash.Error(ctx.Gettext("Error getting timeline items"))
 		ctx.Handle(500, "ListTimelineItems", err)
 		return
 	}

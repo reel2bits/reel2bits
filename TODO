@@ -21,8 +21,6 @@ check ASC/DESC
 
 changer les suburl "/..." hardcodés en utilisant les .Name() dans les routes
 
-Tr() des erreurs des routes -> gettext
-
 afficher sur la page que les infos sont indispos ...
   -> et ne pas permettre l'affichage si non loggué+uploadeur
   -> ne pas lister dans les albums si non loggué+uploadeur
