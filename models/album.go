@@ -36,7 +36,7 @@ func (album *Album) BeforeUpdate() (err error) {
 }
 
 func (album *Album) getTracksCount(db *gorm.DB) (count int64, err error) {
-	db.Model(&Album{}).Select("id").Where("album_id = ?", album.ID).Count(&count)
+	db.Model(&Album{}).Select("id").Where("id = ?", album.ID).Count(&count)
 	return
 }
 
@@ -222,7 +222,7 @@ func DeleteAlbum(albumID uint, userID uint) (err error) {
 
 // GetMapNameIDOfAlbums returns a []Album of albums
 func GetMapNameIDOfAlbums(userID uint) (sets []Album, err error) {
-	err = db.Model(&Album{}).Select("id", "name").Where("user_id = ?", userID).Find(&sets).Error
+	err = db.Model(&Album{}).Select("id, name").Where("user_id = ?", userID).Find(&sets).Error
 	return
 }
 

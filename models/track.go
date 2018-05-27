@@ -311,14 +311,14 @@ func GetTrackByAlbumIDAndOrder(albumID uint, albumOrder int64) (track Track, err
 
 // GetFirstTrackOfAlbum and not the last
 // IF the album is empty, an error will be thrown by the .Find()
-func GetFirstTrackOfAlbum(albumID uint, onlyPublic bool) (track *Track, err error) {
+func GetFirstTrackOfAlbum(albumID uint, onlyPublic bool) (track Track, err error) {
 	tx := db.Preload("TrackInfo").Preload("User").Where("album_id = ?", albumID)
 
 	if onlyPublic {
 		tx = tx.Where("ready = ? AND is_private = ?", true, false)
 	}
 
-	err = tx.Order("track.album_order ASC").Limit(1).Find(&track).Error
+	err = tx.Order("album_order ASC").First(&track).Error
 	return
 }
 

@@ -187,6 +187,8 @@ func Show(ctx *context.Context) {
 		}
 	}
 
+	// TODO: handle tmplShowWait
+
 	ctx.HTML(200, tmplShow)
 }
 
@@ -507,16 +509,23 @@ func Edit(ctx *context.Context) {
 		return
 	}
 
-	albums, _ := models.GetMapNameIDOfAlbums(ctx.User.ID)
+	albums, err := models.GetMapNameIDOfAlbums(ctx.User.ID)
+	if err != nil {
+		log.Errorf("Error getting album list for user %d: %v", ctx.User.ID, err)
+	}
 
 	ctx.Data["albums"] = albums
-	ctx.Data["track"] = track
-	ctx.Data["user"] = user
+	ctx.Data["description"] = track.Description
+	ctx.Data["is_private"] = track.IsPrivate
+	ctx.Data["show_dl_link"] = track.ShowDlLink
 	ctx.Data["Title"] = fmt.Sprintf("%s by %s - %s", track.Title, user.UserName, setting.AppName)
+	ctx.Data["title"] = track.Title
 	ctx.Data["cur_album"] = track.AlbumID
-	ctx.PageIs("TrackShowWait")
+	ctx.PageIs("TrackEdit")
 
-	ctx.HTML(200, tmplShowWait)
+	// TODO: handle tmplShowWait
+
+	ctx.HTML(200, tmplEdit)
 }
 
 // EditPost [POST]

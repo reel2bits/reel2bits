@@ -29,9 +29,9 @@
                 </div>
             </div>
 
-            {{ if .sound.Track.Description }}
+            {{ if .sound.Description }}
             <div class="row sound-description">
-                <div class="col-lg-12"><span id="song-description">{{ .sound.Track.Description }}</span></div>
+                <div class="col-lg-12"><span id="song-description">{{ .sound.Description }}</span></div>
             </div>
             {{ end }}
         {{ end }}
@@ -75,10 +75,10 @@
                     <thead><tr><th></th><th></th><th></th><th></th></tr></thead>
                     <tbody>
                     {{ range .tracks }}
-                    <tr class="play-song {{if (eq $.sound.Track.ID .Track.ID)}}song-active{{end}}" data-soundid="{{ .Track.ID }}" data-href="{{URLFor "track_infos_json" ":userSlug" $.user.Slug ":trackSlug" .Track.Slug}}" data-hrefreorder="{{URLFor "track_reorder" ":userSlug" $.user.Slug ":trackSlug" .Track.Slug}}">
-                    <td width="10px">{{ .Track.AlbumOrder }}</td>
-                    <td width="20px"><a href="{{ URLFor "track_show" ":userSlug" $.user.Slug ":trackSlug" .Track.Slug }}"><i class="fa fa-link" aria-hidden="true"></i></a></td>
-                    <td class="switch-song"><i class="fa fa-{{ if .Track.IsPrivate }}lock{{ else }}play{{ end }}" aria-hidden="true"></i> {{ SubStr .Track.Title 0 70 }}</td>
+                    <tr class="play-song {{if (eq $.sound.ID .ID)}}song-active{{end}}" data-soundid="{{ .ID }}" data-href="{{URLFor "track_infos_json" ":userSlug" $.user.Slug ":trackSlug" .Slug}}" data-hrefreorder="{{URLFor "track_reorder" ":userSlug" $.user.Slug ":trackSlug" .Slug}}">
+                    <td width="10px">{{ .AlbumOrder }}</td>
+                    <td width="20px"><a href="{{ URLFor "track_show" ":userSlug" $.user.Slug ":trackSlug" .Slug }}"><i class="fa fa-link" aria-hidden="true"></i></a></td>
+                    <td class="switch-song"><i class="fa fa-{{ if .IsPrivate }}lock{{ else }}play{{ end }}" aria-hidden="true"></i> {{ SubStr .Title 0 70 }}</td>
                     <td class="switch-song ast-duration">{{ DurationToHuman .TrackInfo.Duration }}</td>
                     </tr>
                     {{ end }}
@@ -207,10 +207,10 @@
     {{ if (gt .album_sounds_count 0) }}
     // initial call, but only if we have an initial sound
     var wf_datas = {{ Unescape .sound.TrackInfo.Waveform }};
-    {{if (eq .sound.Track.Mimetype "audio/mpeg")}}
-    var filename = "{{URLFor "media_track_stream" ":userSlug" .user.Slug ":trackSlug" .sound.Track.Slug ":type" "orig"}}";
+    {{if (eq .sound.Mimetype "audio/mpeg")}}
+    var filename = "{{URLFor "media_track_stream" ":userSlug" .user.Slug ":trackSlug" .sound.Slug ":type" "orig"}}";
     {{else}}
-    var filename = "{{URLFor "media_track_stream" ":userSlug" .user.Slug ":trackSlug" .sound.Track.Slug ":type" "mp3"}}";
+    var filename = "{{URLFor "media_track_stream" ":userSlug" .user.Slug ":trackSlug" .sound.Slug ":type" "mp3"}}";
     {{end}}
 
     load_wf(filename, wf_datas.data);
