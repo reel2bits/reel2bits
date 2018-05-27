@@ -339,7 +339,7 @@ func GetTracks(opts *TrackOptions) (tracks []Track, count int64, err error) {
 	}
 	tracks = make([]Track, 0, opts.PageSize)
 
-	tx := db.Preload("TrackInfo").Preload("User").Order("created_at DESC").Offset((opts.Page - 1) * opts.PageSize).Limit(opts.PageSize)
+	tx := db.Model(&Track{}).Preload("TrackInfo").Preload("User").Order("created_at DESC").Offset((opts.Page - 1) * opts.PageSize).Limit(opts.PageSize)
 
 	tx = tx.Where("is_private = ?", false)
 

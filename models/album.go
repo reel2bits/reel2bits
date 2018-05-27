@@ -168,7 +168,7 @@ func GetAlbums(opts *AlbumOptions) (albums []Album, itemsCount int64, err error)
 
 	albums = make([]Album, 0, opts.PageSize)
 
-	tx := db.Preload("User").Order("created_at ASC").Offset((opts.Page - 1) * opts.PageSize).Limit(opts.PageSize)
+	tx := db.Model(&Album{}).Preload("User").Order("created_at ASC").Offset((opts.Page - 1) * opts.PageSize).Limit(opts.PageSize)
 
 	if opts.WithPrivate && !opts.GetAll {
 		tx = tx.Or("is_private = ?", true)
