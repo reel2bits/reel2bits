@@ -19,8 +19,6 @@ check pagination counts
 
 check ASC/DESC
 
-readme: add BBC Audiowaveform
-
 changer les suburl "/..." hardcodés en utilisant les .Name() dans les routes
 
 Tr() des erreurs des routes -> gettext

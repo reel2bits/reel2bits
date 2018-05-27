@@ -22,6 +22,10 @@ KISS, that's all.
 
     apt install libtagc0-dev libtag1-dev libmagic-dev sox libsox-fmt-mp3 libsox-dev
 
+- Audiowaveform
+    Check the documentation on how to install at: https://github.com/bbc/audiowaveform#installation
+    Don't forget to adapt the path in ```conf/app.ini``` for the audiowaveform binary.
+
 - Checkout:
 
     go get -v -insecure -u dev.sigpipe.me/dashie/reel2bits
