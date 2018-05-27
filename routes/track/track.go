@@ -187,7 +187,10 @@ func Show(ctx *context.Context) {
 		}
 	}
 
-	// TODO: handle tmplShowWait
+	if !track.Ready {
+		ctx.HTML(200, tmplShowWait)
+		return
+	}
 
 	ctx.HTML(200, tmplShow)
 }
@@ -523,7 +526,12 @@ func Edit(ctx *context.Context) {
 	ctx.Data["cur_album"] = track.AlbumID
 	ctx.PageIs("TrackEdit")
 
-	// TODO: handle tmplShowWait
+	if !track.Ready {
+		ctx.Data["user"] = user
+		ctx.Data["track"] = track
+		ctx.HTML(200, tmplShowWait)
+		return
+	}
 
 	ctx.HTML(200, tmplEdit)
 }

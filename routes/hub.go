@@ -48,7 +48,7 @@ func Home(ctx *context.Context) {
 		return
 	}
 
-	ctx.Data["items"] = listOfItems
+	ctx.Data["tracks"] = listOfItems
 	ctx.Data["items_count"] = itemsCount
 
 	ctx.Data["Total"] = itemsCount
