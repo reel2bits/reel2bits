@@ -30,7 +30,7 @@ import (
 )
 
 const (
-	panicHtml = `<html>
+	panicHTML = `<html>
 <head><title>PANIC: %s</title>
 <meta charset="utf-8" />
 <style type="text/css">
@@ -156,7 +156,7 @@ func Recovery() macaron.Handler {
 				var body []byte
 				if macaron.Env == macaron.DEV {
 					res.Header().Set("Content-Type", "text/html")
-					body = []byte(fmt.Sprintf(panicHtml, err, err, stack))
+					body = []byte(fmt.Sprintf(panicHTML, err, err, stack))
 				}
 
 				res.WriteHeader(http.StatusInternalServerError)
