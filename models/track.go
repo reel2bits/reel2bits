@@ -69,11 +69,11 @@ type Track struct {
 	TrackInfoID uint `gorm:"INDEX"`
 	TrackInfo   TrackInfo
 
-	Ready bool `gorm:"DEFAULT 0"` // ready means "can be shown to public, if not IsPrivate anyway
+	Ready bool `gorm:"DEFAULT:false"` // ready means "can be shown to public, if not IsPrivate anyway
 
 	// Permissions
-	IsPrivate  bool `gorm:"DEFAULT 0"`
-	ShowDlLink bool `gorm:"DEFAULT 1"`
+	IsPrivate  bool `gorm:"DEFAULT:false"`
+	ShowDlLink bool `gorm:"DEFAULT:true"`
 }
 
 // BeforeSave set default states

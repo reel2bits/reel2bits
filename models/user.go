@@ -31,8 +31,8 @@ type User struct {
 	Slug string `gorm:"UNIQUE"`
 
 	// Permissions
-	IsAdmin  bool `gorm:"DEFAULT:0"`
-	IsActive bool `gorm:"DEFAULT:0"`
+	IsAdmin  bool `gorm:"DEFAULT:false"`
+	IsActive bool `gorm:"DEFAULT:false"`
 }
 
 // BeforeSave Create slug

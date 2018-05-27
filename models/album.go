@@ -20,7 +20,7 @@ type Album struct {
 	Slug        string
 
 	// Permissions
-	IsPrivate bool `gorm:"DEFAULT 0"`
+	IsPrivate bool `gorm:"DEFAULT:false"`
 }
 
 // BeforeSave Create slug
