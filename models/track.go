@@ -315,7 +315,7 @@ func GetFirstTrackOfAlbum(albumID uint, onlyPublic bool) (track Track, err error
 	tx := db.Preload("TrackInfo").Preload("User").Where("album_id = ?", albumID)
 
 	if onlyPublic {
-		tx = tx.Where("ready = ? AND is_private = ?", true, false)
+		tx = tx.Where("ready = ? AND is_private = ?", true, "false")
 	}
 
 	err = tx.Order("album_order ASC").First(&track).Error
@@ -341,7 +341,7 @@ func GetTracks(opts *TrackOptions) (tracks []Track, count int64, err error) {
 
 	tx := db.Model(&Track{}).Preload("TrackInfo").Preload("User").Order("created_at DESC").Offset((opts.Page - 1) * opts.PageSize).Limit(opts.PageSize)
 
-	tx = tx.Where("is_private = ?", false)
+	tx = tx.Where("is_private = ?", "false")
 
 	if opts.WithPrivate && !opts.GetAll {
 		tx = tx.Or("is_private = ?", true)
@@ -362,7 +362,7 @@ func GetTracks(opts *TrackOptions) (tracks []Track, count int64, err error) {
 
 // GetNotReadyTracks and only that
 func GetNotReadyTracks() (tracks []Track, err error) {
-	err = db.Model(&Track{}).Where("ready = ?", false).Find(&tracks).Error
+	err = db.Model(&Track{}).Where("ready = ?", "false").Find(&tracks).Error
 	if err != nil {
 		log.Errorf("Cannot get un-ready tracks: %s", err)
 	}
@@ -376,7 +376,7 @@ func GetAlbumTracks(albumID uint, onlyPublic bool) (tracks []Track, err error) {
 	tx := db.Preload("User").Where("album_id = ?", albumID)
 
 	if onlyPublic {
-		tx = tx.Where("ready = ? AND is_private = ?", true, false)
+		tx = tx.Where("ready = ? AND is_private = ?", true, "false")
 	}
 
 	tx = tx.Order("album_order ASC")
