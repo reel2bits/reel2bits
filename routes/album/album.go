@@ -39,7 +39,7 @@ func NewPost(ctx *context.Context, f form.Album) {
 		UserID:      ctx.User.ID,
 		Name:        f.Name,
 		Description: f.Description,
-		IsPrivate:   f.IsPrivate,
+		Private:     models.BoolToFake(f.IsPrivate),
 	}
 
 	if err := models.CreateAlbum(a); err != nil {
@@ -236,7 +236,7 @@ func EditPost(ctx *context.Context, f form.Album) {
 
 	album.Name = f.Name
 	album.Description = f.Description
-	album.IsPrivate = f.IsPrivate
+	album.Private = models.BoolToFake(f.IsPrivate)
 
 	err = models.UpdateAlbum(&album)
 	if err != nil {

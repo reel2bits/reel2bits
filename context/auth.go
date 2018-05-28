@@ -39,7 +39,7 @@ func Toggle(options *ToggleOptions) macaron.Handler {
 				ctx.SetCookie("redirect_to", url.QueryEscape(setting.AppSubURL+ctx.Req.RequestURI), 0, setting.AppSubURL)
 				ctx.SubURLRedirect(ctx.URLFor("user_login")) // maybe not need appsuburl
 				return
-			} else if !ctx.User.IsActive {
+			} else if !ctx.User.IsActive() {
 				ctx.Title("auth.activate_your_account")
 				ctx.HTML(200, "user/auth/activate")
 				return
@@ -54,7 +54,7 @@ func Toggle(options *ToggleOptions) macaron.Handler {
 		}
 
 		if options.AdminRequired {
-			if !ctx.User.IsAdmin {
+			if !ctx.User.IsAdmin() {
 				ctx.Error(403)
 				return
 			}

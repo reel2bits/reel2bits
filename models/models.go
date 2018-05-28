@@ -33,6 +33,54 @@ var (
 	EnableSQLite3 bool
 )
 
+// START OF CRIMEs
+// Yes I know, this is ugly, please don't revoke my Developper License©
+// The issue is that in Go, 0 == false == nil == empty, they are all considered empties.
+// So we got into the issue where with Gorm we can't query like .Where("is_ready = ?", false) because issues
+// So we decided to use integers.
+const (
+	// Please
+	BoolTrue = 1 // don't
+	// change
+	BoolFalse = 2 // the
+	// integers, because we will have the integer value hardcoded into the IsXxx() function, and the `xxx` comment
+)
+
+// The database field will looks like :
+// Ready uint
+// And it will have a "IsReady" function, which will return a real bool, according to the uint value.
+// As for the default, well, it will be hardcoded in the function, and in the `xxx:"DEFAULT:y"` comment
+
+func isABool(fakeBool uint, defaultBool uint) (bool, error) {
+	switch fakeBool {
+	case BoolTrue:
+		return true, nil
+	case BoolFalse:
+		return false, nil
+	default:
+		if defaultBool == BoolTrue {
+			return true, nil
+		} else if defaultBool == BoolFalse {
+			return false, nil
+		}
+		return false, fmt.Errorf("%d is not a valid FakeBool", defaultBool)
+	}
+}
+
+func boolToFake(realBool bool) uint {
+	if realBool {
+		return BoolTrue
+	}
+	return BoolFalse
+}
+
+// BoolToFake because :shrug:
+func BoolToFake(realBool bool) uint {
+	return boolToFake(realBool)
+}
+
+// END OF CRIMES
+
 // LoadConfigs to init db
 func LoadConfigs() {
 	sec := setting.Cfg.Section("database")

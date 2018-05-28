@@ -61,7 +61,7 @@
                 {{ end }}
             </tr>
 
-            {{ if .track.ShowDlLink }}
+            {{ if .track.CanShowDlLink }}
             <tr>
                 <td>
                     <a class="btn btn-info btn-xs" href="{{URLFor "media_track_download" ":userSlug" .user.Slug ":trackSlug" .track.Slug ":type" "orig"}}">

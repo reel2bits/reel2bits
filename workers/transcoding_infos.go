@@ -227,7 +227,7 @@ func generateTranscode(trackID uint) (err error) {
 	}
 
 	// No transcode needed ? right!
-	if !track.TranscodeNeeded {
+	if !track.IsTranscodeNeeded() {
 		return nil
 	}
 
@@ -297,7 +297,7 @@ func generateTranscode(trackID uint) (err error) {
 	// EOF
 	track.TranscodeStartUnix = startTime
 	track.TranscodeStopUnix = time.Now().Unix()
-	track.TranscodeNeeded = false // it's now done
+	track.TranscodeNeeded = models.BoolToFake(false) // it's now done
 	track.TranscodeState = models.ProcessingFinished
 	err = models.UpdateTrack(&track)
 	if err != nil {
@@ -389,7 +389,7 @@ func TranscodeAndFetchInfos(trackID uint) error {
 	models.SetTrackReadyness(trackID, true)
 
 	// Push Track to Timeline if not private
-	if !trackInfosDb.IsPrivate {
+	if !trackInfosDb.IsPrivate() {
 		tli := &models.TimelineItem{
 			TrackID: trackInfosDb.ID,
 			UserID:  trackInfosDb.UserID,

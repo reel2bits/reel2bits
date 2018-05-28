@@ -188,7 +188,7 @@ func RegisterPost(ctx *context.Context, f form.Register) {
 		UserName: f.UserName,
 		Email:    f.Email,
 		Password: f.Password,
-		IsActive: true, // FIXME: implement user activation by email
+		Active:   models.BoolToFake(true), // FIXME: implement user activation by email
 	}
 	if err := models.CreateUser(u); err != nil {
 		switch {
@@ -210,8 +210,8 @@ func RegisterPost(ctx *context.Context, f form.Register) {
 
 	// Auto set Admin if first user
 	if models.CountUsers() == 1 {
-		u.IsAdmin = true
-		u.IsActive = true // bypass email activation
+		u.Admin = models.BoolToFake(true)
+		u.Active = models.BoolToFake(true) // bypass email activation
 		if err := models.UpdateUser(u); err != nil {
 			ctx.Handle(500, "UpdateUser", err)
 			return

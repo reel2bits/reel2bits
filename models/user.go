@@ -31,8 +31,20 @@ type User struct {
 	Slug string `gorm:"UNIQUE"`
 
 	// Permissions
-	IsAdmin  bool `gorm:"DEFAULT:false"`
-	IsActive bool `gorm:"DEFAULT:false"`
+	Admin  uint `gorm:"DEFAULT:2"` // See models.BoolFalse
+	Active uint `gorm:"DEFAULT:2"` // See models.BoolFalse
+}
+
+// IsAdmin from FakeBool
+func (user *User) IsAdmin() bool {
+	realBool, _ := isABool(user.Admin, BoolFalse)
+	return realBool
+}
+
+// IsActive from FakeBool
+func (user *User) IsActive() bool {
+	realBool, _ := isABool(user.Active, BoolFalse)
+	return realBool
 }
 
 // BeforeSave Create slug

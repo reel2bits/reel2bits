@@ -21,18 +21,18 @@ import (
 
 // Also used in TrackInfo, it's a generic state list
 const (
-	ProcessingWaiting   = 0
-	ProcessingStarted   = 1
-	ProcessingFailed    = 2
-	ProcessingFinished  = 3
-	ProcessingNotNeeded = 4
-	ProcessingRetrying  = 5
+	ProcessingWaiting   = 1 // a.k.a ProcessingNeeded
+	ProcessingStarted   = 2
+	ProcessingFailed    = 3
+	ProcessingFinished  = 4
+	ProcessingNotNeeded = 5
+	ProcessingRetrying  = 6
 )
 
 // Select between transcoding or metadatas state
 const (
-	TrackTranscoding = 0
-	TrackMetadatas   = 1
+	TrackTranscoding = 1
+	TrackMetadatas   = 2
 )
 
 // Track database structure
@@ -57,7 +57,7 @@ type Track struct {
 	AlbumOrder int64
 
 	// Transcode state is also used for the worker job to fetch infos
-	TranscodeNeeded bool
+	TranscodeNeeded uint // See models.BoolFalse
 	TranscodeState  int
 	MetadatasState  int
 
@@ -69,18 +69,42 @@ type Track struct {
 	TrackInfoID uint `gorm:"INDEX"`
 	TrackInfo   TrackInfo
 
-	Ready bool `gorm:"DEFAULT:false"` // ready means "can be shown to public, if not IsPrivate anyway
+	Ready uint `gorm:"DEFAULT:2"` // See models.BoolFalse
 
 	// Permissions
-	IsPrivate  bool `gorm:"DEFAULT:false"`
-	ShowDlLink bool `gorm:"DEFAULT:true"`
+	Private    uint `gorm:"DEFAULT:2"` // See models.BoolFalse
+	ShowDlLink uint `gorm:"DEFAULT:1"` // See models.BoolTrue
+}
+
+// IsTranscodeNeeded from FakeBool
+func (track *Track) IsTranscodeNeeded() bool {
+	realBool, _ := isABool(track.Private, BoolFalse) // in reality the defaultBool should be unused
+	return realBool
+}
+
+// IsReady from FakeBool
+func (track *Track) IsReady() bool {
+	realBool, _ := isABool(track.Ready, BoolFalse)
+	return realBool
+}
+
+// IsPrivate from FakeBool
+func (track *Track) IsPrivate() bool {
+	realBool, _ := isABool(track.Private, BoolFalse)
+	return realBool
+}
+
+// CanShowDlLink from FakeBool
+func (track *Track) CanShowDlLink() bool {
+	realBool, _ := isABool(track.ShowDlLink, BoolTrue)
+	return realBool
 }
 
 // BeforeSave set default states
 func (track *Track) BeforeSave() (err error) {
 	track.Slug = slug.Make(track.Title)
 
-	if track.TranscodeNeeded {
+	if track.IsTranscodeNeeded() {
 		track.TranscodeState = ProcessingWaiting
 	} else {
 		track.TranscodeState = ProcessingNotNeeded
@@ -272,7 +296,7 @@ func SetTrackReadyness(id uint, state bool) (err error) {
 	if err != nil {
 		return err
 	}
-	t.Ready = state
+	t.Ready = boolToFake(state)
 
 	err = db.Model(&Track{}).Update(t).Error
 	if err != nil {

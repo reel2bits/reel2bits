@@ -54,8 +54,8 @@ func UploadPost(ctx *context.Context, f form.TrackUpload) {
 		UserID:       ctx.User.ID,
 		Title:        f.Title,
 		Description:  f.Description,
-		IsPrivate:    f.IsPrivate,
-		ShowDlLink:   f.ShowDlLink,
+		Private:      models.BoolToFake(f.IsPrivate),
+		ShowDlLink:   models.BoolToFake(f.ShowDlLink),
 		Filename:     fmt.Sprintf("%s%s", fileHash, filepath.Ext(f.File.Filename)), // .Ext returns the dot
 		FilenameOrig: strings.TrimSuffix(f.File.Filename, filepath.Ext(f.File.Filename)),
 		Hash:         fileHash,
@@ -81,7 +81,7 @@ func UploadPost(ctx *context.Context, f form.TrackUpload) {
 
 	t.Mimetype = mimetype
 	if mimetype != "audio/mpeg" {
-		t.TranscodeNeeded = true
+		t.TranscodeNeeded = models.BoolToFake(true)
 	}
 
 	if err := models.CreateTrack(t); err != nil {
@@ -113,7 +113,7 @@ func UploadPost(ctx *context.Context, f form.TrackUpload) {
 	server, err := workers.CreateServer()
 	if err != nil {
 		ctx.Flash.Error(ctx.Gettext("Cannot initiate the worker connection, please retry again."))
-		if t.TranscodeNeeded {
+		if t.IsTranscodeNeeded() {
 			err = models.UpdateTrackState(t.ID, &models.Track{TranscodeState: models.ProcessingRetrying}, models.TrackTranscoding)
 			if err != nil {
 				log.Errorf("CreateServer: Error setting TranscodeState to ProcessingRetry for track %d: %s", t.ID, err)
@@ -128,7 +128,7 @@ func UploadPost(ctx *context.Context, f form.TrackUpload) {
 	_, err = server.SendTask(sig)
 	if err != nil {
 		ctx.Flash.Error(ctx.Gettext("Cannot push the worker job, the watchdog should take care of it."))
-		if t.TranscodeNeeded {
+		if t.IsTranscodeNeeded() {
 			err = models.UpdateTrackState(t.ID, &models.Track{TranscodeState: models.ProcessingRetrying}, models.TrackTranscoding)
 			if err != nil {
 				log.Errorf("SendTask: Error setting TranscodeState to ProcessingRetry for track %d: %s", t.ID, err)
@@ -187,7 +187,7 @@ func Show(ctx *context.Context) {
 		}
 	}
 
-	if !track.Ready {
+	if !track.IsReady() {
 		ctx.HTML(200, tmplShowWait)
 		return
 	}
@@ -526,7 +526,7 @@ func Edit(ctx *context.Context) {
 	ctx.Data["cur_album"] = track.AlbumID
 	ctx.PageIs("TrackEdit")
 
-	if !track.Ready {
+	if !track.IsReady() {
 		ctx.Data["user"] = user
 		ctx.Data["track"] = track
 		ctx.HTML(200, tmplShowWait)
@@ -566,8 +566,8 @@ func EditPost(ctx *context.Context, f form.TrackEdit) {
 
 	track.Title = f.Title
 	track.Description = f.Description
-	track.IsPrivate = f.IsPrivate
-	track.ShowDlLink = f.ShowDlLink
+	track.Private = models.BoolToFake(f.IsPrivate)
+	track.ShowDlLink = models.BoolToFake(f.ShowDlLink)
 
 	if f.Album > 0 {
 		track.AlbumID = f.Album

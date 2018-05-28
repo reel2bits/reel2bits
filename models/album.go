@@ -20,7 +20,13 @@ type Album struct {
 	Slug        string
 
 	// Permissions
-	IsPrivate bool `gorm:"DEFAULT:false"`
+	Private uint `gorm:"DEFAULT:2"` // see models.BoolFalse
+}
+
+// IsPrivate from FakeBool
+func (album *Album) IsPrivate() bool {
+	realBool, _ := isABool(album.Private, BoolFalse)
+	return realBool
 }
 
 // BeforeSave Create slug
