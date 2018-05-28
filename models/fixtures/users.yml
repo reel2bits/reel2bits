@@ -8,8 +8,8 @@
   slug: usera
   password: 7d93daa0d1e6f2305cc8fa496847d61dc7320bb16262f9c55dd753480207234cdd96a93194e408341971742f4701772a025a # password
   salt: ZogKvWdyEx
-  is_admin: true
-  is_active: true
+  admin: true
+  active: true
 
 -
   id: 2
@@ -19,5 +19,5 @@
   slug: userb
   password: 7d93daa0d1e6f2305cc8fa496847d61dc7320bb16262f9c55dd753480207234cdd96a93194e408341971742f4701772a025a # password
   salt: ZogKvWdyEx
-  is_admin: false
-  is_active: true
+  admin: false
+  active: true
