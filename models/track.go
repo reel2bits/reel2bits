@@ -493,14 +493,14 @@ func DeleteTrack(trackID uint, userID uint) (err error) {
 
 	err = db.Delete(track).Error
 	if err != nil {
-		return fmt.Errorf("Delete track: %v", err)
+		return fmt.Errorf("delete track: %v", err)
 	}
 
 	// Don't do any delete if the trackInfo was not found (ID == 0)
 	if trackInfo.ID > 0 {
 		err = db.Delete(trackInfo).Error
 		if err != nil {
-			return fmt.Errorf("Delete track info: %v", err)
+			return fmt.Errorf("delete track info: %v", err)
 		}
 	}
 

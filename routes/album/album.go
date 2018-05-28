@@ -253,6 +253,7 @@ func EditPost(ctx *context.Context, f form.Album) {
 }
 
 // DeleteAlbum [POST]
+// FIXME also check using the f orm
 func DeleteAlbum(ctx *context.Context, f form.AlbumDelete) {
 	if ctx.HasError() {
 		ctx.JSONSuccess(map[string]interface{}{

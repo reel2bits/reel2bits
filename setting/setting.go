@@ -8,7 +8,7 @@ import (
 	_ "github.com/gogap/logrus_mate/hooks/file"
 	// Logrus to syslog [optional]
 	_ "github.com/gogap/logrus_mate/hooks/syslog"
-	logrus_fname "github.com/onrik/logrus/filename"
+	logrusFname "github.com/onrik/logrus/filename"
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/ini.v1"
 	"net/mail"
@@ -411,7 +411,7 @@ func initMailer() {
 func initLogging(workDir string) {
 	mate, _ := logrus_mate.NewLogrusMate(logrus_mate.ConfigFile(workDir + "/conf/logging.cfg"))
 
-	filenameHook := logrus_fname.NewHook()
+	filenameHook := logrusFname.NewHook()
 	filenameHook.Field = "source"
 
 	// Set the base logger

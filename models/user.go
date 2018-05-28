@@ -141,17 +141,6 @@ func IsUserExist(uid int64, name string) (exist bool, err error) {
 	return true, nil
 }
 
-// GetFirstUser only
-func GetFirstUser() (user User, err error) {
-	err = db.Order("id ASC").First(&user).Error
-	if gorm.IsRecordNotFoundError(err) || user.ID == 0 {
-		return user, errors.UserNotExist{UserID: 1, Name: ""}
-	} else if err != nil {
-		return user, err
-	}
-	return
-}
-
 var (
 	reservedUsernames = []string{"anon", "anonymous", "private", "assets", "css", "img", "js", "less", "plugins",
 		"debug", "raw", "install", "api", "avatar", "user", "org", "help", "stars", "issues", "pulls",

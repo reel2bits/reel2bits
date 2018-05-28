@@ -179,16 +179,6 @@ func getEngine() (*gorm.DB, error) {
 	return gorm.Open(DbCfg.Type, connStr)
 }
 
-// NewTestEngine to test
-func NewTestEngine(db *gorm.DB) (err error) {
-	db, err = getEngine()
-	if err != nil {
-		return fmt.Errorf("connect to database: %v", err)
-	}
-
-	return err
-}
-
 // SetEngine to use
 func SetEngine() (err error) {
 	db, err = getEngine()
