@@ -42,7 +42,10 @@ func Home(ctx *context.Context) {
 
 	listOfItems, itemsCount, err := models.GetTimelineItems(opts)
 	if err != nil {
-		log.Warnf("Cannot get TimelineItems with opts %v, %s", opts, err)
+		log.WithFields(log.Fields{
+			"opts": opts,
+		}).Warnf("Cannot get TimelineItems with options: %v", err)
+
 		ctx.Flash.Error(ctx.Gettext("Error getting timeline items"))
 		ctx.Handle(500, "ListTimelineItems", err)
 		return

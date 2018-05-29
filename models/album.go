@@ -201,7 +201,10 @@ func getTracksAndDeassociate(albumID uint) error {
 		track.AlbumOrder = 0
 		err := UpdateTrack(&track)
 		if err != nil {
-			log.Errorf("Deassociating album %d from track %d: %s", albumID, track.ID, err)
+			log.WithFields(log.Fields{
+				"album ID": albumID,
+				"track ID": track.ID,
+			}).Errorf("Deassociating album from track: %v", err)
 		}
 	}
 	return nil
@@ -219,10 +222,16 @@ func DeleteAlbum(albumID uint, userID uint) (err error) {
 	}
 
 	if err = getTracksAndDeassociate(album.ID); err != nil {
-		log.Errorf("Error while deassociating tracks of album %d: %s", albumID, err)
+		log.WithFields(log.Fields{
+			"album ID": albumID,
+		}).Errorf("Deassociating album tracks: %v", err)
 	}
 
-	log.Infof("Deleted album %d/%s", album.ID, album.Name)
+	log.WithFields(log.Fields{
+		"album ID":   album.ID,
+		"track name": album.Name,
+	}).Infof("Album deleted")
+
 	return db.Delete(album).Error
 }
 

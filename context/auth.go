@@ -25,7 +25,12 @@ func Toggle(options *ToggleOptions) macaron.Handler {
 			return
 		}
 
-		log.Debugf("SignOutRequired: %s, DisableCSRF: %s, Req Method: %s", options.SignOutRequired, options.DisableCSRF, ctx.Req.Method)
+		log.WithFields(log.Fields{
+			"SignOutRequired": options.SignOutRequired,
+			"DisableCSRF":     options.DisableCSRF,
+			"Req Method":      ctx.Req.Method,
+		}).Debugf("toggle options")
+
 		if !options.SignOutRequired && !options.DisableCSRF && ctx.Req.Method == "POST" {
 			log.Debug("Validating CSRF")
 			csrf.Validate(ctx.Context, ctx.csrf)

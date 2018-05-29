@@ -65,7 +65,9 @@ func UploadPost(ctx *context.Context, f form.TrackUpload) {
 		t.AlbumID = f.Album
 		count, err := models.GetCountOfAlbumTracks(f.Album)
 		if err != nil {
-			log.Errorf("Cannot get count for album %d: %s", f.Album, err)
+			log.WithFields(log.Fields{
+				"albumID": f.Album,
+			}).Errorf("Cannot get count for album: %v", err)
 			count = 0 // well, yes
 		}
 		t.AlbumOrder = count + 1 // if zero it will be Track 1, etc.
@@ -73,7 +75,7 @@ func UploadPost(ctx *context.Context, f form.TrackUpload) {
 
 	mimetype, err := models.SaveTrackFile(f.File, t.Filename, ctx.User.Slug)
 	if err != nil {
-		log.Errorf("Cannot save track file: %s", err)
+		log.Errorf("Cannot save track file: %v", err)
 		ctx.Flash.Error("Cannot save track file, please retry")
 		ctx.RenderWithErr(ctx.Gettext("file is invalid"), tmplUpload, &f)
 		return
@@ -98,13 +100,20 @@ func UploadPost(ctx *context.Context, f form.TrackUpload) {
 		fName := filepath.Join(storDir, t.Filename)
 		err := os.RemoveAll(fName)
 		if err != nil {
-			log.Errorf("Cannot remove temp file '%s': %s", fName, err)
+			log.WithFields(log.Fields{
+				"file": fName,
+			}).Errorf("Cannot remove temp file: %v", err)
 		} else {
-			log.Infof("File removed: %s", fName)
+			log.WithFields(log.Fields{
+				"file": fName,
+			}).Infof("File removed")
 		}
 		return
 	}
-	log.Debugf("Track created: %d/%s", t.ID, t.Title)
+	log.WithFields(log.Fields{
+		"trackID":     t.ID,
+		"track title": t.Title,
+	}).Debugf("Track created")
 
 	sig := &tasks.Signature{
 		Name: "TranscodeAndFetchInfofs",
@@ -116,13 +125,17 @@ func UploadPost(ctx *context.Context, f form.TrackUpload) {
 		if t.IsTranscodeNeeded() {
 			err = models.UpdateTrackState(t.ID, &models.Track{TranscodeState: models.ProcessingRetrying}, models.TrackTranscoding)
 			if err != nil {
-				log.Errorf("CreateServer: Error setting TranscodeState to ProcessingRetry for track %d: %s", t.ID, err)
+				log.WithFields(log.Fields{
+					"trackID": t.ID,
+				}).Errorf("CreateServer: Error setting TranscodeState to ProcessingRetry of track: %v", err)
 			}
 		}
 
 		err = models.UpdateTrackState(t.ID, &models.Track{MetadatasState: models.ProcessingRetrying}, models.TrackMetadatas)
 		if err != nil {
-			log.Errorf("CreateServer: Error setting MetadatasState to ProcessingRetry for track %d: %s", t.ID, err)
+			log.WithFields(log.Fields{
+				"trackID": t.ID,
+			}).Errorf("CreateServer: Error setting MetadatasState to ProcessingRetry of track: %v", err)
 		}
 	}
 	_, err = server.SendTask(sig)
@@ -131,12 +144,16 @@ func UploadPost(ctx *context.Context, f form.TrackUpload) {
 		if t.IsTranscodeNeeded() {
 			err = models.UpdateTrackState(t.ID, &models.Track{TranscodeState: models.ProcessingRetrying}, models.TrackTranscoding)
 			if err != nil {
-				log.Errorf("SendTask: Error setting TranscodeState to ProcessingRetry for track %d: %s", t.ID, err)
+				log.WithFields(log.Fields{
+					"trackID": t.ID,
+				}).Errorf("SendTask: Error setting TranscodeState to ProcessingRetry of track: %v", err)
 			}
 		}
 		err = models.UpdateTrackState(t.ID, &models.Track{MetadatasState: models.ProcessingRetrying}, models.TrackMetadatas)
 		if err != nil {
-			log.Errorf("SendTask: Error setting MetadatasState to ProcessingRetry for track %d: %s", t.ID, err)
+			log.WithFields(log.Fields{
+				"trackID": t.ID,
+			}).Errorf("SendTask: Error setting MetadatasState to ProcessingRetry of track: %v", err)
 		}
 	}
 
@@ -154,7 +171,10 @@ func Show(ctx *context.Context) {
 
 	user, err := models.GetUserBySlug(ctx.Params(":userSlug"))
 	if err != nil {
-		log.Errorf("Cannot get User from slug %s: %s", ctx.Params(":userSlug"), err)
+		log.WithFields(log.Fields{
+			"user slug": ctx.Params(":userSlug"),
+		}).Errorf("Cannot get User from slug: %v", err)
+
 		ctx.Flash.Error("Unknown user.")
 		ctx.SubURLRedirect(ctx.URLFor("home"), 404)
 		return
@@ -162,7 +182,11 @@ func Show(ctx *context.Context) {
 
 	track, err := models.GetTrackWithInfoBySlugAndUserID(user.ID, ctx.Params(":trackSlug"))
 	if err != nil {
-		log.Errorf("Cannot get Track With Info from slug %s and user %d: %s", ctx.Params(":trackSlug"), user.ID, err)
+		log.WithFields(log.Fields{
+			"track slug": ctx.Params(":trackSlug"),
+			"userID":     user.ID,
+		}).Errorf("Cannot get Track With Info from slug and user: %v", err)
+
 		ctx.Flash.Error("Unknown track.")
 		ctx.SubURLRedirect(ctx.URLFor("home"), 404)
 		return
@@ -178,7 +202,11 @@ func Show(ctx *context.Context) {
 	if track.AlbumID > 0 && track.AlbumOrder > 0 {
 		album, err := models.GetAlbumByID(track.AlbumID)
 		if err != nil {
-			log.Errorf("Cannot get album %d for track %d: %s", track.AlbumID, track.ID, err)
+			log.WithFields(log.Fields{
+				"albumID": track.AlbumID,
+				"trackID": track.ID,
+			}).Errorf("Cannot get album for track: %v", err)
+
 			ctx.Flash.Error(ctx.Gettext("Invalid album."))
 			//ctx.SubURLRedirect(ctx.URLFor("home"), 404)
 			ctx.Data["album"] = nil
@@ -204,14 +232,21 @@ func DevGetMediaTrack(ctx *context.Context) {
 
 	user, err := models.GetUserBySlug(ctx.Params(":userSlug"))
 	if err != nil {
-		log.Errorf("Cannot get User from slug %s: %s", ctx.Params(":userSlug"), err)
+		log.WithFields(log.Fields{
+			"user slug": ctx.Params(":userSlug"),
+		}).Errorf("Cannot get User from slug: %v", err)
+
 		ctx.ServerError("Unknown user.", err)
 		return
 	}
 
 	track, err := models.GetTrackBySlugAndUserID(user.ID, ctx.Params(":trackSlug"))
 	if err != nil {
-		log.Errorf("Cannot get Track from slug %s and user %d: %s", ctx.Params(":trackSlug"), user.ID, err)
+		log.WithFields(log.Fields{
+			"track slug": ctx.Params(":trackSlug"),
+			"userID":     user.ID,
+		}).Errorf("Cannot get Track from slug and user: %v", err)
+
 		ctx.ServerError("Unknown track.", err)
 		return
 	}
@@ -227,7 +262,10 @@ func DevGetMediaTrack(ctx *context.Context) {
 
 	content, err := ioutil.ReadFile(fName)
 	if err != nil {
-		log.Errorf("Cannot read file %s", err)
+		log.WithFields(log.Fields{
+			"file": fName,
+		}).Errorf("Cannot read file: %v", err)
+
 		ctx.ServerError("Cannot read file", err)
 		return
 	}
@@ -245,14 +283,21 @@ func DevGetMediaPngWf(ctx *context.Context) {
 
 	user, err := models.GetUserBySlug(ctx.Params(":userSlug"))
 	if err != nil {
-		log.Errorf("Cannot get User from slug %s: %s", ctx.Params(":userSlug"), err)
+		log.WithFields(log.Fields{
+			"user slug": ctx.Params(":userSlug"),
+		}).Errorf("Cannot get User from slug: %v", err)
+
 		ctx.ServerError("Unknown user.", err)
 		return
 	}
 
 	track, err := models.GetTrackBySlugAndUserID(user.ID, ctx.Params(":trackSlug"))
 	if err != nil {
-		log.Errorf("Cannot get Track from slug %s and user %d: %s", ctx.Params(":trackSlug"), user.ID, err)
+		log.WithFields(log.Fields{
+			"track slug": ctx.Params(":trackSlug"),
+			"userID":     user.ID,
+		}).Errorf("Cannot get Track from slug and user: %v", err)
+
 		ctx.ServerError("Unknown track.", err)
 		return
 	}
@@ -262,7 +307,10 @@ func DevGetMediaPngWf(ctx *context.Context) {
 
 	content, err := ioutil.ReadFile(fName)
 	if err != nil {
-		log.Errorf("Cannot read file %s", err)
+		log.WithFields(log.Fields{
+			"file": fName,
+		}).Errorf("Cannot read file: %v", err)
+
 		ctx.ServerError("Cannot read file", err)
 		return
 	}
@@ -280,14 +328,21 @@ func DevGetMediaDownload(ctx *context.Context) {
 
 	user, err := models.GetUserBySlug(ctx.Params(":userSlug"))
 	if err != nil {
-		log.Errorf("Cannot get User from slug %s: %s", ctx.Params(":userSlug"), err)
+		log.WithFields(log.Fields{
+			"user slug": ctx.Params(":userSlug"),
+		}).Errorf("Cannot get User from slug: %v", err)
+
 		ctx.ServerError("Unknown user.", err)
 		return
 	}
 
 	track, err := models.GetTrackBySlugAndUserID(user.ID, ctx.Params(":trackSlug"))
 	if err != nil {
-		log.Errorf("Cannot get Track from slug %s and user %d: %s", ctx.Params(":trackSlug"), user.ID, err)
+		log.WithFields(log.Fields{
+			"track slug": ctx.Params(":trackSlug"),
+			"userID":     user.ID,
+		}).Errorf("Cannot get Track from slug and user: %v", err)
+
 		ctx.ServerError("Unknown track.", err)
 		return
 	}
@@ -301,7 +356,10 @@ func DevGetMediaDownload(ctx *context.Context) {
 
 	content, err := ioutil.ReadFile(fName)
 	if err != nil {
-		log.Errorf("Cannot read file %s", err)
+		log.WithFields(log.Fields{
+			"file": fName,
+		}).Errorf("Cannot read file: %v", err)
+
 		ctx.ServerError("Cannot read file", err)
 		return
 	}
@@ -318,7 +376,10 @@ func ListUserTracks(ctx *context.Context) {
 
 	user, err := models.GetUserBySlug(ctx.Params(":userSlug"))
 	if err != nil {
-		log.Errorf("Cannot get User from slug %s: %s", ctx.Params(":userSlug"), err)
+		log.WithFields(log.Fields{
+			"user slug": ctx.Params(":userSlug"),
+		}).Errorf("Cannot get User from slug: %v", err)
+
 		ctx.ServerError("Unknown user.", err)
 		return
 	}
@@ -348,7 +409,10 @@ func ListUserTracks(ctx *context.Context) {
 
 	listOfTracks, tracksCount, err := models.GetTracks(opts)
 	if err != nil {
-		log.Warnf("Cannot get Tracks with opts %v, %s", opts, err)
+		log.WithFields(log.Fields{
+			"opts": opts,
+		}).Errorf("Cannot get Track with options: %v", err)
+
 		ctx.Flash.Error(ctx.Gettext("Error getting list of tracks"))
 		ctx.Handle(500, "ListTracks", err)
 		return
@@ -386,14 +450,21 @@ func DeleteTrack(ctx *context.Context, f form.TrackDelete) {
 	// Get user and track
 	user, err := models.GetUserBySlug(ctx.Params(":userSlug"))
 	if err != nil {
-		log.Errorf("Cannot get User from slug %s: %s", ctx.Params(":userSlug"), err)
+		log.WithFields(log.Fields{
+			"user slug": ctx.Params(":userSlug"),
+		}).Errorf("Cannot get User from slug: %v", err)
+
 		ctx.ServerError("Unknown user.", err)
 		return
 	}
 
 	track, err := models.GetTrackBySlugAndUserID(user.ID, ctx.Params(":trackSlug"))
 	if err != nil {
-		log.Errorf("Cannot get Track from slug %s and user %d: %s", ctx.Params(":trackSlug"), user.ID, err)
+		log.WithFields(log.Fields{
+			"track slug": ctx.Params(":trackSlug"),
+			"userID":     user.ID,
+		}).Errorf("Cannot get Track from slug and user: %v", err)
+
 		ctx.ServerError("Unknown track.", err)
 		return
 	}
@@ -433,14 +504,21 @@ func GetJSONWaveform(ctx *context.Context) {
 
 	user, err := models.GetUserBySlug(ctx.Params(":userSlug"))
 	if err != nil {
-		log.Errorf("Cannot get User from slug %s: %s", ctx.Params(":userSlug"), err)
+		log.WithFields(log.Fields{
+			"user slug": ctx.Params(":userSlug"),
+		}).Errorf("Cannot get User from slug: %v", err)
+
 		ctx.ServerError("Unknown user.", err)
 		return
 	}
 
 	soundInfo, err := models.GetTrackWithInfoBySlugAndUserID(user.ID, ctx.Params(":trackSlug"))
 	if err != nil {
-		log.Errorf("Cannot get Track from slug %s and user %d: %s", ctx.Params(":trackSlug"), user.ID, err)
+		log.WithFields(log.Fields{
+			"track slug": ctx.Params(":trackSlug"),
+			"userID":     user.ID,
+		}).Errorf("Cannot get Track from slug and user: %v", err)
+
 		ctx.ServerError("Unknown track.", err)
 		return
 	}
@@ -451,7 +529,7 @@ func GetJSONWaveform(ctx *context.Context) {
 		err := json.Unmarshal([]byte(soundInfo.TrackInfo.Waveform), &w)
 
 		if err != nil {
-			log.Errorf("Cannot unmarshal waveform: %s", err)
+			log.Errorf("Cannot unmarshal waveform: %v", err)
 			ctx.JSONSuccess(map[string]interface{}{
 				"error": "Cannot unmarshal Waveform",
 			})
@@ -493,7 +571,10 @@ func Edit(ctx *context.Context) {
 
 	user, err := models.GetUserBySlug(ctx.Params(":userSlug"))
 	if err != nil {
-		log.Errorf("Cannot get User from slug %s: %s", ctx.Params(":userSlug"), err)
+		log.WithFields(log.Fields{
+			"user slug": ctx.Params(":userSlug"),
+		}).Errorf("Cannot get User from slug: %v", err)
+
 		ctx.Flash.Error("Unknown user.")
 		ctx.SubURLRedirect(ctx.URLFor("home"), 404)
 		return
@@ -506,7 +587,11 @@ func Edit(ctx *context.Context) {
 
 	track, err := models.GetTrackWithInfoBySlugAndUserID(user.ID, ctx.Params(":trackSlug"))
 	if err != nil {
-		log.Errorf("Cannot get Track With Info from slug %s and user %d: %s", ctx.Params(":trackSlug"), user.ID, err)
+		log.WithFields(log.Fields{
+			"track slug": ctx.Params(":trackSlug"),
+			"userID":     user.ID,
+		}).Errorf("Cannot get Track With Info from slug and user: %v", err)
+
 		ctx.Flash.Error("Unknown track.")
 		ctx.SubURLRedirect(ctx.URLFor("home"), 404)
 		return
@@ -514,7 +599,10 @@ func Edit(ctx *context.Context) {
 
 	albums, err := models.GetMapNameIDOfAlbums(ctx.User.ID)
 	if err != nil {
-		log.Errorf("Error getting album list for user %d: %v", ctx.User.ID, err)
+		log.WithFields(log.Fields{
+			"userID": ctx.User.ID,
+		}).Errorf("Cannot get album list for user: %v", err)
+
 	}
 
 	ctx.Data["albums"] = albums
@@ -550,7 +638,10 @@ func EditPost(ctx *context.Context, f form.TrackEdit) {
 
 	user, err := models.GetUserBySlug(ctx.Params(":userSlug"))
 	if err != nil {
-		log.Errorf("Cannot get User from slug %s: %s", ctx.Params(":userSlug"), err)
+		log.WithFields(log.Fields{
+			"user slug": ctx.Params(":userSlug"),
+		}).Errorf("Cannot get User from slug: %v", err)
+
 		ctx.Flash.Error("Unknown user.")
 		ctx.SubURLRedirect(ctx.URLFor("home"), 404)
 		return
@@ -558,7 +649,11 @@ func EditPost(ctx *context.Context, f form.TrackEdit) {
 
 	track, err := models.GetTrackBySlugAndUserID(user.ID, ctx.Params(":trackSlug"))
 	if err != nil {
-		log.Errorf("Cannot get Track from slug %s and user %d: %s", ctx.Params(":trackSlug"), user.ID, err)
+		log.WithFields(log.Fields{
+			"track slug": ctx.Params(":trackSlug"),
+			"userID":     user.ID,
+		}).Errorf("Cannot get Track from slug and user: %v", err)
+
 		ctx.Flash.Error("Unknown track.")
 		ctx.SubURLRedirect(ctx.URLFor("home"), 404)
 		return
@@ -573,7 +668,10 @@ func EditPost(ctx *context.Context, f form.TrackEdit) {
 		track.AlbumID = f.Album
 		count, err := models.GetCountOfAlbumTracks(f.Album)
 		if err != nil {
-			log.Errorf("Cannot get count for album %d: %s", f.Album, err)
+			log.WithFields(log.Fields{
+				"albumID": f.Album,
+			}).Errorf("Cannot get count of album: %v", err)
+
 			count = 0 // well, yes
 		}
 		track.AlbumOrder = count + 1 // if zero it will be Track 1, etc.

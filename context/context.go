@@ -206,7 +206,7 @@ func Contexter() macaron.Handler {
 		// Get user from session if logined.
 		ctx.User, ctx.IsBasicAuth = auth.SignedInUser(ctx.Context, ctx.Session)
 
-		log.Infof("user ID %d", ctx.User.ID)
+		log.WithFields(log.Fields{"userID": ctx.User.ID}).Infof("contexter")
 
 		if ctx.User.ID > 0 {
 			ctx.IsLogged = true
@@ -224,8 +224,11 @@ func Contexter() macaron.Handler {
 
 		ctx.Data["CSRFToken"] = x.GetToken()
 		ctx.Data["CSRFTokenHTML"] = template.HTML(`<input type="hidden" name="_csrf" value="` + x.GetToken() + `">`)
-		log.Debugf("Session ID: %s", sess.ID())
-		log.Debugf("CSRF Token: %v", ctx.Data["CSRFToken"])
+
+		log.WithFields(log.Fields{
+			"Session ID": sess.ID(),
+			"CSRF Token": ctx.Data["CSRFToken"],
+		}).Debugf("contexter")
 
 		c.Map(ctx)
 	}

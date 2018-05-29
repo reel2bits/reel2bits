@@ -40,7 +40,10 @@ func AutoLogin(c *context.Context) (bool, error) {
 	isSucceed := false
 	defer func() {
 		if !isSucceed {
-			log.Debugf("auto-login cookie cleared: %s", uname)
+			log.WithFields(log.Fields{
+				"uname": uname,
+			}).Debugf("auto-login cookie cleared")
+
 			c.SetCookie(setting.CookieUserName, "", -1, setting.AppSubURL)
 			c.SetCookie(setting.CookieRememberName, "", -1, setting.AppSubURL)
 			c.SetCookie(setting.LoginStatusCookieName, "", -1, setting.AppSubURL)
@@ -206,7 +209,10 @@ func RegisterPost(ctx *context.Context, f form.Register) {
 		}
 		return
 	}
-	log.Debugf("Account created: %d/%s", u.ID, u.UserName)
+	log.WithFields(log.Fields{
+		"userID":   u.ID,
+		"userName": u.UserName,
+	}).Debugf("Account created")
 
 	// Auto set Admin if first user
 	if models.CountUsers() == 1 {
@@ -284,7 +290,10 @@ func ResetPasswdPost(ctx *context.Context) {
 			return
 		}
 
-		log.Debugf("User password reset: %s", u.UserName)
+		log.WithFields(log.Fields{
+			"userName": u.UserName,
+		}).Debugf("User password reset")
+
 		ctx.Redirect(setting.AppSubURL + "/user/login")
 		return
 	}
