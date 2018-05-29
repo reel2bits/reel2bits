@@ -29,8 +29,6 @@ ERRO[2018-05-27 00:14:44] Cannot create Waveforms                       err="Err
   -> retry ?
   -> on dirait pas, voir pour rajouter un bouton pour relancer un transcoding / extract
 
-may uploading should trigger workers ?
-
 sox issue, from WAV, but not critical ?
   formats: mp3 can't encode Signed Integer PCM
   formats: mp3 can't encode to 16-bit
