@@ -31,5 +31,3 @@ sox issue, from WAV, but not critical ?
   formats: mp3 can't encode to 16-bit
 
 RAVEN integration isn't the best one ...
-
-Move all get of track/album/user/slug into a contexter to avoid duplicating code in every routes
