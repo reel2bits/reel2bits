@@ -68,22 +68,7 @@ func ListFromUser(ctx *context.Context) {
 	ctx.Title("album.title_list")
 	ctx.PageIs("AlbumListFromUser")
 
-	if ctx.Params(":userSlug") == "" {
-		ctx.ServerError("No.", nil)
-		return
-	}
-
-	user, err := models.GetUserBySlug(ctx.Params(":userSlug"))
-	if err != nil {
-		log.WithFields(log.Fields{
-			"user slug": ctx.Params(":userSlug"),
-		}).Errorf("Cannot get User from slug: %v", err)
-
-		ctx.ServerError("Unknown user.", err)
-		return
-	}
-
-	ctx.Data["Title"] = fmt.Sprintf("Albums of %s - %s", user.UserName, setting.AppName)
+	ctx.Data["Title"] = fmt.Sprintf("Albums of %s - %s", ctx.URLUser.UserName, setting.AppName)
 
 	page := ctx.QueryInt("page")
 	if page <= 0 {
@@ -95,11 +80,11 @@ func ListFromUser(ctx *context.Context) {
 		PageSize:    10, // TODO: put this in config
 		Page:        page,
 		GetAll:      false,
-		UserID:      user.ID,
+		UserID:      ctx.URLUser.ID,
 		WithPrivate: false,
 	}
 
-	if ctx.Data["LoggedUserID"] == user.ID {
+	if ctx.Data["LoggedUserID"] == ctx.URLUser.ID {
 		opts.WithPrivate = true
 	}
 
@@ -114,7 +99,7 @@ func ListFromUser(ctx *context.Context) {
 		return
 	}
 
-	ctx.Data["user"] = user
+	ctx.Data["user"] = ctx.URLUser
 	ctx.Data["albums"] = listOfAlbums
 	ctx.Data["albums_count"] = albumsCount
 
@@ -126,49 +111,22 @@ func ListFromUser(ctx *context.Context) {
 
 // Show [GET]
 func Show(ctx *context.Context) {
-	if ctx.Params(":userSlug") == "" || ctx.Params(":albumSlug") == "" {
-		ctx.Flash.Error("No.")
-		ctx.SubURLRedirect(ctx.URLFor("home"), 500)
-		return
-	}
-
-	user, err := models.GetUserBySlug(ctx.Params(":userSlug"))
-	if err != nil {
-		log.WithFields(log.Fields{
-			"user slug": ctx.Params(":userSlug"),
-		}).Errorf("Cannot get User from slug: %v", err)
-
-		ctx.Flash.Error("Unknown user.")
-		ctx.SubURLRedirect(ctx.URLFor("home"), 404)
-		return
-	}
-
-	album, err := models.GetAlbumBySlugAndUserID(user.ID, ctx.Params(":albumSlug"))
-	if err != nil {
-		log.WithFields(log.Fields{
-			"album slug": ctx.Params(":albumSlug"),
-			"userID":     user.ID,
-		}).Errorf("Cannot get Album from slug and user: %v", err)
-
-		ctx.Flash.Error("Unknown album.")
-		ctx.SubURLRedirect(ctx.URLFor("home"), 404)
-		return
-	}
-
-	ctx.Data["album"] = album
-	ctx.Data["album_sounds_count"], err = album.GetTracksCount()
+	albumCount, err := ctx.URLAlbum.GetTracksCount()
 	if err != nil {
 		ctx.Flash.Error("Cannot get album tracks count")
 		ctx.Data["album_sounds_count"] = 0
 	}
 
-	onlyReady := !(ctx.User.ID == album.UserID)
+	ctx.Data["album"] = ctx.URLAlbum
+	ctx.Data["album_sounds_count"] = albumCount
 
-	sound, err := models.GetFirstTrackOfAlbum(album.ID, onlyReady)
+	onlyReady := !(ctx.User.ID == ctx.URLAlbum.UserID)
+
+	sound, err := models.GetFirstTrackOfAlbum(ctx.URLAlbum.ID, onlyReady)
 	if err != nil {
 		//ctx.Flash.Warning("Album is empty.")
 		log.WithFields(log.Fields{
-			"albumID": album.ID,
+			"albumID": ctx.URLAlbum.ID,
 		}).Errorf("Cannot get Album track at order 1: %v", err)
 
 		//ctx.SubURLRedirect(ctx.URLFor("home"), 404)
@@ -178,10 +136,10 @@ func Show(ctx *context.Context) {
 		ctx.Data["sound"] = sound
 	}
 
-	tracks, err := models.GetAlbumTracks(album.ID, onlyReady)
+	tracks, err := models.GetAlbumTracks(ctx.URLAlbum.ID, onlyReady)
 	if err != nil {
 		log.WithFields(log.Fields{
-			"albumID": album.ID,
+			"albumID": ctx.URLAlbum.ID,
 		}).Errorf("Cannot get album tracks: %v", err)
 
 		ctx.Flash.Error("Cannot get album tracks.")
@@ -190,8 +148,8 @@ func Show(ctx *context.Context) {
 	}
 	ctx.Data["tracks"] = tracks
 
-	ctx.Data["user"] = user
-	ctx.Data["Title"] = fmt.Sprintf("%s by %s - %s", album.Name, user.UserName, setting.AppName)
+	ctx.Data["user"] = ctx.URLUser
+	ctx.Data["Title"] = fmt.Sprintf("%s by %s - %s", ctx.URLAlbum.Name, ctx.URLUser.UserName, setting.AppName)
 	ctx.PageIs("AlbumShow")
 
 	ctx.HTML(200, tmplShow)
@@ -199,38 +157,9 @@ func Show(ctx *context.Context) {
 
 // Edit [GET]
 func Edit(ctx *context.Context) {
-	if ctx.Params(":userSlug") == "" || ctx.Params(":albumSlug") == "" {
-		ctx.Flash.Error("No.")
-		ctx.SubURLRedirect(ctx.URLFor("home"), 500)
-		return
-	}
-
-	user, err := models.GetUserBySlug(ctx.Params(":userSlug"))
-	if err != nil {
-		log.WithFields(log.Fields{
-			"user slug": ctx.Params(":userSlug"),
-		}).Errorf("Cannot get User from slug: %v", err)
-
-		ctx.Flash.Error("Unknown user.")
-		ctx.SubURLRedirect(ctx.URLFor("home"), 404)
-		return
-	}
-
-	album, err := models.GetAlbumBySlugAndUserID(user.ID, ctx.Params(":albumSlug"))
-	if err != nil {
-		log.WithFields(log.Fields{
-			"album slug": ctx.Params(":albumSlug"),
-			"userID":     user.ID,
-		}).Errorf("Cannot get Album from slug and user: %v", err)
-
-		ctx.Flash.Error("Unknown album.")
-		ctx.SubURLRedirect(ctx.URLFor("home"), 404)
-		return
-	}
-
-	ctx.Data["name"] = album.Name
-	ctx.Data["is_private"] = album.IsPrivate()
-	ctx.Data["description"] = album.Description
+	ctx.Data["name"] = ctx.URLAlbum.Name
+	ctx.Data["is_private"] = ctx.URLAlbum.IsPrivate()
+	ctx.Data["description"] = ctx.URLAlbum.Description
 
 	ctx.PageIs("AlbumEdit")
 	ctx.HTML(200, tmplEdit)
@@ -248,34 +177,11 @@ func EditPost(ctx *context.Context, f form.Album) {
 		return
 	}
 
-	user, err := models.GetUserBySlug(ctx.Params(":userSlug"))
-	if err != nil {
-		log.WithFields(log.Fields{
-			"user slug": ctx.Params(":userSlug"),
-		}).Errorf("Cannot get User from slug: %v", err)
+	ctx.URLAlbum.Name = f.Name
+	ctx.URLAlbum.Description = f.Description
+	ctx.URLAlbum.Private = models.BoolToFake(f.IsPrivate)
 
-		ctx.Flash.Error("Unknown user.")
-		ctx.SubURLRedirect(ctx.URLFor("home"), 404)
-		return
-	}
-
-	album, err := models.GetAlbumBySlugAndUserID(user.ID, ctx.Params(":albumSlug"))
-	if err != nil {
-		log.WithFields(log.Fields{
-			"album slug": ctx.Params(":albumSlug"),
-			"userID":     user.ID,
-		}).Errorf("Cannot get Album from slug and user: %v", err)
-
-		ctx.Flash.Error("Unknown album.")
-		ctx.SubURLRedirect(ctx.URLFor("home"), 404)
-		return
-	}
-
-	album.Name = f.Name
-	album.Description = f.Description
-	album.Private = models.BoolToFake(f.IsPrivate)
-
-	err = models.UpdateAlbum(&album)
+	err := models.UpdateAlbum(&ctx.URLAlbum)
 	if err != nil {
 		switch {
 		default:
@@ -285,7 +191,7 @@ func EditPost(ctx *context.Context, f form.Album) {
 	}
 
 	ctx.Flash.Success(ctx.Gettext("Album edited"))
-	ctx.SubURLRedirect(ctx.URLFor("album_show", ":userSlug", user.Slug, ":albumSlug", album.Slug))
+	ctx.SubURLRedirect(ctx.URLFor("album_show", ":userSlug", ctx.URLUser.Slug, ":albumSlug", ctx.URLAlbum.Slug))
 
 }
 
@@ -300,44 +206,14 @@ func DeleteAlbum(ctx *context.Context, f form.AlbumDelete) {
 		return
 	}
 
-	if ctx.Params(":userSlug") == "" || ctx.Params(":albumSlug") == "" {
-		ctx.JSONSuccess(map[string]interface{}{
-			"error":    "what about no ?",
-			"redirect": false,
-		})
-		return
-	}
-
-	// Get user and album
-	user, err := models.GetUserBySlug(ctx.Params(":userSlug"))
-	if err != nil {
-		log.WithFields(log.Fields{
-			"user slug": ctx.Params(":userSlug"),
-		}).Errorf("Cannot get User from slug: %v", err)
-
-		ctx.ServerError("Unknown user.", err)
-		return
-	}
-
-	album, err := models.GetAlbumBySlugAndUserID(user.ID, ctx.Params(":albumSlug"))
-	if err != nil {
-		log.WithFields(log.Fields{
-			"album slug": ctx.Params(":albumSlug"),
-			"userID":     user.ID,
-		}).Errorf("Cannot get Album from slug and user: %v", err)
-
-		ctx.ServerError("Unknown album.", err)
-		return
-	}
-
-	if ctx.Data["LoggedUserID"] != album.UserID {
+	if ctx.Data["LoggedUserID"] != ctx.URLAlbum.UserID {
 		ctx.JSONSuccess(map[string]interface{}{
 			"error":    ctx.Gettext("Unauthorized"),
 			"redirect": false,
 		})
 	}
 
-	err = models.DeleteAlbum(album.ID, album.UserID)
+	err := models.DeleteAlbum(ctx.URLAlbum.ID, ctx.URLAlbum.UserID)
 	if err != nil {
 		ctx.Flash.Error(ctx.Gettext("Error deleting album"))
 		log.Warnf("DeleteAlbum.Delete: %v", err)
@@ -351,7 +227,7 @@ func DeleteAlbum(ctx *context.Context, f form.AlbumDelete) {
 	ctx.Flash.Success(ctx.Gettext("Album deleted"))
 	ctx.JSONSuccess(map[string]interface{}{
 		"error":    nil,
-		"redirect": ctx.SubURLFor("album_list", ":userSlug", user.Slug),
+		"redirect": ctx.SubURLFor("album_list", ":userSlug", ctx.URLUser.Slug),
 	})
 	return
 }

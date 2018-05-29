@@ -150,13 +150,13 @@ func RegisterRoutes(m *macaron.Macaron) {
 		m.Combo("").Get(track.Upload).Post(csrf.Validate, bindIgnErr(form.TrackUpload{}), track.UploadPost).Name("track_upload")
 	}, reqSignIn)
 
-	m.Get("/t/:userSlug", track.ListUserTracks).Name("track_list")
+	m.Get("/t/:userSlug", context.AssignURLUser(), track.ListUserTracks).Name("track_list")
 
 	m.Group("/t/:userSlug/:trackSlug", func() {
-		m.Get("", track.Show).Name("track_show")
-		m.Combo("/edit", reqSignIn).Get(track.Edit).Post(csrf.Validate, bindIgnErr(form.TrackEdit{}), track.EditPost).Name("track_edit")
-		m.Post("/delete", reqSignIn, csrf.Validate, bindIgnErr(form.TrackDelete{}), track.DeleteTrack).Name("track_delete")
-		m.Get(".json", track.GetJSONWaveform).Name("track_infos_json")
+		m.Get("", context.AssignURLUser(), context.AssignURLTrackWI(), track.Show).Name("track_show")
+		m.Combo("/edit", reqSignIn).Get(context.AssignURLUser(), context.AssignURLTrack(), track.Edit).Post(csrf.Validate, context.AssignURLUser(), context.AssignURLTrack(), bindIgnErr(form.TrackEdit{}), track.EditPost).Name("track_edit")
+		m.Post("/delete", reqSignIn, csrf.Validate, context.AssignURLUser(), context.AssignURLTrack(), bindIgnErr(form.TrackDelete{}), track.DeleteTrack).Name("track_delete")
+		m.Get(".json", context.AssignURLUser(), context.AssignURLTrackWI(), track.GetJSONWaveform).Name("track_infos_json")
 		m.Get("/reorder").Name("track_reorder")
 	})
 	// END TRACK
@@ -166,20 +166,20 @@ func RegisterRoutes(m *macaron.Macaron) {
 		m.Combo("/new", reqSignIn).Get(album.New).Post(csrf.Validate, bindIgnErr(form.Album{}), album.NewPost).Name("album_new")
 	})
 
-	m.Get("/a/:userSlug", album.ListFromUser).Name("album_list")
+	m.Get("/a/:userSlug", context.AssignURLUser(), album.ListFromUser).Name("album_list")
 
 	m.Group("/a/:userSlug/:albumSlug", func() {
-		m.Get("", album.Show).Name("album_show")
-		m.Combo("/edit", reqSignIn).Get(album.Edit).Post(csrf.Validate, bindIgnErr(form.Album{}), album.EditPost).Name("album_edit")
-		m.Post("/delete", reqSignIn, csrf.Validate, bindIgnErr(form.AlbumDelete{}), album.DeleteAlbum).Name("album_delete")
+		m.Get("", context.AssignURLUser(), context.AssignURLAlbum(), album.Show).Name("album_show")
+		m.Combo("/edit", reqSignIn).Get(context.AssignURLUser(), context.AssignURLAlbum(), album.Edit).Post(csrf.Validate, context.AssignURLUser(), context.AssignURLAlbum(), bindIgnErr(form.Album{}), album.EditPost).Name("album_edit")
+		m.Post("/delete", reqSignIn, context.AssignURLUser(), context.AssignURLAlbum(), csrf.Validate, bindIgnErr(form.AlbumDelete{}), album.DeleteAlbum).Name("album_delete")
 	})
 	// END ALBUM
 
 	// In prod this should be served by Nginx or another reverse proxy for a lot of performances reasons
 	m.Group("/medias/track/:userSlug/:trackSlug", func() {
-		m.Get("/stream/:type", track.DevGetMediaTrack).Name("media_track_stream")
-		m.Get("/download/:type", track.DevGetMediaDownload).Name("media_track_download")
-		m.Get("/waveform", track.DevGetMediaPngWf).Name("media_track_waveform")
+		m.Get("/stream/:type", context.AssignURLUser(), context.AssignURLTrack(), track.DevGetMediaTrack).Name("media_track_stream")
+		m.Get("/download/:type", context.AssignURLUser(), context.AssignURLTrack(), track.DevGetMediaDownload).Name("media_track_download")
+		m.Get("/waveform", context.AssignURLUser(), context.AssignURLTrack(), track.DevGetMediaPngWf).Name("media_track_waveform")
 	})
 	/* Admin part */
 

@@ -32,6 +32,10 @@ type Context struct {
 
 	IsLogged    bool
 	IsBasicAuth bool
+
+	URLUser  models.User  // User from the slug in URL
+	URLAlbum models.Album // Album from the slug in URL
+	URLTrack models.Track // Track from the slug in URL
 }
 
 // Title sets "Title" field in template data.

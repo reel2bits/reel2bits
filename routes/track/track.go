@@ -163,48 +163,19 @@ func UploadPost(ctx *context.Context, f form.TrackUpload) {
 
 // Show [GET]
 func Show(ctx *context.Context) {
-	if ctx.Params(":userSlug") == "" || ctx.Params(":trackSlug") == "" {
-		ctx.Flash.Error("No.")
-		ctx.SubURLRedirect(ctx.URLFor("home"), 500)
-		return
-	}
-
-	user, err := models.GetUserBySlug(ctx.Params(":userSlug"))
-	if err != nil {
-		log.WithFields(log.Fields{
-			"user slug": ctx.Params(":userSlug"),
-		}).Errorf("Cannot get User from slug: %v", err)
-
-		ctx.Flash.Error("Unknown user.")
-		ctx.SubURLRedirect(ctx.URLFor("home"), 404)
-		return
-	}
-
-	track, err := models.GetTrackWithInfoBySlugAndUserID(user.ID, ctx.Params(":trackSlug"))
-	if err != nil {
-		log.WithFields(log.Fields{
-			"track slug": ctx.Params(":trackSlug"),
-			"userID":     user.ID,
-		}).Errorf("Cannot get Track With Info from slug and user: %v", err)
-
-		ctx.Flash.Error("Unknown track.")
-		ctx.SubURLRedirect(ctx.URLFor("home"), 404)
-		return
-	}
-
 	// TODO check for track.ready
 
-	ctx.Data["track"] = track
-	ctx.Data["user"] = user
-	ctx.Data["Title"] = fmt.Sprintf("%s by %s - %s", track.Title, user.UserName, setting.AppName)
+	ctx.Data["track"] = ctx.URLTrack
+	ctx.Data["user"] = ctx.URLUser
+	ctx.Data["Title"] = fmt.Sprintf("%s by %s - %s", ctx.URLTrack.Title, ctx.URLUser.UserName, setting.AppName)
 	ctx.PageIs("TrackShow")
 
-	if track.AlbumID > 0 && track.AlbumOrder > 0 {
-		album, err := models.GetAlbumByID(track.AlbumID)
+	if ctx.URLTrack.AlbumID > 0 && ctx.URLTrack.AlbumOrder > 0 {
+		album, err := models.GetAlbumByID(ctx.URLTrack.AlbumID)
 		if err != nil {
 			log.WithFields(log.Fields{
-				"albumID": track.AlbumID,
-				"trackID": track.ID,
+				"albumID": ctx.URLTrack.AlbumID,
+				"trackID": ctx.URLTrack.ID,
 			}).Errorf("Cannot get album for track: %v", err)
 
 			ctx.Flash.Error(ctx.Gettext("Invalid album."))
@@ -215,7 +186,7 @@ func Show(ctx *context.Context) {
 		}
 	}
 
-	if !track.IsReady() {
+	if !ctx.URLTrack.IsReady() {
 		ctx.HTML(200, tmplShowWait)
 		return
 	}
@@ -225,35 +196,9 @@ func Show(ctx *context.Context) {
 
 // DevGetMediaTrack [GET] DEV ONLY !
 func DevGetMediaTrack(ctx *context.Context) {
-	if ctx.Params(":userSlug") == "" || ctx.Params(":trackSlug") == "" {
-		ctx.ServerError("No.", nil)
-		return
-	}
-
-	user, err := models.GetUserBySlug(ctx.Params(":userSlug"))
-	if err != nil {
-		log.WithFields(log.Fields{
-			"user slug": ctx.Params(":userSlug"),
-		}).Errorf("Cannot get User from slug: %v", err)
-
-		ctx.ServerError("Unknown user.", err)
-		return
-	}
-
-	track, err := models.GetTrackBySlugAndUserID(user.ID, ctx.Params(":trackSlug"))
-	if err != nil {
-		log.WithFields(log.Fields{
-			"track slug": ctx.Params(":trackSlug"),
-			"userID":     user.ID,
-		}).Errorf("Cannot get Track from slug and user: %v", err)
-
-		ctx.ServerError("Unknown track.", err)
-		return
-	}
-
-	storDir := filepath.Join(setting.Storage.Path, "tracks", user.Slug)
-	fName := filepath.Join(storDir, track.Filename)
-	mimeType := track.Mimetype
+	storDir := filepath.Join(setting.Storage.Path, "tracks", ctx.URLUser.Slug)
+	fName := filepath.Join(storDir, ctx.URLTrack.Filename)
+	mimeType := ctx.URLTrack.Mimetype
 
 	if ctx.Params(":type") == "mp3" {
 		fName = fmt.Sprintf("%s.mp3", strings.TrimSuffix(fName, filepath.Ext(fName)))
@@ -270,40 +215,14 @@ func DevGetMediaTrack(ctx *context.Context) {
 		return
 	}
 
-	ctx.ServeContentNoDownload(fmt.Sprintf("%s%s", strings.TrimSuffix(track.Filename, filepath.Ext(track.Filename)), filepath.Ext(fName)), mimeType, bytes.NewReader(content))
+	ctx.ServeContentNoDownload(fmt.Sprintf("%s%s", strings.TrimSuffix(ctx.URLTrack.Filename, filepath.Ext(ctx.URLTrack.Filename)), filepath.Ext(fName)), mimeType, bytes.NewReader(content))
 
 }
 
 // DevGetMediaPngWf [GET] DEV ONLY !
 func DevGetMediaPngWf(ctx *context.Context) {
-	if ctx.Params(":userSlug") == "" || ctx.Params(":trackSlug") == "" {
-		ctx.ServerError("No.", nil)
-		return
-	}
-
-	user, err := models.GetUserBySlug(ctx.Params(":userSlug"))
-	if err != nil {
-		log.WithFields(log.Fields{
-			"user slug": ctx.Params(":userSlug"),
-		}).Errorf("Cannot get User from slug: %v", err)
-
-		ctx.ServerError("Unknown user.", err)
-		return
-	}
-
-	track, err := models.GetTrackBySlugAndUserID(user.ID, ctx.Params(":trackSlug"))
-	if err != nil {
-		log.WithFields(log.Fields{
-			"track slug": ctx.Params(":trackSlug"),
-			"userID":     user.ID,
-		}).Errorf("Cannot get Track from slug and user: %v", err)
-
-		ctx.ServerError("Unknown track.", err)
-		return
-	}
-
-	storDir := filepath.Join(setting.Storage.Path, "tracks", user.Slug)
-	fName := filepath.Join(storDir, fmt.Sprintf("%s.png", track.Filename))
+	storDir := filepath.Join(setting.Storage.Path, "tracks", ctx.URLUser.Slug)
+	fName := filepath.Join(storDir, fmt.Sprintf("%s.png", ctx.URLTrack.Filename))
 
 	content, err := ioutil.ReadFile(fName)
 	if err != nil {
@@ -315,40 +234,14 @@ func DevGetMediaPngWf(ctx *context.Context) {
 		return
 	}
 
-	ctx.ServeContentNoDownload(track.Filename, "image/png", bytes.NewReader(content))
+	ctx.ServeContentNoDownload(ctx.URLTrack.Filename, "image/png", bytes.NewReader(content))
 
 }
 
 // DevGetMediaDownload [GET] DEV ONLY !
 func DevGetMediaDownload(ctx *context.Context) {
-	if ctx.Params(":userSlug") == "" || ctx.Params(":trackSlug") == "" {
-		ctx.ServerError("No.", nil)
-		return
-	}
-
-	user, err := models.GetUserBySlug(ctx.Params(":userSlug"))
-	if err != nil {
-		log.WithFields(log.Fields{
-			"user slug": ctx.Params(":userSlug"),
-		}).Errorf("Cannot get User from slug: %v", err)
-
-		ctx.ServerError("Unknown user.", err)
-		return
-	}
-
-	track, err := models.GetTrackBySlugAndUserID(user.ID, ctx.Params(":trackSlug"))
-	if err != nil {
-		log.WithFields(log.Fields{
-			"track slug": ctx.Params(":trackSlug"),
-			"userID":     user.ID,
-		}).Errorf("Cannot get Track from slug and user: %v", err)
-
-		ctx.ServerError("Unknown track.", err)
-		return
-	}
-
-	storDir := filepath.Join(setting.Storage.Path, "tracks", user.Slug)
-	fName := filepath.Join(storDir, track.Filename)
+	storDir := filepath.Join(setting.Storage.Path, "tracks", ctx.URLUser.Slug)
+	fName := filepath.Join(storDir, ctx.URLTrack.Filename)
 
 	if ctx.Params(":type") == "mp3" {
 		fName = fmt.Sprintf("%s.mp3", strings.TrimSuffix(fName, filepath.Ext(fName)))
@@ -364,27 +257,12 @@ func DevGetMediaDownload(ctx *context.Context) {
 		return
 	}
 
-	ctx.ServeContent(fmt.Sprintf("%s__by__%s%s", track.Slug, user.Slug, filepath.Ext(fName)), bytes.NewReader(content))
+	ctx.ServeContent(fmt.Sprintf("%s__by__%s%s", ctx.URLTrack.Slug, ctx.URLUser.Slug, filepath.Ext(fName)), bytes.NewReader(content))
 }
 
 // ListUserTracks [GET]
 func ListUserTracks(ctx *context.Context) {
-	if ctx.Params(":userSlug") == "" {
-		ctx.ServerError("No.", nil)
-		return
-	}
-
-	user, err := models.GetUserBySlug(ctx.Params(":userSlug"))
-	if err != nil {
-		log.WithFields(log.Fields{
-			"user slug": ctx.Params(":userSlug"),
-		}).Errorf("Cannot get User from slug: %v", err)
-
-		ctx.ServerError("Unknown user.", err)
-		return
-	}
-
-	ctx.Data["Title"] = fmt.Sprintf("Tracks of %s - %s", user.UserName, setting.AppName)
+	ctx.Data["Title"] = fmt.Sprintf("Tracks of %s - %s", ctx.URLUser.UserName, setting.AppName)
 	ctx.PageIs("UserListTracks")
 
 	page := ctx.QueryInt("page")
@@ -397,12 +275,12 @@ func ListUserTracks(ctx *context.Context) {
 		PageSize:    10, // TODO: put this in config
 		Page:        page,
 		GetAll:      false,
-		UserID:      user.ID,
+		UserID:      ctx.URLUser.ID,
 		WithPrivate: false,
 		OnlyReady:   true,
 	}
 
-	if ctx.Data["LoggedUserID"] == user.ID {
+	if ctx.Data["LoggedUserID"] == ctx.URLUser.ID {
 		opts.WithPrivate = true
 		opts.OnlyReady = false
 	}
@@ -418,7 +296,7 @@ func ListUserTracks(ctx *context.Context) {
 		return
 	}
 
-	ctx.Data["user"] = user
+	ctx.Data["user"] = ctx.URLUser
 	ctx.Data["tracks"] = listOfTracks
 	ctx.Data["tracks_count"] = tracksCount
 
@@ -439,44 +317,14 @@ func DeleteTrack(ctx *context.Context, f form.TrackDelete) {
 		return
 	}
 
-	if ctx.Params(":userSlug") == "" || ctx.Params(":trackSlug") == "" {
-		ctx.JSONSuccess(map[string]interface{}{
-			"error":    "what about no ?",
-			"redirect": false,
-		})
-		return
-	}
-
-	// Get user and track
-	user, err := models.GetUserBySlug(ctx.Params(":userSlug"))
-	if err != nil {
-		log.WithFields(log.Fields{
-			"user slug": ctx.Params(":userSlug"),
-		}).Errorf("Cannot get User from slug: %v", err)
-
-		ctx.ServerError("Unknown user.", err)
-		return
-	}
-
-	track, err := models.GetTrackBySlugAndUserID(user.ID, ctx.Params(":trackSlug"))
-	if err != nil {
-		log.WithFields(log.Fields{
-			"track slug": ctx.Params(":trackSlug"),
-			"userID":     user.ID,
-		}).Errorf("Cannot get Track from slug and user: %v", err)
-
-		ctx.ServerError("Unknown track.", err)
-		return
-	}
-
-	if ctx.Data["LoggedUserID"] != track.UserID {
+	if ctx.Data["LoggedUserID"] != ctx.URLTrack.UserID {
 		ctx.JSONSuccess(map[string]interface{}{
 			"error":    ctx.Gettext("Unauthorized"),
 			"redirect": false,
 		})
 	}
 
-	err = models.DeleteTrack(track.ID, track.UserID)
+	err := models.DeleteTrack(ctx.URLTrack.ID, ctx.URLTrack.UserID)
 	if err != nil {
 		ctx.Flash.Error(ctx.Gettext("Error deleting track"))
 		log.Warnf("DeleteTrack.Delete: %v", err)
@@ -490,43 +338,17 @@ func DeleteTrack(ctx *context.Context, f form.TrackDelete) {
 	ctx.Flash.Success(ctx.Gettext("Track deleted"))
 	ctx.JSONSuccess(map[string]interface{}{
 		"error":    nil,
-		"redirect": ctx.SubURLFor("track_list", ":userSlug", user.Slug),
+		"redirect": ctx.SubURLFor("track_list", ":userSlug", ctx.URLUser.Slug),
 	})
 	return
 }
 
 // GetJSONWaveform [GET]
 func GetJSONWaveform(ctx *context.Context) {
-	if ctx.Params(":userSlug") == "" || ctx.Params(":trackSlug") == "" {
-		ctx.ServerError("No.", nil)
-		return
-	}
-
-	user, err := models.GetUserBySlug(ctx.Params(":userSlug"))
-	if err != nil {
-		log.WithFields(log.Fields{
-			"user slug": ctx.Params(":userSlug"),
-		}).Errorf("Cannot get User from slug: %v", err)
-
-		ctx.ServerError("Unknown user.", err)
-		return
-	}
-
-	soundInfo, err := models.GetTrackWithInfoBySlugAndUserID(user.ID, ctx.Params(":trackSlug"))
-	if err != nil {
-		log.WithFields(log.Fields{
-			"track slug": ctx.Params(":trackSlug"),
-			"userID":     user.ID,
-		}).Errorf("Cannot get Track from slug and user: %v", err)
-
-		ctx.ServerError("Unknown track.", err)
-		return
-	}
-
-	if soundInfo.TrackInfo.Waveform != "" && soundInfo.TrackInfo.WaveformErr == "" {
+	if ctx.URLTrack.TrackInfo.Waveform != "" && ctx.URLTrack.TrackInfo.WaveformErr == "" {
 		// MERGE json from .TrackInfo.Waveform
 		var w models.Waveform
-		err := json.Unmarshal([]byte(soundInfo.TrackInfo.Waveform), &w)
+		err := json.Unmarshal([]byte(ctx.URLTrack.TrackInfo.Waveform), &w)
 
 		if err != nil {
 			log.Errorf("Cannot unmarshal waveform: %v", err)
@@ -537,15 +359,15 @@ func GetJSONWaveform(ctx *context.Context) {
 		}
 
 		soundType := "orig"
-		if soundInfo.Mimetype != "audio/mpeg" {
+		if ctx.URLTrack.Mimetype != "audio/mpeg" {
 			soundType = "mp3"
 		}
 		ctx.JSONSuccess(map[string]interface{}{
 			"waveform":    w,
-			"track_url":   ctx.URLFor("media_track_stream", ":userSlug", user.Slug, ":trackSlug", soundInfo.Slug, ":type", soundType),
-			"wf_png":      ctx.URLFor("media_track_waveform", ":userSlug", user.Slug, ":trackSlug", soundInfo.Slug),
-			"title":       soundInfo.Title,
-			"description": soundInfo.Description,
+			"track_url":   ctx.URLFor("media_track_stream", ":userSlug", ctx.URLUser.Slug, ":trackSlug", ctx.URLTrack.Slug, ":type", soundType),
+			"wf_png":      ctx.URLFor("media_track_waveform", ":userSlug", ctx.URLUser.Slug, ":trackSlug", ctx.URLTrack.Slug),
+			"title":       ctx.URLTrack.Title,
+			"description": ctx.URLTrack.Description,
 		})
 		return
 	}
@@ -559,41 +381,13 @@ func GetJSONWaveform(ctx *context.Context) {
 
 // Edit [GET]
 func Edit(ctx *context.Context) {
-	if ctx.Params(":userSlug") == "" || ctx.Params(":trackSlug") == "" {
-		ctx.Flash.Error("No.")
-		ctx.SubURLRedirect(ctx.URLFor("home"), 500)
-		return
-	}
 	if !ctx.IsLogged {
 		ctx.SubURLRedirect(ctx.URLFor("home"), 403)
 		return
 	}
 
-	user, err := models.GetUserBySlug(ctx.Params(":userSlug"))
-	if err != nil {
-		log.WithFields(log.Fields{
-			"user slug": ctx.Params(":userSlug"),
-		}).Errorf("Cannot get User from slug: %v", err)
-
-		ctx.Flash.Error("Unknown user.")
-		ctx.SubURLRedirect(ctx.URLFor("home"), 404)
-		return
-	}
-
-	if ctx.Data["LoggedUserID"] != user.ID {
+	if ctx.Data["LoggedUserID"] != ctx.URLUser.ID {
 		ctx.SubURLRedirect(ctx.URLFor("home"), 403)
-		return
-	}
-
-	track, err := models.GetTrackWithInfoBySlugAndUserID(user.ID, ctx.Params(":trackSlug"))
-	if err != nil {
-		log.WithFields(log.Fields{
-			"track slug": ctx.Params(":trackSlug"),
-			"userID":     user.ID,
-		}).Errorf("Cannot get Track With Info from slug and user: %v", err)
-
-		ctx.Flash.Error("Unknown track.")
-		ctx.SubURLRedirect(ctx.URLFor("home"), 404)
 		return
 	}
 
@@ -606,17 +400,17 @@ func Edit(ctx *context.Context) {
 	}
 
 	ctx.Data["albums"] = albums
-	ctx.Data["description"] = track.Description
-	ctx.Data["is_private"] = track.IsPrivate()
-	ctx.Data["show_dl_link"] = track.CanShowDlLink()
-	ctx.Data["Title"] = fmt.Sprintf("%s by %s - %s", track.Title, user.UserName, setting.AppName)
-	ctx.Data["title"] = track.Title
-	ctx.Data["cur_album"] = track.AlbumID
+	ctx.Data["description"] = ctx.URLTrack.Description
+	ctx.Data["is_private"] = ctx.URLTrack.IsPrivate()
+	ctx.Data["show_dl_link"] = ctx.URLTrack.CanShowDlLink()
+	ctx.Data["Title"] = fmt.Sprintf("%s by %s - %s", ctx.URLTrack.Title, ctx.URLUser.UserName, setting.AppName)
+	ctx.Data["title"] = ctx.URLTrack.Title
+	ctx.Data["cur_album"] = ctx.URLTrack.AlbumID
 	ctx.PageIs("TrackEdit")
 
-	if !track.IsReady() {
-		ctx.Data["user"] = user
-		ctx.Data["track"] = track
+	if !ctx.URLTrack.IsReady() {
+		ctx.Data["user"] = ctx.URLUser
+		ctx.Data["track"] = ctx.URLTrack
 		ctx.HTML(200, tmplShowWait)
 		return
 	}
@@ -636,36 +430,13 @@ func EditPost(ctx *context.Context, f form.TrackEdit) {
 		return
 	}
 
-	user, err := models.GetUserBySlug(ctx.Params(":userSlug"))
-	if err != nil {
-		log.WithFields(log.Fields{
-			"user slug": ctx.Params(":userSlug"),
-		}).Errorf("Cannot get User from slug: %v", err)
-
-		ctx.Flash.Error("Unknown user.")
-		ctx.SubURLRedirect(ctx.URLFor("home"), 404)
-		return
-	}
-
-	track, err := models.GetTrackBySlugAndUserID(user.ID, ctx.Params(":trackSlug"))
-	if err != nil {
-		log.WithFields(log.Fields{
-			"track slug": ctx.Params(":trackSlug"),
-			"userID":     user.ID,
-		}).Errorf("Cannot get Track from slug and user: %v", err)
-
-		ctx.Flash.Error("Unknown track.")
-		ctx.SubURLRedirect(ctx.URLFor("home"), 404)
-		return
-	}
-
-	track.Title = f.Title
-	track.Description = f.Description
-	track.Private = models.BoolToFake(f.IsPrivate)
-	track.ShowDlLink = models.BoolToFake(f.ShowDlLink)
+	ctx.URLTrack.Title = f.Title
+	ctx.URLTrack.Description = f.Description
+	ctx.URLTrack.Private = models.BoolToFake(f.IsPrivate)
+	ctx.URLTrack.ShowDlLink = models.BoolToFake(f.ShowDlLink)
 
 	if f.Album > 0 {
-		track.AlbumID = f.Album
+		ctx.URLTrack.AlbumID = f.Album
 		count, err := models.GetCountOfAlbumTracks(f.Album)
 		if err != nil {
 			log.WithFields(log.Fields{
@@ -674,14 +445,14 @@ func EditPost(ctx *context.Context, f form.TrackEdit) {
 
 			count = 0 // well, yes
 		}
-		track.AlbumOrder = count + 1 // if zero it will be Track 1, etc.
+		ctx.URLTrack.AlbumOrder = count + 1 // if zero it will be Track 1, etc.
 	} else {
 		// zéro is considered as "unassociated"
-		track.AlbumID = 0
-		track.AlbumOrder = 0
+		ctx.URLTrack.AlbumID = 0
+		ctx.URLTrack.AlbumOrder = 0
 	}
 
-	err = models.UpdateTrack(&track)
+	err := models.UpdateTrack(&ctx.URLTrack)
 	if err != nil {
 		switch {
 		default:
@@ -691,5 +462,5 @@ func EditPost(ctx *context.Context, f form.TrackEdit) {
 	}
 
 	ctx.Flash.Success(ctx.Gettext("Track edited"))
-	ctx.SubURLRedirect(ctx.URLFor("track_show", ":userSlug", user.Slug, ":trackSlug", track.Slug))
+	ctx.SubURLRedirect(ctx.URLFor("track_show", ":userSlug", ctx.URLUser.Slug, ":trackSlug", ctx.URLTrack.Slug))
 }
