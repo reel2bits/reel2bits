@@ -21,9 +21,6 @@ check ASC/DESC
 
 changer les suburl "/..." hardcodés en utilisant les .Name() dans les routes
 
-ERRO[2018-05-27 00:11:54] No.: <nil>                                    source="context/context.go:95"
-  -> No.: <nil> ???
-
 ERRO[2018-05-27 00:14:44] Audiowaveform binary doesn't exists.          bin=/usr/local/bin/audiowaveform err="stat /usr/local/bin/audiowaveform: no such file or directory" source="workers/transcoding_infos.go:133" trackID=1
 ERRO[2018-05-27 00:14:44] Cannot create Waveforms                       err="Error: /usr/local/bin/audiowaveform doesn't exists" source="workers/transcoding_infos.go:368" trackID=1
   -> retry ?
