@@ -519,8 +519,8 @@ func Edit(ctx *context.Context) {
 
 	ctx.Data["albums"] = albums
 	ctx.Data["description"] = track.Description
-	ctx.Data["is_private"] = track.IsPrivate
-	ctx.Data["show_dl_link"] = track.ShowDlLink
+	ctx.Data["is_private"] = track.IsPrivate()
+	ctx.Data["show_dl_link"] = track.CanShowDlLink()
 	ctx.Data["Title"] = fmt.Sprintf("%s by %s - %s", track.Title, user.UserName, setting.AppName)
 	ctx.Data["title"] = track.Title
 	ctx.Data["cur_album"] = track.AlbumID

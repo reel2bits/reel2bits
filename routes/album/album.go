@@ -199,7 +199,7 @@ func Edit(ctx *context.Context) {
 	}
 
 	ctx.Data["name"] = album.Name
-	ctx.Data["is_private"] = album.IsPrivate
+	ctx.Data["is_private"] = album.IsPrivate()
 	ctx.Data["description"] = album.Description
 
 	ctx.PageIs("AlbumEdit")

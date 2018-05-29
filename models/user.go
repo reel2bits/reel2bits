@@ -36,13 +36,13 @@ type User struct {
 }
 
 // IsAdmin from FakeBool
-func (user *User) IsAdmin() bool {
+func (user User) IsAdmin() bool {
 	realBool, _ := isABool(user.Admin, BoolFalse)
 	return realBool
 }
 
 // IsActive from FakeBool
-func (user *User) IsActive() bool {
+func (user User) IsActive() bool {
 	realBool, _ := isABool(user.Active, BoolFalse)
 	return realBool
 }

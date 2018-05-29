@@ -77,25 +77,25 @@ type Track struct {
 }
 
 // IsTranscodeNeeded from FakeBool
-func (track *Track) IsTranscodeNeeded() bool {
+func (track Track) IsTranscodeNeeded() bool {
 	realBool, _ := isABool(track.Private, BoolFalse) // in reality the defaultBool should be unused
 	return realBool
 }
 
 // IsReady from FakeBool
-func (track *Track) IsReady() bool {
+func (track Track) IsReady() bool {
 	realBool, _ := isABool(track.Ready, BoolFalse)
 	return realBool
 }
 
 // IsPrivate from FakeBool
-func (track *Track) IsPrivate() bool {
+func (track Track) IsPrivate() bool {
 	realBool, _ := isABool(track.Private, BoolFalse)
 	return realBool
 }
 
 // CanShowDlLink from FakeBool
-func (track *Track) CanShowDlLink() bool {
+func (track Track) CanShowDlLink() bool {
 	realBool, _ := isABool(track.ShowDlLink, BoolTrue)
 	return realBool
 }

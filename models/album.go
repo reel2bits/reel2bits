@@ -24,7 +24,7 @@ type Album struct {
 }
 
 // IsPrivate from FakeBool
-func (album *Album) IsPrivate() bool {
+func (album Album) IsPrivate() bool {
 	realBool, _ := isABool(album.Private, BoolFalse)
 	return realBool
 }
