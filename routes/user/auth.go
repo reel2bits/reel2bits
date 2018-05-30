@@ -294,7 +294,7 @@ func ResetPasswdPost(ctx *context.Context) {
 			"userName": u.UserName,
 		}).Debugf("User password reset")
 
-		ctx.Redirect(setting.AppSubURL + "/user/login")
+		ctx.Redirect(ctx.SubURLFor("user_login"))
 		return
 	}
 	ctx.Data["IsResetFailed"] = true
