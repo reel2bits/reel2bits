@@ -29,16 +29,11 @@ func (album Album) IsPrivate() bool {
 	return realBool
 }
 
-// BeforeSave Create slug # also called when updating
-func (album *Album) BeforeSave() (err error) {
-	album.Slug = slug.Make(album.Name)
-	return nil
-}
-
-// BeforeUpdate Update slug
-func (album *Album) BeforeUpdate() (err error) {
-	album.Slug = slug.Make(album.Name)
-	return nil
+// AfterSave Create slug
+func (album *Album) AfterSave(tx *gorm.DB) (err error) {
+	nameSlug := slug.Make(fmt.Sprintf("%d-%s", album.ID, album.Name))
+	tx.Model(&Album{}).Where("id = ?", album.ID).Update("slug", nameSlug)
+	return
 }
 
 func (album *Album) getTracksCount(db *gorm.DB) (count int64, err error) {

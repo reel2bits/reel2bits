@@ -131,8 +131,6 @@ func (track Track) LicenceObj() *Licence {
 
 // BeforeCreate set default states
 func (track *Track) BeforeCreate() (err error) {
-	track.Slug = slug.Make(track.Title)
-
 	if track.IsTranscodeNeeded() {
 		track.TranscodeState = ProcessingWaiting
 	} else {
@@ -142,9 +140,15 @@ func (track *Track) BeforeCreate() (err error) {
 	return
 }
 
-// BeforeUpdate set slug
-func (track *Track) BeforeUpdate() {
-	track.Slug = slug.Make(track.Title)
+// AfterSave Create slug
+func (track *Track) AfterSave(tx *gorm.DB) (err error) {
+	if track.ID == 0 {
+		return // Ignore if we have nothing useful to do
+	}
+	log.Infof("AfterSave ID %d", track.ID)
+	titleSlug := slug.Make(fmt.Sprintf("%d-%s", track.ID, track.Title))
+	tx.Model(&Track{}).Where("id = ?", track.ID).Update("slug", titleSlug)
+	return
 }
 
 // AfterFind set times

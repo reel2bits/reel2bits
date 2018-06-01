@@ -39,7 +39,11 @@
                         {{ if $track.TrackInfo.Waveform }}
                         <img src="{{ URLFor "media_track_waveform" ":userSlug" $track.User.Slug ":trackSlug" $track.Slug }}"/>
                         {{ else }}
-                        <span class="label label-info">Please wait, song metadatas are processing...</span>
+                        {{ if not $track.ProcessingDone }}
+                            <span class="label label-danger">Error ! Please see track page for information.</span>
+                        {{ else }}
+                            <span class="label label-info">Please wait, song metadatas are processing...</span>
+                        {{ end }}
                         {{ end }}
                     </div>
                 </div>
