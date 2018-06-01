@@ -47,6 +47,8 @@ type Track struct {
 	Description string `gorm:"TEXT"`
 	Slug        string
 
+	Licence      int `gorm:"DEFAULT:0"` // See models.go LicencesMapping
+
 	Filename     string // crafted from hash, filename on filesystem, used for original file, with extension.
 	FilenameOrig string // original filename without extension
 
@@ -98,6 +100,26 @@ func (track Track) IsPrivate() bool {
 func (track Track) CanShowDlLink() bool {
 	realBool, _ := isABool(track.ShowDlLink, BoolTrue)
 	return realBool
+}
+
+// LicencesMapping as the name says
+func (track Track) LicencesMapping() []Licence {
+	return LicencesMapping
+}
+
+// LicenceObj get the associated LicenceObj for the track
+func (track Track) LicenceObj() *Licence {
+	if track.Licence <= 0 {
+		return nil
+	}
+
+	for _, lic := range LicencesMapping {
+		if lic.ID == track.Licence {
+			return &lic
+		}
+	}
+
+	return nil
 }
 
 // BeforeSave set default states

@@ -29,6 +29,16 @@
                             </select>
                         </div>
 
+                        <div class="form-group {{if .Err_Licence}}has-error{{end}}">
+                            <label for="licence" class="">{{Gettext ("Licence")}}</label>
+                            <select id="licence" name="licence">
+                                <option value="0" selected>No licence specified.</option>
+                                {{range $lic := .LicencesMapping}}
+                                <option value="{{$lic.ID}}">{{$lic.Name}}</option>
+                                {{end}}
+                            </select>
+                        </div>
+
                         <div class="form-group {{if .Err_File}}has-error{{end}}">
                             <label for="file" class="">{{Gettext ("File")}}</label>
                             <input type="file" name="file" id="file" class="" value="{{.file}}" placeholder='{{Gettext ("Track file")}}' required accept=".mp3,.mp4,.wav,.ogg,.flac,audio/mpeg,audio/mp4,audio/wav,audio/vorbis,audio/flac">

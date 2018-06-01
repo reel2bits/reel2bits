@@ -81,6 +81,24 @@ func BoolToFake(realBool bool) uint {
 
 // END OF CRIMES
 
+type Licence struct {
+	Name string
+	ID int
+	Link string
+	Icon string
+}
+
+// Please don't change the numbers. It's hardcoded.
+var LicencesMapping = []Licence{
+	{Name: "Attribution", ID: 1, Link: "https://creativecommons.org/licenses/by/4.0/", Icon: "creative-commons"},
+	{Name: "Attribution Share Alike", ID: 2, Link: "https://creativecommons.org/licenses/by-sa/4.0", Icon: "creative-commons"},
+	{Name: "Attribution No Derivatives", ID: 3, Link: "https://creativecommons.org/licenses/by-nd/4.0", Icon: "creative-commons"},
+	{Name: "Attribution Non Commercial", ID: 4, Link: "https://creativecommons.org/licenses/by-nc/4.0", Icon: "creative-commons"},
+	{Name: "Attribution Non Commercial - Share Alike", ID: 5, Link: "https://creativecommons.org/licenses/by-nc-sa/4.0", Icon: "creative-commons"},
+	{Name: "Attribution Non Commercial - No Derivatives", ID: 6, Link: "https://creativecommons.org/licenses/by-nc-nd/4.0", Icon: "creative-commons"},
+	{Name: "Public Domain Dedication", ID: 7, Link: "", Icon: ""},
+}
+
 // LoadConfigs to init db
 func LoadConfigs() {
 	sec := setting.Cfg.Section("database")

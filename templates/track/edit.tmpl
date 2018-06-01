@@ -34,6 +34,20 @@
                             </select>
                         </div>
 
+                        <div class="form-group {{if .Err_Licence}}has-error{{end}}">
+                            <label for="licence" class="">{{Gettext ("Licence")}}</label>
+                            <select id="licence" name="licence">
+                                <option value="0">Select a licence if you want.</option>
+                                {{range .LicencesMapping}}
+                                    {{ if (eq .ID $.licence) }}
+                                    <option value="{{.ID}}" selected>{{.Name}}</option>
+                                    {{ else }}
+                                    <option value="{{.ID}}">{{.Name}}</option>
+                                    {{ end }}
+                                {{end}}
+                            </select>
+                        </div>
+
                         <div class="checkbox {{if .Err_IsPrivate}}has-error{{end}}">
                             <label>
                                 <input type="checkbox" name="is_private" id="is_private" class="" value="true" {{if .is_private}}checked{{end}}>{{Gettext ("Private track ?")}}

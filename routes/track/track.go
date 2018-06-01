@@ -34,6 +34,7 @@ func Upload(ctx *context.Context) {
 	albums, _ := models.GetMapNameIDOfAlbums(ctx.User.ID)
 
 	ctx.Data["albums"] = albums
+	ctx.Data["LicencesMapping"] = ctx.URLTrack.LicencesMapping()
 
 	ctx.HTML(200, tmplUpload)
 }
@@ -59,6 +60,7 @@ func UploadPost(ctx *context.Context, f form.TrackUpload) {
 		Filename:     fmt.Sprintf("%s%s", fileHash, filepath.Ext(f.File.Filename)), // .Ext returns the dot
 		FilenameOrig: strings.TrimSuffix(f.File.Filename, filepath.Ext(f.File.Filename)),
 		Hash:         fileHash,
+		Licence:      f.Licence,
 	}
 
 	if f.Album > 0 {
@@ -406,6 +408,8 @@ func Edit(ctx *context.Context) {
 	ctx.Data["Title"] = fmt.Sprintf("%s by %s - %s", ctx.URLTrack.Title, ctx.URLUser.UserName, setting.AppName)
 	ctx.Data["title"] = ctx.URLTrack.Title
 	ctx.Data["cur_album"] = ctx.URLTrack.AlbumID
+	ctx.Data["licence"] = ctx.URLTrack.Licence
+	ctx.Data["LicencesMapping"] = ctx.URLTrack.LicencesMapping()
 	ctx.PageIs("TrackEdit")
 
 	if !ctx.URLTrack.IsReady() {
@@ -434,6 +438,7 @@ func EditPost(ctx *context.Context, f form.TrackEdit) {
 	ctx.URLTrack.Description = f.Description
 	ctx.URLTrack.Private = models.BoolToFake(f.IsPrivate)
 	ctx.URLTrack.ShowDlLink = models.BoolToFake(f.ShowDlLink)
+	ctx.URLTrack.Licence = f.Licence
 
 	if f.Album > 0 {
 		ctx.URLTrack.AlbumID = f.Album

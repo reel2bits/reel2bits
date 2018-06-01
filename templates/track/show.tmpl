@@ -85,6 +85,19 @@
             {{ end }}
 
             <tr><td>Duration</td><td colspan="2">{{ DurationToHuman .track.TrackInfo.Duration }}</td></tr>
+            <tr><td>Licence</td><td colspan="2">
+                {{ if .track.Licence }}
+                  {{ if .track.LicenceObj.Icon }}<i class="fa fa-{{ .track.LicenceObj.Icon }}" aria-hidden="true"></i>&nbsp;{{ end }}
+                  {{ if .track.LicenceObj.Link }}
+                    <a href="{{.track.LicenceObj.Link}}" target="_blank">{{.track.LicenceObj.Name}}</a>
+                  {{ else }}
+                      {{ .track.LicenceObj.Name }}
+                  {{ end }}
+                {{ else }}
+                  Not specified.
+                {{ end }}
+            </td>
+
             {{ if .track.TrackInfo.TypeHuman }}<tr><td>Type</td><td colspan="2">{{ .track.TrackInfo.TypeHuman }}</td></tr>{{ end }}
             {{ if .track.TrackInfo.Codec }}<tr><td>Codec</td><td colspan="2">{{ .track.TrackInfo.Codec }}</td></tr>{{ end }}
             {{ if .track.TrackInfo.Format }}<tr><td>Format</td><td colspan="2">{{ .track.TrackInfo.Format }} bits</td></tr>{{ end }}
