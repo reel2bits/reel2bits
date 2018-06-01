@@ -55,6 +55,12 @@ func init() {
 				return false, errs
 			}
 
+			if len(data) <= 0 {
+				log.Errorf("[]bytes data is empty, no file submited.")
+				errs.Add([]string{name}, errOnlyAudioFile, "OnlyAudioFile")
+				return false, errs
+			}
+
 			mimetype, err := tool.GetBlobMimeType(data)
 			if err != nil {
 				log.Errorf("Error reading temp uploaded file: %s", err)
