@@ -10,7 +10,6 @@ KISS, that's all.
 
 ## TODO
 
-- Replace transcoding by something else than sox maybe
 - Show error when mp3 file don't load
 - Maybe permit track stream/download using the server or not
 - Timezone management ? Actually all is more-or-less UTC
@@ -34,6 +33,12 @@ Edit config: conf/app.ini
 
 Launch how you want the "./reel2bits web" and "./reel2bits worker"
 Or use the Systemd Unit files in "conf/" directory and adapt them
+
+## Creating an user
+
+The first created user, either CLI or web app is automatically admin.
+
+You can create an user from CLI with ```./reel2bits createuser``` and fill the prompts.
 
 ## Docker
 
