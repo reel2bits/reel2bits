@@ -58,8 +58,8 @@ type Track struct {
 
 	// Transcode state is also used for the worker job to fetch infos
 	TranscodeNeeded uint // See models.BoolFalse
-	TranscodeState  int // ProcessingXxx
-	MetadatasState  int // ProcessingXxx
+	TranscodeState  int  // ProcessingXxx
+	MetadatasState  int  // ProcessingXxx
 
 	TranscodeStart     time.Time `gorm:"-"`
 	TranscodeStartUnix int64
@@ -107,6 +107,7 @@ func (track Track) LicencesMapping() []Licence {
 	return LicencesMapping
 }
 
+// ProcessingDone or not, accounting of failed processing
 func (track Track) ProcessingDone() bool {
 	if track.TranscodeState == ProcessingFailed {
 		return false
