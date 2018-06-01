@@ -43,6 +43,24 @@
                             {{ end }}
                         </div>
                     </div>
+                {{ else if $item.Album }}
+                    <div class="row album_single_list">
+                        <div class="col-lg-6">
+                            <i class="fa fa-music" aria-hidden="true"></i>&nbsp;
+                            <a href="{{ URLFor "album_show" ":userSlug" $item.User.Slug ":albumSlug" $item.Album.Slug }}">{{ SubStr .Name 0 60 }}</a>
+                        <br />
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <i class="fa fa-calendar" aria-hidden="true"></i> {{ ElapsedToHuman $item.Album.CreatedAt }}
+                            </div>
+                            <div class="col-sm-4">
+                                <i class="fa fa-play" aria-hidden="true"></i> {{$item.Album.GetTracksCount}} tracks
+                            </div>
+                        </div>
+                        </div>
+                        <div class="col-lg-6">
+                        </div>
+                    </div>
                 {{ end }}
             {{end}}
         </div>
