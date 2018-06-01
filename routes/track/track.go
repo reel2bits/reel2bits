@@ -45,6 +45,7 @@ func UploadPost(ctx *context.Context, f form.TrackUpload) {
 	ctx.PageIs("TrackUpload")
 
 	if ctx.HasError() {
+		ctx.Data["LicencesMapping"] = ctx.URLTrack.LicencesMapping()
 		ctx.Success(tmplUpload)
 		return
 	}

@@ -32,9 +32,17 @@
                         <div class="form-group {{if .Err_Licence}}has-error{{end}}">
                             <label for="licence" class="">{{Gettext ("Licence")}}</label>
                             <select id="licence" name="licence">
-                                <option value="0" selected>No licence specified.</option>
-                                {{range $lic := .LicencesMapping}}
-                                <option value="{{$lic.ID}}">{{$lic.Name}}</option>
+                                <option value="0">Select a licence if you want.</option>
+                                {{range .LicencesMapping}}
+                                    {{ if $.licence }}
+                                        {{ if (eq .ID $.licence) }}
+                                        <option value="{{.ID}}" selected>{{.Name}}</option>
+                                        {{ else }}
+                                        <option value="{{.ID}}">{{.Name}}</option>
+                                        {{ end }}
+                                    {{ else }}
+                                        <option value="{{.ID}}">{{.Name}}</option>
+                                    {{ end }}
                                 {{end}}
                             </select>
                         </div>
