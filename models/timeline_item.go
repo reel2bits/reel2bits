@@ -94,7 +94,7 @@ func GetTimelineItems(opts *TimelineItemsOpts) (timelineItems []TimelineItem, co
 	}
 	timelineItems = make([]TimelineItem, 0, opts.PageSize)
 
-	err = db.Order("created_at ASC").Offset((opts.Page - 1) * opts.PageSize).Limit(opts.PageSize).Find(&timelineItems).Error
+	err = db.Preload("User").Preload("Track").Preload("Album").Preload("Track.TrackInfo").Order("created_at ASC").Offset((opts.Page - 1) * opts.PageSize).Limit(opts.PageSize).Find(&timelineItems).Error
 	db.Model(&TimelineItem{}).Select("id").Count(&count)
 	return timelineItems, count, err
 }
