@@ -565,6 +565,15 @@ func DeleteTrack(trackID uint, userID uint) (err error) {
 		}
 	}
 
+	// Delete the timeline item
+	err = DeleteTimelineItem(trackUser.ID, track.ID, 0)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"trackID": track.ID,
+			"userID":  trackUser.ID,
+		}).Errorf("Cannot delete timelineItem: %v", err)
+	}
+
 	log.WithFields(log.Fields{
 		"trackID":     track.ID,
 		"track title": track.Title,

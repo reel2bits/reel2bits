@@ -8,12 +8,12 @@ more tests for sec (not UT)
 the "Timeline", albums plus tracks mixed on one page
 
 implementer l'ajout a la TLITEM lors:
-- ajout track
-- private -> public
-- albun.tracks >= 1
+x track became ready
+x private -> public
+- album.tracks >= 1
 remove TLITEM:
-- rm track
-- public -> private
+x rm track
+x public -> private
 - album.tracks <= 0
 ***
 

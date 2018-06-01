@@ -435,6 +435,12 @@ func EditPost(ctx *context.Context, f form.TrackEdit) {
 		return
 	}
 
+	var previouslyPrivate = false
+
+	if ctx.URLTrack.IsPrivate() {
+		previouslyPrivate = true
+	}
+
 	ctx.URLTrack.Title = f.Title
 	ctx.URLTrack.Description = f.Description
 	ctx.URLTrack.Private = models.BoolToFake(f.IsPrivate)
@@ -465,6 +471,33 @@ func EditPost(ctx *context.Context, f form.TrackEdit) {
 			ctx.Handle(500, "EditTrack", err)
 		}
 		return
+	}
+
+	// Track have been publicized, add timelineItem
+	if previouslyPrivate && !f.IsPrivate {
+		if !ctx.URLTrack.IsPrivate() {
+			tli := &models.TimelineItem{
+				TrackID: ctx.URLTrack.ID,
+				UserID:  ctx.URLTrack.UserID,
+			}
+			err := models.CreateTimelineItem(tli)
+			if err != nil {
+				log.WithFields(log.Fields{
+					"track": ctx.URLTrack.ID,
+				}).Error("Cannot add track to timeline")
+			}
+		}
+	}
+
+	// Track have been privatized, remove timeline item
+	if !previouslyPrivate && f.IsPrivate {
+		err = models.DeleteTimelineItem(ctx.URLUser.ID, ctx.URLTrack.ID, 0)
+		if err != nil {
+			log.WithFields(log.Fields{
+				"trackID": ctx.URLTrack.ID,
+				"userID":  ctx.URLUser.ID,
+			}).Errorf("Cannot delete timelineItem: %v", err)
+		}
 	}
 
 	ctx.Flash.Success(ctx.Gettext("Track edited"))
