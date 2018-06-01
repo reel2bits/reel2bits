@@ -47,7 +47,7 @@ type Track struct {
 	Description string `gorm:"TEXT"`
 	Slug        string
 
-	Licence      int `gorm:"DEFAULT:0"` // See models.go LicencesMapping
+	Licence int `gorm:"DEFAULT:0"` // See models.go LicencesMapping
 
 	Filename     string // crafted from hash, filename on filesystem, used for original file, with extension.
 	FilenameOrig string // original filename without extension

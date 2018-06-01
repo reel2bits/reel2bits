@@ -81,14 +81,15 @@ func BoolToFake(realBool bool) uint {
 
 // END OF CRIMES
 
+// Licence is a licence struct
 type Licence struct {
 	Name string
-	ID int
+	ID   int
 	Link string
 	Icon string
 }
 
-// Please don't change the numbers. It's hardcoded.
+// LicencesMapping : Please don't change the numbers. It's hardcoded.
 var LicencesMapping = []Licence{
 	{Name: "Attribution", ID: 1, Link: "https://creativecommons.org/licenses/by/4.0/", Icon: "creative-commons"},
 	{Name: "Attribution Share Alike", ID: 2, Link: "https://creativecommons.org/licenses/by-sa/4.0", Icon: "creative-commons"},
