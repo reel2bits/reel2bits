@@ -32,6 +32,7 @@ func main() {
 	app.Commands = []cli.Command{
 		cmd.Web,
 		cmd.Worker,
+		cmd.CreateUser,
 	}
 	app.Flags = append(app.Flags, []cli.Flag{}...)
 	app.Run(os.Args)
