@@ -206,7 +206,7 @@ func SetEngine() (err error) {
 	}
 
 	db.LogMode(DbCfg.Logging)
-	db.SetLogger(setting.LoggerBdd)
+	//db.SetLogger(setting.LoggerBdd)
 	return nil
 }
 

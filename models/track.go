@@ -22,11 +22,9 @@ import (
 // Also used in TrackInfo, it's a generic state list
 const (
 	ProcessingWaiting   = 1 // a.k.a ProcessingNeeded
-	ProcessingStarted   = 2
 	ProcessingFailed    = 3
-	ProcessingFinished  = 4
-	ProcessingNotNeeded = 5
-	ProcessingRetrying  = 6
+	ProcessingFinished  = 4 // OK state
+	ProcessingNotNeeded = 5 // OK state too
 )
 
 // Select between transcoding or metadatas state
@@ -60,13 +58,15 @@ type Track struct {
 
 	// Transcode state is also used for the worker job to fetch infos
 	TranscodeNeeded uint // See models.BoolFalse
-	TranscodeState  int
-	MetadatasState  int
+	TranscodeState  int // ProcessingXxx
+	MetadatasState  int // ProcessingXxx
 
 	TranscodeStart     time.Time `gorm:"-"`
 	TranscodeStartUnix int64
 	TranscodeStop      time.Time `gorm:"-"`
 	TranscodeStopUnix  int64
+
+	ProcessingError string
 
 	TrackInfoID uint `gorm:"INDEX"`
 	TrackInfo   TrackInfo
@@ -80,7 +80,7 @@ type Track struct {
 
 // IsTranscodeNeeded from FakeBool
 func (track Track) IsTranscodeNeeded() bool {
-	realBool, _ := isABool(track.Private, BoolFalse) // in reality the defaultBool should be unused
+	realBool, _ := isABool(track.TranscodeNeeded, BoolFalse) // in reality the defaultBool should be unused
 	return realBool
 }
 
@@ -107,6 +107,13 @@ func (track Track) LicencesMapping() []Licence {
 	return LicencesMapping
 }
 
+func (track Track) ProcessingDone() bool {
+	if track.TranscodeState == ProcessingFailed {
+		return false
+	}
+	return true
+}
+
 // LicenceObj get the associated LicenceObj for the track
 func (track Track) LicenceObj() *Licence {
 	if track.Licence <= 0 {
@@ -122,8 +129,8 @@ func (track Track) LicenceObj() *Licence {
 	return nil
 }
 
-// BeforeSave set default states
-func (track *Track) BeforeSave() (err error) {
+// BeforeCreate set default states
+func (track *Track) BeforeCreate() (err error) {
 	track.Slug = slug.Make(track.Title)
 
 	if track.IsTranscodeNeeded() {
@@ -414,7 +421,12 @@ func GetTracks(opts *TrackOptions) (tracks []Track, count int64, err error) {
 
 // GetNotReadyTracks and only that
 func GetNotReadyTracks() (tracks []Track, err error) {
-	err = db.Model(&Track{}).Where("ready = ?", BoolFalse).Find(&tracks).Error
+	tx := db.Model(&Track{}).Where("ready = ?", BoolFalse)
+
+	// Exclude tracks who failed transcoding
+	tx = tx.Not("transcode_state", ProcessingFailed)
+
+	err = tx.Find(&tracks).Error
 	if err != nil {
 		log.Errorf("Cannot get un-ready tracks: %v", err)
 	}

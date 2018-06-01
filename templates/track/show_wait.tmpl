@@ -29,10 +29,20 @@
 </div>
 {{ end }}
 
+{{ if not .track.ProcessingDone }}
+<div class="row">
+    <div class="col-lg-7 col-lg-offset-1">
+        An error while processing the file occured: <i>{{ .track.ProcessingError }}</i>.<br />
+        Make sure it's a supported file and upload it again.<br />
+        You can delete this file as it won't be processed again.
+    </div>
+</div>
+{{ else }}
 <div class="row">
     <div class="col-lg-7 col-lg-offset-1">
         The processing of the file is not done yet. Please come back later.
     </div>
 </div>
+{{ end }}
 
 {{template "base/footer" .}}

@@ -47,7 +47,7 @@ func (user User) IsActive() bool {
 	return realBool
 }
 
-// BeforeSave Create slug
+// BeforeSave Create slug # Also called when updating
 func (user *User) BeforeSave() (err error) {
 	user.Slug = slug.Make(user.UserName)
 	return nil

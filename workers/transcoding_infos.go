@@ -277,8 +277,11 @@ func generateTranscode(trackID uint) (err error) {
 
 	// TODO 256CBR fixed for output mp3
 
+	// Not sure the multiplier should always be nil...
+	twoChSiginfo := sox.NewSignalInfo(input.Signal().Rate(), 2, input.Signal().Precision(), input.Signal().Length(), nil)
+
 	dfName := fmt.Sprintf("%s.mp3", strings.TrimSuffix(fName, filepath.Ext(fName)))
-	output = sox.OpenWrite(dfName, input.Signal(), input.Encoding(), nil)
+	output = sox.OpenWrite(dfName, twoChSiginfo, input.Encoding(), nil)
 	if output == nil {
 		log.WithFields(log.Fields{
 			"trackID": trackID,
@@ -308,6 +311,33 @@ func generateTranscode(trackID uint) (err error) {
 		return err
 	}
 
+	return nil
+}
+
+// Used to change track to private, and set error if processing failed
+func processingFailed(trackID uint, msg string) error {
+	track, err := models.GetTrackByID(trackID)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"trackID": trackID,
+			"err":     err,
+		}).Error("Cannot get Track from index trackID.")
+		return err
+	}
+
+	track.TranscodeState = models.ProcessingFailed
+	track.TranscodeNeeded = models.BoolToFake(false)
+	track.ProcessingError = msg
+	track.Private = models.BoolToFake(true)
+
+	err = models.UpdateTrack(&track)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"trackID": trackID,
+			"err":     err,
+		}).Error("Cannot update Track.")
+		return err
+	}
 	return nil
 }
 
@@ -348,29 +378,33 @@ func TranscodeAndFetchInfos(trackID uint) error {
 		return err
 	}
 
-	// Generate transcode file
-	err = generateTranscode(trackID)
-	if err != nil {
-		log.WithFields(log.Fields{
-			"trackID": trackID,
-			"err":     err,
-		}).Error("Cannot transcode")
-		return err
-	}
+	// More than two channels are not handled
+	if ti.Channels <= 2 {
+		// Generate transcode file
+		err = generateTranscode(trackID)
+		if err != nil {
+			log.WithFields(log.Fields{
+				"trackID": trackID,
+				"err":     err,
+			}).Error("Cannot transcode")
+			_ = processingFailed(trackID, "unable to create transcoded file")
+			return err
+		}
 
-	// After transcoding, else we won't be able to transcode !mp3
-	// Generate Waveforms
-	wf, err := generateWaveforms(trackID)
-	if err != nil {
-		log.WithFields(log.Fields{
-			"trackID": trackID,
-			"err":     err,
-		}).Error("Cannot create Waveforms")
-		ti.ProcessedWaveform = models.ProcessingFailed
-		ti.WaveformErr = fmt.Sprintf("%s", err)
-	} else {
-		ti.ProcessedWaveform = models.ProcessingFinished
-		ti.Waveform = wf
+		// After transcoding, else we won't be able to transcode !mp3
+		// Generate Waveforms
+		wf, err := generateWaveforms(trackID)
+		if err != nil {
+			log.WithFields(log.Fields{
+				"trackID": trackID,
+				"err":     err,
+			}).Error("Cannot create Waveforms")
+			ti.ProcessedWaveform = models.ProcessingFailed
+			ti.WaveformErr = fmt.Sprintf("%s", err)
+		} else {
+			ti.ProcessedWaveform = models.ProcessingFinished
+			ti.Waveform = wf
+		}
 	}
 
 	// Update TrackInfo
@@ -383,6 +417,21 @@ func TranscodeAndFetchInfos(trackID uint) error {
 			"err":         err,
 		}).Error("Cannot update TrackInfo")
 		return err
+	}
+
+	if ti.Channels > 2 {
+		log.WithFields(log.Fields{
+			"channels": ti.Channels,
+			"trackID":  trackID,
+		}).Warnf("Cannot process files with more than two channels")
+		models.SetTrackReadyness(trackID, false)
+
+		err = processingFailed(trackID, "cannot process files with more than two channels")
+		if err != nil {
+			return err
+		}
+
+		return fmt.Errorf("cannot process files with more than two channels")
 	}
 
 	// Track is now ready

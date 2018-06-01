@@ -126,7 +126,7 @@ func UploadPost(ctx *context.Context, f form.TrackUpload) {
 	if err != nil {
 		ctx.Flash.Error(ctx.Gettext("Cannot initiate the worker connection, please retry again."))
 		if t.IsTranscodeNeeded() {
-			err = models.UpdateTrackState(t.ID, &models.Track{TranscodeState: models.ProcessingRetrying}, models.TrackTranscoding)
+			err = models.UpdateTrackState(t.ID, &models.Track{TranscodeState: models.ProcessingWaiting}, models.TrackTranscoding)
 			if err != nil {
 				log.WithFields(log.Fields{
 					"trackID": t.ID,
@@ -134,7 +134,7 @@ func UploadPost(ctx *context.Context, f form.TrackUpload) {
 			}
 		}
 
-		err = models.UpdateTrackState(t.ID, &models.Track{MetadatasState: models.ProcessingRetrying}, models.TrackMetadatas)
+		err = models.UpdateTrackState(t.ID, &models.Track{MetadatasState: models.ProcessingWaiting}, models.TrackMetadatas)
 		if err != nil {
 			log.WithFields(log.Fields{
 				"trackID": t.ID,
@@ -145,14 +145,14 @@ func UploadPost(ctx *context.Context, f form.TrackUpload) {
 	if err != nil {
 		ctx.Flash.Error(ctx.Gettext("Cannot push the worker job, the watchdog should take care of it."))
 		if t.IsTranscodeNeeded() {
-			err = models.UpdateTrackState(t.ID, &models.Track{TranscodeState: models.ProcessingRetrying}, models.TrackTranscoding)
+			err = models.UpdateTrackState(t.ID, &models.Track{TranscodeState: models.ProcessingWaiting}, models.TrackTranscoding)
 			if err != nil {
 				log.WithFields(log.Fields{
 					"trackID": t.ID,
 				}).Errorf("SendTask: Error setting TranscodeState to ProcessingRetry of track: %v", err)
 			}
 		}
-		err = models.UpdateTrackState(t.ID, &models.Track{MetadatasState: models.ProcessingRetrying}, models.TrackMetadatas)
+		err = models.UpdateTrackState(t.ID, &models.Track{MetadatasState: models.ProcessingWaiting}, models.TrackMetadatas)
 		if err != nil {
 			log.WithFields(log.Fields{
 				"trackID": t.ID,

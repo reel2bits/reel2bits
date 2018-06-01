@@ -29,7 +29,7 @@ func (album Album) IsPrivate() bool {
 	return realBool
 }
 
-// BeforeSave Create slug
+// BeforeSave Create slug # also called when updating
 func (album *Album) BeforeSave() (err error) {
 	album.Slug = slug.Make(album.Name)
 	return nil
