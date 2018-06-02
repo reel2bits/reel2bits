@@ -31,6 +31,10 @@ func (album Album) IsPrivate() bool {
 
 // AfterSave Create slug
 func (album *Album) AfterSave(tx *gorm.DB) (err error) {
+	if album.ID == 0 {
+		return // Ignore if we have nothing useful to do
+	}
+	log.Infof("AfterSave ID %d", album.ID)
 	nameSlug := slug.Make(fmt.Sprintf("%d-%s", album.ID, album.Name))
 	tx.Model(&Album{}).Where("id = ?", album.ID).Update("slug", nameSlug)
 	return
