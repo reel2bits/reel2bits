@@ -65,15 +65,22 @@ func UploadPost(ctx *context.Context, f form.TrackUpload) {
 	}
 
 	if f.Album > 0 {
-		t.AlbumID = f.Album
-		count, err := models.GetCountOfAlbumTracks(f.Album)
+		album, err := models.GetAlbumByID(f.Album)
 		if err != nil {
 			log.WithFields(log.Fields{
 				"albumID": f.Album,
-			}).Errorf("Cannot get count for album: %v", err)
-			count = 0 // well, yes
+			}).Errorf("Cannot get album by ID: %v", err)
+		} else {
+			t.AlbumID = f.Album
+			albumTracksCount, err := models.GetCountOfAlbumTracks(album.ID)
+			if err != nil {
+				log.WithFields(log.Fields{
+					"albumID": f.Album,
+				}).Errorf("Cannot get count for album: %v", err)
+				albumTracksCount = 0 // well, yes
+			}
+			t.AlbumOrder = albumTracksCount + 1 // if zero it will be Track 1, etc.
 		}
-		t.AlbumOrder = count + 1 // if zero it will be Track 1, etc.
 	}
 
 	mimetype, err := models.SaveTrackFile(f.File, t.Filename, ctx.User.Slug)
@@ -447,21 +454,36 @@ func EditPost(ctx *context.Context, f form.TrackEdit) {
 	ctx.URLTrack.ShowDlLink = models.BoolToFake(f.ShowDlLink)
 	ctx.URLTrack.Licence = f.Licence
 
+	//var previouslyAlbum = ctx.URLTrack.AlbumID
+	//var album = models.Album{}
+	//var addAlbumTli = false
+	//var rmAlbumTli = false
+	//var albumTracksCount int
+
 	if f.Album > 0 {
-		ctx.URLTrack.AlbumID = f.Album
-		count, err := models.GetCountOfAlbumTracks(f.Album)
+		album, err := models.GetAlbumByID(f.Album)
 		if err != nil {
 			log.WithFields(log.Fields{
 				"albumID": f.Album,
-			}).Errorf("Cannot get count of album: %v", err)
+			}).Errorf("Cannot get album by ID: %v", err)
+		} else {
+			//addAlbumTli = true
+			ctx.URLTrack.AlbumID = album.ID
+			albumTracksCount, err := models.GetCountOfAlbumTracks(album.ID)
+			if err != nil {
+				log.WithFields(log.Fields{
+					"albumID": f.Album,
+				}).Errorf("Cannot get count of album: %v", err)
 
-			count = 0 // well, yes
+				albumTracksCount = 0 // well, yes
+			}
+			ctx.URLTrack.AlbumOrder = albumTracksCount + 1 // if zero it will be Track 1, etc.
 		}
-		ctx.URLTrack.AlbumOrder = count + 1 // if zero it will be Track 1, etc.
 	} else {
-		// zéro is considered as "unassociated"
+		// zero is considered as "unassociated"
 		ctx.URLTrack.AlbumID = 0
 		ctx.URLTrack.AlbumOrder = 0
+		//rmAlbumTli = true
 	}
 
 	err := models.UpdateTrack(&ctx.URLTrack)
@@ -472,6 +494,8 @@ func EditPost(ctx *context.Context, f form.TrackEdit) {
 		}
 		return
 	}
+
+	// Timeline Item handling
 
 	// Track have been publicized, add timelineItem
 	if previouslyPrivate && !f.IsPrivate {
@@ -484,7 +508,7 @@ func EditPost(ctx *context.Context, f form.TrackEdit) {
 			if err != nil {
 				log.WithFields(log.Fields{
 					"track": ctx.URLTrack.ID,
-				}).Error("Cannot add track to timeline")
+				}).Errorf("Cannot add track to timeline: %v", err)
 			}
 		}
 	}
@@ -499,6 +523,31 @@ func EditPost(ctx *context.Context, f form.TrackEdit) {
 			}).Errorf("Cannot delete timelineItem: %v", err)
 		}
 	}
+
+	// Add Album to TLI since tracks count >= 1
+	//if previouslyAlbum != f.Album && addAlbumTli && !rmAlbumTli && !album.IsPrivate() {
+	//	tli := &models.TimelineItem{
+	//		UserID:  ctx.URLTrack.UserID,
+	//		AlbumID: album.ID,
+	//	}
+	//	err := models.CreateTimelineItem(tli)
+	//	if err != nil {
+	//		log.WithFields(log.Fields{
+	//			"album": album.ID,
+	//		}).Errorf("Cannot add album to timeline: %v", err)
+	//	}
+	//}
+	//
+	//// Remove Album from TLI since tracks count <= 0
+	//if previouslyAlbum != f.Album && !addAlbumTli && rmAlbumTli && (albumTracksCount <= 0) {
+	//	err = models.DeleteTimelineItem(ctx.URLUser.ID, 0, album.ID)
+	//	if err != nil {
+	//		log.WithFields(log.Fields{
+	//			"albumID": album.ID,
+	//			"userID":  ctx.URLUser.ID,
+	//		}).Errorf("Cannot delete timelineItem: %v", err)
+	//	}
+	//}
 
 	ctx.Flash.Success(ctx.Gettext("Track edited"))
 	ctx.SubURLRedirect(ctx.URLFor("track_show", ":userSlug", ctx.URLUser.Slug, ":trackSlug", ctx.URLTrack.Slug))
