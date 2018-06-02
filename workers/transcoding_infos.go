@@ -447,7 +447,38 @@ func TranscodeAndFetchInfos(trackID uint) error {
 		if err != nil {
 			log.WithFields(log.Fields{
 				"track": trackID,
-			}).Error("Cannot add track to timeline")
+			}).Errorf("Cannot add track to timeline: %v", err)
+		}
+
+		// Push the Album too if needed
+		album, err := models.GetAlbumByID(trackInfosDb.AlbumID)
+		if err != nil {
+			log.WithFields(log.Fields{
+				"albumID": trackInfosDb.AlbumID,
+			}).Errorf("Cannot get album: %v", err)
+		}
+
+		if album.ID > 0 && !album.IsPrivate() {
+			albumTracksCount, err := models.GetCountOfAlbumTracks(trackInfosDb.AlbumID)
+			if err != nil {
+				log.WithFields(log.Fields{
+					"albumID": trackInfosDb.AlbumID,
+				}).Errorf("Cannot get count for album: %v", err)
+				albumTracksCount = 0 // well, yes
+			}
+
+			if albumTracksCount >= 1 {
+				tli := &models.TimelineItem{
+					UserID:  trackInfosDb.UserID,
+					AlbumID: trackInfosDb.AlbumID,
+				}
+				err := models.CreateTimelineItem(tli)
+				if err != nil {
+					log.WithFields(log.Fields{
+						"album": trackInfosDb.AlbumID,
+					}).Errorf("Cannot add album to timeline: %v", err)
+				}
+			}
 		}
 	}
 
