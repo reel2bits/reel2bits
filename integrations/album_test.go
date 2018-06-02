@@ -7,10 +7,6 @@ import (
 	"testing"
 )
 
-// UserA create AlbumA / UserA remove AlbumA
-//   Should disappears from /a/usera
-//   Should disappears from /
-
 func createAlbum(name string, desc string, public bool, t *testing.T, session *TestSession) (response *TestResponse) {
 	req := NewRequest(t, "GET", "/albums/new")
 	resp := session.MakeRequest(t, req, http.StatusOK)

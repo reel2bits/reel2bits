@@ -23,11 +23,13 @@ import (
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/macaron.v1"
 	"io"
+	"mime/multipart"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
 	"os"
 	"path"
+	"path/filepath"
 	"strings"
 	"testing"
 )
@@ -90,8 +92,7 @@ func initIntegrationTest() {
 
 func prepareTestEnv(t testing.TB) {
 	assert.NoError(t, models.LoadFixtures())
-	//assert.NoError(t, os.RemoveAll("integrations/reel2bits-integration"))
-	//assert.NoError(t, com.CopyDir("integrations/reel2bits-integration-meta", "integrations/reel2bits-integration"))
+	assert.NoError(t, os.RemoveAll(setting.Storage.Path))
 }
 
 type TestSession struct {
@@ -221,6 +222,35 @@ func NewRequestWithBody(t testing.TB, method, urlStr string, body io.Reader) *ht
 	assert.NoError(t, err)
 	request.RequestURI = urlStr
 	return request
+}
+
+func NewRequestWithBodyAndFile(t testing.TB, method, urlStr string, values map[string]string, paramName string, filePath string) *http.Request {
+	urlValues := url.Values{}
+	for key, value := range values {
+		urlValues[key] = []string{value}
+	}
+
+	file, err := os.Open(filePath)
+	assert.NoError(t, err)
+	defer file.Close()
+
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+	part, err := writer.CreateFormFile(paramName, filepath.Base(filePath))
+	assert.NoError(t, err)
+	_, err = io.Copy(part, file)
+
+	for key, val := range values {
+		_ = writer.WriteField(key, val)
+	}
+	err = writer.Close()
+	assert.NoError(t, err)
+
+	req, err := http.NewRequest(method, urlStr, body)
+	assert.NoError(t, err)
+	req.RequestURI = urlStr
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	return req
 }
 
 const NoExpectedStatus = -1
