@@ -6,7 +6,6 @@ import (
 	"testing"
 )
 
-
 func TestUploadTrack(t *testing.T) {
 	Convey("Test Login User A and creating public album", t, func() {
 		prepareTestEnv(t)
@@ -22,12 +21,12 @@ func TestUploadTrack(t *testing.T) {
 		csrf := NewHTMLParser(t, resp.Body)
 
 		opts := map[string]string{
-			"_csrf": csrf.GetCSRF(),
-			"title": trackName,
+			"_csrf":        csrf.GetCSRF(),
+			"title":        trackName,
 			"description":  trackDesc,
-			"album": "0",
-			"licence": "0",
-			"is_private": "",
+			"album":        "0",
+			"licence":      "0",
+			"is_private":   "",
 			"show_dl_link": "true",
 		}
 
