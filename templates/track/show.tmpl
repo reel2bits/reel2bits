@@ -56,7 +56,7 @@
         <table class="table table-condensed table-hoverable">
             <tr>
                 {{ if (and (eq .IsLogged true) (eq .track.UserID .LoggedUserID)) }}
-                <td class="si_btn_edit"><a class="btn btn-success btn-xs" href="{{URLFor "track_edit" ":userSlug" .user.Slug ":trackSlug" .track.Slug}}">edit</a></td>
+                <td class="si_btn_edit"><a class="btn btn-success btn-xs edit_link" href="{{URLFor "track_edit" ":userSlug" .user.Slug ":trackSlug" .track.Slug}}">edit</a></td>
                 <td class="si_btn_delete"><a class="btn btn-danger btn-xs delete_link" data-url="{{URLFor "track_delete" ":userSlug" .user.Slug ":trackSlug" .track.Slug}}" data-user="{{.user.Slug}}" data-track="{{.track.Slug}}">delete</a></td>
                 {{ end }}
             </tr>
