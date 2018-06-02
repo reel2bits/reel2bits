@@ -51,7 +51,13 @@ func TestMain(m *testing.M) {
 		os.Exit(1)
 	}
 
-	err := models.InitFixtures(helper, "models/fixtures/")
+	appRoot := os.Getenv("APP_ROOT")
+	if appRoot == "" {
+		fmt.Println("Environment variable $APP_ROOT is not set")
+		os.Exit(1)
+	}
+
+	err := models.InitFixtures(helper, path.Join(appRoot, "models/fixtures/"))
 	if err != nil {
 		fmt.Printf("Error initializing test database: %v\n", err)
 		os.Exit(1)
@@ -65,7 +71,7 @@ func initIntegrationTest() {
 		fmt.Println("Environment variable $APP_ROOT is not set")
 		os.Exit(1)
 	}
-	setting.AppPath = path.Join(appRoot, "bleurg")
+	setting.AppPath = path.Join(appRoot, "integrations")
 
 	appConf := os.Getenv("APP_CONF")
 	if appConf == "" {
