@@ -74,7 +74,7 @@ pipeline:
     when:
       event: [ push, tag, pull_request ]
 
-  publish:
+  publish-web:
     image: plugins/docker
     repo: dashie/reel2bits-web
     dockerfile: Dockerfile-web
@@ -83,7 +83,7 @@ pipeline:
         - DOCKER_USERNAME
         - DOCKER_PASSWORD
 
-  publish:
+  publish-worker:
     image: plugins/docker
     repo: dashie/reel2bits-worker
     dockerfile: Dockerfile-worker
