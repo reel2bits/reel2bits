@@ -10,12 +10,13 @@
     <div class="row">
         <div class="col-lg-9 col-lg-offset-1">
             {{range $item := .items}}
-                {{ if $item.Track }}
-                    <div class="row single_track_list">
+                {{ if gt $item.Track.ID 0 }}
+                    {{ if not $item.Track.IsPrivate }}
+                    <div class="row single_timeline_item">
                         <div class="col-lg-6">
                             <div class="row">
                                 <div class="col-lg-12">
-                                    <a href="{{ URLFor "track_show" ":userSlug" $item.User.Slug ":trackSlug" $item.Track.Slug }}">{{ $item.Track.Title }}</a>
+                                    <i title="Track" class="fa fa-music" aria-hidden="true"></i> <a href="{{ URLFor "track_show" ":userSlug" $item.User.Slug ":trackSlug" $item.Track.Slug }}">{{ $item.Track.Title }}</a>
                                 </div>
                             </div>
 
@@ -43,24 +44,32 @@
                             {{ end }}
                         </div>
                     </div>
-                {{ else if $item.Album }}
-                    <div class="row album_single_list">
+                    {{ end }}
+                {{ else if gt $item.Album.ID 0 }}
+                    {{ if not $item.Album.IsPrivate }}
+                    <div class="row single_timeline_item">
                         <div class="col-lg-6">
-                            <i class="fa fa-music" aria-hidden="true"></i>&nbsp;
-                            <a href="{{ URLFor "album_show" ":userSlug" $item.User.Slug ":albumSlug" $item.Album.Slug }}">{{ SubStr .Name 0 60 }}</a>
-                        <br />
-                        <div class="row">
-                            <div class="col-sm-4">
-                                <i class="fa fa-calendar" aria-hidden="true"></i> {{ ElapsedToHuman $item.Album.CreatedAt }}
+                            <i title="Album" class="fa fa-folder-open-o" aria-hidden="true"></i>&nbsp;
+                            <a href="{{ URLFor "album_show" ":userSlug" $item.User.Slug ":albumSlug" $item.Album.Slug }}">{{ SubStr $item.Album.Name 0 60 }}</a>
+                            <br />
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <i class="fa fa-calendar" aria-hidden="true"></i> {{ ElapsedToHuman $item.Album.CreatedAt }}
+                                </div>
+                                <div class="col-lg-6">
+                                    <i class="fa fa-play" aria-hidden="true"></i> {{$item.Album.GetTracksCount}} tracks
+                                </div>
                             </div>
-                            <div class="col-sm-4">
-                                <i class="fa fa-play" aria-hidden="true"></i> {{$item.Album.GetTracksCount}} tracks
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <i class="fa fa-user-o" aria-hidden="true"></i> by <a href="{{ URLFor "track_list" ":userSlug" $item.User.Slug }}">{{ $item.User.UserName }}</a>
+                                </div>
                             </div>
-                        </div>
                         </div>
                         <div class="col-lg-6">
                         </div>
                     </div>
+                    {{ end }}
                 {{ end }}
             {{end}}
         </div>

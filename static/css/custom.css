@@ -423,3 +423,9 @@ div.album_new_btns {
 div.album_single_list {
     margin-bottom: 1em;
 }
+
+div.single_timeline_item {
+    margin-bottom: 2em;
+    padding-bottom: 0.5em;
+    border-bottom: 1px dotted lightgray;
+}
