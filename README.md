@@ -64,3 +64,4 @@ Worker and web needs access to redis, database, and local access to files.
 ## Licensing
 
 - MIT License
+- integrations/STE-013.mp3 is dashie's own creation recording of a 3D printer printing things, license is : Do What The Fuck You Want Whith This Unusuable Thing I Dont Care.
