@@ -6,7 +6,7 @@
 <footer>
     <div>
         <div class="left">
-            &copy; 2017-2018 reel2bits - {{Gettext "version: %s" AppVer}} - {{Gettext "page: <strong>%s</strong>" (LoadTimes .PageStartTime) | Safe}} - {{Gettext "template: <strong>%s</strong>" (call .TmplLoadTimes) | Safe}}
+            &copy; 2017-2018 reel2bits - {{Gettext "version: %s" AppVer}} - {{Gettext "page: <strong>%s</strong>" (LoadTimes .PageStartTime) | Safe}} - {{Gettext "template: <strong>%s</strong>" (call .TmplLoadTimes) | Safe}} - Logged in as {{ .LoggedUserName }}
         </div>
         <div class="right">
             {{if NeedsImpressum}}
