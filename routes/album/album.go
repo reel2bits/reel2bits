@@ -129,9 +129,14 @@ func Show(ctx *context.Context) {
 			"albumID": ctx.URLAlbum.ID,
 		}).Errorf("Cannot get Album track at order 1: %v", err)
 
-		//ctx.SubURLRedirect(ctx.URLFor("home"), 404)
-		//return
-		ctx.Data["sound"] = nil
+		// User is probably not logged, or browsing another user album.
+		// So if the album is a one-track one, and this track is private
+		// There won't be any result.
+		if ctx.User.ID != ctx.URLUser.ID {
+			ctx.SubURLRedirect(ctx.URLFor("home"), 404)
+			return
+		}
+		// Ignore if the user match the one from url
 	} else {
 		ctx.Data["sound"] = sound
 	}

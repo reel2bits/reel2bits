@@ -13,6 +13,7 @@ import (
 	"github.com/Unknwon/paginater"
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
@@ -173,6 +174,10 @@ func UploadPost(ctx *context.Context, f form.TrackUpload) {
 
 // Show [GET]
 func Show(ctx *context.Context) {
+	if (ctx.User.ID != ctx.URLUser.ID) && ctx.URLTrack.IsPrivate() {
+		ctx.SubURLRedirect(ctx.URLFor("home"), http.StatusForbidden)
+		return
+	}
 	// TODO check for track.ready
 
 	ctx.Data["track"] = ctx.URLTrack
