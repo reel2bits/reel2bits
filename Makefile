@@ -15,7 +15,7 @@ DATA_FILES := $(shell find conf | sed 's/ /\\ /g')
 DIST := dist
 
 BUILD_FLAGS:=-o $(EXECUTABLE) -v
-TAGS=sqlite
+TAGS=
 NOW=$(shell date -u '+%Y%m%d%I%M%S')
 
 GO ?= go
@@ -57,13 +57,13 @@ lint:
 		for PKG in $(PACKAGES_ALL); do golint -set_exit_status $$PKG || exit 1; done;
 
 build:
-		$(GO) build $(BUILD_FLAGS) -ldflags '$(LDFLAGS)' -tags '$(TAGS)'
+		$(GO) build $(BUILD_FLAGS) -ldflags '$(LDFLAGS)' 
 
 build-dev: vet
-		$(GO) build $(BUILD_FLAGS) -tags '$(TAGS)'
+		$(GO) build $(BUILD_FLAGS) 
 
 build-dev-race: vet
-		$(GO) build $(BUILD_FLAGS) -race -tags '$(TAGS)'
+		$(GO) build $(BUILD_FLAGS) -race 
 
 clean: clean-mac
 		$(GO) clean -i ./...
@@ -110,7 +110,7 @@ test: fmt-check
 		$(GO) test -cover -v $(PACKAGES)
 
 integrations.sqlite.test: $(SOURCES)
-		$(GO) test -c $(GOPKGNAMEPATH)/integrations -o integrations.sqlite.test -tags 'sqlite'
+		$(GO) test -c $(GOPKGNAMEPATH)/integrations -o integrations.sqlite.test 
 
 .PHONY: integrations-sqlite
 integrations-sqlite: integrations.sqlite.test

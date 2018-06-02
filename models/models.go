@@ -2,7 +2,6 @@ package models
 
 import (
 	"dev.sigpipe.me/dashie/reel2bits/setting"
-	"errors"
 	"fmt"
 	"github.com/jinzhu/gorm"
 	log "github.com/sirupsen/logrus"
@@ -29,8 +28,6 @@ var (
 		Type, Host, Name, User, Passwd, Path, SSLMode string
 		Logging                                       bool
 	}
-
-	EnableSQLite3 bool
 )
 
 // START OF CRIMEs
@@ -185,9 +182,6 @@ func getEngine() (*gorm.DB, error) {
 		host, port := parseMSSQLHostPort(DbCfg.Host)
 		connStr = fmt.Sprintf("server=%s; port=%s; database=%s; user id=%s; password=%s;", host, port, DbCfg.Name, DbCfg.User, DbCfg.Passwd)
 	case "sqlite3":
-		if !EnableSQLite3 {
-			return nil, errors.New("this binary version does not build support for SQLite3")
-		}
 		if err := os.MkdirAll(path.Dir(DbCfg.Path), os.ModePerm); err != nil {
 			return nil, fmt.Errorf("fail to create directories: %v", err)
 		}
@@ -234,8 +228,4 @@ func InitDb() {
 		log.Fatalf("Fail to initialize ORM engine: %v", err)
 	}
 	HasEngine = true
-
-	if EnableSQLite3 {
-		log.Info("SQLite3 Supported")
-	}
 }
