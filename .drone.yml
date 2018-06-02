@@ -43,6 +43,7 @@ pipeline:
       TAGS: sqlite
       GOPATH: /srv/app
     commands:
+      - pwd
       - apk -U add sox sox-dev taglib taglib-dev libmagic file-dev
       - apk add cmake gcc g++ make pkgconfig git boost-dev gd-dev libmad-dev libsndfile-dev libid3tag-dev wget
       - git clone https://github.com/bbcrd/audiowaveform.git /tmp/audiowaveform
@@ -57,7 +58,7 @@ pipeline:
       - make
       - mkdir -p /usr/local/bin/
       - cp audiowaveform /usr/local/bin/audiowaveform
-      - cd /srv/app
+      - cd /srv/app/reel2bits
       - make integrations-sqlite
     when:
       event: [ push, tag, pull_request ]
