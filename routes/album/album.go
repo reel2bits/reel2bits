@@ -177,6 +177,8 @@ func EditPost(ctx *context.Context, f form.Album) {
 		return
 	}
 
+	previouslyPrivate := ctx.URLAlbum.IsPrivate()
+
 	ctx.URLAlbum.Name = f.Name
 	ctx.URLAlbum.Description = f.Description
 	ctx.URLAlbum.Private = models.BoolToFake(f.IsPrivate)
@@ -188,6 +190,40 @@ func EditPost(ctx *context.Context, f form.Album) {
 			ctx.Handle(500, "EditAlbum", err)
 		}
 		return
+	}
+
+	if previouslyPrivate && !f.IsPrivate {
+		albumTracksCount, err := models.GetCountOfAlbumTracks(ctx.URLAlbum.ID)
+		if err != nil {
+			log.WithFields(log.Fields{
+				"albumID": ctx.URLAlbum.ID,
+			}).Errorf("Cannot get count of album: %v", err)
+
+			albumTracksCount = 0 // well, yes
+		}
+		if albumTracksCount >= 1 {
+			tli := &models.TimelineItem{
+				AlbumID: ctx.URLAlbum.ID,
+				UserID:  ctx.URLAlbum.UserID,
+			}
+			err := models.CreateTimelineItem(tli)
+			if err != nil {
+				log.WithFields(log.Fields{
+					"userID": ctx.URLAlbum.ID,
+					"album": ctx.URLAlbum.ID,
+				}).Errorf("Cannot add track to timeline: %v", err)
+			}
+		}
+	}
+
+	if !previouslyPrivate && f.IsPrivate {
+		err = models.DeleteTimelineItem(ctx.URLUser.ID, 0, ctx.URLAlbum.ID)
+		if err != nil {
+			log.WithFields(log.Fields{
+				"albumID": ctx.URLAlbum.ID,
+				"userID":  ctx.URLUser.ID,
+			}).Errorf("Cannot delete timelineItem: %v", err)
+		}
 	}
 
 	ctx.Flash.Success(ctx.Gettext("Album edited"))
