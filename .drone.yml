@@ -57,7 +57,7 @@ pipeline:
       - make
       - mkdir -p /usr/local/bin/
       - cp audiowaveform /usr/local/bin/audiowaveform
-
+      - cd /srv/app
       - make integrations-sqlite
     when:
       event: [ push, tag, pull_request ]
