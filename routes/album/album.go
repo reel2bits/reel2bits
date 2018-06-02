@@ -133,6 +133,7 @@ func Show(ctx *context.Context) {
 		// So if the album is a one-track one, and this track is private
 		// There won't be any result.
 		if ctx.User.ID != ctx.URLUser.ID {
+			ctx.Flash.Error("No public tracks in this album.")
 			ctx.SubURLRedirect(ctx.URLFor("home"), 404)
 			return
 		}
@@ -162,6 +163,11 @@ func Show(ctx *context.Context) {
 
 // Edit [GET]
 func Edit(ctx *context.Context) {
+	if ctx.Data["LoggedUserID"] != ctx.URLUser.ID {
+		ctx.SubURLRedirect(ctx.URLFor("home"), 403)
+		return
+	}
+
 	ctx.Data["name"] = ctx.URLAlbum.Name
 	ctx.Data["is_private"] = ctx.URLAlbum.IsPrivate()
 	ctx.Data["description"] = ctx.URLAlbum.Description
@@ -173,6 +179,11 @@ func Edit(ctx *context.Context) {
 // EditPost [POST]
 func EditPost(ctx *context.Context, f form.Album) {
 	if !ctx.IsLogged {
+		ctx.SubURLRedirect(ctx.URLFor("home"), 403)
+		return
+	}
+
+	if ctx.Data["LoggedUserID"] != ctx.URLUser.ID {
 		ctx.SubURLRedirect(ctx.URLFor("home"), 403)
 		return
 	}
@@ -252,6 +263,7 @@ func DeleteAlbum(ctx *context.Context, f form.AlbumDelete) {
 			"error":    ctx.Gettext("Unauthorized"),
 			"redirect": false,
 		})
+		return
 	}
 
 	err := models.DeleteAlbum(ctx.URLAlbum.ID, ctx.URLAlbum.UserID)

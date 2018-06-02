@@ -175,6 +175,7 @@ func UploadPost(ctx *context.Context, f form.TrackUpload) {
 // Show [GET]
 func Show(ctx *context.Context) {
 	if (ctx.User.ID != ctx.URLUser.ID) && ctx.URLTrack.IsPrivate() {
+		ctx.Flash.Error("Access forbidden.")
 		ctx.SubURLRedirect(ctx.URLFor("home"), http.StatusForbidden)
 		return
 	}
@@ -337,6 +338,7 @@ func DeleteTrack(ctx *context.Context, f form.TrackDelete) {
 			"error":    ctx.Gettext("Unauthorized"),
 			"redirect": false,
 		})
+		return
 	}
 
 	err := models.DeleteTrack(ctx.URLTrack.ID, ctx.URLTrack.UserID)
@@ -438,6 +440,11 @@ func Edit(ctx *context.Context) {
 // EditPost [POST]
 func EditPost(ctx *context.Context, f form.TrackEdit) {
 	if !ctx.IsLogged {
+		ctx.SubURLRedirect(ctx.URLFor("home"), 403)
+		return
+	}
+
+	if ctx.Data["LoggedUserID"] != ctx.URLUser.ID {
 		ctx.SubURLRedirect(ctx.URLFor("home"), 403)
 		return
 	}
