@@ -1,10 +1,12 @@
 {{template "base/head" .}}
 
-<div class="row album_new_btns">
-    <div class="col-lg-9">
-        <a href="{{URLFor "album_new"}}" class="btn btn-xs btn-info">Create a new album</a>
+{{ if (eq .IsLogged true) and (eq .user.ID .LoggedUserID) }}
+    <div class="row album_new_btns">
+        <div class="col-lg-9">
+            <a href="{{URLFor "album_new"}}" class="btn btn-xs btn-info">Create a new album</a>
+        </div>
     </div>
-</div>
+{{ end }}
 
 {{ if not .albums }}
 <div class="row">

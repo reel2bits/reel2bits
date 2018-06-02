@@ -181,6 +181,8 @@ func GetAlbums(opts *AlbumOptions) (albums []Album, itemsCount int64, err error)
 
 	if opts.WithPrivate && !opts.GetAll {
 		tx = tx.Or("private = ?", BoolTrue)
+	} else if !opts.WithPrivate && !opts.GetAll {
+		tx = tx.Where("private = ?", BoolFalse)
 	}
 
 	if !opts.GetAll {
