@@ -55,7 +55,7 @@
     <div class="col-lg-3">
         <table class="table table-condensed table-hoverable">
             <tr>
-                {{ if (eq .IsLogged true) and (eq .track.UserID .LoggedUserID) }}
+                {{ if (and (eq .IsLogged true) (eq .track.UserID .LoggedUserID)) }}
                 <td class="si_btn_edit"><a class="btn btn-success btn-xs" href="{{URLFor "track_edit" ":userSlug" .user.Slug ":trackSlug" .track.Slug}}">edit</a></td>
                 <td class="si_btn_delete"><a class="btn btn-danger btn-xs delete_link" data-url="{{URLFor "track_delete" ":userSlug" .user.Slug ":trackSlug" .track.Slug}}" data-user="{{.user.Slug}}" data-track="{{.track.Slug}}">delete</a></td>
                 {{ end }}
@@ -104,7 +104,7 @@
             {{ if .track.TrackInfo.Channels }}<tr><td>Channels</td><td colspan="2">{{ .track.TrackInfo.Channels }}</td></tr>{{ end }}
             {{ if .track.TrackInfo.Rate }}<tr><td>Rate</td><td colspan="2">{{ .track.TrackInfo.Rate }} Hz</td></tr>{{ end }}
 
-            {{ if (.track.TrackInfo.Bitrate) and .track.TrackInfo.BitrateMode }}
+            {{ if (and .track.TrackInfo.Bitrate .track.TrackInfo.BitrateMode) }}
                 <tr><td>Bitrate</td><td colspan="2">{{ .track.TrackInfo.BitrateMode }} {{ .track.TrackInfo.Bitrate }} bps</td></tr>
             {{ else }}
                 {{ if .track.TrackInfo.Bitrate }}

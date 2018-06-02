@@ -106,7 +106,7 @@
                     <tr>
                         <td>
                         </td>
-                        {{ if (eq .IsLogged true) and (eq .album.UserID .LoggedUserID) }}
+                        {{ if (and (eq .IsLogged true) (eq .album.UserID .LoggedUserID)) }}
                         <td class="si_btn_edit"><a class="btn btn-success btn-xs" href="{{URLFor "album_edit" ":userSlug" .user.Slug ":albumSlug" .album.Slug}}">edit</a></td>
                         <td class="si_btn_delete">
                             <a role="button" tabindex="0" class="btn btn-danger btn-xs" data-trigger="focus"
