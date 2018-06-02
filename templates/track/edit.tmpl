@@ -22,12 +22,11 @@
                         <div class="form-group {{if .Err_Album}}has-error{{end}}">
                             <label for="album" class="">{{Gettext ("Album")}}</label>
                             <select id="album" name="album">
+                                <option value="-1">Select an album if you want.</option>
                                 {{range .albums}}
                                 {{ if (eq .ID $.cur_album) }}
-                                    <option value="-1">Select an album if you want.</option>
                                     <option value="{{.ID}}" selected>{{.Name}}</option>
                                 {{ else }}
-                                    <option value="-1" selected>Select an album if you want.</option>
                                     <option value="{{.ID}}">{{.Name}}</option>
                                 {{ end }}
                                 {{end}}
