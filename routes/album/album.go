@@ -111,7 +111,7 @@ func ListFromUser(ctx *context.Context) {
 
 // Show [GET]
 func Show(ctx *context.Context) {
-	albumCount, err := ctx.URLAlbum.GetTracksCount()
+	albumCount, err := ctx.URLAlbum.GetTracksCount(false)
 	if err != nil {
 		ctx.Flash.Error("Cannot get album tracks count")
 		ctx.Data["album_sounds_count"] = 0

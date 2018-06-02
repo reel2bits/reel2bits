@@ -1,16 +1,3 @@
-***
-An Album can be added to the Timeline if:
- - >=1 track
- - >=1 public track
- - album is public
-An Album would be removed from the Timeline if:
- - <=0 track
- - <=0 public track
- - album became private
-
-This is needed to be handled inside the TrackPost, when editing a Track.
-It's already handled in: AlbumPost (edit album), or when a track processing is finished.
-***
 
 ERRO[2018-05-27 00:14:44] Audiowaveform binary doesn't exists.          bin=/usr/local/bin/audiowaveform err="stat /usr/local/bin/audiowaveform: no such file or directory" source="workers/transcoding_infos.go:133" trackID=1
 ERRO[2018-05-27 00:14:44] Cannot create Waveforms                       err="Error: /usr/local/bin/audiowaveform doesn't exists" source="workers/transcoding_infos.go:368" trackID=1

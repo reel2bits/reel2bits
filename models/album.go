@@ -40,14 +40,18 @@ func (album *Album) AfterSave(tx *gorm.DB) (err error) {
 	return
 }
 
-func (album *Album) getTracksCount(db *gorm.DB) (count int64, err error) {
-	db.Model(&Track{}).Select("id").Where("album_id = ?", album.ID).Count(&count)
+func (album *Album) getTracksCount(onlyPublic bool) (count int64, err error) {
+	tx := db.Model(&Track{}).Select("id").Where("album_id = ?", album.ID)
+	if onlyPublic {
+		tx = tx.Where("private = ?", boolToFake(false))
+	}
+	tx.Count(&count)
 	return
 }
 
 // GetTracksCount 1+1=2
-func (album *Album) GetTracksCount() (int64, error) {
-	return album.getTracksCount(db)
+func (album *Album) GetTracksCount(onlyPublic bool) (int64, error) {
+	return album.getTracksCount(onlyPublic)
 }
 
 func isAlbumNameAlreadyExist(db *gorm.DB, name string, userID uint) (exist bool, err error) {

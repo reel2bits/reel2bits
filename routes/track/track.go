@@ -442,11 +442,14 @@ func EditPost(ctx *context.Context, f form.TrackEdit) {
 		return
 	}
 
+	// Previous private state
 	var previouslyPrivate = false
 
 	if ctx.URLTrack.IsPrivate() {
 		previouslyPrivate = true
 	}
+	// Previous album ID
+	var previouslyAlbum = ctx.URLTrack.AlbumID
 
 	ctx.URLTrack.Title = f.Title
 	ctx.URLTrack.Description = f.Description
@@ -454,39 +457,30 @@ func EditPost(ctx *context.Context, f form.TrackEdit) {
 	ctx.URLTrack.ShowDlLink = models.BoolToFake(f.ShowDlLink)
 	ctx.URLTrack.Licence = f.Licence
 
-	//var previouslyAlbum = ctx.URLTrack.AlbumID
-	//var album = models.Album{}
-	//var addAlbumTli = false
-	//var rmAlbumTli = false
-	//var albumTracksCount int
-
-	if f.Album > 0 {
-		album, err := models.GetAlbumByID(f.Album)
-		if err != nil {
-			log.WithFields(log.Fields{
-				"albumID": f.Album,
-			}).Errorf("Cannot get album by ID: %v", err)
-		} else {
-			//addAlbumTli = true
-			ctx.URLTrack.AlbumID = album.ID
-			albumTracksCount, err := models.GetCountOfAlbumTracks(album.ID)
-			if err != nil {
-				log.WithFields(log.Fields{
-					"albumID": f.Album,
-				}).Errorf("Cannot get count of album: %v", err)
-
-				albumTracksCount = 0 // well, yes
-			}
-			ctx.URLTrack.AlbumOrder = albumTracksCount + 1 // if zero it will be Track 1, etc.
-		}
-	} else {
+	album, err := models.GetAlbumByID(f.Album)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"albumID": f.Album,
+		}).Errorf("Cannot get album by ID: %v", err)
 		// zero is considered as "unassociated"
 		ctx.URLTrack.AlbumID = 0
 		ctx.URLTrack.AlbumOrder = 0
-		//rmAlbumTli = true
+
+	} else {
+		ctx.URLTrack.AlbumID = album.ID
+		albumTracksCount, err := album.GetTracksCount(false)
+		if err != nil {
+			log.WithFields(log.Fields{
+				"albumID": f.Album,
+			}).Errorf("Cannot get count of album: %v", err)
+
+			albumTracksCount = 0 // well, yes
+		}
+		ctx.URLTrack.AlbumOrder = albumTracksCount + 1 // if zero it will be Track 1, etc.
 	}
 
-	err := models.UpdateTrack(&ctx.URLTrack)
+	// Update the track in DB
+	err = models.UpdateTrack(&ctx.URLTrack)
 	if err != nil {
 		switch {
 		default:
@@ -496,6 +490,13 @@ func EditPost(ctx *context.Context, f form.TrackEdit) {
 	}
 
 	// Timeline Item handling
+
+	// Urgh
+	const (
+		TliDoNothing = 1
+		TliAdd       = 2
+		TliRm        = 3
+	)
 
 	// Track have been publicized, add timelineItem
 	if previouslyPrivate && !f.IsPrivate {
@@ -524,30 +525,105 @@ func EditPost(ctx *context.Context, f form.TrackEdit) {
 		}
 	}
 
-	// Add Album to TLI since tracks count >= 1
-	//if previouslyAlbum != f.Album && addAlbumTli && !rmAlbumTli && !album.IsPrivate() {
-	//	tli := &models.TimelineItem{
-	//		UserID:  ctx.URLTrack.UserID,
-	//		AlbumID: album.ID,
-	//	}
-	//	err := models.CreateTimelineItem(tli)
-	//	if err != nil {
-	//		log.WithFields(log.Fields{
-	//			"album": album.ID,
-	//		}).Errorf("Cannot add album to timeline: %v", err)
-	//	}
-	//}
-	//
-	//// Remove Album from TLI since tracks count <= 0
-	//if previouslyAlbum != f.Album && !addAlbumTli && rmAlbumTli && (albumTracksCount <= 0) {
-	//	err = models.DeleteTimelineItem(ctx.URLUser.ID, 0, album.ID)
-	//	if err != nil {
-	//		log.WithFields(log.Fields{
-	//			"albumID": album.ID,
-	//			"userID":  ctx.URLUser.ID,
-	//		}).Errorf("Cannot delete timelineItem: %v", err)
-	//	}
-	//}
+	var TliAlbum = TliDoNothing
+
+	// Did we changed the album from X to Y ?
+	// Meaning we have to do something
+	if previouslyAlbum != f.Album {
+		logFields := make(log.Fields)
+
+		// Check if Album.ID > 0 -> we are going to use a real album
+		log.WithFields(log.Fields{"previous ID": previouslyAlbum, "new ID": album.ID}).Info("Track album ID changed")
+		if album.ID > 0 {
+			TliAlbum = TliAdd
+
+			// Handle the album privacy
+			if album.IsPrivate() {
+				TliAlbum = TliRm
+				logFields["albumPrivate"] = true
+			} else {
+				TliAlbum = TliAdd
+				logFields["albumPrivate"] = false
+			}
+
+			// Handle the track count
+			publicTracksCount, err := album.GetTracksCount(true)
+			if err != nil {
+				log.WithFields(log.Fields{
+					"albumID": f.Album,
+				}).Errorf("Cannot get count of album: %v", err)
+			}
+			if publicTracksCount >= 1 {
+				TliAlbum = TliAdd
+				logFields["publicTracksCount"] = publicTracksCount
+			} else {
+				TliAlbum = TliRm
+				logFields["publicTracksCount"] = publicTracksCount
+			}
+		}
+
+		// Now do the real work
+		if TliAlbum == TliAdd { // Add album to Timeline
+			log.WithFields(logFields).Info("Going to add a timeline album")
+			tli := &models.TimelineItem{
+				UserID:  ctx.URLTrack.UserID,
+				AlbumID: album.ID,
+			}
+			err := models.CreateTimelineItem(tli)
+			if err != nil {
+				log.WithFields(log.Fields{
+					"album": album.ID,
+				}).Errorf("Cannot add album to timeline: %v", err)
+			}
+		} else if TliAlbum == TliRm { // Remove album from Timeline
+			log.WithFields(logFields).Info("Going to remove a timeline album")
+			err = models.DeleteTimelineItem(ctx.URLUser.ID, 0, album.ID)
+			if err != nil {
+				log.WithFields(log.Fields{
+					"albumID": album.ID,
+					"userID":  ctx.URLUser.ID,
+				}).Errorf("Cannot delete timelineItem: %v", err)
+			}
+		}
+
+		// Reset the flag
+		TliAlbum = TliDoNothing
+
+		// We have to handle the previous album too
+		// But only if the previous album is not 0
+		if previouslyAlbum > 0 {
+			log.WithFields(log.Fields{"trackID": ctx.URLTrack.ID}).Info("The track doesn't have an album associated anymore")
+			previousAlbum, err := models.GetAlbumByID(previouslyAlbum)
+			if err != nil {
+				log.WithFields(log.Fields{
+					"albumID": previouslyAlbum,
+				}).Errorf("Cannot get album by ID: %v", err)
+			} else {
+				// Check if the previous album have enough tracks
+				previousPublicTracksCount, err := previousAlbum.GetTracksCount(true)
+				if err != nil {
+					log.WithFields(log.Fields{
+						"albumID": previousAlbum.ID,
+					}).Errorf("Cannot get count of album: %v", err)
+				}
+
+				if previousPublicTracksCount < 1 {
+					TliAlbum = TliRm
+				}
+
+				// Now do the real work for the old album
+				if TliAlbum == TliRm { // Remove album from Timeline
+					err = models.DeleteTimelineItem(ctx.URLUser.ID, 0, previousAlbum.ID)
+					if err != nil {
+						log.WithFields(log.Fields{
+							"albumID": previousAlbum.ID,
+							"userID":  ctx.URLUser.ID,
+						}).Errorf("Cannot delete timelineItem: %v", err)
+					}
+				}
+			}
+		}
+	}
 
 	ctx.Flash.Success(ctx.Gettext("Track edited"))
 	ctx.SubURLRedirect(ctx.URLFor("track_show", ":userSlug", ctx.URLUser.Slug, ":trackSlug", ctx.URLTrack.Slug))
