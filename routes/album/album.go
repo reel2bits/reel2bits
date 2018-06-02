@@ -210,7 +210,7 @@ func EditPost(ctx *context.Context, f form.Album) {
 			if err != nil {
 				log.WithFields(log.Fields{
 					"userID": ctx.URLAlbum.ID,
-					"album": ctx.URLAlbum.ID,
+					"album":  ctx.URLAlbum.ID,
 				}).Errorf("Cannot add track to timeline: %v", err)
 			}
 		}
