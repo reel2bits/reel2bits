@@ -9,24 +9,24 @@ import (
 	"testing"
 )
 
-func createTrack(name string, desc string, public bool, dl_link bool, album int, licence int, t *testing.T, session *TestSession) (response *TestResponse) {
+func createTrack(name string, desc string, public bool, dlLink bool, album int, licence int, t *testing.T, session *TestSession) (response *TestResponse) {
 	// Get CSRF
 	req := NewRequest(t, "GET", "/track/upload")
 	resp := session.MakeRequest(t, req, http.StatusOK)
 	csrf := NewHTMLParser(t, resp.Body)
 
 	opts := map[string]string{
-		"_csrf":        csrf.GetCSRF(),
-		"title":        name,
-		"description":  desc,
-		"album":        string(album),
-		"licence":      string(licence),
+		"_csrf":       csrf.GetCSRF(),
+		"title":       name,
+		"description": desc,
+		"album":       string(album),
+		"licence":     string(licence),
 	}
 
 	if !public {
 		opts["is_private"] = "true"
 	}
-	if dl_link {
+	if dlLink {
 		opts["show_dl_link"] = "true"
 	}
 
@@ -120,7 +120,7 @@ func TestProcessTrack(t *testing.T) {
 
 		So(string(resp.Body), ShouldContainSubstring, "Logged in as userA")
 		So(string(resp.Body), ShouldContainSubstring, trackName)
-		So(string(resp.Body), ShouldContainSubstring, slug.Make(trackName) + "/waveform")
+		So(string(resp.Body), ShouldContainSubstring, slug.Make(trackName)+"/waveform")
 		So(string(resp.Body), ShouldNotContainSubstring, "Please wait, song metadatas are processing...")
 		So(string(resp.Body), ShouldNotContainSubstring, "Error ! Please see track page for information.")
 
