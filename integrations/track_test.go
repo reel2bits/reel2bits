@@ -51,10 +51,10 @@ func deleteTrack(body []byte, t *testing.T, session *TestSession) {
 
 	// Get delete url
 	doc = NewHTMLParser(t, resp.Body)
-	urlDelete, exists := doc.doc.Find("a.delete_link").Attr("data-url")
+	urlDelete, exists := doc.doc.Find("a.delete_btn").Attr("data-url")
 	So(exists, ShouldBeTrue)
 	So(urlDelete, ShouldNotBeEmpty)
-	trackDataTrack, exists := doc.doc.Find("a.delete_link").Attr("data-url")
+	trackDataTrack, exists := doc.doc.Find("a.delete_btn").Attr("data-url")
 	So(exists, ShouldBeTrue)
 	So(trackDataTrack, ShouldNotBeEmpty)
 

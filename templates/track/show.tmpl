@@ -58,8 +58,9 @@
                 {{ if (and (eq .IsLogged true) (eq .track.UserID .LoggedUserID)) }}
                 <td class="si_btn_edit"><a class="btn btn-success btn-xs edit_link" href="{{URLFor "track_edit" ":userSlug" .user.Slug ":trackSlug" .track.Slug}}">edit</a></td>
                 <td class="si_btn_delete">
-                    <a role="button" tabindex="0" class="btn btn-danger btn-xs" data-trigger="focus"
+                    <a role="button" tabindex="0" class="btn btn-danger btn-xs delete_btn" data-trigger="focus"
                    data-container="body" data-toggle="popover" data-placement="top" data-html="true"
+                   data-url='{{URLFor "track_delete" ":userSlug" .user.Slug ":trackSlug" .track.Slug}}'
                    data-content="<a class='btn btn-success btn-xs delete_track_link' data-url='{{URLFor "track_delete" ":userSlug" .user.Slug ":trackSlug" .track.Slug}}' data-user='{{.user.Slug}}' data-track='{{.track.Slug}}'   >yes really</a>">delete</a>
                 </td>
                 {{ end }}
