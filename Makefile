@@ -24,7 +24,7 @@ GOLINT=golint -set_exit_status
 GOFMT ?= gofmt -s
 
 GOFILES := $(shell find . -name "*.go" -type f ! -path "./vendor/*" ! -path "*/bindata.go")
-PACKAGES ?= $(filter-out ${GOPKGNAMEPATH}/integrations,$(shell go list ./... | grep -v /vendor/))
+PACKAGES ?= $(shell go list ./... | grep -v /vendor/)
 PACKAGES_ALL ?= $(shell go list ./... | grep -v /vendor/)
 SOURCES ?= $(shell find . -name "*.go" -type f)
 XGO_DEPS = ""
