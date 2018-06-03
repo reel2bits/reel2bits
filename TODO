@@ -22,5 +22,3 @@ Maybe permit track stream/download using the server or not
 
 Timezone management ? Actually all is more-or-less UTC
   haaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-
-issue with user slug, when registered from cli ?
