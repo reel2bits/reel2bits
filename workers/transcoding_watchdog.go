@@ -48,6 +48,8 @@ func TranscodingWatchdog() {
 		return
 	}
 
+	log.Info("We have %d un-ready tracks to handle.", len(tracks))
+
 	if len(queueTranscodingInfos) <= 0 {
 		log.Info("Workers queue is empty, checking for un-ready tracks.")
 		log.Infof("Found %d un-ready tracks to process.", len(tracks))
