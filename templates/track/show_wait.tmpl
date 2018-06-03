@@ -6,7 +6,11 @@
     </div>
     <div class="col-lg-2 col-lg-offset-4">
         {{ if (and (eq .IsLogged true) (eq .track.UserID .LoggedUserID)) }}
-        <td class="si_btn_delete"><a class="btn btn-danger btn-xs delete_link" data-url="{{URLFor "track_delete" ":userSlug" .user.Slug ":trackSlug" .track.Slug}}" data-user="{{.user.Slug}}" data-track="{{.track.Slug}}">delete</a></td>
+        <td class="si_btn_delete">
+        <a role="button" tabindex="0" class="btn btn-danger btn-xs" data-trigger="focus"
+           data-container="body" data-toggle="popover" data-placement="top" data-html="true"
+           data-content="<a class='btn btn-success btn-xs delete_track_link' data-url='{{URLFor "track_delete" ":userSlug" .user.Slug ":trackSlug" .track.Slug}}' data-user='{{.user.Slug}}' data-track='{{.track.Slug}}'   >yes really</a>">delete</a>
+        </td>
         {{ end }}
     </div>
 </div>
@@ -43,6 +47,14 @@
         The processing of the file is not done yet. Please come back later.
     </div>
 </div>
+{{ end }}
+
+{{ define "scriptsTrackShowWait" }}
+<script type="application/javascript">
+$(function () {
+    $('[data-toggle="popover"]').popover();
+});
+</script>
 {{ end }}
 
 {{template "base/footer" .}}

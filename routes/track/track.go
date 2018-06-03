@@ -203,6 +203,7 @@ func Show(ctx *context.Context) {
 	}
 
 	if !ctx.URLTrack.IsReady() {
+		ctx.PageIs("TrackShowWait")
 		ctx.HTML(200, tmplShowWait)
 		return
 	}

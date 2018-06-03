@@ -53,6 +53,9 @@
 {{ if .PageIsTrackShow }}
     {{template "scriptsTrackShow" .}}
 {{ end }}
+{{ if .PageIsTrackShowWait }}
+    {{template "scriptsTrackShowWait" .}}
+{{ end }}
 {{ if .PageIsAlbumShow }}
     {{template "scriptsAlbumShow" .}}
 {{ end }}
