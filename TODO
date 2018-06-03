@@ -22,3 +22,6 @@ Maybe permit track stream/download using the server or not
 
 Timezone management ? Actually all is more-or-less UTC
   haaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+
+Worker off, cron watchdog stack jobs with duplicate
+  Does this cause issue ?
