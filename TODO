@@ -29,5 +29,3 @@ When switching song, the duration doesn't always get filled
   and seems to be "00" on some single track album, mmmhmhmmh
 
 Optimise count(*) to count(id)
-
-empty album delete button don't works
