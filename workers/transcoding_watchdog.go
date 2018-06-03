@@ -48,7 +48,7 @@ func TranscodingWatchdog() {
 		return
 	}
 
-	log.Info("We have %d un-ready tracks to handle.", len(tracks))
+	log.Infof("We have %d un-ready tracks to handle.", len(tracks))
 
 	if len(queueTranscodingInfos) <= 0 {
 		log.Info("Workers queue is empty, checking for un-ready tracks.")
@@ -70,6 +70,8 @@ func TranscodingWatchdog() {
 		}
 		return
 	}
+
+	log.Infof("Queue contains %d elements", len(queueTranscodingInfos))
 
 	// Second case : we have some worker elements to process, but there is un-processed tracks not in list
 	for _, t := range tracks {
@@ -117,6 +119,8 @@ func TranscodingWatchdog() {
 					"err":     err,
 				}).Error("Cannot push the worker job, please retry again.")
 			}
+		} else {
+			log.Infof("Track %d already in queue", t.ID)
 		}
 	}
 
