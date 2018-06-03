@@ -3,6 +3,7 @@ package workers
 import (
 	"dev.sigpipe.me/dashie/reel2bits/models"
 	"dev.sigpipe.me/dashie/reel2bits/pkg/sync"
+	"encoding/json"
 	"fmt"
 	"github.com/RichardKnop/machinery/v1/tasks"
 	log "github.com/sirupsen/logrus"
@@ -81,6 +82,13 @@ func TranscodingWatchdog() {
 				n, ok := arg.Value.(float64)
 				if !ok {
 					log.Errorf("Cannot convert to float64")
+					continue
+				}
+				argValue = uint(n)
+			} else if strings.HasPrefix(fmt.Sprintf("%T", arg.Value), "json.Number") {
+				n, err := arg.Value.(json.Number).Int64()
+				if err != nil {
+					log.Errorf("Cannot convert to int64")
 					continue
 				}
 				argValue = uint(n)

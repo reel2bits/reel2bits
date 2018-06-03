@@ -236,6 +236,22 @@ func isTrackTitleAlreadyExist(title string, userID uint) (exist bool, err error)
 	return true, nil
 }
 
+// DoesTrackIDExists or not
+func DoesTrackIDExists(trackID uint) (exist bool, err error) {
+	if trackID < 0 {
+		return true, fmt.Errorf("wtf are you doing")
+	}
+
+	track := Track{}
+	err = db.Select("id").Where("id = ?", trackID).First(&track).Error
+	if gorm.IsRecordNotFoundError(err) || track.ID == 0 {
+		return false, nil
+	} else if err != nil {
+		return false, nil
+	}
+	return true, nil
+}
+
 // CreateTrack or error
 func CreateTrack(t *Track) (err error) {
 	trackTitleAlreadyExist, err := isTrackTitleAlreadyExist(t.Title, t.UserID)
