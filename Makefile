@@ -24,7 +24,7 @@ GOLINT=golint -set_exit_status
 GOFMT ?= gofmt -s
 
 GOFILES := $(shell find . -name "*.go" -type f ! -path "./vendor/*" ! -path "*/bindata.go")
-PACKAGES ?= $(shell go list ./... | grep -v /vendor/)
+PACKAGES ?= $(filter-out ${GOPKGNAMEPATH}/integrations,$(shell go list ./... | grep -v /vendor/))
 PACKAGES_ALL ?= $(shell go list ./... | grep -v /vendor/)
 SOURCES ?= $(shell find . -name "*.go" -type f)
 XGO_DEPS = ""
@@ -48,7 +48,7 @@ web: build
 		./$(EXECUTABLE) web
 
 vet:
-		$(GOVET) $(PACKAGES)
+		$(GOVET) $(PACKAGES_ALL)
 
 lint:
 		@hash golint > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
@@ -106,6 +106,7 @@ fmt-check: required-gofmt-version
 ### Targets for tests
 check: test
 
+# Use PACKAGES instead of PACKAGES_ALL because the integrations tests are run separately
 test: fmt-check
 		$(GO) test -cover -v $(PACKAGES)
 
