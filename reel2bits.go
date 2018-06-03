@@ -10,7 +10,7 @@ import (
 )
 
 // AppVersion is... guess what ?
-const AppVersion = "0.2"
+const AppVersion = "0.3"
 
 func init() {
 	setting.AppVer = AppVersion
