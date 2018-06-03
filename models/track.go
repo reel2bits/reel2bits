@@ -441,7 +441,7 @@ func GetNotReadyTracks() (tracks []Track, err error) {
 func GetAlbumTracks(albumID uint, onlyPublic bool) (tracks []Track, err error) {
 	tracks = make([]Track, 0)
 
-	tx := db.Preload("User").Where("album_id = ?", albumID)
+	tx := db.Preload("User").Preload("TrackInfo").Where("album_id = ?", albumID)
 
 	if onlyPublic {
 		tx = tx.Where("ready = ? AND private = ?", BoolTrue, BoolFalse)
