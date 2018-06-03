@@ -249,6 +249,6 @@ func GetMapNameIDOfAlbums(userID uint) (sets []Album, err error) {
 // GetCountOfAlbumTracks to be used when album.CountTracksblahblah() cannot be used
 // To be deprecated at some point
 func GetCountOfAlbumTracks(albumID uint) (count int64, err error) {
-	err = db.Model(&Track{}).Where("album_id = ?", albumID).Count(&count).Error
+	err = db.Model(&Track{}).Select("id").Where("album_id = ?", albumID).Count(&count).Error
 	return
 }

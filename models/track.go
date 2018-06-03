@@ -418,8 +418,7 @@ func GetTracks(opts *TrackOptions) (tracks []Track, count int64, err error) {
 		tx = tx.Where("ready = ?", BoolTrue)
 	}
 
-	err = tx.Find(&tracks).Error
-	tx.Count(&count)
+	err = tx.Find(&tracks).Count(&count).Error
 
 	return tracks, count, err
 }

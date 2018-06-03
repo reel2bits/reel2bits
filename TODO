@@ -27,5 +27,3 @@ Timezone management ? Actually all is more-or-less UTC
 
 When switching song, the duration doesn't always get filled
   and seems to be "00" on some single track album, mmmhmhmmh
-
-Optimise count(*) to count(id)
