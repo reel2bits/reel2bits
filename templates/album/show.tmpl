@@ -124,6 +124,9 @@
 
 {{ define "scriptsAlbumShow" }}
 <script type="application/javascript">
+
+{{ if (gt .album_sounds_count 0) }}
+
     function switch_song(element, autoplay) {
         console.log("Switching to song ID " + element.data().soundid);
 
@@ -204,7 +207,6 @@
         }
     });
 
-    {{ if (gt .album_sounds_count 0) }}
     // initial call, but only if we have an initial sound
     var wf_datas = {{ Unescape .sound.TrackInfo.Waveform }};
     {{if (eq .sound.Mimetype "audio/mpeg")}}
@@ -214,11 +216,6 @@
     {{end}}
 
     load_wf(filename, wf_datas.data);
-    {{end}}
-
-    $(function () {
-        $('[data-toggle="popover"]').popover();
-    });
 
     let table = $('.table-album-sounds').DataTable( {
         paging: false,
@@ -264,6 +261,12 @@
         // default
         e.stopPropagation();
     } );
+{{ end }}
+
+$(function () {
+    $('[data-toggle="popover"]').popover();
+});
+
 </script>
 {{ end }}
 
