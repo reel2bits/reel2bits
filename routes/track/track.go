@@ -29,7 +29,7 @@ const (
 
 // Upload [GET]
 func Upload(ctx *context.Context) {
-	ctx.Title("track.title_upload")
+	ctx.Title(ctx.Gettext("Upload a new track"))
 	ctx.PageIs("TrackUpload")
 
 	albums, _ := models.GetMapNameIDOfAlbums(ctx.User.ID)
@@ -42,7 +42,7 @@ func Upload(ctx *context.Context) {
 
 // UploadPost [POST]
 func UploadPost(ctx *context.Context, f form.TrackUpload) {
-	ctx.Title("track.title_upload")
+	ctx.Title(ctx.Gettext("Upload a new track"))
 	ctx.PageIs("TrackUpload")
 
 	if ctx.HasError() {
@@ -183,7 +183,7 @@ func Show(ctx *context.Context) {
 
 	ctx.Data["track"] = ctx.URLTrack
 	ctx.Data["user"] = ctx.URLUser
-	ctx.Data["Title"] = fmt.Sprintf("%s by %s - %s", ctx.URLTrack.Title, ctx.URLUser.UserName, setting.AppName)
+	ctx.Data["Title"] = fmt.Sprintf("%s by %s", ctx.URLTrack.Title, ctx.URLUser.UserName)
 	ctx.PageIs("TrackShow")
 
 	if ctx.URLTrack.AlbumID > 0 && ctx.URLTrack.AlbumOrder > 0 {
@@ -279,7 +279,7 @@ func DevGetMediaDownload(ctx *context.Context) {
 
 // ListUserTracks [GET]
 func ListUserTracks(ctx *context.Context) {
-	ctx.Data["Title"] = fmt.Sprintf("Tracks of %s - %s", ctx.URLUser.UserName, setting.AppName)
+	ctx.Data["Title"] = fmt.Sprintf("Tracks of %s", ctx.URLUser.UserName)
 	ctx.PageIs("UserListTracks")
 
 	page := ctx.QueryInt("page")
@@ -421,7 +421,7 @@ func Edit(ctx *context.Context) {
 	ctx.Data["description"] = ctx.URLTrack.Description
 	ctx.Data["is_private"] = ctx.URLTrack.IsPrivate()
 	ctx.Data["show_dl_link"] = ctx.URLTrack.CanShowDlLink()
-	ctx.Data["Title"] = fmt.Sprintf("%s by %s - %s", ctx.URLTrack.Title, ctx.URLUser.UserName, setting.AppName)
+	ctx.Data["Title"] = fmt.Sprintf("%s by %s", ctx.URLTrack.Title, ctx.URLUser.UserName)
 	ctx.Data["title"] = ctx.URLTrack.Title
 	ctx.Data["cur_album"] = ctx.URLTrack.AlbumID
 	ctx.Data["licence"] = ctx.URLTrack.Licence

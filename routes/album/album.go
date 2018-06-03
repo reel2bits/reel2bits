@@ -4,7 +4,6 @@ import (
 	"dev.sigpipe.me/dashie/reel2bits/context"
 	"dev.sigpipe.me/dashie/reel2bits/models"
 	"dev.sigpipe.me/dashie/reel2bits/pkg/form"
-	"dev.sigpipe.me/dashie/reel2bits/setting"
 	"fmt"
 	"github.com/Unknwon/paginater"
 	log "github.com/sirupsen/logrus"
@@ -19,7 +18,7 @@ const (
 
 // New [GET]
 func New(ctx *context.Context) {
-	ctx.Title("album.title_new")
+	ctx.Title(ctx.Gettext("Create a new album"))
 	ctx.PageIs("AlbumNew")
 
 	ctx.HTML(200, tmplNew)
@@ -27,7 +26,7 @@ func New(ctx *context.Context) {
 
 // NewPost [POST]
 func NewPost(ctx *context.Context, f form.Album) {
-	ctx.Title("album.title_new")
+	ctx.Title(ctx.Gettext("Create a new album"))
 	ctx.PageIs("AlbumNew")
 
 	if ctx.HasError() {
@@ -65,10 +64,9 @@ func NewPost(ctx *context.Context, f form.Album) {
 
 // ListFromUser [GET]
 func ListFromUser(ctx *context.Context) {
-	ctx.Title("album.title_list")
 	ctx.PageIs("AlbumListFromUser")
 
-	ctx.Data["Title"] = fmt.Sprintf("Albums of %s - %s", ctx.URLUser.UserName, setting.AppName)
+	ctx.Data["Title"] = fmt.Sprintf("Albums of %s", ctx.URLUser.UserName)
 
 	page := ctx.QueryInt("page")
 	if page <= 0 {
@@ -155,7 +153,7 @@ func Show(ctx *context.Context) {
 	ctx.Data["tracks"] = tracks
 
 	ctx.Data["user"] = ctx.URLUser
-	ctx.Data["Title"] = fmt.Sprintf("%s by %s - %s", ctx.URLAlbum.Name, ctx.URLUser.UserName, setting.AppName)
+	ctx.Data["Title"] = fmt.Sprintf("%s by %s", ctx.URLAlbum.Name, ctx.URLUser.UserName)
 	ctx.PageIs("AlbumShow")
 
 	ctx.HTML(200, tmplShow)

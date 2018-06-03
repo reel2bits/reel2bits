@@ -99,7 +99,7 @@ func updateSystemStatus() {
 
 // Dashboard [GET]
 func Dashboard(ctx *context.Context) {
-	ctx.Title("admin.dashboard.title")
+	ctx.Title(ctx.Gettext("Admin Dashboard"))
 	ctx.PageIs("AdminDashboard")
 
 	// TODO model stats
