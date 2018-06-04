@@ -345,7 +345,7 @@ func processingFailed(trackID uint, msg string) error {
 func TranscodeAndFetchInfos(trackID uint) error {
 	log.WithFields(log.Fields{
 		"trackID": trackID,
-	}).Debug("Starting processing track.")
+	}).Debugf("Starting processing track %d", trackID)
 
 	trackInfosDb, err := models.GetTrackByID(trackID)
 	if err != nil {
@@ -381,6 +381,7 @@ func TranscodeAndFetchInfos(trackID uint) error {
 	// More than two channels are not handled
 	if ti.Channels <= 2 {
 		// Generate transcode file
+		log.Infof("Started generating transcode for %d", trackID)
 		err = generateTranscode(trackID)
 		if err != nil {
 			log.WithFields(log.Fields{
@@ -390,9 +391,11 @@ func TranscodeAndFetchInfos(trackID uint) error {
 			_ = processingFailed(trackID, "unable to create transcoded file")
 			return err
 		}
+		log.Infof("Finished generating transcode for %d", trackID)
 
 		// After transcoding, else we won't be able to transcode !mp3
 		// Generate Waveforms
+		log.Infof("Started generating waveform for %d", trackID)
 		wf, err := generateWaveforms(trackID)
 		if err != nil {
 			log.WithFields(log.Fields{
@@ -405,6 +408,7 @@ func TranscodeAndFetchInfos(trackID uint) error {
 			ti.ProcessedWaveform = models.ProcessingFinished
 			ti.Waveform = wf
 		}
+		log.Infof("Finished generating waveform for %d", trackID)
 	}
 
 	// Update TrackInfo
@@ -481,6 +485,8 @@ func TranscodeAndFetchInfos(trackID uint) error {
 			}
 		}
 	}
+
+	log.Debugf("Processing of track %d done.", trackID)
 
 	return nil
 }
