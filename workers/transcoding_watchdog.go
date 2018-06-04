@@ -67,6 +67,8 @@ func TranscodingWatchdog() {
 					"err":     err,
 				}).Error("Cannot push the worker job, please retry again.")
 			}
+
+			log.Infof("Track %d have been queued.", t.ID)
 		}
 		return
 	}
