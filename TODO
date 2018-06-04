@@ -24,4 +24,10 @@ Timezone management ? Actually all is more-or-less UTC
   haaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 
 Wavesurfer-js
-  issue with partial content, doesn't works
+  issue with partial content, doesn't works, or after some minutes !
+
+Workers issue
+after taks run:
+127.0.0.1:6379[4]> keys *
+1) "task_31f19bea-e7e1-4887-9ea8-4f26e7b08af3"
+-> shouldn't the task_ be removed after running ?
