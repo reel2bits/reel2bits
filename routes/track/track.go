@@ -225,7 +225,7 @@ func DevGetMediaTrack(ctx *context.Context) {
 		}
 	}
 
-	xFileName := filepath.Join("/_protected/media/tracks/", ctx.URLUser.Slug, ctx.URLTrack.Filename )
+	xFileName := filepath.Join("/_protected/media/tracks/", ctx.URLUser.Slug, ctx.URLTrack.Filename)
 
 	if ctx.Params(":type") == "mp3" {
 		xFileName = fmt.Sprintf("%s.mp3", strings.TrimSuffix(xFileName, filepath.Ext(xFileName)))
@@ -236,7 +236,7 @@ func DevGetMediaTrack(ctx *context.Context) {
 	log.Infof("Using X-Accel-Redirect %s", xFileName)
 }
 
-// DevGetMediaPngWf
+// DevGetMediaPngWf [GET]
 // TODO: use nginx offload
 func DevGetMediaPngWf(ctx *context.Context) {
 	storDir := filepath.Join(setting.Storage.Path, "tracks", ctx.URLUser.Slug)
@@ -256,7 +256,7 @@ func DevGetMediaPngWf(ctx *context.Context) {
 
 }
 
-// DevGetMediaDownload
+// DevGetMediaDownload [GET]
 func DevGetMediaDownload(ctx *context.Context) {
 	if ctx.URLTrack.IsPrivate() {
 		if ctx.IsLogged {
@@ -270,7 +270,7 @@ func DevGetMediaDownload(ctx *context.Context) {
 		}
 	}
 
-	xFileName := filepath.Join("/_protected/media/tracks/", ctx.URLUser.Slug, ctx.URLTrack.Filename )
+	xFileName := filepath.Join("/_protected/media/tracks/", ctx.URLUser.Slug, ctx.URLTrack.Filename)
 
 	if ctx.Params(":type") == "mp3" {
 		xFileName = fmt.Sprintf("%s.mp3", strings.TrimSuffix(xFileName, filepath.Ext(xFileName)))
