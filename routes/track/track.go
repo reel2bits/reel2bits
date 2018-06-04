@@ -211,32 +211,33 @@ func Show(ctx *context.Context) {
 	ctx.HTML(200, tmplShow)
 }
 
-// DevGetMediaTrack [GET] DEV ONLY !
+// DevGetMediaTrack [GET]
 func DevGetMediaTrack(ctx *context.Context) {
-	storDir := filepath.Join(setting.Storage.Path, "tracks", ctx.URLUser.Slug)
-	fName := filepath.Join(storDir, ctx.URLTrack.Filename)
-	mimeType := ctx.URLTrack.Mimetype
+	if ctx.URLTrack.IsPrivate() {
+		if ctx.IsLogged {
+			if ctx.User.ID != ctx.URLTrack.UserID {
+				ctx.HandleText(http.StatusForbidden, "forbidden")
+				return
+			}
+		} else {
+			ctx.HandleText(http.StatusForbidden, "forbidden")
+			return
+		}
+	}
+
+	xFileName := filepath.Join("/_protected/media/tracks/", ctx.URLUser.Slug, ctx.URLTrack.Filename )
 
 	if ctx.Params(":type") == "mp3" {
-		fName = fmt.Sprintf("%s.mp3", strings.TrimSuffix(fName, filepath.Ext(fName)))
-		mimeType = "audio/mpeg"
+		xFileName = fmt.Sprintf("%s.mp3", strings.TrimSuffix(xFileName, filepath.Ext(xFileName)))
 	}
 
-	content, err := ioutil.ReadFile(fName)
-	if err != nil {
-		log.WithFields(log.Fields{
-			"file": fName,
-		}).Errorf("Cannot read file: %v", err)
-
-		ctx.ServerError("Cannot read file", err)
-		return
-	}
-
-	ctx.ServeContentNoDownload(fmt.Sprintf("%s%s", strings.TrimSuffix(ctx.URLTrack.Filename, filepath.Ext(ctx.URLTrack.Filename)), filepath.Ext(fName)), mimeType, bytes.NewReader(content))
-
+	ctx.Resp.Header().Set("Content-Disposition", "attachment; filename="+ctx.URLTrack.Filename)
+	ctx.Resp.Header().Set("X-Accel-Redirect", xFileName)
+	log.Infof("Using X-Accel-Redirect %s", xFileName)
 }
 
-// DevGetMediaPngWf [GET] DEV ONLY !
+// DevGetMediaPngWf
+// TODO: use nginx offload
 func DevGetMediaPngWf(ctx *context.Context) {
 	storDir := filepath.Join(setting.Storage.Path, "tracks", ctx.URLUser.Slug)
 	fName := filepath.Join(storDir, fmt.Sprintf("%s.png", ctx.URLTrack.Filename))
@@ -255,26 +256,29 @@ func DevGetMediaPngWf(ctx *context.Context) {
 
 }
 
-// DevGetMediaDownload [GET] DEV ONLY !
+// DevGetMediaDownload
 func DevGetMediaDownload(ctx *context.Context) {
-	storDir := filepath.Join(setting.Storage.Path, "tracks", ctx.URLUser.Slug)
-	fName := filepath.Join(storDir, ctx.URLTrack.Filename)
+	if ctx.URLTrack.IsPrivate() {
+		if ctx.IsLogged {
+			if ctx.User.ID != ctx.URLTrack.UserID {
+				ctx.HandleText(http.StatusForbidden, "forbidden")
+				return
+			}
+		} else {
+			ctx.HandleText(http.StatusForbidden, "forbidden")
+			return
+		}
+	}
+
+	xFileName := filepath.Join("/_protected/media/tracks/", ctx.URLUser.Slug, ctx.URLTrack.Filename )
 
 	if ctx.Params(":type") == "mp3" {
-		fName = fmt.Sprintf("%s.mp3", strings.TrimSuffix(fName, filepath.Ext(fName)))
+		xFileName = fmt.Sprintf("%s.mp3", strings.TrimSuffix(xFileName, filepath.Ext(xFileName)))
 	}
 
-	content, err := ioutil.ReadFile(fName)
-	if err != nil {
-		log.WithFields(log.Fields{
-			"file": fName,
-		}).Errorf("Cannot read file: %v", err)
-
-		ctx.ServerError("Cannot read file", err)
-		return
-	}
-
-	ctx.ServeContent(fmt.Sprintf("%s__by__%s%s", ctx.URLTrack.Slug, ctx.URLUser.Slug, filepath.Ext(fName)), bytes.NewReader(content))
+	ctx.Resp.Header().Set("Content-Disposition", "attachment; filename="+ctx.URLTrack.Filename)
+	ctx.Resp.Header().Set("X-Accel-Redirect", xFileName)
+	log.Infof("Using X-Accel-Redirect %s", xFileName)
 }
 
 // ListUserTracks [GET]
