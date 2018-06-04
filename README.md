@@ -55,6 +55,10 @@ No ports for worker, 4000 for web.
 
 Worker and web needs access to redis, database, and local access to files.
 
+## Screenshot
+
+![screenshot](https://dev.sigpipe.me/dashie/reel2bits/raw/branch/master/screenshot.png)
+
 ## Contact, issues
 
 - Main contact: Dashie: dashie (at) sigpipe (dot) me
