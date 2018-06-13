@@ -59,7 +59,7 @@ var (
 	// Worker configuration
 	Worker struct {
 		RedisHost string
-		RedisDb   string
+		RedisDb   int
 		RedisPort string
 	}
 
