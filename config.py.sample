@@ -45,3 +45,7 @@ SENTRY_USER_ATTRS = ['name', 'email']
 SENTRY_DSN = ""
 # And uncomment and fill with appropriate Sentry informations
 #SENTRY_DSN = "https://user:pass@sentry.your.host/ID?ca_certs=/etc/ssl/certs/ca-certificates.crt"
+
+BROKER_REDIS_HOST = "127.0.0.1"
+BROKER_REDIS_PORT = 6379
+BROKER_REDIS_DB = 0

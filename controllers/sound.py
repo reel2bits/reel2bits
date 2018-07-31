@@ -120,6 +120,11 @@ def upload():
 
             db.session.add(rec)
             db.session.commit()
+
+            # push the job in queue
+            from workers import upload_workflow
+            upload_workflow.send(rec.id)
+
             flash(gettext('Uploaded !'), 'success')
         else:
             return render_template('sound/upload.jinja2', pcfg=pcfg,

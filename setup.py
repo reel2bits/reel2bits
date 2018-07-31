@@ -34,7 +34,8 @@ setup(
         'Flask_Babelex',
         'texttable',
         'python-slugify',
-        'python-magic'
+        'python-magic',
+        'dramatiq'
     ],
     setup_requires=[
         'pytest-runner',

@@ -23,11 +23,8 @@ from utils import InvalidUsage, is_admin, duration_elapsed_human, \
     duration_song_human
 
 import texttable
-import click
-import datetime
 from flask_debugtoolbar import DebugToolbarExtension
 
-from crons import cron_generate_sound_infos, cron_transcode
 from dbseed import make_db_seed
 from pprint import pprint as pp
 
@@ -208,27 +205,5 @@ def create_app(config_filename="config.py"):
     def seed():
         """Seed database with default content"""
         make_db_seed(db)
-
-    @app.cli.command()
-    @click.option('--dryrun', default=False,
-                  help="Dry run, doesn't commit anything")
-    @click.option('--force', default=False,
-                  help="Force re-generation")
-    def generate_sound_infos(dryrun=False, force=False):
-        """Generate Sound Infos """
-        print("-- STARTED on {0}".format(datetime.datetime.now()))
-        cron_generate_sound_infos(dryrun, force)
-        print("-- FINISHED on {0}".format(datetime.datetime.now()))
-
-    @app.cli.command()
-    @click.option('--dryrun', default=False,
-                  help="Dry run, doesn't commit anything")
-    @click.option('--force', default=False,
-                  help="Force re-generation")
-    def transcode(dryrun=False, force=False):
-        """Transcode sounds needed """
-        print("-- STARTED on {0}".format(datetime.datetime.now()))
-        cron_transcode(dryrun, force)
-        print("-- FINISHED on {0}".format(datetime.datetime.now()))
 
     return app

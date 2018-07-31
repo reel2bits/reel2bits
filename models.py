@@ -269,12 +269,24 @@ class Timeline(db.Model):
 
 licences = {
     0: {"name": "Not Specified", "id": 0, "link": "", "icon": ""},
-    1: {"name": "CC Attribution", "id": 1, "link": "https://creativecommons.org/licenses/by/4.0/", "icon": "creative-commons"},
-    2: {"name": "CC Attribution Share Alike", "id": 2, "link": "https://creativecommons.org/licenses/by-sa/4.0", "icon": "creative-commons"},
-    3: {"name": "CC Attribution No Derivatives", "id": 3, "link": "https://creativecommons.org/licenses/by-nd/4.0", "icon": "creative-commons"},
-    4: {"name": "CC Attribution Non Commercial", "id": 4, "link": "https://creativecommons.org/licenses/by-nc/4.0", "icon": "creative-commons"},
-    5: {"name": "CC Attribution Non Commercial - Share Alike", "id": 5, "link": "https://creativecommons.org/licenses/by-nc-sa/4.0", "icon": "creative-commons"},
-    6: {"name": "CC Attribution Non Commercial - No Derivatives", "id": 6, "link": "https://creativecommons.org/licenses/by-nc-nd/4.0", "icon": "creative-commons"},
+    1: {"name": "CC Attribution", "id": 1,
+        "link": "https://creativecommons.org/licenses/by/4.0/",
+        "icon": "creative-commons"},
+    2: {"name": "CC Attribution Share Alike", "id": 2,
+        "link": "https://creativecommons.org/licenses/by-sa/4.0",
+        "icon": "creative-commons"},
+    3: {"name": "CC Attribution No Derivatives", "id": 3,
+        "link": "https://creativecommons.org/licenses/by-nd/4.0",
+        "icon": "creative-commons"},
+    4: {"name": "CC Attribution Non Commercial", "id": 4,
+        "link": "https://creativecommons.org/licenses/by-nc/4.0",
+        "icon": "creative-commons"},
+    5: {"name": "CC Attribution Non Commercial - Share Alike", "id": 5,
+        "link": "https://creativecommons.org/licenses/by-nc-sa/4.0",
+        "icon": "creative-commons"},
+    6: {"name": "CC Attribution Non Commercial - No Derivatives", "id": 6,
+        "link": "https://creativecommons.org/licenses/by-nc-nd/4.0",
+        "icon": "creative-commons"},
     7: {"name": "Public Domain Dedication", "id": 7, "link": "", "icon": ""}
 }
 

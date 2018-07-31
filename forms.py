@@ -64,8 +64,8 @@ class UserProfileForm(ModelForm):
 
 
 class ConfigForm(Form):
-    app_name = StringField(gettext('Instance Name'), [DataRequired(),
-                                                 Length(max=255)])
+    app_name = StringField(
+        gettext('Instance Name'), [DataRequired(), Length(max=255)])
     app_description = TextAreaField(gettext('Instance description'))
 
     submit = SubmitField(gettext('Update config'))
@@ -76,7 +76,8 @@ def get_albums():
 
 
 def get_licences():
-    return [ (licences[a]['id'], licences[a]['name']) for a in licences ]
+    return [(licences[a]['id'], licences[a]['name']) for a in licences]
+
 
 class SoundUploadForm(Form):
     title = StringField(gettext('Title'), [Length(max=255)])

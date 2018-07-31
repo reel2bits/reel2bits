@@ -15,7 +15,8 @@ import sqlalchemy as sa  # noqa: E402
 
 
 def upgrade():
-    op.add_column('config', sa.Column('app_description', sa.Text(), nullable=True))
+    op.add_column('config', sa.Column('app_description', sa.Text(),
+                                      nullable=True))
 
 
 def downgrade():

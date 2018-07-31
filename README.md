@@ -29,16 +29,16 @@ Reel2Bits
 # Default config
  - App Name: My reel2bits instance
 
-# Crontabs and cache actions
-  List of cron target availables.
-  Makes sure to run them under the user which runs reel2bits and virtualenv if you use it.
-  Commands:
-  - python3 reel2bits.py cron generate_sound_infos
+# Workers
+  Run the workers using:
   
-# Crons explained
-  - generate_sound_infos
-    - Get basic infos (bitrate, codec, samplerate, etc.) and Waveform data-points for HTML5 player
+    $ dramatiq workers -Q <queue name>
+    
+  See also 'dramatiq --help' for all config (threads etc.) infos
 
+  List of queues and descriptions:
+  - upload_workflow : handle metadatas and transcoding after upload
+  
 # TODO
   - Albums
   - Tags

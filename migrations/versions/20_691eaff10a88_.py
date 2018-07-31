@@ -16,13 +16,13 @@ import sqlalchemy as sa  # noqa: E402
 
 def upgrade():
     op.alter_column('sound', 'licence',
-               existing_type=sa.INTEGER(),
-               nullable=True,
-               existing_server_default=sa.text('0'))
+                    existing_type=sa.INTEGER(),
+                    nullable=True,
+                    existing_server_default=sa.text('0'))
 
 
 def downgrade():
     op.alter_column('sound', 'licence',
-               existing_type=sa.INTEGER(),
-               nullable=False,
-               existing_server_default=sa.text('0'))
+                    existing_type=sa.INTEGER(),
+                    nullable=False,
+                    existing_server_default=sa.text('0'))

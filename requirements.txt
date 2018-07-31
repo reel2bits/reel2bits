@@ -13,3 +13,4 @@ sqlalchemy
 mutagen
 pydub
 bcrypt
+dramatiq
