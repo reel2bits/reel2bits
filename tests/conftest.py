@@ -20,7 +20,7 @@ def app():
 def db(app):
     _db.create_all()
     make_db_seed(_db)
-    
+
     yield _db
 
     _db.drop_all()
