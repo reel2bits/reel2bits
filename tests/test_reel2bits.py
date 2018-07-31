@@ -47,14 +47,14 @@ def _do_login(client):
 # Tests now
 
 
-def test_empty_db(test_client):
+def test_empty_db(test_client, init_database):
     """Start with a blank database."""
 
     rv = test_client.get('/')
     assert rv.status_code == 200
 
 
-def test_login_logout(test_client):
+def test_login_logout(test_client, init_database):
     """Make sure login and logout works."""
 
     rv = _do_login(test_client)
