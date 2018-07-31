@@ -15,11 +15,8 @@ def client():
     reel2bits.config['DEBUG_TB_ENABLED'] = False
     reel2bits.config['DEBUG_TB_PANELS'] = ()
 
-    db_fd, reel2bits.config['SQLALCHEMY_DATABASE_URI'] = tempfile.mkstemp()
-    f = reel2bits.config['SQLALCHEMY_DATABASE_URI']
-    print("Db file: {}".format(f))
     reel2bits.config['SQLALCHEMY_DATABASE_URI'] = \
-        "sqlite:///{}".format(f)
+        'postgresql+psycopg2://dashie:saucisse@127.0.0.1/reel2bits_test'
     reel2bits.config['TESTING'] = True
     client = reel2bits.test_client()
 
@@ -31,10 +28,6 @@ def client():
         make_db_seed(db)
 
     yield client
-
-    os.close(db_fd)
-    os.unlink(f)
-
 
 def login(client, email, password):
     return client.post(

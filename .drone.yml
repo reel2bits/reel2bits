@@ -4,6 +4,15 @@ clone:
     depth: 50
     tags: true
 
+services:
+  database:
+    image: postgres:10
+    environment:
+      - POSTGRES_USER=dashie
+      - POSTGRES_PASSWORD=saucisse
+      - POSTGRES_DB=reel2bits_test
+
+
 pipeline:
   restore-cache:
       image: drillster/drone-volume-cache
