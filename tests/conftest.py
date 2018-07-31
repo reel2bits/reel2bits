@@ -3,6 +3,7 @@ import pytest
 from reel2bits import create_app
 from models import db as _db
 
+
 @pytest.yield_fixture(scope='session')
 def app():
     app = create_app('tests/config_test.py')
