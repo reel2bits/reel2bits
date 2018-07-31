@@ -1,12 +1,8 @@
-import os
-import tempfile
 import pytest
 
 from reel2bits import create_app
-from flask_migrate import command
 from models import db
 from dbseed import make_db_seed
-from alembic.config import Config
 
 
 @pytest.fixture(scope='module')
@@ -33,6 +29,7 @@ def init_database():
 
     db.drop_all()
 
+
 def login(client, email, password):
     return client.post(
         '/login',
@@ -48,6 +45,7 @@ def _do_login(client):
     return login(client, 'dashie@sigpipe.me', 'fluttershy')
 
 # Tests now
+
 
 def test_empty_db(test_client):
     """Start with a blank database."""

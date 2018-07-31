@@ -60,7 +60,7 @@ def create_app(config_filename="config.py"):
     if HAS_SENTRY:
         app.config['SENTRY_RELEASE'] = raven.fetch_git_sha(
             os.path.dirname(__file__))
-        sentry = Sentry(app, dsn=app.config['SENTRY_DSN'])
+        sentry = Sentry(app, dsn=app.config['SENTRY_DSN'])  # noqa: F841
         print(" * Sentry support activated")
         print(" * Sentry DSN: %s" % app.config['SENTRY_DSN'])
 
@@ -70,23 +70,24 @@ def create_app(config_filename="config.py"):
     # Logging
     if not app.debug:
         formatter = logging.Formatter(
-            '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]')
+            '%(asctime)s %(levelname)s: %(message)s '
+            '[in %(pathname)s:%(lineno)d]')
         file_handler = RotatingFileHandler(
             "%s/errors_app.log" % os.getcwd(), 'a', 1000000, 1)
         file_handler.setLevel(logging.DEBUG)
         file_handler.setFormatter(formatter)
         app.logger.addHandler(file_handler)
 
-    mail = Mail(app)
+    mail = Mail(app)  # noqa: F841
     migrate = Migrate(app, db)  # noqa: F841
     babel = Babel(app)  # noqa: F841
-    toolbar = DebugToolbarExtension(app)
+    toolbar = DebugToolbarExtension(app)  # noqa: F841
 
     db.init_app(app)
 
     # Setup Flask-Security
-    security = Security(app, user_datastore,
-                        register_form=ExtendedRegisterForm)  # noqa: F841
+    security = Security(app, user_datastore,  # noqa: F841
+                        register_form=ExtendedRegisterForm)
 
     git_version = ""
     gitpath = os.path.join(os.getcwd(), ".git")
@@ -95,7 +96,6 @@ def create_app(config_filename="config.py"):
             ['git', 'rev-parse', '--short', 'HEAD'])
         if git_version:
             git_version = git_version.strip().decode('UTF-8')
-
 
     @babel.localeselector
     def get_locale():
@@ -108,13 +108,11 @@ def create_app(config_filename="config.py"):
         # example.  The best match wins.
         return request.accept_languages.best_match(['fr', 'en'])
 
-
     @babel.timezoneselector
     def get_timezone():
         identity = getattr(g, 'identity', None)
         if identity is not None and identity.id:
             return identity.user.timezone
-
 
     @app.before_request
     def before_request():
@@ -130,13 +128,11 @@ def create_app(config_filename="config.py"):
         }
         g.cfg = cfg
 
-
     @app.errorhandler(InvalidUsage)
     def handle_invalid_usage(error):
         response = jsonify(error.to_dict())
         response.status_code = error.status_code
         return response
-
 
     sounds = UploadSet('sounds', AUDIO)
     configure_uploads(app, sounds)
@@ -147,14 +143,12 @@ def create_app(config_filename="config.py"):
     app.register_blueprint(bp_sound)
     app.register_blueprint(bp_albums)
 
-
     # Used in development
     @app.route('/uploads/<string:thing>/<path:stuff>', methods=['GET'])
     def get_uploads_stuff(thing, stuff):
         directory = safe_join(app.config['UPLOADS_DEFAULT_DEST'], thing)
         print("Get {0} from {1}".format(stuff, directory))
         return send_from_directory(directory, stuff, as_attachment=True)
-
 
     @app.errorhandler(404)
     def page_not_found(msg):
@@ -163,7 +157,6 @@ def create_app(config_filename="config.py"):
                 "e": msg}
         return render_template('error_page.jinja2', pcfg=pcfg), 404
 
-
     @app.errorhandler(403)
     def err_forbidden(msg):
         pcfg = {"title": lazy_gettext("Whoops, something failed."),
@@ -171,14 +164,12 @@ def create_app(config_filename="config.py"):
                 "e": msg}
         return render_template('error_page.jinja2', pcfg=pcfg), 403
 
-
     @app.errorhandler(410)
     def err_gone(msg):
         pcfg = {"title": lazy_gettext("Whoops, something failed."),
                 "error": 410, "message": lazy_gettext("Gone"),
                 "e": msg}
         return render_template('error_page.jinja2', pcfg=pcfg), 410
-
 
     if not app.debug:
         @app.errorhandler(500)
@@ -188,7 +179,6 @@ def create_app(config_filename="config.py"):
                     "message": lazy_gettext("Something is broken"),
                     "e": msg}
             return render_template('error_page.jinja2', pcfg=pcfg), 500
-
 
     # Other commands
     @app.cli.command()
@@ -208,18 +198,15 @@ def create_app(config_filename="config.py"):
 
         print(table.draw())
 
-
     @app.cli.command()
     def config():
         """Dump config"""
         pp(app.config)
 
-
     @app.cli.command()
     def seed():
         """Seed database with default content"""
         make_db_seed(db)
-
 
     @app.cli.command()
     @click.option('--dryrun', default=False,
@@ -231,7 +218,6 @@ def create_app(config_filename="config.py"):
         print("-- STARTED on {0}".format(datetime.datetime.now()))
         cron_generate_sound_infos(dryrun, force)
         print("-- FINISHED on {0}".format(datetime.datetime.now()))
-
 
     @app.cli.command()
     @click.option('--dryrun', default=False,
