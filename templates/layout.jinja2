@@ -1,14 +1,15 @@
 {% import "bootstrap/utils.html" as butils %}
-
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="">
     <meta name="author" content="">
+
+    <link rel="icon" href="{{AppSubURL}}/favicon.ico">
 
     <title>
     {% block title %}{% if pcfg and pcfg['title'] %}
@@ -35,107 +36,96 @@
     <![endif]-->
 
     {% block styles %}{% endblock %}
-  </head>
+</head>
 
-  <body>
+<body>
 
-    <!-- Static navbar -->
-    <nav class="navbar navbar-default navbar-static-top">
-      <div class="container">
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
         <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">{{ gettext('Toggle navigation') }}</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="{{ url_for('bp_main.home') }}">{{ g.cfg['app_name'] }}</a>
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">{{ gettext('Toggle navigation') }}</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{{ url_for('bp_main.home') }}">{{ g.cfg['app_name'] }}</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
-            {% if current_user.is_authenticated %}
-                <li><a href="{{ url_for('bp_sound.upload') }}">{{ gettext('Upload') }}</a></li>
-                <li><a href="{{ url_for('bp_albums.new', username=current_user.name) }}">{{ gettext('New album') }}</a></li>
-                <li><a href="{{ url_for('bp_users.profile', name=current_user.name) }}">{{ gettext('My Profile') }}</a></li>
-            {% endif %}
-          </ul>
-          <ul class="nav navbar-nav navbar-right">
-            {% if request.endpoint %}
-                <li class="{% if request.endpoint.startswith('bp_main.about') %}active{% endif %}"><a href="{{ url_for('bp_main.about') }}">{{ gettext('About') }}</a></li>
+            <ul class="nav navbar-nav">
                 {% if current_user.is_authenticated %}
-                    <li class="dropdown">
-                      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ gettext('Logged as %(username)s', username=current_user.name) }} <span class="caret"></span></a>
-                      <ul class="dropdown-menu">
-                          <li class="dropdown-header">{{ gettext('User') }}</li>
-                          <li><a href="{{ url_for('bp_users.profile', name=current_user.name) }}">{{ gettext('Profile') }}</a></li>
-                          <li><a href="{{ url_for('bp_users.logs') }}">{{ gettext('Logs') }}</a></li>
-                          {% if is_admin() %}
-                              <li role="separator" class="divider"></li>
-                              <li class="dropdown-header">{{ gettext('Admin') }}</li>
-                              <li><a href="{{ url_for('bp_admin.config') }}">{{ gettext('App config') }}</a></li>
-                              <li><a href="{{ url_for('bp_admin.logs') }}">{{ gettext('App logs') }}</a></li>
-                          {% endif %}
-                          <li role="separator" class="divider"></li>
-                          <li><a href="{{ url_for_security('change_password') }}">{{ gettext('Change password') }}</a></li>
-                          <li><a href="{{ url_for_security('logout') }}">{{ gettext('Logout') }}</a></li>
-                        </ul>
-                    </li>
-                {% else %}
-                    {% if security.registerable %}
-                        <li class="{% if request.endpoint.startswith('security.register') %}active{% endif %}"><a href="{{ url_for_security('register') }}">{{ gettext('Register') }}</a></li>
-                    {% endif %}
-                    <li class="{% if request.endpoint.startswith('security.login') %}active{% endif %}"><a href="{{ url_for_security('login') }}">{{ gettext('Login') }}</a></li>
+                    <li><a href="{{ url_for('bp_sound.upload') }}">{{ gettext('Upload') }}</a></li>
+                    <li><a href="{{ url_for('bp_albums.new', username=current_user.name) }}">{{ gettext('New album') }}</a></li>
+                    <li><a href="{{ url_for('bp_users.profile', name=current_user.name) }}">{{ gettext('My Profile') }}</a></li>
                 {% endif %}
-            {% endif %}
-          </ul>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                {% if request.endpoint %}
+                    <li class="{% if request.endpoint.startswith('bp_main.about') %}active{% endif %}"><a href="{{ url_for('bp_main.about') }}">{{ gettext('About') }}</a></li>
+                    {% if current_user.is_authenticated %}
+                        <li class="dropdown">
+                          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ gettext('Logged as %(username)s', username=current_user.name) }} <span class="caret"></span></a>
+                          <ul class="dropdown-menu">
+                              <li class="dropdown-header">{{ gettext('User') }}</li>
+                              <li><a href="{{ url_for('bp_users.profile', name=current_user.name) }}">{{ gettext('Profile') }}</a></li>
+                              <li><a href="{{ url_for('bp_users.logs') }}">{{ gettext('Logs') }}</a></li>
+                              {% if is_admin() %}
+                                  <li role="separator" class="divider"></li>
+                                  <li class="dropdown-header">{{ gettext('Admin') }}</li>
+                                  <li><a href="{{ url_for('bp_admin.config') }}">{{ gettext('App config') }}</a></li>
+                                  <li><a href="{{ url_for('bp_admin.logs') }}">{{ gettext('App logs') }}</a></li>
+                              {% endif %}
+                              <li role="separator" class="divider"></li>
+                              <li><a href="{{ url_for_security('change_password') }}">{{ gettext('Change password') }}</a></li>
+                              <li><a href="{{ url_for_security('logout') }}">{{ gettext('Logout') }}</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        {% if security.registerable %}
+                            <li class="{% if request.endpoint.startswith('security.register') %}active{% endif %}"><a href="{{ url_for_security('register') }}">{{ gettext('Register') }}</a></li>
+                        {% endif %}
+                        <li class="{% if request.endpoint.startswith('security.login') %}active{% endif %}"><a href="{{ url_for_security('login') }}">{{ gettext('Login') }}</a></li>
+                    {% endif %}
+                {% endif %}
+            </ul>
         </div><!--/.nav-collapse -->
-      </div>
-    </nav>
+    </div>
+</nav>
 
-    <div class="container">
+<div class="container">
+    <div class="row">
+        <div class="col-lg-6 col-lg-offset-3">{{ butils.flashed_messages(container=False) }}</div>
+    </div>
 
-        <div class="row">
-            <div class="col-lg-6 col-lg-offset-3">{{ butils.flashed_messages(container=False) }}</div>
+    {% block content %}{% endblock %}
+
+    <footer>
+        <div>
+            <div class="left">
+                &copy; 2017-2018 reel2bits - {{ gettext("version: %(version)s", version=g.cfg['REEL2BITS_VERSION']) }}{% if current_user.is_authenticated %} - {{ gettext('Logged as %(username)s', username=current_user.name) }}{% endif %}
+            </div>
+            <div class="right">
+                <a target="_blank" href="https://dev.sigpipe.me/dashie/reel2bits">{{ gettext("Sources") }}</a>
+                -
+                <a href="#">{{ gettext('Back to top') }}</a>
+            </div>
         </div>
-
-      <div class="row">
-
-        <div class="col-sm-12 blog-main">
-            {% block content %}{% endblock %}
-        </div><!-- /.blog-main -->
-
-      </div><!-- /.row -->
-
-    </div><!-- /.container -->
-
-    <footer class="blog-footer">
-        {% autoescape false %}
-        <p>
-            {{ gettext("Use template for %(link1)s by %(link2)s and use %(link3)s, reel2bits %(link4)s",
-            link1='<a href="http://getbootstrap.com">Bootstrap</a>',
-            link2='<a href="https://twitter.com/mdo">@mdo</a>',
-            link3='<a href="http://glyphicons.com/">Glyphicons</a>',
-            link4='<a href="https://dev.sigpipe.me/dashie/reel2bits">%s</a>' % gettext('source code')) }}
-        </p>
-        <p><small>{{ gettext("Running version %(version)s", version=g.cfg['REEL2BITS_VERSION']) }}</small></p>
-      <p>
-        <a href="#">{{ gettext('Back to top') }}</a>
-      </p>
-        {% endautoescape %}
     </footer>
+</div> <!-- /container -->
 
 
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="{{ url_for('static', filename='js/jquery-3.2.1.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <script src="{{ url_for('static', filename='js/ie10-viewport-bug-workaround.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/jquery.bootstrap-growl.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/global.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/datatables.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/wavesurfer.min.js') }}"></script>
-    {% block scripts %}{% endblock %}
-  </body>
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="{{ url_for('static', filename='js/jquery-3.2.1.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+<script src="{{ url_for('static', filename='js/ie10-viewport-bug-workaround.js') }}"></script>
+<script src="{{ url_for('static', filename='js/jquery.bootstrap-growl.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/global.js') }}"></script>
+<script src="{{ url_for('static', filename='js/datatables.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/wavesurfer.min.js') }}"></script>
+{% block scripts %}{% endblock %}
+
+</body>
 </html>
