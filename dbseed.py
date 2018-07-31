@@ -40,6 +40,7 @@ def seed_users(db):
 
 def seed_config(db):
     a = Config(app_name='My reel2bits instance')
+    a.app_description = """This is a reel2bits instance"""
     db.session.add(a)
     db.session.commit()
     db.session.commit()

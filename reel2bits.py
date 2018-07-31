@@ -124,7 +124,8 @@ def create_app(config_filename="config.py"):
             'REEL2BITS_VERSION_VER': __VERSION__,
             'REEL2BITS_VERSION_GIT': git_version,
             'REEL2BITS_VERSION': "{0} ({1})".format(__VERSION__, git_version),
-            "app_name": _config.app_name
+            "app_name": _config.app_name,
+            'app_description': _config.app_description
         }
         g.cfg = cfg
 

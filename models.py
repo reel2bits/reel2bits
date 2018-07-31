@@ -92,6 +92,7 @@ class Config(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     app_name = db.Column(db.String(255), default=None)
+    app_description = db.Column(db.Text)
 
 
 class Logging(db.Model):

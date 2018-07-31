@@ -64,8 +64,9 @@ class UserProfileForm(ModelForm):
 
 
 class ConfigForm(Form):
-    app_name = StringField(gettext('App Name'), [DataRequired(),
+    app_name = StringField(gettext('Instance Name'), [DataRequired(),
                                                  Length(max=255)])
+    app_description = TextAreaField(gettext('Instance description'))
 
     submit = SubmitField(gettext('Update config'))
 

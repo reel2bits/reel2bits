@@ -38,6 +38,12 @@ footer .right {
     float: right;
 }
 
+hr{
+    border:0;
+    margin: 2em 1em 2em 1em;
+    height:1px;
+    background: lightgrey;
+}
 /*
  ** Elements **
  */

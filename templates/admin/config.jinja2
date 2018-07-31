@@ -20,6 +20,11 @@
         </div>
         <div class="row">
             <div class="col-lg-6">
+                {{ wtf.form_field(form.app_description, 'horizontal', horizontal_columns=('lg', 4, 8)) }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-6">
                 {{ wtf.form_field(form.submit, button_map={'submit': 'success'}) }}
             </div>
         </div>

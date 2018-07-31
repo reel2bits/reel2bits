@@ -57,6 +57,7 @@ def config():
 
     if form.validate_on_submit():
         _config.app_name = form.app_name.data
+        _config.app_description = form.app_description.data
 
         db.session.commit()
         flash(gettext("Configuration updated"), "info")
