@@ -3,7 +3,7 @@ import logging
 import os
 import subprocess
 from logging.handlers import RotatingFileHandler
-from flask_babelex import lazy_gettext, Babel
+from flask_babelex import gettext, Babel
 from flask import Flask, render_template, g, send_from_directory, \
     jsonify, safe_join, request, flash
 from flask_bootstrap import Bootstrap
@@ -118,7 +118,7 @@ def create_app(config_filename="config.py"):
     def before_request():
         _config = Config.query.first()
         if not _config:
-            flash(lazy_gettext("Config not found"), 'error')
+            flash(gettext("Config not found"), 'error')
 
         cfg = {
             'REEL2BITS_VERSION_VER': __VERSION__,
@@ -152,31 +152,31 @@ def create_app(config_filename="config.py"):
 
     @app.errorhandler(404)
     def page_not_found(msg):
-        pcfg = {"title": lazy_gettext("Whoops, something failed."),
-                "error": 404, "message": lazy_gettext("Page not found"),
+        pcfg = {"title": gettext("Whoops, something failed."),
+                "error": 404, "message": gettext("Page not found"),
                 "e": msg}
         return render_template('error_page.jinja2', pcfg=pcfg), 404
 
     @app.errorhandler(403)
     def err_forbidden(msg):
-        pcfg = {"title": lazy_gettext("Whoops, something failed."),
-                "error": 403, "message": lazy_gettext("Access forbidden"),
+        pcfg = {"title": gettext("Whoops, something failed."),
+                "error": 403, "message": gettext("Access forbidden"),
                 "e": msg}
         return render_template('error_page.jinja2', pcfg=pcfg), 403
 
     @app.errorhandler(410)
     def err_gone(msg):
-        pcfg = {"title": lazy_gettext("Whoops, something failed."),
-                "error": 410, "message": lazy_gettext("Gone"),
+        pcfg = {"title": gettext("Whoops, something failed."),
+                "error": 410, "message": gettext("Gone"),
                 "e": msg}
         return render_template('error_page.jinja2', pcfg=pcfg), 410
 
     if not app.debug:
         @app.errorhandler(500)
         def err_failed(msg):
-            pcfg = {"title": lazy_gettext("Whoops, something failed."),
+            pcfg = {"title": gettext("Whoops, something failed."),
                     "error": 500,
-                    "message": lazy_gettext("Something is broken"),
+                    "message": gettext("Something is broken"),
                     "e": msg}
             return render_template('error_page.jinja2', pcfg=pcfg), 500
 

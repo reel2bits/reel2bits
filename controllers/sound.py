@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, \
     redirect, url_for, flash, Response, abort, json
-from flask_babelex import lazy_gettext, gettext
+from flask_babelex import gettext, gettext
 from flask_security import login_required, current_user
 from flask_uploads import UploadSet, AUDIO
 
@@ -18,21 +18,21 @@ sounds = UploadSet('sounds', AUDIO)
 def show(username, soundslug):
     user = User.query.filter(User.name == username).first()
     if not user:
-        flash(lazy_gettext("User not found"), "error")
+        flash(gettext("User not found"), "error")
         return redirect(url_for("bp_main.home"))
     sound = Sound.query.filter(Sound.slug == soundslug,
                                Sound.user_id == user.id).first()
     if not sound:
-        flash(lazy_gettext("Sound not found"), "error")
+        flash(gettext("Sound not found"), "error")
         return redirect(url_for("bp_users.profile", name=user.name))
 
     if sound.private:
         if current_user.is_authenticated:
             if sound.user_id != current_user.id:
-                flash(lazy_gettext("Sound not found"), "error")
+                flash(gettext("Sound not found"), "error")
                 return redirect(url_for("bp_users.profile", name=user.name))
         else:
-            flash(lazy_gettext("Sound not found"), "error")
+            flash(gettext("Sound not found"), "error")
             return redirect(url_for("bp_users.profile", name=user.name))
 
     pcfg = {"title": sound.title}
@@ -44,7 +44,7 @@ def show(username, soundslug):
         si_w = None
 
     # if si and si.type == "FLAC":
-    #    flash(lazy_gettext("No HTML5 player supported actually"), 'info')
+    #    flash(gettext("No HTML5 player supported actually"), 'info')
 
     return render_template('sound/show.jinja2', pcfg=pcfg, user=user,
                            sound=sound, waveform=si_w)
@@ -82,7 +82,7 @@ def waveform_json(username, soundslug):
 @bp_sound.route('/sound/upload', methods=['GET', 'POST'])
 @login_required
 def upload():
-    pcfg = {"title": lazy_gettext("New upload")}
+    pcfg = {"title": gettext("New upload")}
     user = User.query.filter(User.id == current_user.id).one()
 
     form = SoundUploadForm()
@@ -119,7 +119,7 @@ def upload():
 
             db.session.add(rec)
             db.session.commit()
-            flash(lazy_gettext('Uploaded !'), 'success')
+            flash(gettext('Uploaded !'), 'success')
         else:
             return render_template('sound/upload.jinja2', pcfg=pcfg,
                                    form=form, flash='Error with the file')
@@ -137,12 +137,12 @@ def edit(username, soundslug):
     sound = Sound.query.filter(Sound.user_id == current_user.id,
                                Sound.slug == soundslug).first()
     if not sound:
-        flash(lazy_gettext("Sound not found"), 'error')
+        flash(gettext("Sound not found"), 'error')
         return redirect(url_for('bp_users.profile', name=username))
 
     pcfg = {"title": gettext(u'Edit %(value)s', value=sound.title)}
 
-    form = SoundEditForm(request.form, sound)
+    form = SoundEditForm(request.form, obj=sound)
 
     if form.validate_on_submit():
         sound.title = form.title.data
@@ -171,7 +171,7 @@ def delete(username, soundslug):
     sound = Sound.query.filter(Sound.user_id == current_user.id,
                                Sound.slug == soundslug).first()
     if not sound:
-        flash(lazy_gettext("Sound not found"), 'error')
+        flash(gettext("Sound not found"), 'error')
         return redirect(url_for('bp_users.profile', name=username))
 
     db.session.delete(sound)

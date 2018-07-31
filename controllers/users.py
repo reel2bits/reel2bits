@@ -1,7 +1,7 @@
 import pytz
 from flask import Blueprint, render_template, request, \
     redirect, url_for, flash, Response, json
-from flask_babelex import lazy_gettext, gettext
+from flask_babelex import gettext, gettext
 from flask_security import login_required, current_user
 
 from forms import UserProfileForm
@@ -14,7 +14,7 @@ bp_users = Blueprint('bp_users', __name__)
 @login_required
 def logs():
     level = request.args.get('level')
-    pcfg = {"title": lazy_gettext("User Logs")}
+    pcfg = {"title": gettext("User Logs")}
     if level:
         _logs = UserLogging.query.filter(UserLogging.level == level.upper(),
                                          UserLogging.user_id == current_user.id
@@ -48,7 +48,7 @@ def profile(name):
 
     user = User.query.filter(User.name == name).first()
     if not user:
-        flash(lazy_gettext("User not found"), 'error')
+        flash(gettext("User not found"), 'error')
         return redirect(url_for("bp_main.home"))
 
     if current_user.is_authenticated and user.id == current_user.id:
@@ -67,7 +67,7 @@ def profile_albums(name):
 
     user = User.query.filter(User.name == name).first()
     if not user:
-        flash(lazy_gettext("User not found"), 'error')
+        flash(gettext("User not found"), 'error')
         return redirect(url_for("bp_main.home"))
 
     if current_user.is_authenticated and user.id == current_user.id:
@@ -83,14 +83,14 @@ def profile_albums(name):
 @bp_users.route('/user/edit', methods=['GET', 'POST'])
 @login_required
 def edit():
-    pcfg = {"title": lazy_gettext("Edit my profile")}
+    pcfg = {"title": gettext("Edit my profile")}
 
     user = User.query.filter(User.id == current_user.id).first()
     if not user:
-        flash(lazy_gettext("User not found"), 'error')
+        flash(gettext("User not found"), 'error')
         return redirect(url_for("bp_main.home"))
 
-    form = UserProfileForm(request.form, user)
+    form = UserProfileForm(request.form, obj=user)
     form.timezone.choices = [[str(i), str(i)] for i in pytz.all_timezones]
 
     if form.validate_on_submit():

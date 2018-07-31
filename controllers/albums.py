@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, \
     redirect, url_for, flash, Response, json
-from flask_babelex import lazy_gettext, gettext
+from flask_babelex import gettext, gettext
 from flask_security import login_required, current_user
 
 from forms import AlbumForm
@@ -14,7 +14,7 @@ bp_albums = Blueprint('bp_albums', __name__)
                  methods=['GET', 'POST'])
 @login_required
 def new(username):
-    pcfg = {"title": lazy_gettext("New album")}
+    pcfg = {"title": gettext("New album")}
 
     form = AlbumForm()
 
@@ -27,7 +27,7 @@ def new(username):
 
         db.session.add(rec)
         db.session.commit()
-        flash(lazy_gettext('Created !'), 'success')
+        flash(gettext('Created !'), 'success')
     else:
         return render_template('album/new.jinja2',
                                pcfg=pcfg, form=form)
@@ -40,21 +40,21 @@ def new(username):
 def show(username, setslug):
     user = User.query.filter(User.name == username).first()
     if not user:
-        flash(lazy_gettext("User not found"), "error")
+        flash(gettext("User not found"), "error")
         return redirect(url_for("bp_main.home"))
     album = Album.query.filter(Album.slug == setslug,
                                Album.user_id == user.id).first()
     if not album:
-        flash(lazy_gettext("Album not found"), "error")
+        flash(gettext("Album not found"), "error")
         return redirect(url_for("bp_users.profile", name=user.name))
 
     if album.private:
         if current_user.is_authenticated:
             if album.user_id != current_user.id:
-                flash(lazy_gettext("Album not found"), "error")
+                flash(gettext("Album not found"), "error")
                 return redirect(url_for("bp_users.profile", name=user.name))
         else:
-            flash(lazy_gettext("Album not found"), "error")
+            flash(gettext("Album not found"), "error")
             return redirect(url_for("bp_users.profile", name=user.name))
 
     pcfg = {"title": album.title}
@@ -72,12 +72,12 @@ def edit(username, setslug):
     album = Album.query.filter(Album.user_id == current_user.id,
                                Album.slug == setslug).first()
     if not album:
-        flash(lazy_gettext("Album not found"), 'error')
+        flash(gettext("Album not found"), 'error')
         return redirect(url_for('bp_users.profile', name=username))
 
     pcfg = {"title": gettext(u'Edit %(value)s', value=album.title)}
 
-    form = AlbumForm(request.form, album)
+    form = AlbumForm(request.form, obj=album)
 
     contains_private = False
     if album.sounds and form.private.data is False:
@@ -95,7 +95,7 @@ def edit(username, setslug):
             return redirect(url_for('bp_albums.show',
                                     username=username, setslug=album.slug))
     else:
-        flash(lazy_gettext("Public album cannot have private sounds"), "error")
+        flash(gettext("Public album cannot have private sounds"), "error")
     return render_template('album/edit.jinja2', pcfg=pcfg,
                            form=form, album=album)
 
@@ -107,7 +107,7 @@ def delete(username, setslug):
     album = Album.query.filter(Album.user_id == current_user.id,
                                Album.slug == setslug).first()
     if not album:
-        flash(lazy_gettext("Album not found"), 'error')
+        flash(gettext("Album not found"), 'error')
         return redirect(url_for('bp_users.profile', name=username))
 
     db.session.delete(album)
@@ -121,7 +121,7 @@ def delete(username, setslug):
 def reorder_json(username, setslug):
     user = User.query.filter(User.name == username).first()
     if not user:
-        flash(lazy_gettext("User not found"), "error")
+        flash(gettext("User not found"), "error")
         return redirect(url_for("bp_main.home"))
     album = Album.query.filter(Album.slug == setslug,
                                Album.user_id == user.id).first()
