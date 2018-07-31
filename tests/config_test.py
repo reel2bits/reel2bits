@@ -6,7 +6,7 @@ WTF_CSRF_ENABLED = False
 
 SECRET_KEY = 'udf298euf02uf2f02f2uf0'
 SQLALCHEMY_DATABASE_URI = \
-    'postgresql+psycopg2://dashie:saucisse@127.0.0.1/reel2bits_test'
+    'postgresql+psycopg2://dashie:saucisse@0.0.0.0:5432/reel2bits_test'
 # SQLALCHEMY_DATABASE_URI = 'sqlite:///ahrl.db'
 # SQLALCHEMY_DATABASE_URI = 'mysql://dashie:saucisse@localhost/ahrl'
 SQLALCHEMY_ECHO = False
