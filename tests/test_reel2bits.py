@@ -6,6 +6,7 @@ from dbseed import make_db_seed
 from alembic.config import Config
 from flask_migrate import command
 
+
 @pytest.fixture(scope='session')
 def flask_app(request):
     app = create_app('tests/config_test.py')
@@ -13,6 +14,7 @@ def flask_app(request):
     context.push()
     yield app
     context.pop()
+
 
 @pytest.fixture(scope='session')
 def test_client(request, flask_app):
@@ -29,6 +31,7 @@ def db(request):
     yield ddb
 
     ddb.drop_all()
+
 
 def login(client, email, password):
     return client.post(
