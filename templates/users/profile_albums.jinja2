@@ -3,8 +3,8 @@
 {% block opengraph %}
     <meta content="{{ g.cfg['app_name'] }}" property="og:site_name" />
     <meta property="og:type" content="profile">
-    <meta content="Albums of {{ sound.user.name }}" property="og:title" />
-    <meta content="Albums of {{ sound.user.name }}" property="og:description" />
+    <meta content="Albums of {{ user.name }}" property="og:title" />
+    <meta content="Albums of {{ user.name }}" property="og:description" />
     <meta content="{{ url_for('bp_users.profile', name=user.name) }}" property="og:url" />
 {% endblock %}
 
