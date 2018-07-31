@@ -2,6 +2,7 @@ import pytest
 
 from reel2bits import create_app
 from models import db as _db
+from dbseed import make_db_seed
 
 
 @pytest.yield_fixture(scope='session')
@@ -18,7 +19,8 @@ def app():
 @pytest.yield_fixture(scope='session')
 def db(app):
     _db.create_all()
-
+    make_db_seed(_db)
+    
     yield _db
 
     _db.drop_all()
