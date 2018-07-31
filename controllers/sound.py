@@ -146,6 +146,10 @@ def edit(username, soundslug):
         flash(gettext("Sound not found"), 'error')
         return redirect(url_for('bp_users.profile', name=username))
 
+    if sound.user.id != current_user.id:
+        flash(gettext("Forbidden"), "error")
+        return redirect(url_for("bp_users.profile", name=username))
+
     pcfg = {"title": gettext(u'Edit %(value)s', value=sound.title)}
 
     form = SoundEditForm(request.form, obj=sound)
@@ -180,6 +184,10 @@ def delete(username, soundslug):
     if not sound:
         flash(gettext("Sound not found"), 'error')
         return redirect(url_for('bp_users.profile', name=username))
+
+    if sound.user.id != current_user.id:
+        flash(gettext("Forbidden"), "error")
+        return redirect(url_for("bp_users.profile", name=username))
 
     db.session.delete(sound)
     db.session.commit()

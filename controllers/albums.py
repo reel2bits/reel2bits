@@ -75,6 +75,10 @@ def edit(username, setslug):
         flash(gettext("Album not found"), 'error')
         return redirect(url_for('bp_users.profile', name=username))
 
+    if current_user.id != album.user.id:
+        flash(gettext("Forbidden"), 'error')
+        return redirect(url_for('bp_users.profile', name=username))
+
     pcfg = {"title": gettext(u'Edit %(value)s', value=album.title)}
 
     form = AlbumForm(request.form, obj=album)
@@ -102,13 +106,21 @@ def edit(username, setslug):
 
 @bp_albums.route('/user/<string:username>/sets/<string:setslug>/delete',
                  methods=['GET', 'DELETE', 'PUT'])
-@login_required
 def delete(username, setslug):
-    album = Album.query.filter(Album.user_id == current_user.id,
-                               Album.slug == setslug).first()
+    user = User.query.filter(User.name == username).first()
+    if not user:
+        raise InvalidUsage('User not found', status_code=404)
+
+    album = Album.query.filter(Album.slug == setslug,
+                               Album.user_id == user.id).first()
     if not album:
-        flash(gettext("Album not found"), 'error')
-        return redirect(url_for('bp_users.profile', name=username))
+        raise InvalidUsage('Album not found', status_code=404)
+
+    if not current_user.is_authenticated:
+        raise InvalidUsage('Login required', status_code=500)
+
+    if user.id != current_user.id:
+        raise InvalidUsage('Forbidden', status_code=500)
 
     db.session.delete(album)
     db.session.commit()
@@ -121,12 +133,18 @@ def delete(username, setslug):
 def reorder_json(username, setslug):
     user = User.query.filter(User.name == username).first()
     if not user:
-        flash(gettext("User not found"), "error")
-        return redirect(url_for("bp_main.home"))
+        raise InvalidUsage('User not found', status_code=404)
+
     album = Album.query.filter(Album.slug == setslug,
                                Album.user_id == user.id).first()
     if not album:
         raise InvalidUsage('Album not found', status_code=404)
+
+    if not current_user.is_authenticated:
+        raise InvalidUsage('Login required', status_code=500)
+
+    if user.id != current_user.id:
+        raise InvalidUsage('Forbidden', status_code=500)
 
     if album.private:
         if current_user:
