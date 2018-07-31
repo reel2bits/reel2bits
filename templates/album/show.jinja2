@@ -240,11 +240,13 @@
         },
 
         fnDrawCallback: function() {
-            $(".table-album-sounds thead").remove();
+            $(".table-album-sounds thead").hide();
         }
     });
 
     table.on( 'row-reorder', function ( e, diff, edit ) {
+        console.log(diff);
+        //let href = edit.triggerRow.data()[1].dataset.hrefreorder;
         let href = diff[1].node.dataset.hrefreorder;
 
         console.log('asked to move some rows');
