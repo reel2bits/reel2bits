@@ -43,204 +43,205 @@ except ImportError as e:
     print(" * No Sentry support")
     HAS_SENTRY = False
 
-cfg = {}
 
-# App configuration
-app = Flask(__name__)
-app.config.from_pyfile("config.py")
-app.config.update(cfg)
+def create_app(config_filename="config.py"):
+    # App configuration
+    app = Flask(__name__)
+    app.config.from_pyfile(config_filename)
 
-Bootstrap(app)
+    Bootstrap(app)
 
-app.jinja_env.add_extension('jinja2.ext.with_')
-app.jinja_env.add_extension('jinja2.ext.do')
-app.jinja_env.globals.update(is_admin=is_admin)
-app.jinja_env.globals.update(duration_elapsed_human=duration_elapsed_human)
-app.jinja_env.globals.update(duration_song_human=duration_song_human)
+    app.jinja_env.add_extension('jinja2.ext.with_')
+    app.jinja_env.add_extension('jinja2.ext.do')
+    app.jinja_env.globals.update(is_admin=is_admin)
+    app.jinja_env.globals.update(duration_elapsed_human=duration_elapsed_human)
+    app.jinja_env.globals.update(duration_song_human=duration_song_human)
 
-if HAS_SENTRY:
-    app.config['SENTRY_RELEASE'] = raven.fetch_git_sha(
-        os.path.dirname(__file__))
-    sentry = Sentry(app, dsn=app.config['SENTRY_DSN'])
-    print(" * Sentry support activated")
-    print(" * Sentry DSN: %s" % app.config['SENTRY_DSN'])
+    if HAS_SENTRY:
+        app.config['SENTRY_RELEASE'] = raven.fetch_git_sha(
+            os.path.dirname(__file__))
+        sentry = Sentry(app, dsn=app.config['SENTRY_DSN'])
+        print(" * Sentry support activated")
+        print(" * Sentry DSN: %s" % app.config['SENTRY_DSN'])
 
-if app.config['DEBUG'] is True:
-    app.jinja_env.auto_reload = True
+    if app.config['DEBUG'] is True:
+        app.jinja_env.auto_reload = True
 
-# Logging
-if not app.debug:
-    formatter = logging.Formatter(
-        '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]')
-    file_handler = RotatingFileHandler(
-        "%s/errors_app.log" % os.getcwd(), 'a', 1000000, 1)
-    file_handler.setLevel(logging.DEBUG)
-    file_handler.setFormatter(formatter)
-    app.logger.addHandler(file_handler)
+    # Logging
+    if not app.debug:
+        formatter = logging.Formatter(
+            '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]')
+        file_handler = RotatingFileHandler(
+            "%s/errors_app.log" % os.getcwd(), 'a', 1000000, 1)
+        file_handler.setLevel(logging.DEBUG)
+        file_handler.setFormatter(formatter)
+        app.logger.addHandler(file_handler)
 
-mail = Mail(app)
-migrate = Migrate(app, db)  # noqa: F841
-babel = Babel(app)  # noqa: F841
-toolbar = DebugToolbarExtension(app)
+    mail = Mail(app)
+    migrate = Migrate(app, db)  # noqa: F841
+    babel = Babel(app)  # noqa: F841
+    toolbar = DebugToolbarExtension(app)
 
-db.init_app(app)
+    db.init_app(app)
 
-# Setup Flask-Security
-security = Security(app, user_datastore,
-                    register_form=ExtendedRegisterForm)  # noqa: F841
+    # Setup Flask-Security
+    security = Security(app, user_datastore,
+                        register_form=ExtendedRegisterForm)  # noqa: F841
 
-git_version = ""
-gitpath = os.path.join(os.getcwd(), ".git")
-if os.path.isdir(gitpath):
-    git_version = subprocess.check_output(
-        ['git', 'rev-parse', '--short', 'HEAD'])
-    if git_version:
-        git_version = git_version.strip().decode('UTF-8')
-
-
-@babel.localeselector
-def get_locale():
-    # if a user is logged in, use the locale from the user settings
-    identity = getattr(g, 'identity', None)
-    if identity is not None and identity.id:
-        return identity.user.locale
-    # otherwise try to guess the language from the user accept
-    # header the browser transmits.  We support fr/en in this
-    # example.  The best match wins.
-    return request.accept_languages.best_match(['fr', 'en'])
+    git_version = ""
+    gitpath = os.path.join(os.getcwd(), ".git")
+    if os.path.isdir(gitpath):
+        git_version = subprocess.check_output(
+            ['git', 'rev-parse', '--short', 'HEAD'])
+        if git_version:
+            git_version = git_version.strip().decode('UTF-8')
 
 
-@babel.timezoneselector
-def get_timezone():
-    identity = getattr(g, 'identity', None)
-    if identity is not None and identity.id:
-        return identity.user.timezone
+    @babel.localeselector
+    def get_locale():
+        # if a user is logged in, use the locale from the user settings
+        identity = getattr(g, 'identity', None)
+        if identity is not None and identity.id:
+            return identity.user.locale
+        # otherwise try to guess the language from the user accept
+        # header the browser transmits.  We support fr/en in this
+        # example.  The best match wins.
+        return request.accept_languages.best_match(['fr', 'en'])
 
 
-@app.before_request
-def before_request():
-    _config = Config.query.first()
-    if not _config:
-        flash(lazy_gettext("Config not found"), 'error')
-
-    cfg = {
-        'REEL2BITS_VERSION_VER': __VERSION__,
-        'REEL2BITS_VERSION_GIT': git_version,
-        'REEL2BITS_VERSION': "{0} ({1})".format(__VERSION__, git_version),
-        "app_name": _config.app_name
-    }
-    g.cfg = cfg
+    @babel.timezoneselector
+    def get_timezone():
+        identity = getattr(g, 'identity', None)
+        if identity is not None and identity.id:
+            return identity.user.timezone
 
 
-@app.errorhandler(InvalidUsage)
-def handle_invalid_usage(error):
-    response = jsonify(error.to_dict())
-    response.status_code = error.status_code
-    return response
+    @app.before_request
+    def before_request():
+        _config = Config.query.first()
+        if not _config:
+            flash(lazy_gettext("Config not found"), 'error')
+
+        cfg = {
+            'REEL2BITS_VERSION_VER': __VERSION__,
+            'REEL2BITS_VERSION_GIT': git_version,
+            'REEL2BITS_VERSION': "{0} ({1})".format(__VERSION__, git_version),
+            "app_name": _config.app_name
+        }
+        g.cfg = cfg
 
 
-sounds = UploadSet('sounds', AUDIO)
-configure_uploads(app, sounds)
-
-app.register_blueprint(bp_main)
-app.register_blueprint(bp_users)
-app.register_blueprint(bp_admin)
-app.register_blueprint(bp_sound)
-app.register_blueprint(bp_albums)
+    @app.errorhandler(InvalidUsage)
+    def handle_invalid_usage(error):
+        response = jsonify(error.to_dict())
+        response.status_code = error.status_code
+        return response
 
 
-# Used in development
-@app.route('/uploads/<string:thing>/<path:stuff>', methods=['GET'])
-def get_uploads_stuff(thing, stuff):
-    directory = safe_join(app.config['UPLOADS_DEFAULT_DEST'], thing)
-    print("Get {0} from {1}".format(stuff, directory))
-    return send_from_directory(directory, stuff, as_attachment=True)
+    sounds = UploadSet('sounds', AUDIO)
+    configure_uploads(app, sounds)
+
+    app.register_blueprint(bp_main)
+    app.register_blueprint(bp_users)
+    app.register_blueprint(bp_admin)
+    app.register_blueprint(bp_sound)
+    app.register_blueprint(bp_albums)
 
 
-@app.errorhandler(404)
-def page_not_found(msg):
-    pcfg = {"title": lazy_gettext("Whoops, something failed."),
-            "error": 404, "message": lazy_gettext("Page not found"),
-            "e": msg}
-    return render_template('error_page.jinja2', pcfg=pcfg), 404
+    # Used in development
+    @app.route('/uploads/<string:thing>/<path:stuff>', methods=['GET'])
+    def get_uploads_stuff(thing, stuff):
+        directory = safe_join(app.config['UPLOADS_DEFAULT_DEST'], thing)
+        print("Get {0} from {1}".format(stuff, directory))
+        return send_from_directory(directory, stuff, as_attachment=True)
 
 
-@app.errorhandler(403)
-def err_forbidden(msg):
-    pcfg = {"title": lazy_gettext("Whoops, something failed."),
-            "error": 403, "message": lazy_gettext("Access forbidden"),
-            "e": msg}
-    return render_template('error_page.jinja2', pcfg=pcfg), 403
-
-
-@app.errorhandler(410)
-def err_gone(msg):
-    pcfg = {"title": lazy_gettext("Whoops, something failed."),
-            "error": 410, "message": lazy_gettext("Gone"),
-            "e": msg}
-    return render_template('error_page.jinja2', pcfg=pcfg), 410
-
-
-if not app.debug:
-    @app.errorhandler(500)
-    def err_failed(msg):
+    @app.errorhandler(404)
+    def page_not_found(msg):
         pcfg = {"title": lazy_gettext("Whoops, something failed."),
-                "error": 500,
-                "message": lazy_gettext("Something is broken"),
+                "error": 404, "message": lazy_gettext("Page not found"),
                 "e": msg}
-        return render_template('error_page.jinja2', pcfg=pcfg), 500
+        return render_template('error_page.jinja2', pcfg=pcfg), 404
 
 
-# Other commands
-@app.cli.command()
-def routes():
-    """Dump all routes of defined app"""
-    table = texttable.Texttable()
-    table.set_deco(texttable.Texttable().HEADER)
-    table.set_cols_dtype(['t', 't', 't'])
-    table.set_cols_align(["l", "l", "l"])
-    table.set_cols_width([50, 30, 80])
-
-    table.add_rows([["Prefix", "Verb", "URI Pattern"]])
-
-    for rule in sorted(app.url_map.iter_rules(), key=lambda x: str(x)):
-        methods = ','.join(rule.methods)
-        table.add_row([rule.endpoint, methods, rule])
-
-    print(table.draw())
+    @app.errorhandler(403)
+    def err_forbidden(msg):
+        pcfg = {"title": lazy_gettext("Whoops, something failed."),
+                "error": 403, "message": lazy_gettext("Access forbidden"),
+                "e": msg}
+        return render_template('error_page.jinja2', pcfg=pcfg), 403
 
 
-@app.cli.command()
-def config():
-    """Dump config"""
-    pp(app.config)
+    @app.errorhandler(410)
+    def err_gone(msg):
+        pcfg = {"title": lazy_gettext("Whoops, something failed."),
+                "error": 410, "message": lazy_gettext("Gone"),
+                "e": msg}
+        return render_template('error_page.jinja2', pcfg=pcfg), 410
 
 
-@app.cli.command()
-def seed():
-    """Seed database with default content"""
-    make_db_seed(db)
+    if not app.debug:
+        @app.errorhandler(500)
+        def err_failed(msg):
+            pcfg = {"title": lazy_gettext("Whoops, something failed."),
+                    "error": 500,
+                    "message": lazy_gettext("Something is broken"),
+                    "e": msg}
+            return render_template('error_page.jinja2', pcfg=pcfg), 500
 
 
-@app.cli.command()
-@click.option('--dryrun', default=False,
-              help="Dry run, doesn't commit anything")
-@click.option('--force', default=False,
-              help="Force re-generation")
-def generate_sound_infos(dryrun=False, force=False):
-    """Generate Sound Infos """
-    print("-- STARTED on {0}".format(datetime.datetime.now()))
-    cron_generate_sound_infos(dryrun, force)
-    print("-- FINISHED on {0}".format(datetime.datetime.now()))
+    # Other commands
+    @app.cli.command()
+    def routes():
+        """Dump all routes of defined app"""
+        table = texttable.Texttable()
+        table.set_deco(texttable.Texttable().HEADER)
+        table.set_cols_dtype(['t', 't', 't'])
+        table.set_cols_align(["l", "l", "l"])
+        table.set_cols_width([50, 30, 80])
+
+        table.add_rows([["Prefix", "Verb", "URI Pattern"]])
+
+        for rule in sorted(app.url_map.iter_rules(), key=lambda x: str(x)):
+            methods = ','.join(rule.methods)
+            table.add_row([rule.endpoint, methods, rule])
+
+        print(table.draw())
 
 
-@app.cli.command()
-@click.option('--dryrun', default=False,
-              help="Dry run, doesn't commit anything")
-@click.option('--force', default=False,
-              help="Force re-generation")
-def transcode(dryrun=False, force=False):
-    """Transcode sounds needed """
-    print("-- STARTED on {0}".format(datetime.datetime.now()))
-    cron_transcode(dryrun, force)
-    print("-- FINISHED on {0}".format(datetime.datetime.now()))
+    @app.cli.command()
+    def config():
+        """Dump config"""
+        pp(app.config)
+
+
+    @app.cli.command()
+    def seed():
+        """Seed database with default content"""
+        make_db_seed(db)
+
+
+    @app.cli.command()
+    @click.option('--dryrun', default=False,
+                  help="Dry run, doesn't commit anything")
+    @click.option('--force', default=False,
+                  help="Force re-generation")
+    def generate_sound_infos(dryrun=False, force=False):
+        """Generate Sound Infos """
+        print("-- STARTED on {0}".format(datetime.datetime.now()))
+        cron_generate_sound_infos(dryrun, force)
+        print("-- FINISHED on {0}".format(datetime.datetime.now()))
+
+
+    @app.cli.command()
+    @click.option('--dryrun', default=False,
+                  help="Dry run, doesn't commit anything")
+    @click.option('--force', default=False,
+                  help="Force re-generation")
+    def transcode(dryrun=False, force=False):
+        """Transcode sounds needed """
+        print("-- STARTED on {0}".format(datetime.datetime.now()))
+        cron_transcode(dryrun, force)
+        print("-- FINISHED on {0}".format(datetime.datetime.now()))
+
+    return app

@@ -28,13 +28,11 @@ pipeline:
       - apk -U add sox sox-dev taglib taglib-dev libmagic file-dev
       - apk add cmake gcc g++ make pkgconfig git boost-dev gd-dev libmad-dev libsndfile-dev libid3tag-dev wget
       - pip install --upgrade pip setuptools
-      - pip install --cache-dir=.cache -r requirements.txt
-      - pip install --cache-dir=.cache -r test-requirements.txt
+      - pip install flake8
       - python setup.py install
       - ./tests/install_audiowaveform.sh
       - flake8 .
-      - cp config.py.sample config.py
-      - pytest -v
+      - python setup.py test
 
   rebuild-cache:
       image: drillster/drone-volume-cache

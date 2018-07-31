@@ -6,7 +6,7 @@ setup(
     license='MIT',
     long_description=open('README.md').read(),
     url="http://dev.sigpipe.me/DashieV3/reel2bits",
-    author="Dashie 'Valérianne'",
+    author="Dashie",
     author_email="dashie@sigpipe.me",
     install_requires=[
         'WTForms',
@@ -25,7 +25,22 @@ setup(
         'Flask-Security',
         'Flask-SQLAlchemy',
         'Flask-Uploads',
-        'Flask-WTF'
-    ]
+        'Flask-WTF',
+        'bcrypt',
+        'pydub',
+        'psycopg2-binary',
+        'mutagen',
+        'unidecode',
+        'Flask_Babel',
+        'texttable',
+        'slugify',
+        'python-magic'
+    ],
+    setup_requires=[
+        'pytest-runner',
+    ],
+    tests_require=[
+        'pytest',
+    ],
 )
 

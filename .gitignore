@@ -8,3 +8,5 @@
 /uploads/waveforms/
 /tmp/cty.xml
 /.pytest_cache/
+/reel2bits.egg-info
+/.eggs
