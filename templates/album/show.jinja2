@@ -236,9 +236,11 @@
         searching: false,
         info: false,
         lengthChange: false,
+    {% if current_user.id == user.id %}
         rowReorder: {
             update: true,
         },
+    {% endif %}
 
 
         fnDrawCallback: function() {
@@ -246,6 +248,7 @@
         }
     });
 
+    {% if current_user.id == user.id %}
     table.on( 'row-reorder', function ( e, diff, edit ) {
         console.log(diff);
         //let href = edit.triggerRow.data()[1].dataset.hrefreorder;
@@ -280,6 +283,7 @@
         // default
         e.stopPropagation();
     } );
+    {% endif %}
 
 
 </script>
