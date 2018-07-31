@@ -267,6 +267,7 @@
             data: JSON.stringify({'data': moved}),
         }).done(function( data ) {
             console.log("position changed in database successfully.");
+            show_alert('success', 'Track reorder', 'success');
             return true;
         }).fail(function(data) {
             // nope
