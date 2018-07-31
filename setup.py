@@ -33,7 +33,7 @@ setup(
         'unidecode',
         'Flask_Babelex',
         'texttable',
-        'slugify',
+        'python-slugify',
         'python-magic'
     ],
     setup_requires=[

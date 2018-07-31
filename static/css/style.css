@@ -103,18 +103,6 @@ div.page_modal .content {
     overflow: hidden;
 }
 
-.row, .adv-search {
-    margin-bottom: 1em;
-}
-
-.form-adv-search .form-group {
-    margin-bottom: 0;
-}
-
-.form-adv-submit .col-lg-6 {
-    padding-left: 0;
-}
-
 td.si_btn_edit, td.si_btn_delete {
     text-align: center;
 }

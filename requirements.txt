@@ -7,7 +7,7 @@ mutagen
 flask_cli
 python-magic
 flask
-slugify
+python-slugify
 wtforms
 sqlalchemy
 mutagen
