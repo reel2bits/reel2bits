@@ -62,7 +62,7 @@ def show(username, setslug):
     return render_template('album/show.jinja2', pcfg=pcfg, user=user,
                            album=album,
                            sound=album.sounds.order_by(
-                               'album_order asc').first())
+                               Sound.album_order.asc()).first())
 
 
 @bp_albums.route('/user/<string:username>/sets/<string:setslug>/edit',
