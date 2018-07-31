@@ -5,18 +5,6 @@ clone:
     tags: true
 
 pipeline:
-  ping:
-    image: postgres
-    commands:
-      # wait for postgres service to become available
-      - |
-        until psql -U postgres -d reel2bits_test -h postgres \
-         -c "SELECT 1;" >/dev/null 2>&1; do sleep 1; done
-      # query the database
-      - |
-        psql -U postgres -d reel2bits_test -h database \
-        -c "SELECT * FROM pg_catalog.pg_tables;"
-
   restore-cache:
       image: drillster/drone-volume-cache
       restore: true
