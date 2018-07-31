@@ -1,0 +1,45 @@
+clone:
+  git:
+    image: plugins/git:1
+    depth: 50
+    tags: true
+
+pipeline:
+  restore-cache:
+      image: drillster/drone-volume-cache
+      restore: true
+      mount:
+          - .cache
+      volumes:
+          - /tmp/cache:/cache
+
+  build:
+    image: python:3-alpine
+    commands:
+      - apk -U add sox sox-dev taglib taglib-dev libmagic file-dev
+      - apk add cmake gcc g++ make pkgconfig git boost-dev gd-dev libmad-dev libsndfile-dev libid3tag-dev wget
+      - pip install --upgrade pip setuptools
+      - pip install --cache-dir=.cache -r requirements.txt
+      - pip install --cache-dir=.cache -r test-requirements.txt
+      - python setup.py install
+      - ./tests/install_audiowaveform.sh
+      - flake8 .
+      - cp config.py.sample config.py
+      - pytest -v
+
+  rebuild-cache:
+      image: drillster/drone-volume-cache
+      rebuild: true
+      mount:
+          - .cache
+      volumes:
+          - /tmp/cache:/cache
+
+  notify:
+    image: plugins/slack
+    channel: gitea
+    secrets:
+      - SLACK_WEBHOOK
+    when:
+      event: [ push, tag, pull_request ]
+      status: [ changed, failure, success ]
