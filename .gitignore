@@ -1,9 +1,10 @@
 *.pyc
-config.py
-TODO.org
-.idea
+/config.py
+/TODO.org
+/.idea
 *.db
-uploads/pictures/*
-uploads/sounds/*
-uploads/waveforms/
-tmp/cty.xml
+/uploads/pictures/*
+/uploads/sounds/*
+/uploads/waveforms/
+/tmp/cty.xml
+/.pytest_cache/
