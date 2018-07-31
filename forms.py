@@ -11,7 +11,7 @@ from wtforms_alchemy import model_form_factory
 from flask_babelex import gettext
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 
-from models import db, User, Album
+from models import db, User, Album, licences
 
 BaseModelForm = model_form_factory(Form)
 
@@ -75,6 +75,9 @@ def get_albums():
     return Album.query.filter(Album.user_id == current_user.id).all()
 
 
+def get_licences():
+    return [ (licences[a]['id'], licences[a]['name']) for a in licences ]
+
 class SoundUploadForm(Form):
     title = StringField(gettext('Title'), [Length(max=255)])
     sound = FileField(gettext('File'), [FileRequired(),
@@ -84,6 +87,9 @@ class SoundUploadForm(Form):
                              allow_blank=True,
                              label=gettext('Album'),
                              get_label='title')
+    licence = SelectField(choices=get_licences(),
+                          coerce=int,
+                          label=gettext('Licence'))
 
     def validate_private(form, field):
         if field.data is True and form.album.data.private is False:
@@ -101,6 +107,9 @@ class SoundEditForm(Form):
                              allow_blank=True,
                              label=gettext('Album'),
                              get_label='title')
+    licence = SelectField(choices=get_licences(),
+                          coerce=int,
+                          label=gettext('Licence'))
 
     def validate_private(form, field):
         if field.data is True and form.album.data.private is False:

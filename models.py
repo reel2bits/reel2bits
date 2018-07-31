@@ -170,6 +170,7 @@ class Sound(db.Model):
     # TODO genre
     # TODO tags
     # TODO picture ?
+    licence = db.Column(db.Integer, nullable=False, server_default='0')
     description = db.Column(db.UnicodeText(), nullable=True)
     private = db.Column(db.Boolean(), default=False, nullable=True)
     slug = db.Column(db.String(255), unique=True, nullable=True)
@@ -212,6 +213,9 @@ class Sound(db.Model):
             return os.path.join(self.user.slug, self.filename_transcoded)
         else:
             return os.path.join(self.user.slug, self.filename)
+
+    def licence_info(self):
+        return licences[self.licence]
 
 
 class Album(db.Model):
@@ -261,6 +265,18 @@ class Timeline(db.Model):
     sound = db.relationship("Sound", back_populates="timeline")
 
     __mapper_args__ = {"order_by": timestamp.desc()}
+
+
+licences = {
+    0: {"name": "Not Specified", "id": 0, "link": "", "icon": ""},
+    1: {"name": "CC Attribution", "id": 1, "link": "https://creativecommons.org/licenses/by/4.0/", "icon": "creative-commons"},
+    2: {"name": "CC Attribution Share Alike", "id": 2, "link": "https://creativecommons.org/licenses/by-sa/4.0", "icon": "creative-commons"},
+    3: {"name": "CC Attribution No Derivatives", "id": 3, "link": "https://creativecommons.org/licenses/by-nd/4.0", "icon": "creative-commons"},
+    4: {"name": "CC Attribution Non Commercial", "id": 4, "link": "https://creativecommons.org/licenses/by-nc/4.0", "icon": "creative-commons"},
+    5: {"name": "CC Attribution Non Commercial - Share Alike", "id": 5, "link": "https://creativecommons.org/licenses/by-nc-sa/4.0", "icon": "creative-commons"},
+    6: {"name": "CC Attribution Non Commercial - No Derivatives", "id": 6, "link": "https://creativecommons.org/licenses/by-nc-nd/4.0", "icon": "creative-commons"},
+    7: {"name": "Public Domain Dedication", "id": 7, "link": "", "icon": ""}
+}
 
 
 @event.listens_for(User, 'after_update')

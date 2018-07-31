@@ -14,10 +14,11 @@
             {{ wtf.form_errors(form, hiddens=True) }}
             {{ wtf.form_field(form.title, 'horizontal', placeholder=gettext("What's the title ?")) }}
             {{ wtf.form_field(form.description, 'horizontal', placeholder=gettext("Add a nice description ?")) }}
-            {{ wtf.form_field(form.album, 'horizontal') }}
             <div class="col-lg-10 col-lg-offset-2">
                 <small>{{ gettext("If you want to add to a new album you need to create it separately.") }}</small>
             </div>
+            {{ wtf.form_field(form.album, 'horizontal') }}
+            {{ wtf.form_field(form.licence, 'horizontal') }}
             {{ wtf.form_field(form.private, 'horizontal') }}
             {{ wtf.form_field(form.submit, button_map={'submit': 'success'}) }}
             <a class="btn btn-warning" href="{{ url_for('bp_sound.show', username=sound.user.name, soundslug=sound.slug) }}">{{ gettext("Cancel edit") }}</a>

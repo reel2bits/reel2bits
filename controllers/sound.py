@@ -98,6 +98,7 @@ def upload():
             rec = Sound()
             rec.filename = filename_hashed
             rec.filename_orig = filename_orig
+            rec.licence = form.licence.data
             if form.album.data:
                 rec.album_id = form.album.id
                 if not form.album.data.sounds:
@@ -148,6 +149,7 @@ def edit(username, soundslug):
         sound.title = form.title.data
         sound.private = form.private.data
         sound.description = form.description.data
+        sound.licence = form.licence.data
         if form.album.data:
             sound.album_id = form.album.data.id
             if not sound.album_order:

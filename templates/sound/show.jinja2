@@ -69,11 +69,6 @@
     <div class="col-lg-3">
         <table class="table table-condensed table-hoverable">
                 <tr>
-                    <td>
-                        <a class="btn btn-info btn-xs" href="{{ url_for('get_uploads_stuff', thing='sounds', stuff=sound.path_sound(orig=True)) }}">
-                            <i class="fa fa-download" aria-hidden="true"></i> download
-                        </a>
-                    </td>
                     {% if current_user.is_authenticated and sound.user_id == current_user.id  %}
                         <td class="si_btn_edit"><a class="btn btn-success btn-xs" href="{{ url_for('bp_sound.edit', username=sound.user.name, soundslug=sound.slug) }}">{{ gettext('edit') }}</a></td>
                         <td class="si_btn_delete">
@@ -84,9 +79,37 @@
                     {% endif %}
                 </tr>
 
+                <tr>
+                    <td>
+                        <a class="btn btn-info btn-xs" href="{{ url_for('get_uploads_stuff', thing='sounds', stuff=sound.path_sound(orig=True)) }}">
+                            <i class="fa fa-download" aria-hidden="true"></i> download orig
+                        </a>
+                    </td>
+                    <td>
+                        <a class="btn btn-info btn-xs" href="{{ url_for('get_uploads_stuff', thing='sounds', stuff=sound.path_sound(orig=False)) }}">
+                            <i class="fa fa-download" aria-hidden="true"></i> download mp3
+                        </a>
+                    </td>
+                </tr>
+
             {% if sound.album %}
                 <tr><td colspan="3">{{ gettext("In album:") }} <a href="{{ url_for("bp_albums.show", username=sound.user.name, setslug=sound.album.slug) }}">{{ sound.album.title|truncate(15) }}</a></td></tr>
             {% endif %}
+
+            <tr>
+                <td>{{ gettext("Licence") }}</td>
+                <td>
+                    {% if sound.licence_info()["icon"] %}
+                        <i class="fa fa-{{ sound.licence_info()["icon"] }}" aria-hidden="true"></i>
+                    {% endif %}
+
+                    {% if sound.licence_info()["link"] %}
+                        <a href="{{ sound.licence_info()["link"] }}" target="_blank">{{ sound.licence_info()["name"] }}</a>
+                    {% else %}
+                        {{ sound.licence_info()["name"] }}
+                    {% endif %}
+                </td>
+            </tr>
 
             {% if info %}
                 <tr><td>Duration</td><td colspan="2">{{ duration_song_human(info.duration) }}</td></tr>
