@@ -11,15 +11,19 @@ from sqlalchemy_searchable import make_searchable
 db = SQLAlchemy()
 make_searchable(db.metadata)
 
-
 roles_users = db.Table('roles_users',
-                       db.Column('user_id', db.Integer(), db.ForeignKey('user.id')),
-                       db.Column('role_id', db.Integer(), db.ForeignKey('role.id')))
+                       db.Column('user_id',
+                                 db.Integer(),
+                                 db.ForeignKey('user.id')),
+                       db.Column('role_id',
+                                 db.Integer(),
+                                 db.ForeignKey('role.id')))
 
 
 class Role(db.Model, RoleMixin):
     id = db.Column(db.Integer(), primary_key=True)
-    name = db.Column(db.String(80), unique=True, nullable=False, info={'label': 'Name'})
+    name = db.Column(db.String(80), unique=True, nullable=False,
+                     info={'label': 'Name'})
     description = db.Column(db.String(255), info={'label': 'Description'})
 
     __mapper_args__ = {"order_by": name}
@@ -27,9 +31,12 @@ class Role(db.Model, RoleMixin):
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(255), unique=True, nullable=False, info={'label': 'Email'})
-    name = db.Column(db.String(255), unique=True, nullable=False, info={'label': 'Name'})
-    password = db.Column(db.String(255), nullable=False, info={'label': 'Password'})
+    email = db.Column(db.String(255), unique=True, nullable=False,
+                      info={'label': 'Email'})
+    name = db.Column(db.String(255), unique=True, nullable=False,
+                     info={'label': 'Name'})
+    password = db.Column(db.String(255), nullable=False,
+                         info={'label': 'Password'})
     active = db.Column(db.Boolean())
     confirmed_at = db.Column(db.DateTime())
 
@@ -38,18 +45,28 @@ class User(db.Model, UserMixin):
 
     locale = db.Column(db.String(5), default="en")
 
-    timezone = db.Column(db.String(255), nullable=False, default='UTC')  # Managed and fed by pytz
+    timezone = db.Column(db.String(255), nullable=False,
+                         default='UTC')  # Managed and fed by pytz
 
     slug = db.Column(db.String(255), unique=True, nullable=True)
 
-    roles = db.relationship('Role', secondary=roles_users, backref=db.backref('users', lazy='dynamic'))
-    apitokens = db.relationship('Apitoken', backref='user', lazy='dynamic', cascade="delete")
+    roles = db.relationship('Role',
+                            secondary=roles_users,
+                            backref=db.backref('users', lazy='dynamic'))
+    apitokens = db.relationship('Apitoken',
+                                backref='user',
+                                lazy='dynamic',
+                                cascade="delete")
 
-    user_loggings = db.relationship('UserLogging', backref='user', lazy='dynamic', cascade="delete")
-    loggings = db.relationship('Logging', backref='user', lazy='dynamic', cascade="delete")
+    user_loggings = db.relationship('UserLogging', backref='user',
+                                    lazy='dynamic', cascade="delete")
+    loggings = db.relationship('Logging', backref='user',
+                               lazy='dynamic', cascade="delete")
 
-    sounds = db.relationship('Sound', backref='user', lazy='dynamic', cascade="delete")
-    albums = db.relationship('Album', backref='user', lazy='dynamic', cascade="delete")
+    sounds = db.relationship('Sound', backref='user',
+                             lazy='dynamic', cascade="delete")
+    albums = db.relationship('Album', backref='user',
+                             lazy='dynamic', cascade="delete")
 
     __mapper_args__ = {"order_by": name}
 
@@ -59,9 +76,12 @@ class User(db.Model, UserMixin):
 
 class Apitoken(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer(), db.ForeignKey('user.id'), nullable=False)
-    token = db.Column(db.String(255), unique=True, nullable=False, info={'label': 'Token'})
-    secret = db.Column(db.String(255), unique=True, nullable=False, info={'label': 'Secret'})
+    user_id = db.Column(db.Integer(), db.ForeignKey('user.id'),
+                        nullable=False)
+    token = db.Column(db.String(255), unique=True,
+                      nullable=False, info={'label': 'Token'})
+    secret = db.Column(db.String(255), unique=True,
+                       nullable=False, info={'label': 'Secret'})
 
 
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
@@ -78,10 +98,12 @@ class Logging(db.Model):
     __tablename__ = "logging"
 
     id = db.Column(db.Integer, primary_key=True)
-    category = db.Column(db.String(255), nullable=False, default="General")
+    category = db.Column(db.String(255), nullable=False,
+                         default="General")
     level = db.Column(db.String(255), nullable=False, default="INFO")
     message = db.Column(db.Text, nullable=False)
-    timestamp = db.Column(db.DateTime(timezone=False), server_default=func.now(), onupdate=func.now())
+    timestamp = db.Column(db.DateTime(timezone=False),
+                          server_default=func.now(), onupdate=func.now())
 
     user_id = db.Column(db.Integer(), db.ForeignKey('user.id'), nullable=True)
 
@@ -95,10 +117,13 @@ class UserLogging(db.Model):
     category = db.Column(db.String(255), nullable=False, default="General")
     level = db.Column(db.String(255), nullable=False, default="INFO")
     message = db.Column(db.Text, nullable=False)
-    timestamp = db.Column(db.DateTime(timezone=False), server_default=func.now(), onupdate=func.now())
+    timestamp = db.Column(db.DateTime(timezone=False),
+                          server_default=func.now(), onupdate=func.now())
 
-    sound_id = db.Column(db.Integer(), db.ForeignKey('sound.id'), nullable=False)
-    user_id = db.Column(db.Integer(), db.ForeignKey('user.id'), nullable=False)
+    sound_id = db.Column(db.Integer(), db.ForeignKey('sound.id'),
+                         nullable=False)
+    user_id = db.Column(db.Integer(), db.ForeignKey('user.id'),
+                        nullable=False)
 
     __mapper_args__ = {"order_by": timestamp.desc()}
 
@@ -123,7 +148,8 @@ class SoundInfo(db.Model):
     done_basic = db.Column(db.Boolean, default=False)
     done_waveform = db.Column(db.Boolean, default=False)
 
-    sound_id = db.Column(db.Integer(), db.ForeignKey('sound.id'), nullable=False)
+    sound_id = db.Column(db.Integer(), db.ForeignKey('sound.id'),
+                         nullable=False)
 
 
 class Sound(db.Model):
@@ -147,7 +173,8 @@ class Sound(db.Model):
     private = db.Column(db.Boolean(), default=False, nullable=True)
     slug = db.Column(db.String(255), unique=True, nullable=True)
     filename = db.Column(db.String(255), unique=False, nullable=True)
-    filename_transcoded = db.Column(db.String(255), unique=False, nullable=True)
+    filename_transcoded = db.Column(db.String(255), unique=False,
+                                    nullable=True)
 
     filename_orig = db.Column(db.String(255), unique=False, nullable=True)
     album_order = db.Column(db.Integer, nullable=True)
@@ -156,17 +183,23 @@ class Sound(db.Model):
     transcode_state = db.Column(db.Integer(), default=0, nullable=False)
     # 0 nothing / default / waiting, 1 processing, 2 done, 3 error
 
-    user_id = db.Column(db.Integer(), db.ForeignKey('user.id'), nullable=False)
-    album_id = db.Column(db.Integer(), db.ForeignKey('album.id'), nullable=True)
-    sound_infos = db.relationship('SoundInfo', backref='sound_info', lazy='dynamic', cascade="delete")
-    user_loggings = db.relationship('UserLogging', backref='sound', lazy='dynamic', cascade="delete")
+    user_id = db.Column(db.Integer(), db.ForeignKey('user.id'),
+                        nullable=False)
+    album_id = db.Column(db.Integer(), db.ForeignKey('album.id'),
+                         nullable=True)
+    sound_infos = db.relationship('SoundInfo', backref='sound_info',
+                                  lazy='dynamic', cascade="delete")
+    user_loggings = db.relationship('UserLogging', backref='sound',
+                                    lazy='dynamic', cascade="delete")
 
-    timeline = db.relationship("Timeline", uselist=False, back_populates="sound")
+    timeline = db.relationship("Timeline", uselist=False,
+                               back_populates="sound")
 
     __mapper_args__ = {"order_by": uploaded.desc()}
 
     def elapsed(self):
-        print("db: {0}, now: {1}".format(self.uploaded, datetime.datetime.utcnow()))
+        print("db: {0}, now: {1}".format(self.uploaded,
+                                         datetime.datetime.utcnow()))
         el = datetime.datetime.utcnow() - self.uploaded
         return el.total_seconds()
 
@@ -198,7 +231,8 @@ class Album(db.Model):
     user_id = db.Column(db.Integer(), db.ForeignKey('user.id'), nullable=False)
     sounds = db.relationship('Sound', backref='album', lazy='dynamic')
 
-    timeline = db.relationship("Timeline", uselist=False, back_populates="album")
+    timeline = db.relationship("Timeline", uselist=False,
+                               back_populates="album")
 
     __mapper_args__ = {"order_by": created.desc()}
 
@@ -211,12 +245,16 @@ class Timeline(db.Model):
     __tablename__ = "timeline"
 
     id = db.Column(db.Integer, primary_key=True)
-    timestamp = db.Column(db.DateTime(timezone=False), default=datetime.datetime.utcnow)
+    timestamp = db.Column(db.DateTime(timezone=False),
+                          default=datetime.datetime.utcnow)
     private = db.Column(db.Boolean, default=False)
 
-    sound_id = db.Column(db.Integer(), db.ForeignKey('user.id'), nullable=False)
-    album_id = db.Column(db.Integer(), db.ForeignKey('album.id'), nullable=False)
-    user_id = db.Column(db.Integer(), db.ForeignKey('sound.id'), nullable=False)
+    sound_id = db.Column(db.Integer(), db.ForeignKey('user.id'),
+                         nullable=False)
+    album_id = db.Column(db.Integer(), db.ForeignKey('album.id'),
+                         nullable=False)
+    user_id = db.Column(db.Integer(), db.ForeignKey('sound.id'),
+                        nullable=False)
 
     album = db.relationship("Album", back_populates="timeline")
     sound = db.relationship("Sound", back_populates="timeline")
@@ -232,7 +270,8 @@ def make_user_slug(mapper, connection, target):
     title = "{0} {1}".format(target.id, target.name)
     slug = slugify(title)
     connection.execute(
-        User.__table__.update().where(User.__table__.c.id == target.id).values(slug=slug)
+        User.__table__.update().where(
+            User.__table__.c.id == target.id).values(slug=slug)
     )
 
 
@@ -246,7 +285,8 @@ def make_sound_slug(mapper, connection, target):
             title = "{0} {1}".format(target.id, target.title)
         slug = slugify(title[:255])
         connection.execute(
-            Sound.__table__.update().where(Sound.__table__.c.id == target.id).values(slug=slug)
+            Sound.__table__.update().where(
+                Sound.__table__.c.id == target.id).values(slug=slug)
         )
 
 
@@ -257,5 +297,6 @@ def make_album_slug(mapper, connection, target):
         title = "{0} {1}".format(target.id, target.title)
         slug = slugify(title[:255])
         connection.execute(
-            Album.__table__.update().where(Album.__table__.c.id == target.id).values(slug=slug)
+            Album.__table__.update().where(
+                Album.__table__.c.id == target.id).values(slug=slug)
         )

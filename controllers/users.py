@@ -1,7 +1,8 @@
 import pytz
-from flask import Blueprint, render_template, request, redirect, url_for, flash, Response, json
-from flask_security import login_required, current_user
+from flask import Blueprint, render_template, request, \
+    redirect, url_for, flash, Response, json
 from flask_babel import lazy_gettext, gettext
+from flask_security import login_required, current_user
 
 from forms import UserProfileForm
 from models import db, User, UserLogging, Sound, Album
@@ -24,17 +25,21 @@ def logs():
     return render_template('users/user_logs.jinja2', pcfg=pcfg, logs=_logs)
 
 
-@bp_users.route('/user/logs/<int:log_id>/delete', methods=['GET', 'DELETE', 'PUT'])
+@bp_users.route('/user/logs/<int:log_id>/delete',
+                methods=['GET', 'DELETE', 'PUT'])
 @login_required
 def logs_delete(log_id):
-    log = UserLogging.query.filter(UserLogging.id == log_id, UserLogging.user_id == current_user.id).first()
+    log = UserLogging.query.filter(UserLogging.id == log_id,
+                                   UserLogging.user_id == current_user.id
+                                   ).first()
     if not log:
         _datas = {"status": "error", "id": log_id}
     else:
         db.session.delete(log)
         db.session.commit()
         _datas = {"status": "deleted", "id": log_id}
-    return Response(json.dumps(_datas), mimetype='application/json;charset=utf-8')
+    return Response(json.dumps(_datas),
+                    mimetype='application/json;charset=utf-8')
 
 
 @bp_users.route('/user/<string:name>', methods=['GET'])
@@ -49,9 +54,11 @@ def profile(name):
     if current_user.is_authenticated and user.id == current_user.id:
         sounds = Sound.query.filter(Sound.user_id == user.id)
     else:
-        sounds = Sound.query.filter(Sound.user_id == user.id, Sound.private.is_(False))
+        sounds = Sound.query.filter(Sound.user_id == user.id,
+                                    Sound.private.is_(False))
 
-    return render_template('users/profile.jinja2', pcfg=pcfg, user=user, sounds=sounds)
+    return render_template('users/profile.jinja2', pcfg=pcfg,
+                           user=user, sounds=sounds)
 
 
 @bp_users.route('/user/<string:name>/sets', methods=['GET'])
@@ -66,9 +73,11 @@ def profile_albums(name):
     if current_user.is_authenticated and user.id == current_user.id:
         albums = Album.query.filter(Album.user_id == user.id)
     else:
-        albums = Album.query.filter(Album.user_id == user.id, Album.private.is_(False))
+        albums = Album.query.filter(Album.user_id == user.id,
+                                    Album.private.is_(False))
 
-    return render_template('users/profile_albums.jinja2', pcfg=pcfg, user=user, albums=albums)
+    return render_template('users/profile_albums.jinja2',
+                           pcfg=pcfg, user=user, albums=albums)
 
 
 @bp_users.route('/user/edit', methods=['GET', 'POST'])
@@ -93,4 +102,5 @@ def edit():
         db.session.commit()
         return redirect(url_for('bp_users.profile', name=user.name))
 
-    return render_template('users/edit.jinja2', pcfg=pcfg, form=form, user=user)
+    return render_template('users/edit.jinja2', pcfg=pcfg,
+                           form=form, user=user)

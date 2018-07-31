@@ -92,7 +92,7 @@ def dt_utc_to_user_tz(dt, user=None):
     if dt.tzinfo == user_tz:
         return dt  # already converted
     utc_dt = pytz.timezone('UTC').localize(dt)  # Makes a naive-UTC DateTime
-    return utc_dt.astimezone(user_tz)           # Then convert it to the user_tz
+    return utc_dt.astimezone(user_tz)  # Then convert it to the user_tz
 
 
 def show_date_no_offset(dt):
@@ -137,9 +137,13 @@ def add_log(category, level, message):
 
 def add_user_log(item, user, category, level, message):
     if not category or not level or not message or not item:
-        print("!! Fatal error in add_user_log() one of three variables not set")
-    print("[LOG][{0}][{1}][u:{2}i:{3}] {4}".format(level.upper(), category, user, item, message))
-    a = UserLogging(category=category, level=level.upper(), message=message, sound_id=item, user_id=user)
+        print(
+            "!! Fatal error in add_user_log() one of three variables not set")
+    print("[LOG][{0}][{1}][u:{2}i:{3}] {4}".format(level.upper(),
+                                                   category, user,
+                                                   item, message))
+    a = UserLogging(category=category, level=level.upper(), message=message,
+                    sound_id=item, user_id=user)
     db.session.add(a)
     db.session.commit()
 
@@ -199,12 +203,14 @@ def duration_song_human(seconds):
 def get_waveform(filename):
     binary = current_app.config['AUDIOWAVEFORM_BIN']
     if not os.path.exists(binary) or not os.path.exists(filename):
-        add_log("AUDIOWAVEFORM", "ERROR", "Filename {0} or binary {1} invalid".format(filename, binary))
+        add_log("AUDIOWAVEFORM", "ERROR", "Filename {0} or binary {1} invalid"
+                .format(filename, binary))
         return None
 
     tmpjson = "{0}.json".format(filename)
 
-    cmd = [binary, '-i', filename, '--pixels-per-second', '10', '-b', '8', '-o', tmpjson]
+    cmd = [binary, '-i', filename, '--pixels-per-second',
+           '10', '-b', '8', '-o', tmpjson]
 
     """
     Failed: Can't generate "xxx" from "xxx"
@@ -226,7 +232,8 @@ def get_waveform(filename):
     """
 
     try:
-        process = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        process = subprocess.run(cmd, stdout=subprocess.PIPE,
+                                 stderr=subprocess.PIPE)
         if not process:
             add_log("AUDIOWAVEFORM", "ERROR", "Subprocess returned None")
             return None
@@ -237,7 +244,8 @@ def get_waveform(filename):
     print("- Command ran with: {0}".format(process.args))
 
     if process.stderr.startswith(b"Can't generate"):
-        add_log("AUDIOWAVEFORM", "ERROR", "Process error: {0}".format(process.stderr))
+        add_log("AUDIOWAVEFORM", "ERROR", "Process error: {0}".format(
+            process.stderr))
         return None
 
     with open(tmpjson, 'r') as f:
@@ -253,14 +261,18 @@ def get_waveform(filename):
 def create_png_waveform(fn_audio, fn_png):
     binary = current_app.config['AUDIOWAVEFORM_BIN']
     if not os.path.exists(binary) or not os.path.exists(fn_audio):
-        add_log("AUDIOWAVEFORM_PNG", "ERROR", "Filename {0} or binary {1} invalid".format(fn_audio, binary))
+        add_log(
+            "AUDIOWAVEFORM_PNG", "ERROR", "Filename {0} or binary {1} invalid"
+            .format(fn_audio, binary))
         return None
 
     pngwf = "{0}.png".format(fn_png)
-    cmd = [binary, '-i', fn_audio, '--width', '384', '--height', '64', '--no-axis-labels', '-o', pngwf]
+    cmd = [binary, '-i', fn_audio, '--width', '384', '--height', '64',
+           '--no-axis-labels', '-o', pngwf]
 
     try:
-        process = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        process = subprocess.run(cmd, stdout=subprocess.PIPE,
+                                 stderr=subprocess.PIPE)
         if not process:
             add_log("AUDIOWAVEFORM_PNG", "ERROR", "Subprocess returned None")
             return None
@@ -271,7 +283,8 @@ def create_png_waveform(fn_audio, fn_png):
     print("- Command ran with: {0}".format(process.args))
 
     if process.stderr.startswith(b"Can't generate"):
-        add_log("AUDIOWAVEFORM_PNG", "ERROR", "Process error: {0}".format(process.stderr))
+        add_log("AUDIOWAVEFORM_PNG", "ERROR", "Process error: {0}".format(
+            process.stderr))
         return None
 
     return True

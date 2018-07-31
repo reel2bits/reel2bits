@@ -1,7 +1,7 @@
-from flask import Blueprint, render_template, flash, redirect, url_for
+from flask import Blueprint, render_template
 from flask_babel import lazy_gettext
 
-from models import User, Config
+from models import User
 
 bp_main = Blueprint('bp_main', __name__)
 

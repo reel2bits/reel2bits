@@ -4,7 +4,8 @@ import os
 import subprocess
 from logging.handlers import RotatingFileHandler
 from flask_babel import lazy_gettext, Babel
-from flask import Flask, render_template, g, send_from_directory, jsonify, safe_join, request, flash
+from flask import Flask, render_template, g, send_from_directory, \
+    jsonify, safe_join, request, flash
 from flask_bootstrap import Bootstrap
 from flask_mail import Mail
 from flask_migrate import Migrate
@@ -18,20 +19,24 @@ from controllers.sound import bp_sound
 from controllers.users import bp_users
 from forms import ExtendedRegisterForm
 from models import db, user_datastore, Config
-from utils import InvalidUsage, is_admin, gcfg, duration_elapsed_human, duration_song_human
+from utils import InvalidUsage, is_admin, duration_elapsed_human, \
+    duration_song_human
 
 import texttable
 import click
+import datetime
 from flask_debugtoolbar import DebugToolbarExtension
 
 from crons import cron_generate_sound_infos, cron_transcode
 from dbseed import make_db_seed
+from pprint import pprint as pp
 
 __VERSION__ = "0.0.1"
 
 try:
     from raven.contrib.flask import Sentry
     import raven
+
     print(" * Sentry support loaded")
     HAS_SENTRY = True
 except ImportError as e:
@@ -65,8 +70,10 @@ if app.config['DEBUG'] is True:
 
 # Logging
 if not app.debug:
-    formatter = logging.Formatter('%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]')
-    file_handler = RotatingFileHandler("%s/errors_app.log" % os.getcwd(), 'a', 1000000, 1)
+    formatter = logging.Formatter(
+        '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]')
+    file_handler = RotatingFileHandler(
+        "%s/errors_app.log" % os.getcwd(), 'a', 1000000, 1)
     file_handler.setLevel(logging.DEBUG)
     file_handler.setFormatter(formatter)
     app.logger.addHandler(file_handler)
@@ -85,9 +92,11 @@ security = Security(app, user_datastore,
 git_version = ""
 gitpath = os.path.join(os.getcwd(), ".git")
 if os.path.isdir(gitpath):
-    git_version = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD'])
+    git_version = subprocess.check_output(
+        ['git', 'rev-parse', '--short', 'HEAD'])
     if git_version:
         git_version = git_version.strip().decode('UTF-8')
+
 
 @babel.localeselector
 def get_locale():
@@ -100,11 +109,13 @@ def get_locale():
     # example.  The best match wins.
     return request.accept_languages.best_match(['fr', 'en'])
 
+
 @babel.timezoneselector
 def get_timezone():
     identity = getattr(g, 'identity', None)
     if identity is not None and identity.id:
         return identity.user.timezone
+
 
 @app.before_request
 def before_request():
@@ -120,11 +131,13 @@ def before_request():
     }
     g.cfg = cfg
 
+
 @app.errorhandler(InvalidUsage)
 def handle_invalid_usage(error):
     response = jsonify(error.to_dict())
     response.status_code = error.status_code
     return response
+
 
 sounds = UploadSet('sounds', AUDIO)
 configure_uploads(app, sounds)
@@ -135,6 +148,7 @@ app.register_blueprint(bp_admin)
 app.register_blueprint(bp_sound)
 app.register_blueprint(bp_albums)
 
+
 # Used in development
 @app.route('/uploads/<string:thing>/<path:stuff>', methods=['GET'])
 def get_uploads_stuff(thing, stuff):
@@ -142,30 +156,40 @@ def get_uploads_stuff(thing, stuff):
     print("Get {0} from {1}".format(stuff, directory))
     return send_from_directory(directory, stuff, as_attachment=True)
 
+
 @app.errorhandler(404)
 def page_not_found(msg):
     pcfg = {"title": lazy_gettext("Whoops, something failed."),
-            "error": 404, "message": lazy_gettext("Page not found"), "e": msg}
+            "error": 404, "message": lazy_gettext("Page not found"),
+            "e": msg}
     return render_template('error_page.jinja2', pcfg=pcfg), 404
+
 
 @app.errorhandler(403)
 def err_forbidden(msg):
     pcfg = {"title": lazy_gettext("Whoops, something failed."),
-            "error": 403, "message": lazy_gettext("Access forbidden"), "e": msg}
+            "error": 403, "message": lazy_gettext("Access forbidden"),
+            "e": msg}
     return render_template('error_page.jinja2', pcfg=pcfg), 403
+
 
 @app.errorhandler(410)
 def err_gone(msg):
     pcfg = {"title": lazy_gettext("Whoops, something failed."),
-            "error": 410, "message": lazy_gettext("Gone"), "e": msg}
+            "error": 410, "message": lazy_gettext("Gone"),
+            "e": msg}
     return render_template('error_page.jinja2', pcfg=pcfg), 410
+
 
 if not app.debug:
     @app.errorhandler(500)
     def err_failed(msg):
-        pcfg = {"title": lazy_gettext("Whoops, something failed."), "error": 500,
-                "message": lazy_gettext("Something is broken"), "e": msg}
+        pcfg = {"title": lazy_gettext("Whoops, something failed."),
+                "error": 500,
+                "message": lazy_gettext("Something is broken"),
+                "e": msg}
         return render_template('error_page.jinja2', pcfg=pcfg), 500
+
 
 # Other commands
 @app.cli.command()
@@ -185,19 +209,24 @@ def routes():
 
     print(table.draw())
 
+
 @app.cli.command()
 def config():
     """Dump config"""
     pp(app.config)
+
 
 @app.cli.command()
 def seed():
     """Seed database with default content"""
     make_db_seed(db)
 
+
 @app.cli.command()
-@click.option('--dryrun', default=False, help="Dry run, doesn't commit anything")
-@click.option('--force', default=False, help="Force re-generation")
+@click.option('--dryrun', default=False,
+              help="Dry run, doesn't commit anything")
+@click.option('--force', default=False,
+              help="Force re-generation")
 def generate_sound_infos(dryrun=False, force=False):
     """Generate Sound Infos """
     print("-- STARTED on {0}".format(datetime.datetime.now()))
@@ -206,8 +235,10 @@ def generate_sound_infos(dryrun=False, force=False):
 
 
 @app.cli.command()
-@click.option('--dryrun', default=False, help="Dry run, doesn't commit anything")
-@click.option('--force', default=False, help="Force re-generation")
+@click.option('--dryrun', default=False,
+              help="Dry run, doesn't commit anything")
+@click.option('--force', default=False,
+              help="Force re-generation")
 def transcode(dryrun=False, force=False):
     """Transcode sounds needed """
     print("-- STARTED on {0}".format(datetime.datetime.now()))

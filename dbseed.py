@@ -9,7 +9,7 @@ def make_db_seed(db):
         seed_config(db)
         seed_users(db)  # after timezones because not null relation
         # also seeds roles admin/user
-    except:
+    except:  # noqa: E722
         db.session.rollback()
         raise
 

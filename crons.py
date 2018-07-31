@@ -20,9 +20,17 @@ def get_basic_infos(fname):
 
     print("- File is type {0}".format(mt))
 
-    # We are going to get: duration (in seconds), format (bits), rate (Hz), channels (count), codec (or not)
-    infos = {'duration': None, 'format': None, 'rate': None, 'channels': None, 'codec': None,
-             'bitrate': None, 'bitrate_mode': None, 'type': None, 'type_human': None}
+    # We are going to get: duration (in seconds), format (bits), rate (Hz),
+    # channels (count), codec (or not)
+    infos = {'duration': None,
+             'format': None,
+             'rate': None,
+             'channels': None,
+             'codec': None,
+             'bitrate': None,
+             'bitrate_mode': None,
+             'type': None,
+             'type_human': None}
 
     # WAV
     if mt == "audio/x-wav":
@@ -108,10 +116,12 @@ def cron_generate_sound_infos(dry_run=False, force=False):
 
             # Generate Basic infos
 
-            fname = os.path.join(current_app.config['UPLOADED_SOUNDS_DEST'], user.slug, sound.filename)
+            fname = os.path.join(current_app.config['UPLOADED_SOUNDS_DEST'],
+                                 user.slug, sound.filename)
 
             if not _infos.done_basic or force:
-                print("- WORKING BASIC on {0}, {1}".format(sound.id, sound.filename))
+                print("- WORKING BASIC on {0}, {1}".format(sound.id,
+                                                           sound.filename))
                 basic_infos = get_basic_infos(fname)
                 print("- Our file got basic infos: {0}".format(basic_infos))
                 _infos.duration = basic_infos['duration']
@@ -133,14 +143,18 @@ def cron_generate_sound_infos(dry_run=False, force=False):
                 else:
                     fname_t = fname
 
-                print("- WORKING WAVEFORM on {0}, {1}".format(sound.id, sound.filename))
+                print("- WORKING WAVEFORM on {0}, {1}".format(sound.id,
+                                                              sound.filename))
                 waveform_infos = get_waveform_infos(fname_t)
-                print("- Our file got waveform infos: {0}".format(waveform_infos))
+                print("- Our file got waveform infos: {0}".format(
+                    waveform_infos))
                 _infos.waveform = waveform_infos
                 if not waveform_infos:
                     _infos.waveform_error = True
                 else:
-                    fdir_wf = os.path.join(current_app.config['UPLOADS_DEFAULT_DEST'], 'waveforms', user.slug)
+                    fdir_wf = os.path.join(
+                        current_app.config['UPLOADS_DEFAULT_DEST'],
+                        'waveforms', user.slug)
                     fname_wf = os.path.join(fdir_wf, sound.filename)
 
                     if not os.path.isdir(fdir_wf):
@@ -162,11 +176,13 @@ def cron_transcode(dry_run=False, force=False):
     users = User.query.all()
     for user in users:
         print("- User {0}".format(user.name))
-        for sound in user.sounds.filter(Sound.transcode_needed.is_(True),
-                                        Sound.transcode_state == Sound.TRANSCODE_WAITING):
+        for sound in user.sounds.filter(
+                Sound.transcode_needed.is_(True),
+                Sound.transcode_state == Sound.TRANSCODE_WAITING):
             print("File: {0}: {1}".format(sound.id, sound.title))
 
-            fname = os.path.join(current_app.config['UPLOADED_SOUNDS_DEST'], user.slug, sound.filename)
+            fname = os.path.join(current_app.config['UPLOADED_SOUNDS_DEST'],
+                                 user.slug, sound.filename)
             _file, _ext = splitext(fname)
 
             _start = time.time()
@@ -177,7 +193,9 @@ def cron_transcode(dry_run=False, force=False):
             print("From: {0}".format(fname))
             print("Transcoded: {0}.mp3".format(_file))
             elapsed = (time.time() - _start)
-            print("Transcoding done: ({0}) {1}".format(elapsed, duration_song_human(elapsed)))
+            print("Transcoding done: ({0}) {1}".format(
+                elapsed,
+                duration_song_human(elapsed)))
 
             sound.transcode_state = Sound.TRANSCODE_DONE
             sound.transcode_needed = False
