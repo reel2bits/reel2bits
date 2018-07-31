@@ -100,7 +100,7 @@ def upload():
             rec.filename_orig = filename_orig
             rec.licence = form.licence.data
             if form.album.data:
-                rec.album_id = form.album.id
+                rec.album_id = form.album.data.id
                 if not form.album.data.sounds:
                     rec.album_order = 0
                 else:
