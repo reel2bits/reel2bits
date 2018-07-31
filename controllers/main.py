@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, flash, redirect, url_for
-from flask.ext.babel import lazy_gettext
+from flask_babel import lazy_gettext
 
 from models import User, Config
 

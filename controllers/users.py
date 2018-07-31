@@ -1,7 +1,7 @@
 import pytz
 from flask import Blueprint, render_template, request, redirect, url_for, flash, Response, json
 from flask_security import login_required, current_user
-from flask.ext.babel import lazy_gettext, gettext
+from flask_babel import lazy_gettext, gettext
 
 from forms import UserProfileForm
 from models import db, User, UserLogging, Sound, Album

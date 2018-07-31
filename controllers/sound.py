@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, Response, abort, json
 from flask_security import login_required, current_user
 from flask_uploads import UploadSet, AUDIO
-from flask.ext.babel import lazy_gettext, gettext
+from flask_babel import lazy_gettext, gettext
 
 from forms import SoundUploadForm, SoundEditForm
 from models import db, User, Sound

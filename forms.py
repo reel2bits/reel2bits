@@ -7,7 +7,7 @@ from wtforms import widgets
 from wtforms.fields.core import StringField
 from wtforms.validators import DataRequired, ValidationError, Length
 from wtforms_alchemy import model_form_factory
-from flask.ext.babel import lazy_gettext
+from flask_babel import lazy_gettext
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 
 from models import db, User, Album

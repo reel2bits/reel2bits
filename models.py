@@ -9,7 +9,7 @@ from sqlalchemy.sql import func
 from sqlalchemy_searchable import make_searchable
 
 db = SQLAlchemy()
-make_searchable()
+make_searchable(db.metadata)
 
 
 roles_users = db.Table('roles_users',
