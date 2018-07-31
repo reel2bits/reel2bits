@@ -28,7 +28,8 @@ pipeline:
       - apk -U add sox sox-dev taglib taglib-dev libmagic file-dev libffi libffi-dev
       - apk add cmake gcc g++ make pkgconfig git boost-dev gd-dev libmad-dev libsndfile-dev libid3tag-dev wget postgresql-dev
       - pip install --upgrade pip setuptools
-      - pip install flake8
+      - pip install --cache-dir=/cache flake8
+      - pip install --cache-dir=/cache -r requirements.txt
       - python setup.py install
       - ./tests/install_audiowaveform.sh
       - flake8 .
