@@ -65,7 +65,7 @@ class UserProfileForm(ModelForm):
 
 class ConfigForm(Form):
     app_name = StringField(gettext('App Name'), [DataRequired(),
-                                                      Length(max=255)])
+                                                 Length(max=255)])
 
     submit = SubmitField(gettext('Update config'))
 
@@ -77,7 +77,7 @@ def get_albums():
 class SoundUploadForm(Form):
     title = StringField(gettext('Title'), [Length(max=255)])
     sound = FileField(gettext('File'), [FileRequired(),
-                                             FileAllowed(AUDIO)])
+                                        FileAllowed(AUDIO)])
     private = BooleanField(gettext('Private'), default=False)
     album = QuerySelectField(query_factory=get_albums,
                              allow_blank=True,
@@ -111,7 +111,7 @@ class SoundEditForm(Form):
 
 class AlbumForm(Form):
     title = StringField(gettext('Title'), [Length(max=255),
-                                                DataRequired()])
+                                           DataRequired()])
     description = TextAreaField(gettext('Description'))
     private = BooleanField(gettext('Private'), default=False)
 

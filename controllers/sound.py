@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, \
     redirect, url_for, flash, Response, abort, json
-from flask_babelex import gettext, gettext
+from flask_babelex import gettext
 from flask_security import login_required, current_user
 from flask_uploads import UploadSet, AUDIO
 
