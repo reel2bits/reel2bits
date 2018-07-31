@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request,\
     redirect, url_for, flash, Response, json
-from flask_babel import lazy_gettext
+from flask_babelex import lazy_gettext
 from flask_security import login_required
 
 from forms import ConfigForm

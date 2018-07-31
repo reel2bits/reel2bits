@@ -1,4 +1,4 @@
-Flask_Babel
+Flask_Babelex
 psycopg2-binary
 texttable
 Unidecode

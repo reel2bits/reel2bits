@@ -31,7 +31,7 @@ setup(
         'psycopg2-binary',
         'mutagen',
         'unidecode',
-        'Flask_Babel',
+        'Flask_Babelex',
         'texttable',
         'slugify',
         'python-magic'

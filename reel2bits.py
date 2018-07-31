@@ -3,7 +3,7 @@ import logging
 import os
 import subprocess
 from logging.handlers import RotatingFileHandler
-from flask_babel import lazy_gettext, Babel
+from flask_babelex import lazy_gettext, Babel
 from flask import Flask, render_template, g, send_from_directory, \
     jsonify, safe_join, request, flash
 from flask_bootstrap import Bootstrap
