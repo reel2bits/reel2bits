@@ -36,6 +36,12 @@
     <![endif]-->
 
     {% block styles %}{% endblock %}
+
+    {% block opengraph %}
+        <meta content="{{ g.cfg['app_name'] }}" property="og:site_name" />
+        <meta property="og:title" content="{{ g.cfg['app_name'] }} - Upload and share sound tracks">
+        <meta property="og:description" content="{{ g.cfg['app_description'] }}">
+    {% endblock %}
 </head>
 
 <body>

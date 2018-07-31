@@ -1,6 +1,18 @@
 {% extends "layout.jinja2" %}
 {% import "bootstrap/wtf.html" as wtf %}
 
+{% block opengraph %}
+    <meta content="{{ g.cfg['app_name'] }}" property="og:site_name" />
+    <meta content="object" property="og:type" />
+    {% if album.description %}
+        <meta content="Album {{ album.title }} of {{ album.user.name }}" property="og:title" />
+        <meta content="{{ album.description }}" property="og:description" />
+    {% else %}
+        <meta content="Album {{ album.title }} of {{ album.user.name }}" property="og:title" />
+    {% endif %}
+    <meta content="{{ url_for('bp_albums.show', username=album.user.name, setslug=album.slug) }}" property="og:url" />
+{% endblock %}
+
 {% block content %}
     <div class="row">
         <div class="col-lg-3 col-lg-offset-1 ss-user-back">

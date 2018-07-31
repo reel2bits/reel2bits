@@ -2,6 +2,18 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% set info = sound.sound_infos.first() %}
 
+{% block opengraph %}
+    <meta content="{{ g.cfg['app_name'] }}" property="og:site_name" />
+    <meta content="object" property="og:type" />
+    {% if sound.description %}
+        <meta content="Track {{ sound.title }} of {{ sound.user.name }}" property="og:title" />
+        <meta content="{{ sound.description }}" property="og:description" />
+    {% else %}
+        <meta content="Track {{ sound.title }} of {{ sound.user.name }}" property="og:title" />
+    {% endif %}
+    <meta content="{{ url_for('bp_sound.show', username=sound.user.name, soundslug=sound.slug) }}" property="og:url" />
+{% endblock %}
+
 {% block content %}
     <div class="row">
         <div class="col-lg-3 col-lg-offset-1 ss-user-back">

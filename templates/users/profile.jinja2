@@ -1,5 +1,13 @@
 {% extends "layout.jinja2" %}
 
+{% block opengraph %}
+    <meta content="{{ g.cfg['app_name'] }}" property="og:site_name" />
+    <meta property="og:type" content="profile">
+    <meta content="Tracks of {{ sound.user.name }}" property="og:title" />
+    <meta content="Tracks of {{ sound.user.name }}" property="og:description" />
+    <meta content="{{ url_for('bp_users.profile', name=user.name) }}" property="og:url" />
+{% endblock %}
+
 {% block content %}
     <div class="row">
         <div class="col-lg-10"><h3>{{ gettext("%(value)s' profile", value=user.name) }}</h3></div>
