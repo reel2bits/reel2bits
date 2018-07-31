@@ -233,11 +233,13 @@
 
     let table = $('.table-album-sounds').DataTable( {
         paging: false,
-        scrollY: 400,
         searching: false,
+        info: false,
+        lengthChange: false,
         rowReorder: {
             update: true,
         },
+
 
         fnDrawCallback: function() {
             $(".table-album-sounds thead").hide();
