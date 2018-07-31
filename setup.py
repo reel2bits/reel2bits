@@ -10,9 +10,9 @@ setup(
     author_email="dashie@sigpipe.me",
     install_requires=[
         'Flask',
+        'SQLAlchemy',
         'WTForms',
         'WTForms-Alchemy',
-        'SQLAlchemy',
         'SQLAlchemy-Searchable',
         'SQLAlchemy-Utils',
         'SQLAlchemy-Continuum',
