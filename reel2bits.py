@@ -95,6 +95,13 @@ def create_app(config_filename="config.py"):
         add_user_log(user.id, user.id, "user", "info",
                      "Your password has been changed !")
 
+    @FlaskSecuritySignals.reset_password_instructions_sent.connect_via(app)
+    def log_reset_password_instr(sender, user, token):
+        if not user:
+            return
+        add_user_log(user.id, user.id, "user", "info",
+                     "Password reset instructions sent.")
+
     git_version = ""
     gitpath = os.path.join(os.getcwd(), ".git")
     if os.path.isdir(gitpath):
