@@ -1,6 +1,6 @@
 import pytest
 
-from reel2bits import create_app
+from app import create_app
 from models import db as _db
 from dbseed import make_db_seed
 import os
