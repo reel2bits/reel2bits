@@ -1,4 +1,5 @@
 from flask import Blueprint, current_app, request, jsonify, Response
+from models import db, User
 
 bp_wellknown = Blueprint('bp_wellknown', __name__, url_prefix='/.well-known')
 
@@ -24,18 +25,23 @@ def webfinger():
     if not (domain == current_app.config['AP_DOMAIN']):
         return Response("", status=404)
 
+    user = db.session.query(User).filter_by(
+        name_insensitive=user_id).first()
+    if not user:
+        return Response("", status=404)
+
     method = "https"
 
     resp = {
-        "subject": f"acct:{user_id}@{domain}",
+        "subject": f"acct:{user.name}@{domain}",
         "aliases": [
-            f"{method}://{domain}/user/{user_id}"
+            f"{method}://{domain}/user/{user.name}"
         ],
         "links": [
             {
                 "rel": "self",
                 "type": "application/activity+json",
-                "href": f"{method}://{domain}/user/{user_id}"
+                "href": f"{method}://{domain}/user/{user.name}"
             },
         ]
     }

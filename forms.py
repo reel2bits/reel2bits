@@ -45,7 +45,8 @@ class ExtendedRegisterForm(RegisterForm):
         if len(field.data) <= 0:
             raise ValidationError(gettext("Username required"))
 
-        u = User.query.filter(User.name == field.data).first()
+        u = db.session.query(User).filter_by(
+            name_insensitive=field.data).first()
         if u:
             raise ValidationError(gettext("Username already taken"))
 

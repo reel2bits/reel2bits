@@ -7,9 +7,16 @@ from slugify import slugify
 from sqlalchemy import event
 from sqlalchemy.sql import func
 from sqlalchemy_searchable import make_searchable
+from sqlalchemy.ext.hybrid import Comparator, hybrid_property
 
 db = SQLAlchemy()
 make_searchable(db.metadata)
+
+
+class CaseInsensitiveComparator(Comparator):
+    def __eq__(self, other):
+        return func.lower(self.__clause_element__()) == func.lower(other)
+
 
 roles_users = db.Table('roles_users',
                        db.Column('user_id',
@@ -34,7 +41,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(255), unique=True, nullable=False,
                       info={'label': 'Email'})
     name = db.Column(db.String(255), unique=True, nullable=False,
-                     info={'label': 'Name'})
+                     info={'label': 'Username'})
     password = db.Column(db.String(255), nullable=False,
                          info={'label': 'Password'})
     active = db.Column(db.Boolean())
@@ -77,6 +84,14 @@ class User(db.Model, UserMixin):
     def generate_slug(target, value, oldvalue, initiator):
         if value and (not target.slug or value != oldvalue):
             target.slug = target.name
+
+    @hybrid_property
+    def name_insensitive(self):
+        return self.name.lower()
+
+    @name_insensitive.comparator
+    def name_insensitive(cls):
+        return CaseInsensitiveComparator(cls.name)
 
 
 event.listen(User.name, 'set', User.generate_slug, retval=False)
