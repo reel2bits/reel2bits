@@ -10,7 +10,8 @@ import magic
 import mutagen
 
 from models import db, SoundInfo, Sound
-from utils import get_waveform, create_png_waveform, duration_song_human
+from utils import get_waveform, create_png_waveform, \
+    duration_song_human, add_user_log
 from pydub import AudioSegment
 from os.path import splitext
 
@@ -127,6 +128,9 @@ def work_transcode(sound_id):
         return
 
     print("File: {0}: {1}".format(sound.id, sound.title))
+    add_user_log(sound.id, sound.user.id, 'sounds', 'info',
+                 "Transcoding started for: {0} -- {1}".format(sound.id,
+                                                              sound.title))
 
     fname = os.path.join(app.config['UPLOADED_SOUNDS_DEST'],
                          sound.user.slug, sound.filename)
@@ -154,12 +158,20 @@ def work_transcode(sound_id):
     sound.filename_transcoded = "{0}.mp3".format(_a)
     db.session.commit()
 
+    add_user_log(sound.id, sound.user.id, 'sounds', 'info',
+                 "Transcoding finished for: {0} -- {1}".format(sound.id,
+                                                               sound.title))
+
 
 def work_metadatas(sound_id, force=False):
     sound = Sound.query.get(sound_id)
     if not sound:
         print("- Cant find sound ID %(id)s in database".format(id=sound_id))
         return
+
+    add_user_log(sound.id, sound.user.id, 'sounds', 'info',
+                 "Metadatas gathering started for: {0} -- {1}".format(
+                     sound.id, sound.title))
 
     _infos = sound.sound_infos.first()
 
@@ -218,6 +230,10 @@ def work_metadatas(sound_id, force=False):
 
     db.session.add(_infos)
     db.session.commit()
+
+    add_user_log(sound.id, sound.user.id, 'sounds', 'info',
+                 "Metadatas gathering finished for: {0} -- {1}".format(
+                     sound.id, sound.title))
 
 
 @dramatiq.actor(queue_name="upload_workflow", max_retries=3)
