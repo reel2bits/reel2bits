@@ -216,6 +216,10 @@ def work_metadatas(sound_id, force=False):
         _infos.waveform = waveform_infos
         if not waveform_infos:
             _infos.waveform_error = True
+            add_user_log(sound.id, sound.user.id, 'sounds', 'info',
+                         "Got an error when generating waveform"
+                         " for: {0} -- {1}".format(
+                             sound.id, sound.title))
         else:
             fdir_wf = os.path.join(
                 app.config['UPLOADS_DEFAULT_DEST'],
