@@ -16,7 +16,6 @@ Reel2Bits
     cp config.py.sample config.py
     $EDITOR config.py
     export FLASK_ENV=<development or production>
-    export FLASK_APP=reel2bits.py
     flask db upgrade
     flask dbseed
     flask run

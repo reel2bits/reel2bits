@@ -14,3 +14,11 @@ mutagen
 pydub
 bcrypt
 dramatiq
+flask_bootstrap
+flask_mail
+flask_migrate
+flask_security
+flask_uploads
+wtforms_alchemy
+sqlalchemy_searchable
+flask_debugtoolbar
