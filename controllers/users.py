@@ -106,6 +106,8 @@ def edit():
         add_user_log(user.id, user.id, 'user', 'info',
                      "Edited user profile")
 
+        flash(gettext("Profile updated"), "success")
+
         return redirect(url_for('bp_users.profile', name=user.name))
 
     return render_template('users/edit.jinja2', pcfg=pcfg,
