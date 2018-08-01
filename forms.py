@@ -6,7 +6,8 @@ from wtforms import PasswordField, SubmitField, SelectField,\
     BooleanField, TextAreaField
 from wtforms import widgets
 from wtforms.fields.core import StringField
-from wtforms.validators import DataRequired, ValidationError, Length
+from wtforms.validators import DataRequired, ValidationError, \
+    Length, Regexp
 from wtforms_alchemy import model_form_factory
 from flask_babelex import gettext
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
@@ -36,7 +37,9 @@ class ModelForm(BaseModelForm):
 
 
 class ExtendedRegisterForm(RegisterForm):
-    name = StringField('Name', [DataRequired()])
+    name = StringField('Username', [DataRequired(),
+                                    Regexp(regex='^\w+$'),
+                                    Length(max=150)])
 
     def validate_name(form, field):
         if len(field.data) <= 0:
