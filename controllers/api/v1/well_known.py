@@ -1,7 +1,5 @@
 from flask import Blueprint, current_app, request, jsonify, Response
 
-from models import User
-
 bp_wellknown = Blueprint('bp_wellknown', __name__, url_prefix='/.well-known')
 
 

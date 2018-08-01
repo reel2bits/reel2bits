@@ -1,4 +1,4 @@
-from flask import Blueprint, current_app, request, jsonify, Response
+from flask import Blueprint, current_app, jsonify, Response, g
 
 from models import db, Config, User, Sound
 
@@ -15,7 +15,7 @@ def nodeinfo():
         "version": "2.0",
         "software": {
             "name": "reel2bits",
-            "version": None
+            "version": g.cfg['REEL2BITS_VERSION_VER']
         },
         "services": {
             "inbound": [],
@@ -26,9 +26,9 @@ def nodeinfo():
         ],
         "openRegistrations": current_app.config['SECURITY_REGISTERABLE'],
         "usage": {
-            "localPosts": db.session.query(Sound.id).count(), # FIXME
+            "localPosts": db.session.query(Sound.id).count(),
             "users": {
-                "total": db.session.query(User.id).count() # FIXME
+                "total": db.session.query(User.id).count()
             }
         },
         "metadata": {
@@ -40,7 +40,7 @@ def nodeinfo():
         }
     }
 
-
     response = jsonify(resp)
-    response.mimetype = 'application/json; charset=utf-8; profile="http://nodeinfo.diaspora.software/ns/schema/2.0#"'
+    response.mimetype = 'application/json; charset=utf-8; profile=' \
+                        '"http://nodeinfo.diaspora.software/ns/schema/2.0#"'
     return response
