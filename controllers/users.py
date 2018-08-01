@@ -11,7 +11,7 @@ from utils import add_user_log
 bp_users = Blueprint('bp_users', __name__)
 
 
-@bp_users.route('/user/logs', methods=['GET'])
+@bp_users.route('/account/logs', methods=['GET'])
 @login_required
 def logs():
     level = request.args.get('level')
@@ -26,7 +26,7 @@ def logs():
     return render_template('users/user_logs.jinja2', pcfg=pcfg, logs=_logs)
 
 
-@bp_users.route('/user/logs/<int:log_id>/delete',
+@bp_users.route('/account/logs/<int:log_id>/delete',
                 methods=['GET', 'DELETE', 'PUT'])
 @login_required
 def logs_delete(log_id):
@@ -81,7 +81,7 @@ def profile_albums(name):
                            pcfg=pcfg, user=user, albums=albums)
 
 
-@bp_users.route('/user/edit', methods=['GET', 'POST'])
+@bp_users.route('/account/edit', methods=['GET', 'POST'])
 @login_required
 def edit():
     pcfg = {"title": gettext("Edit my profile")}
