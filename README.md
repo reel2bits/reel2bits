@@ -15,16 +15,23 @@ Reel2Bits
     # Install Pydub dependencies: https://github.com/jiaaro/pydub#dependencies
     cp config.py.sample config.py
     $EDITOR config.py
-    python3 reel2bits.py db upgrade
-    python3 reel2bits.py db seed
-    python3 reel2bits.py runserver # or whatever gunicorn whatever stuff
+    export FLASK_ENV=<development or production>
+    export FLASK_APP=reel2bits.py
+    flask db upgrade
+    flask dbseed
+    flask run
     Don't forget to update default Config by getting to "Your user" (top right) then "Config"
 
     Also install this tool : https://github.com/bbc/audiowaveform
     And adapt the path to it in config.py
 
-# Gunicorn
-    gunicorn -w 2 -b 127.0.0.1:8000 --error-logfile=errors.log --access-logfile=access.log --chdir=$PWD reel2bits:app
+# Production running
+
+TODO
+
+# Docker
+
+TODO
 
 # Default config
  - App Name: My reel2bits instance
@@ -40,10 +47,6 @@ Reel2Bits
   - upload_workflow : handle metadatas and transcoding after upload
   
 # TODO
-  - Albums
-  - Tags
-  - Genre
-  - User picture
   - Transcode and serve FLAC as MP3 CBR (HTML5 doesn't support FLAC)
   - Transcode only for waveform OGG to MP3 CBR (audiowaveform doesn't support OGG)
 
