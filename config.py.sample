@@ -35,6 +35,14 @@ SECURITY_PASSWORD_SALT = 'CHANGEME'
 # Do not change after users have registered
 SECRET_KEY = 'CHANGEME'
 
+# Mail setup
+MAIL_SERVER = "localhost"
+MAIL_PORT = 25
+MAIL_USE_TLS = False
+MAIL_USE_SSL = False
+MAIL_USERNAME = None
+MAIL_PASSWORD = None
+MAIL_DEFAULT_SENDER = f"postmaster@{AP_DOMAIN}"
 
 # Development only options
 DEBUG = False
