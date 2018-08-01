@@ -22,3 +22,4 @@ flask_uploads
 wtforms_alchemy
 sqlalchemy_searchable
 flask_debugtoolbar
+redis

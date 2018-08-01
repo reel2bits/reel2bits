@@ -117,13 +117,18 @@ def get_waveform_infos(fname):
 def work_transcode(sound_id):
     sound = Sound.query.get(sound_id)
     if not sound:
-        print("- Cant find sound ID %(id)s in database".format(id=sound_id))
+        print("- Cant find sound ID {id} in database".format(id=sound_id))
         return
     if not sound.transcode_needed:
-        print("- Sound ID %(id)s doesnt need transcoding".format(id=sound_id))
+        print("- Sound ID {id} doesn't need transcoding".format(id=sound_id))
+        sound.transcode_state = Sound.TRANSCODE_DONE
+        db.session.commit()
+        add_user_log(sound.id, sound.user.id, 'sounds', 'info',
+                     "Transcoding not needed for: {0} -- {1}".format(
+                         sound.id, sound.title))
         return
     if not sound.transcode_state == Sound.TRANSCODE_WAITING:
-        print("- Sound ID %(id)s transcoding != TRANSCODE_WAITING".format(
+        print("- Sound ID {id} transcoding != TRANSCODE_WAITING".format(
             id=sound_id))
         return
 

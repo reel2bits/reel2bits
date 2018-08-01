@@ -73,6 +73,14 @@ class User(db.Model, UserMixin):
     def join_roles(self, string):
         return string.join([i.description for i in self.roles])
 
+    @staticmethod
+    def generate_slug(target, value, oldvalue, initiator):
+        if value and (not target.slug or value != oldvalue):
+            target.slug = target.name
+
+
+event.listen(User.name, 'set', User.generate_slug, retval=False)
+
 
 class Apitoken(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -206,7 +214,8 @@ class Sound(db.Model):
         return os.path.join(self.user.slug, "{0}.png".format(self.filename))
 
     def path_sound(self, orig=False):
-        if self.transcode_state == self.TRANSCODE_DONE and not orig:
+        if self.transcode_needed and \
+                self.transcode_state == self.TRANSCODE_DONE and not orig:
             return os.path.join(self.user.slug, self.filename_transcoded)
         else:
             return os.path.join(self.user.slug, self.filename)
@@ -288,41 +297,26 @@ licences = {
 }
 
 
-@event.listens_for(User, 'after_update')
-@event.listens_for(User, 'after_insert')
-def make_user_slug(mapper, connection, target):
-    if target.slug != "":
-        return
-    title = "{0} {1}".format(target.id, target.name)
-    slug = slugify(title)
-    connection.execute(
-        User.__table__.update().where(
-            User.__table__.c.id == target.id).values(slug=slug)
-    )
-
-
 @event.listens_for(Sound, 'after_update')
 @event.listens_for(Sound, 'after_insert')
 def make_sound_slug(mapper, connection, target):
-    if not target.slug or target.slug == "":
-        if not target.title or target.title == "":
-            title = "{0} {1}".format(target.id, target.filename)
-        else:
-            title = "{0} {1}".format(target.id, target.title)
-        slug = slugify(title[:255])
-        connection.execute(
-            Sound.__table__.update().where(
-                Sound.__table__.c.id == target.id).values(slug=slug)
-        )
+    if not target.title or target.title == "":
+        title = "{0} {1}".format(target.id, target.filename)
+    else:
+        title = "{0} {1}".format(target.id, target.title)
+    slug = slugify(title[:255])
+    connection.execute(
+        Sound.__table__.update().where(
+            Sound.__table__.c.id == target.id).values(slug=slug)
+    )
 
 
 @event.listens_for(Album, 'after_update')
 @event.listens_for(Album, 'after_insert')
 def make_album_slug(mapper, connection, target):
-    if not target.slug or target.slug == "":
-        title = "{0} {1}".format(target.id, target.title)
-        slug = slugify(title[:255])
-        connection.execute(
-            Album.__table__.update().where(
-                Album.__table__.c.id == target.id).values(slug=slug)
+    title = "{0} {1}".format(target.id, target.title)
+    slug = slugify(title[:255])
+    connection.execute(
+        Album.__table__.update().where(
+            Album.__table__.c.id == target.id).values(slug=slug)
         )

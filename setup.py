@@ -35,6 +35,7 @@ setup(
         'texttable',
         'python-slugify',
         'python-magic',
+        'redis',
         'dramatiq'
     ],
     setup_requires=[
