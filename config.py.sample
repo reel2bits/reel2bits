@@ -1,54 +1,62 @@
-DEBUG = True
-
-SECRET_KEY = 'aglaglawx2r31ht1g0m1vcq'
-# SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://dashie@localhost/reel2bits'
-SQLALCHEMY_DATABASE_URI = 'postgresql+pg8000://dashie@localhost/reel2bits'
-# SQLALCHEMY_DATABASE_URI = 'sqlite:///reel2bits.db'
-SQLALCHEMY_ECHO = False
-SQLALCHEMY_TRACK_MODIFICATIONS = False
-
-SECURITY_CONFIRMABLE = False
-SECURITY_REGISTERABLE = False  # deactivate registration
-SECURITY_RECOVERABLE = True
-SECURITY_TRACKABLE = False
-SECURITY_CHANGEABLE = True
-SECURITY_PASSWORD_HASH = 'bcrypt'
-SECURITY_PASSWORD_SALT = 'ottersrulestheworld'
-# SECURITY_URL_PREFIX = '/sec'
-
-SECURITY_SEND_REGISTER_EMAIL = False
-SECURITY_SEND_PASSWORD_CHANGE_EMAIL = False
-SECURITY_SEND_PASSWORD_RESET_NOTICE_EMAIL = False
-
-BOOTSTRAP_USE_MINIFIED = True
-BOOTSTRAP_SERVE_LOCAL = True
-BOOTSTRAP_CDN_FORCE_SSL = True
-BOOTSTRAP_QUERYSTRING_REVVING = True
-
-DEBUG_TB_PROFILER_ENABLED = True
-DEBUG_TB_INTERCEPT_REDIRECTS = False
-
+# Website translations
 BABEL_DEFAULT_LOCALE = "en"
-BABEL_DEFAULT_TIMEZONE = "UTC"
 
-# UPLOADS_DEFAULT_DEST is ALWAYS the same as UPLOADED_SOUNDS_DEST but a directory lower
-# Because we use others directories inside UPLOADS_DEFAULT_DEST as organized tree depending
-# On each other
+# Uploads dirs
 UPLOADED_SOUNDS_DEST = "/home/reel2bits/uploads/sounds"
 UPLOADS_DEFAULT_DEST = "/home/reel2bits/uploads"
 TEMP_DOWNLOAD_FOLDER = "/home/reel2bits/tmp"
 
+# Where is located Audiowaveform ?
 AUDIOWAVEFORM_BIN = "/usr/local/bin/audiowaveform"
 
+# If using sentry, set a DSN
 SENTRY_USER_ATTRS = ['name', 'email']
-# If using Sentry comment:
 SENTRY_DSN = ""
-# And uncomment and fill with appropriate Sentry informations
-#SENTRY_DSN = "https://user:pass@sentry.your.host/ID?ca_certs=/etc/ssl/certs/ca-certificates.crt"
 
+# Redis configuration for broker, used for async background tasks
 BROKER_REDIS_HOST = "127.0.0.1"
 BROKER_REDIS_PORT = 6379
 BROKER_REDIS_DB = 0
 
-# Can't be changed after it have been used and/or federated !
 AP_DOMAIN = "localhost"
+
+SQLALCHEMY_DATABASE_URI = \
+    'postgresql+psycopg2://user:password@localhost/reel2bits'
+
+# Should users confirm theire email address ?
+SECURITY_CONFIRMABLE = True
+# Can users register on this instance ?
+SECURITY_REGISTERABLE = True
+# Can users recover theire password ?
+SECURITY_RECOVERABLE = True
+# Salt used for password hashing
+# Do not change after users have registered
+SECURITY_PASSWORD_SALT = 'CHANGEME'
+# Do not change after users have registered
+SECRET_KEY = 'CHANGEME'
+
+
+# Development only options
+DEBUG = False
+TESTING = False
+SQLALCHEMY_ECHO = False
+DEBUG_TB_PROFILER_ENABLED = False
+DEBUG_TB_INTERCEPT_REDIRECTS = False
+
+# Do not touch that
+SQLALCHEMY_TRACK_MODIFICATIONS = False
+SQLALCHEMY_RECORD_QUERIES = True
+# Users can change password
+# Do not disable, will breaks things
+SECURITY_CHANGEABLE = True
+# Password hash algorithm
+SECURITY_PASSWORD_HASH = 'bcrypt'
+
+SECURITY_SEND_REGISTER_EMAIL = True
+SECURITY_SEND_PASSWORD_CHANGE_EMAIL = True
+SECURITY_SEND_PASSWORD_RESET_NOTICE_EMAIL = True
+
+BOOTSTRAP_USE_MINIFIED = True
+BOOTSTRAP_SERVE_LOCAL = True
+BOOTSTRAP_QUERYSTRING_REVVING = True
+BABEL_DEFAULT_TIMEZONE = "UTC"
