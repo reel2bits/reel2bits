@@ -68,7 +68,7 @@
                     if (data.status == "deleted") {
                         $('[data-log-id="' + data.id + '"]').remove();
                     } else {
-                        show_alert("danger", {{ gettext("Log deletion") }}, {{ gettext("An error occured") }});
+                        show_alert("danger", "{{ gettext("Log deletion") }}", "{{ gettext("An error occured") }}");
                     }
                 }).fail(function(data) {
                     console.log("fail" + data);
