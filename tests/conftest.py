@@ -3,11 +3,12 @@ import pytest
 from reel2bits import create_app
 from models import db as _db
 from dbseed import make_db_seed
-
+import os
 
 @pytest.yield_fixture(scope='session')
 def app():
-    app = create_app('tests/config_test.py')
+    cfg = os.getenv('CONFIGTEST', 'tests/config_test.py')
+    app = create_app(cfg)
     ctx = app.app_context()
     ctx.push()
 

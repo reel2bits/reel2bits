@@ -10,3 +10,4 @@
 /.pytest_cache/
 /reel2bits.egg-info
 /.eggs
+/configtest.py
