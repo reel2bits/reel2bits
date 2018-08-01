@@ -17,7 +17,7 @@ from os.path import splitext
 
 from dramatiq.brokers.redis import RedisBroker
 
-from reel2bits import create_app
+from app import create_app
 
 app = create_app()
 ctx = app.app_context()
