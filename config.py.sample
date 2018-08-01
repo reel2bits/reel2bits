@@ -49,3 +49,6 @@ SENTRY_DSN = ""
 BROKER_REDIS_HOST = "127.0.0.1"
 BROKER_REDIS_PORT = 6379
 BROKER_REDIS_DB = 0
+
+# Can't be changed after it have been used and/or federated !
+AP_DOMAIN = "localhost"

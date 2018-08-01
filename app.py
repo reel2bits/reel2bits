@@ -18,6 +18,8 @@ from controllers.albums import bp_albums
 from controllers.main import bp_main
 from controllers.sound import bp_sound
 from controllers.users import bp_users
+from controllers.api.v1.well_known import bp_wellknown
+
 from forms import ExtendedRegisterForm
 from models import db, user_datastore, Config
 from utils import InvalidUsage, is_admin, duration_elapsed_human, \
@@ -156,6 +158,8 @@ def create_app(config_filename="config.py"):
     app.register_blueprint(bp_admin)
     app.register_blueprint(bp_sound)
     app.register_blueprint(bp_albums)
+
+    app.register_blueprint(bp_wellknown)
 
     # Used in development
     @app.route('/uploads/<string:thing>/<path:stuff>', methods=['GET'])
