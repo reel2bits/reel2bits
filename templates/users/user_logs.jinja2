@@ -21,7 +21,7 @@
                 <th>{{ gettext("Date") }}</th>
                 <th>{{ gettext("Category") }}</th>
                 <th width="100px">{{ gettext("Level") }}</th>
-                <th width="100px">{{ gettext("Sound") }}</th>
+                <th width="100px">{{ gettext("Item ID") }}</th>
                 <th>{{ gettext("Message") }}</th>
                 <th width="100px"></th>
             </tr>
@@ -30,10 +30,14 @@
                     <td width="13%">{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
                     <td>{{ log.category }}</td>
                     <td>{{ log.level }}<td>
-                        {% if log.sound %}
-                            ID <a href="{{ url_for('bp_sound.show', username=log.user.name, soundslug=log.sound.slug) }}">{{ log.sound.id }}</a>
+                        {% if log.item_id and log.category == "sounds" %}
+                            {{ log.item_id }}
+                        {% elif log.item_id and log.category == "albums" %}
+                            {{ log.item_id }}
+                        {% elif log.item_id %}
+                            {{ log.item_id }}
                         {% else %}
-                            None
+                            N/A
                         {% endif %}
                     </td>
                     <td>{{ log.message | replace('\r\n', '<br>') }}</td>

@@ -135,6 +135,11 @@ def add_log(category, level, message):
     db.session.commit()
 
 
+# categories used, they are used to map the item_id to the right model
+# - sounds
+# - albums
+# - user
+# - global
 def add_user_log(item, user, category, level, message):
     if not category or not level or not message or not item:
         print(
@@ -143,7 +148,7 @@ def add_user_log(item, user, category, level, message):
                                                    category, user,
                                                    item, message))
     a = UserLogging(category=category, level=level.upper(), message=message,
-                    sound_id=item, user_id=user)
+                    item_id=item, user_id=user)
     db.session.add(a)
     db.session.commit()
 

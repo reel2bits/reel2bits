@@ -6,7 +6,7 @@ from flask_uploads import UploadSet, AUDIO
 
 from forms import SoundUploadForm, SoundEditForm
 from models import db, User, Sound
-from utils import get_hashed_filename, InvalidUsage
+from utils import get_hashed_filename, InvalidUsage, add_user_log
 
 bp_sound = Blueprint('bp_sound', __name__)
 
@@ -125,6 +125,10 @@ def upload():
             from workers import upload_workflow
             upload_workflow.send(rec.id)
 
+            # log
+            add_user_log(rec.id, user.id, 'sounds', 'info',
+                         "Uploaded {0} -- {1}".format(rec.id, rec.title))
+
             flash(gettext('Uploaded !'), 'success')
         else:
             return render_template('sound/upload.jinja2', pcfg=pcfg,
@@ -168,6 +172,9 @@ def edit(username, soundslug):
                     sound.album_order = form.album.data.sounds.count() + 1
 
         db.session.commit()
+        # log
+        add_user_log(sound.id, sound.user.id, 'sounds', 'info',
+                     "Edited {0} -- {1}".format(sound.id, sound.title))
         return redirect(url_for('bp_sound.show', username=username,
                                 soundslug=sound.slug))
 
@@ -191,5 +198,9 @@ def delete(username, soundslug):
 
     db.session.delete(sound)
     db.session.commit()
+
+    # log
+    add_user_log(sound.id, sound.user.id, 'sounds', 'info',
+                 "Deleted {0} -- {1}".format(sound.id, sound.title))
 
     return redirect(url_for('bp_users.profile', name=username))

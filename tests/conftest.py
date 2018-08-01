@@ -5,6 +5,7 @@ from models import db as _db
 from dbseed import make_db_seed
 import os
 
+
 @pytest.yield_fixture(scope='session')
 def app():
     cfg = os.getenv('CONFIGTEST', 'tests/config_test.py')

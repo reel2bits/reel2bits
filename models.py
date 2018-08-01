@@ -120,9 +120,8 @@ class UserLogging(db.Model):
     message = db.Column(db.Text, nullable=False)
     timestamp = db.Column(db.DateTime(timezone=False),
                           server_default=func.now(), onupdate=func.now())
+    item_id = db.Column(db.Integer(), nullable=True)
 
-    sound_id = db.Column(db.Integer(), db.ForeignKey('sound.id'),
-                         nullable=False)
     user_id = db.Column(db.Integer(), db.ForeignKey('user.id'),
                         nullable=False)
 
@@ -191,8 +190,6 @@ class Sound(db.Model):
                          nullable=True)
     sound_infos = db.relationship('SoundInfo', backref='sound_info',
                                   lazy='dynamic', cascade="delete")
-    user_loggings = db.relationship('UserLogging', backref='sound',
-                                    lazy='dynamic', cascade="delete")
 
     timeline = db.relationship("Timeline", uselist=False,
                                back_populates="sound")

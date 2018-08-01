@@ -5,7 +5,7 @@ from flask_security import login_required, current_user
 
 from forms import AlbumForm
 from models import db, User, Album, Sound
-from utils import InvalidUsage
+from utils import InvalidUsage, add_user_log
 
 bp_albums = Blueprint('bp_albums', __name__)
 
@@ -27,6 +27,11 @@ def new(username):
 
         db.session.add(rec)
         db.session.commit()
+
+        # log
+        add_user_log(rec.id, rec.user_id, 'albums', 'info',
+                     "Created {0} -- {1}".format(rec.id, rec.title))
+
         flash(gettext('Created !'), 'success')
     else:
         return render_template('album/new.jinja2',
@@ -96,6 +101,11 @@ def edit(username, setslug):
             album.description = form.description.data
 
             db.session.commit()
+
+            # log
+            add_user_log(album.id, album.user.id, 'albums', 'info',
+                         "Edited {0} -- {1}".format(album.id, album.title))
+
             return redirect(url_for('bp_albums.show',
                                     username=username, setslug=album.slug))
     else:
@@ -124,6 +134,10 @@ def delete(username, setslug):
 
     db.session.delete(album)
     db.session.commit()
+
+    # log
+    add_user_log(album.id, user.id, 'albums', 'info',
+                 "Deleted {0} -- {1}".format(album.id, album.title))
 
     return redirect(url_for('bp_users.profile', name=username))
 

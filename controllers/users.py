@@ -6,6 +6,7 @@ from flask_security import login_required, current_user
 
 from forms import UserProfileForm
 from models import db, User, UserLogging, Sound, Album
+from utils import add_user_log
 
 bp_users = Blueprint('bp_users', __name__)
 
@@ -100,6 +101,11 @@ def edit():
         user.locale = form.locale.data
 
         db.session.commit()
+
+        # log
+        add_user_log(user.id, user.id, 'user', 'info',
+                     "Edited user profile")
+
         return redirect(url_for('bp_users.profile', name=user.name))
 
     return render_template('users/edit.jinja2', pcfg=pcfg,

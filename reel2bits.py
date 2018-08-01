@@ -10,6 +10,7 @@ from flask_bootstrap import Bootstrap
 from flask_mail import Mail
 from flask_migrate import Migrate
 from flask_security import Security
+from flask_security import signals as FlaskSecuritySignals
 from flask_uploads import configure_uploads, UploadSet, AUDIO
 
 from controllers.admin import bp_admin
@@ -20,7 +21,7 @@ from controllers.users import bp_users
 from forms import ExtendedRegisterForm
 from models import db, user_datastore, Config
 from utils import InvalidUsage, is_admin, duration_elapsed_human, \
-    duration_song_human
+    duration_song_human, add_user_log
 
 import texttable
 from flask_debugtoolbar import DebugToolbarExtension
@@ -85,6 +86,14 @@ def create_app(config_filename="config.py"):
     # Setup Flask-Security
     security = Security(app, user_datastore,  # noqa: F841
                         register_form=ExtendedRegisterForm)
+
+    @FlaskSecuritySignals.password_reset.connect_via(app)
+    @FlaskSecuritySignals.password_changed.connect_via(app)
+    def log_password_reset(sender, user):
+        if not user:
+            return
+        add_user_log(user.id, user.id, "user", "info",
+                     "Your password has been changed !")
 
     git_version = ""
     gitpath = os.path.join(os.getcwd(), ".git")
