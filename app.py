@@ -88,7 +88,8 @@ def create_app(config_filename="config.py"):
 
     # Setup Flask-Security
     security = Security(app, user_datastore,  # noqa: F841
-                        register_form=ExtendedRegisterForm)
+                        register_form=ExtendedRegisterForm,
+                        confirm_register_form=ExtendedRegisterForm)
 
     @FlaskSecuritySignals.password_reset.connect_via(app)
     @FlaskSecuritySignals.password_changed.connect_via(app)
