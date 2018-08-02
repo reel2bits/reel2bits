@@ -19,6 +19,7 @@ BROKER_REDIS_PORT = 6379
 BROKER_REDIS_DB = 0
 
 AP_DOMAIN = "localhost"
+SERVER_NAME = "localhost"
 
 SQLALCHEMY_DATABASE_URI = \
     'postgresql+psycopg2://user:password@localhost/reel2bits'

@@ -14,10 +14,11 @@ from utils import get_waveform, create_png_waveform, \
     duration_song_human, add_user_log
 from pydub import AudioSegment
 from os.path import splitext
-
+from flask_mail import Message
 from dramatiq.brokers.redis import RedisBroker
+from flask import render_template
 
-from app import create_app
+from app import create_app, mail
 
 app = create_app()
 ctx = app.app_context()
@@ -250,6 +251,11 @@ def upload_workflow(sound_id):
     with app.app_context():
         print("UPLOAD WORKFLOW started")
 
+        sound = Sound.query.get(sound_id)
+        if not sound:
+            print("- Cant find sound ID {id} in database".format(id=sound_id))
+            return
+
         print("METADATAS started")
         work_metadatas(sound_id)
         print("METADATAS finished")
@@ -257,5 +263,12 @@ def upload_workflow(sound_id):
         print("TRANSCODE started")
         work_transcode(sound_id)
         print("TRANSCODE finished")
+
+        msg = Message(subject="Song processing finished",
+                      recipients=[sound.user.email],
+                      sender=app.config['MAIL_DEFAULT_SENDER'])
+        msg.body = render_template('email/song_processed.txt', sound=sound)
+        msg.html = render_template('email/song_processed.html', sound=sound)
+        mail.send(msg)
 
         print("UPLOAD WORKFLOW finished")

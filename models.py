@@ -238,6 +238,11 @@ class Sound(db.Model):
     def licence_info(self):
         return licences[self.licence]
 
+    def get_title(self):
+        if not self.title:
+            return self.filename
+        return self.title
+
 
 class Album(db.Model):
     __tablename__ = "album"

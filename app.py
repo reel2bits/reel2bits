@@ -44,6 +44,8 @@ except ImportError as e:
     print(" * No Sentry support")
     HAS_SENTRY = False
 
+mail = Mail()
+
 
 def create_app(config_filename="config.py"):
     # App configuration
@@ -79,7 +81,7 @@ def create_app(config_filename="config.py"):
         file_handler.setFormatter(formatter)
         app.logger.addHandler(file_handler)
 
-    mail = Mail(app)  # noqa: F841
+    mail.init_app(app)
     migrate = Migrate(app, db)  # noqa: F841
     babel = Babel(app)  # noqa: F841
     toolbar = DebugToolbarExtension(app)  # noqa: F841

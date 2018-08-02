@@ -1,0 +1,5 @@
+<p>Hello {{ sound.user.name }}!</p>
+
+<p>Your track <b>{{ sound.title }}</b> have been processed and is now available.</p>
+
+Direct link to the track: <a href="{{ url_for("bp_sound.show", username=sound.user.name, soundslug=sound.slug) }}">{{ sound.get_title() }}</a>
