@@ -18,6 +18,8 @@ BROKER_REDIS_HOST = "127.0.0.1"
 BROKER_REDIS_PORT = 6379
 BROKER_REDIS_DB = 0
 
+# They needs to be identical
+# You can't change them after setup !
 AP_DOMAIN = "localhost"
 SERVER_NAME = "localhost"
 
