@@ -17,6 +17,7 @@ RUN apk add --no-cache --virtual .build-deps \
     cmake gcc g++ make pkgconfig git boost-dev gd-dev libmad-dev libsndfile-dev libid3tag-dev libffi-dev
 RUN apk add --no-cache git libffi sox taglib libmagic tzdata libmad boost libsndfile libid3tag postgresql-dev
 RUN pip install --no-cache-dir -r requirements.txt
+
 # Build audiowaveform
 RUN wget && \
     git clone https://github.com/bbcrd/audiowaveform.git /tmp/audiowaveform && cd /tmp/audiowaveform && \
