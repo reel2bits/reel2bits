@@ -321,9 +321,13 @@ licences = {
 @event.listens_for(Sound, 'after_insert')
 def make_sound_slug(mapper, connection, target):
     if not target.title or target.title == "":
-        title = "{0} {1}".format(target.id, target.filename)
+        title = "{0} {1}".format(target.id, target.filename_orig)
     else:
-        title = "{0} {1}".format(target.id, target.title)
+        if slugify(target.title) == "":
+            title = "{0} {1}".format(target.id, target.filename_orig)
+        else:
+            title = "{0} {1}".format(target.id, target.title)
+
     slug = slugify(title[:255])
     connection.execute(
         Sound.__table__.update().where(
