@@ -155,7 +155,6 @@ def work_transcode(sound_id):
         duration_song_human(elapsed)))
 
     sound.transcode_state = Sound.TRANSCODE_DONE
-    sound.transcode_needed = False
 
     info = sound.sound_infos.first()
     info.done_waveform = False

@@ -243,6 +243,9 @@ class Sound(db.Model):
             return self.filename
         return self.title
 
+    def processing_done(self):
+        return self.transcode_state == self.TRANSCODE_DONE
+
 
 class Album(db.Model):
     __tablename__ = "album"

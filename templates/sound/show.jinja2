@@ -97,7 +97,7 @@
                             <i class="fa fa-download" aria-hidden="true"></i> download orig
                         </a>
                     </td>
-                    {% if sound.transcode_needed %}
+                    {% if sound.transcode_needed and sound.processing_done() %}
                     <td>
                         <a class="btn btn-info btn-xs" href="{{ url_for('get_uploads_stuff', thing='sounds', stuff=sound.path_sound(orig=False)) }}">
                             <i class="fa fa-download" aria-hidden="true"></i> download mp3
