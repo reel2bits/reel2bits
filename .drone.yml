@@ -34,6 +34,24 @@ pipeline:
       volumes:
           - /tmp/cache:/cache
 
+  publish-web:
+    image: plugins/docker
+    repo: dashie/reel2bits-web
+    dockerfile: Dockerfile-web
+    tags: [ latest ]
+    secrets:
+        - DOCKER_USERNAME
+        - DOCKER_PASSWORD
+
+  publish-worker:
+    image: plugins/docker
+    repo: dashie/reel2bits-worker
+    dockerfile: Dockerfile-worker
+    tags: [ latest ]
+    secrets:
+        - DOCKER_USERNAME
+        - DOCKER_PASSWORD
+
   notify:
     image: plugins/slack
     channel: gitea
