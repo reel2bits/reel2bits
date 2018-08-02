@@ -91,6 +91,7 @@ class SoundUploadForm(Form):
     album = QuerySelectField(query_factory=get_albums,
                              allow_blank=True,
                              label=gettext('Album'),
+                             blank_text=gettext('No album'),
                              get_label='title')
     licence = SelectField(choices=get_licences(),
                           coerce=int,
@@ -111,6 +112,7 @@ class SoundEditForm(Form):
     album = QuerySelectField(query_factory=get_albums,
                              allow_blank=True,
                              label=gettext('Album'),
+                             blank_text=gettext('No album'),
                              get_label='title')
     licence = SelectField(choices=get_licences(),
                           coerce=int,
