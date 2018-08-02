@@ -5,7 +5,7 @@ LABEL maintainer="Dashie <dashie@sigpipe.me>"
 
 LABEL org.label-schema.license=MIT \
     org.label-schema.name=reel2bits-web \
-    org.label-schema.vcs-url=https://dev.sigpipe.me/dashie/reel2bits
+    org.label-schema.vcs-url=https://dev.sigpipe.me/dashie/reel2bits \
     org.label-schema.build-date=$DRONE_BUILD_STARTED \
     org.label-schema.vcs-ref=$DRONE_COMMIT_SHA
 
