@@ -13,7 +13,7 @@ RUN mkdir -p /app /data /config
 WORKDIR /app
 
 ADD requirements.txt /app/
-RUN apk add --no-cache git libffi sox taglib libmagic tzdata libmad boost libsndfile libid3tag
+RUN apk add --no-cache git libffi sox taglib libmagic tzdata libmad boost libsndfile libid3tag postgresql-dev
 RUN pip install --no-cache-dir -r requirements.txt
 # Build audiowaveform
 RUN apk add --no-cache --virtual .build-deps \

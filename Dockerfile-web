@@ -14,7 +14,7 @@ WORKDIR /app
 
 ADD requirements.txt /app/
 RUN apk add --no-cache git libffi sox taglib libmagic tzdata libmad boost libsndfile libid3tag
-RUN apk add --no-cache --virtual .build-deps gcc g++ libffi-dev
+RUN apk add --no-cache --virtual .build-deps gcc g++ libffi-dev postgresql-dev
 RUN pip install --no-cache-dir -r requirements.txt
 RUN apk del .build-deps
 
