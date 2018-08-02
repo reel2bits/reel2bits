@@ -55,8 +55,10 @@ def profile(name):
     if current_user.is_authenticated and user.id == current_user.id:
         sounds = Sound.query.filter(Sound.user_id == user.id)
     else:
-        sounds = Sound.query.filter(Sound.user_id == user.id,
-                                    Sound.private.is_(False))
+        sounds = Sound.query.filter(
+            Sound.user_id == user.id,
+            Sound.private.is_(False),
+            Sound.transcode_state == Sound.TRANSCODE_DONE)
 
     return render_template('users/profile.jinja2', pcfg=pcfg,
                            user=user, sounds=sounds)

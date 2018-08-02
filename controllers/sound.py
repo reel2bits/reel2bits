@@ -20,8 +20,15 @@ def show(username, soundslug):
     if not user:
         flash(gettext("User not found"), "error")
         return redirect(url_for("bp_main.home"))
-    sound = Sound.query.filter(Sound.slug == soundslug,
-                               Sound.user_id == user.id).first()
+    if current_user.is_authenticated and user.id == current_user.id:
+        sound = Sound.query.filter(Sound.slug == soundslug,
+                                   Sound.user_id == user.id).first()
+    else:
+        sound = Sound.query.filter(
+            Sound.slug == soundslug,
+            Sound.user_id == user.id,
+            Sound.transcode_state == Sound.TRANSCODE_DONE).first()
+
     if not sound:
         flash(gettext("Sound not found"), "error")
         return redirect(url_for("bp_users.profile", name=user.name))
