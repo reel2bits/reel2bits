@@ -5,13 +5,26 @@ def make_db_seed(db):
     print("== Seeding database")
     db.session.begin(subtransactions=True)
     try:
-        print("++ Seeding config")
         seed_config(db)
-        seed_users(db)  # after timezones because not null relation
-        # also seeds roles admin/user
+        seed_roles(db)
     except:  # noqa: E722
         db.session.rollback()
         raise
+
+
+def seed_roles(db):
+    print("++ Seeding roles")
+    role_usr = Role()
+    role_usr.name = 'user'
+    role_usr.description = 'Simple user'
+
+    role_adm = Role()
+    role_adm.name = 'admin'
+    role_adm.description = 'Admin user'
+
+    db.session.add(role_usr)
+    db.session.add(role_adm)
+    db.session.commit()
 
 
 def seed_users(db):
@@ -39,6 +52,7 @@ def seed_users(db):
 
 
 def seed_config(db):
+    print("++ Seeding config")
     a = Config(app_name='My reel2bits instance')
     a.app_description = """This is a reel2bits instance"""
     db.session.add(a)

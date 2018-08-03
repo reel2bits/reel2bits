@@ -20,7 +20,9 @@ def app():
 
 @pytest.yield_fixture(scope='session')
 def db(app):
+    _db.drop_all()
     _db.create_all()
+
     make_db_seed(_db)
 
     yield _db

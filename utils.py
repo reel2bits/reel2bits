@@ -1,16 +1,13 @@
 import datetime
 import hashlib
 import os
-import random
-import string
 import subprocess
 from os.path import splitext
 
-import pytz
 from flask import current_app
 from flask_security import current_user
 
-from models import db, Apitoken, Role, Logging, Config, UserLogging
+from models import db, Role, Logging, Config, UserLogging
 
 
 def gcfg():

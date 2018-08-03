@@ -2,6 +2,7 @@ from utils import duration_elapsed_human, duration_song_human, \
     get_hashed_filename
 import time
 
+
 def test_duration_elapsed_human():
     t = [
         {"duration": 20, "text": "right now"},
