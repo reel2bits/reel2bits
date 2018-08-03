@@ -6,7 +6,7 @@ Reel2Bits
 <img src="https://img.shields.io/badge/python-%3E%3D3.6-blue.svg"/>
 
 # Versions requirement
- - Python >= 3.3 (3.0, 3.1, 3.2 not supported)
+ - Python >= 3.6 (all under 3.6 are not supported)
 
 # Installation
     Install a BDD (mysql is supported, SQLite maybe, PostgreSQL should be)
