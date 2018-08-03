@@ -4,6 +4,7 @@ setup(
     name='reel2bits',
     version='0.1',
     license='MIT',
+    python_requires='>=3.6',
     long_description=open('README.md').read(),
     url="http://dev.sigpipe.me/DashieV3/reel2bits",
     author="Dashie",
