@@ -10,7 +10,9 @@ from flask_bootstrap import Bootstrap
 from flask_mail import Mail
 from flask_migrate import Migrate
 from flask_security import Security
+from flask_security.utils import encrypt_password
 from flask_security import signals as FlaskSecuritySignals
+from flask_security import confirmable as FSConfirmable
 from flask_uploads import configure_uploads, UploadSet, AUDIO
 
 from controllers.admin import bp_admin
@@ -22,7 +24,7 @@ from controllers.api.v1.well_known import bp_wellknown
 from controllers.api.v1.nodeinfo import bp_nodeinfo
 
 from forms import ExtendedRegisterForm
-from models import db, user_datastore, Config
+from models import db, Config, user_datastore, Role
 from utils import InvalidUsage, is_admin, duration_elapsed_human, \
     duration_song_human, add_user_log
 
@@ -31,6 +33,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 
 from dbseed import make_db_seed
 from pprint import pprint as pp
+import click
 
 __VERSION__ = "0.0.1"
 
@@ -231,4 +234,32 @@ def create_app(config_filename="config.py"):
         """Seed database with default content"""
         make_db_seed(db)
 
+    @app.cli.command()
+    def createuser():
+        """Create an user"""
+        username = click.prompt("Username", type=str)
+        email = click.prompt("Email", type=str)
+        password = click.prompt("Password",
+                                type=str,
+                                hide_input=True,
+                                confirmation_prompt=True)
+        while True:
+            role = click.prompt("Role [admin/user]", type=str)
+            if role == "admin" or role == "user":
+                break
+
+        if click.confirm('Do you want to continue ?'):
+            role = Role.query.filter(Role.name == role).first()
+            if not role:
+                raise click.UsageError('Roles not present in database')
+            u = user_datastore.create_user(
+                name=username,
+                email=email,
+                password=encrypt_password(password),
+                roles=[role]
+            )
+            db.session.commit()
+            if FSConfirmable.requires_confirmation(u):
+                FSConfirmable.send_confirmation_instructions(u)
+                print("Look at your emails for validation instructions.")
     return app

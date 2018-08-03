@@ -24,6 +24,12 @@ Reel2Bits
     Also install this tool : https://github.com/bbc/audiowaveform
     And adapt the path to it in config.py
 
+# Creating an user
+
+If you have enabled registration in config, the first user registered will be ADMIN !
+
+Or if you have disabled registration, use the ``` flask createuser ``` command to create an user.
+
 # Production running
 
 TODO
