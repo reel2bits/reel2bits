@@ -49,3 +49,6 @@ SENTRY_DSN = ""
 
 # Bcrypt algorithm hashing rounds (reduced for testing purposes only!)
 BCRYPT_LOG_ROUNDS = 4
+
+AP_DOMAIN = "localhost"
+SERVER_NAME = "localhost"
