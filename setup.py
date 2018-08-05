@@ -37,7 +37,9 @@ setup(
         'python-slugify',
         'python-magic',
         'redis',
-        'dramatiq'
+        'dramatiq',
+        'flask-accept',
+        'git+https://github.com/tsileo/little-boxes/'
     ],
     setup_requires=[
         'pytest-runner',

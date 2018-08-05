@@ -23,3 +23,5 @@ wtforms_alchemy
 sqlalchemy_searchable
 flask_debugtoolbar
 redis
+flask-accept
+git+https://github.com/tsileo/little-boxes/
