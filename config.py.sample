@@ -21,7 +21,8 @@ BROKER_REDIS_DB = 0
 # They needs to be identical
 # You can't change them after setup !
 AP_DOMAIN = "localhost"
-SERVER_NAME = "localhost"
+SERVER_NAME = AP_DOMAIN
+BASE_URL = "https://" + AP_DOMAIN
 
 SQLALCHEMY_DATABASE_URI = \
     'postgresql+psycopg2://user:password@localhost/reel2bits'

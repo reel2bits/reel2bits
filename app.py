@@ -34,6 +34,8 @@ from flask_debugtoolbar import DebugToolbarExtension
 from dbseed import make_db_seed
 from pprint import pprint as pp
 import click
+from little_boxes import activitypub as ap
+from activitypub.backend import Reel2BitsBackend
 
 __VERSION__ = "0.0.1"
 
@@ -90,6 +92,10 @@ def create_app(config_filename="config.py"):
     toolbar = DebugToolbarExtension(app)  # noqa: F841
 
     db.init_app(app)
+
+    # ActivityPub backend
+    back = Reel2BitsBackend()
+    ap.use_backend(back)
 
     # Setup Flask-Security
     security = Security(app, user_datastore,  # noqa: F841

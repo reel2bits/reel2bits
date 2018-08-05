@@ -51,4 +51,5 @@ SENTRY_DSN = ""
 BCRYPT_LOG_ROUNDS = 4
 
 AP_DOMAIN = "localhost"
-SERVER_NAME = "localhost"
+SERVER_NAME = AP_DOMAIN
+BASE_URL = "https://" + AP_DOMAIN
