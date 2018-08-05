@@ -73,9 +73,10 @@ def test_nodeinfo(client, session):
 
     # Test nodeinfo returned json (2.0)
     rv = client.get('/nodeinfo/2.0')
-    assert rv.headers['Content-Type'] == \
-           'application/json; charset=utf-8; ' \
-           'profile="http://nodeinfo.diaspora.software/ns/schema/2.0#"'
+    assert rv.headers['Content-Type'] == 'application/json; ' \
+                                         'charset=utf-8; profile=' \
+                                         '"http://nodeinfo.diaspora.' \
+                                         'software/ns/schema/2.0#"'
     assert rv.status_code == 200
 
     assert_valid_schema(rv.json, "nodeinfo-2.0.json")

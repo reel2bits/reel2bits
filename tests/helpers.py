@@ -2,6 +2,7 @@ import json
 from os.path import join, dirname
 from jsonschema import validate
 
+
 def login(client, email, password):
     return client.post(
         '/login',
