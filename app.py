@@ -24,7 +24,7 @@ from controllers.api.v1.well_known import bp_wellknown
 from controllers.api.v1.nodeinfo import bp_nodeinfo
 
 from forms import ExtendedRegisterForm
-from models import db, Config, user_datastore, Role
+from models import db, Config, user_datastore, Role, create_actor
 from utils import InvalidUsage, is_admin, duration_elapsed_human, \
     duration_song_human, add_user_log
 
@@ -110,6 +110,16 @@ def create_app(config_filename="config.py"):
             return
         add_user_log(user.id, user.id, "user", "info",
                      "Password reset instructions sent.")
+
+    @FlaskSecuritySignals.user_registered.connect_via(app)
+    def create_actor_for_registered_user(app, user, confirm_token):
+        if not user:
+            return
+        actor = create_actor(user)
+        actor.user = user
+        actor.user_id = user.id
+        db.session.add(actor)
+        db.session.commit()
 
     git_version = ""
     gitpath = os.path.join(os.getcwd(), ".git")

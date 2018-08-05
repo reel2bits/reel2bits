@@ -1,12 +1,13 @@
 import pytz
 from flask import Blueprint, render_template, request, \
-    redirect, url_for, flash, Response, json
+    redirect, url_for, flash, Response, json, jsonify
 from flask_babelex import gettext
 from flask_security import login_required, current_user
 
 from forms import UserProfileForm
 from models import db, User, UserLogging, Sound, Album
 from utils import add_user_log
+from flask_accept import accept
 
 bp_users = Blueprint('bp_users', __name__)
 
@@ -44,6 +45,7 @@ def logs_delete(log_id):
 
 
 @bp_users.route('/user/<string:name>', methods=['GET'])
+@accept('text/html')
 def profile(name):
     pcfg = {"title": gettext(u"%(value)s' profile", value=name)}
 
@@ -62,6 +64,43 @@ def profile(name):
 
     return render_template('users/profile.jinja2', pcfg=pcfg,
                            user=user, sounds=sounds)
+
+
+@bp_users.route('/user/<string:name>', methods=['GET'])
+@profile.support('application/json')
+def actor_json(name):
+    user = User.query.filter(User.name == name).first()
+    if not user:
+        return Response("", status=404)
+    actors = user.actor
+    if len(actors) <= 0:
+        return Response("", status=500)
+    actor = actors[0]
+
+    resp = {
+        "@context": [
+            "https://www.w3.org/ns/activitystreams",
+            "https://w3id.org/security/v1"
+        ],
+        "id": actor.url,
+        "type": actor.type.code,
+        "preferredUsername": actor.preferred_username,
+        "inbox": actor.inbox_url,
+        "outbox": actor.outbox_url,
+        "manuallyApprovesFollowers": actor.manually_approves_followers,
+        "publicKey": {
+            "id": actor.private_key_id(),
+            "owner": actor.url,
+            "publicKeyPem": actor.public_key
+        },
+        "endpoints": {
+            "sharedInbox": actor.shared_inbox_url
+        }
+    }
+
+    response = jsonify(resp)
+    response.mimetype = "application/activity+json; charset=utf-8"
+    return response
 
 
 @bp_users.route('/user/<string:name>/sets', methods=['GET'])

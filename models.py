@@ -1,22 +1,41 @@
 import datetime
 import os
 
+from flask import current_app
 from flask_security import SQLAlchemyUserDatastore, UserMixin, RoleMixin
 from flask_sqlalchemy import SQLAlchemy
 from slugify import slugify
+from sqlalchemy import UniqueConstraint
 from sqlalchemy import event
+from sqlalchemy.ext.hybrid import Comparator
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql import func
 from sqlalchemy_searchable import make_searchable
-from sqlalchemy.ext.hybrid import Comparator, hybrid_property
+from sqlalchemy_utils.types.choice import ChoiceType
+from sqlalchemy_utils.types.url import URLType
+from little_boxes.key import Key as LittleBoxesKey
+from activitypub.utils import ap_url
 
 db = SQLAlchemy()
 make_searchable(db.metadata)
 
 
+# #### Base ####
+
 class CaseInsensitiveComparator(Comparator):
     def __eq__(self, other):
         return func.lower(self.__clause_element__()) == func.lower(other)
 
+
+class Config(db.Model):
+    __tablename__ = "config"
+
+    id = db.Column(db.Integer, primary_key=True)
+    app_name = db.Column(db.String(255), default=None)
+    app_description = db.Column(db.Text)
+
+
+# #### User ####
 
 roles_users = db.Table('roles_users',
                        db.Column('user_id',
@@ -110,13 +129,7 @@ class Apitoken(db.Model):
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 
 
-class Config(db.Model):
-    __tablename__ = "config"
-
-    id = db.Column(db.Integer, primary_key=True)
-    app_name = db.Column(db.String(255), default=None)
-    app_description = db.Column(db.Text)
-
+# #### Logging ####
 
 class Logging(db.Model):
     __tablename__ = "logging"
@@ -150,6 +163,8 @@ class UserLogging(db.Model):
 
     __mapper_args__ = {"order_by": timestamp.desc()}
 
+
+# #### Tracks ####
 
 class SoundInfo(db.Model):
     __tablename__ = "sound_info"
@@ -185,10 +200,10 @@ class Sound(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255), nullable=True)
     uploaded = db.Column(db.DateTime(timezone=False),
-                         default=datetime.datetime.utcnow)
+                         default=func.now())
     updated = db.Column(db.DateTime(timezone=False),
-                        default=datetime.datetime.utcnow,
-                        onupdate=datetime.datetime.utcnow)
+                        default=func.now(),
+                        onupdate=func.now())
     # TODO genre
     # TODO tags
     # TODO picture ?
@@ -347,3 +362,88 @@ def make_album_slug(mapper, connection, target):
         Album.__table__.update().where(
             Album.__table__.c.id == target.id).values(slug=slug)
         )
+
+
+# #### Federation ####
+
+ACTOR_TYPE_CHOICES = [
+    ("Person", "Person"),
+    ("Application", "Application"),
+    ("Group", "Group"),
+    ("Organization", "Organization"),
+    ("Service", "Service"),
+]
+
+
+class Actor(db.Model):
+    __tablename__ = "actor"
+    ap_type = "Actor"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    url = db.Column(URLType(), unique=True, index=True)
+    outbox_url = db.Column(URLType())
+    inbox_url = db.Column(URLType())
+    following_url = db.Column(URLType(), nullable=True)
+    followers_url = db.Column(URLType(), nullable=True)
+    shared_inbox_url = db.Column(URLType(), nullable=True)
+    type = db.Column(ChoiceType(ACTOR_TYPE_CHOICES), server_default="Person")
+    name = db.Column(db.String(200), nullable=True)
+    domain = db.Column(db.String(1000), nullable=False)
+    summary = db.Column(db.String(500), nullable=True)
+    preferred_username = db.Column(db.String(200), nullable=True)
+    public_key = db.Column(db.String(5000), nullable=True)
+    private_key = db.Column(db.String(5000), nullable=True)
+    creation_date = db.Column(db.DateTime(timezone=False),
+                              default=func.now())
+    last_fetch_date = db.Column(db.DateTime(timezone=False),
+                                default=func.now())
+    manually_approves_followers = db.Column(db.Boolean, nullable=True,
+                                            server_default=None)
+    followers = None  # relation FIXME
+
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    user = db.relationship("User", backref=db.backref('actor'))
+
+    __table_args__ = (
+        UniqueConstraint('domain', 'preferred_username',
+                         name='_domain_pref_username_uc'),
+    )
+
+    def webfinger_subject(self):
+        return f"{self.preferred_username}@{self.domain}"
+
+    def private_key_id(self):
+        return f"{self.url}#main-key"
+
+    def mention_username(self):
+        return f"@{self.preferred_username}@{self.domain}"
+
+    def is_local(self):
+        return self.domain == current_app.config['AP_DOMAIN']
+
+
+def create_actor(user):
+    """
+    :param user: an User object
+    :return: an Actor object
+    """
+    actor = Actor()
+
+    # Init a new Keypair for this user
+    key = LittleBoxesKey(owner=user.name)
+    key.new()
+
+    actor.preferred_username = user.name
+    actor.domain = current_app.config['AP_DOMAIN']
+    actor.type = "Person"
+    actor.name = user.name
+    actor.manually_approves_followers = False
+    actor.url = ap_url("url", user.name)
+    actor.shared_inbox_url = ap_url("shared_inbox", user.name)
+    actor.inbox_url = ap_url("inbox", user.name)
+    actor.outbox_url = ap_url("outbox", user.name)
+    actor.private_key = key.privkey_pem
+    actor.public_key = key.pubkey_pem
+
+    return actor
