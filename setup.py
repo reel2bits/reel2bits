@@ -38,8 +38,7 @@ setup(
         'python-magic',
         'redis',
         'dramatiq',
-        'flask-accept',
-        'git+https://github.com/tsileo/little-boxes/'
+        'flask-accept'
     ],
     setup_requires=[
         'pytest-runner',
