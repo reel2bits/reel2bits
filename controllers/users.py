@@ -7,7 +7,7 @@ from flask_security import login_required, current_user
 from forms import UserProfileForm
 from models import db, User, UserLogging, Sound, Album
 from utils import add_user_log
-from flask_accept import accept
+from flask_accept import accept_fallback
 
 bp_users = Blueprint('bp_users', __name__)
 
@@ -45,7 +45,7 @@ def logs_delete(log_id):
 
 
 @bp_users.route('/user/<string:name>', methods=['GET'])
-@accept('text/html')
+@accept_fallback
 def profile(name):
     pcfg = {"title": gettext(u"%(value)s' profile", value=name)}
 
@@ -67,7 +67,7 @@ def profile(name):
 
 
 @bp_users.route('/user/<string:name>', methods=['GET'])
-@profile.support('application/json')
+@profile.support('application/json', 'application/activity+json')
 def actor_json(name):
     user = User.query.filter(User.name == name).first()
     if not user:
