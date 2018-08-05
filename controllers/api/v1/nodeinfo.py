@@ -9,7 +9,8 @@ bp_nodeinfo = Blueprint('bp_nodeinfo', __name__, url_prefix='/nodeinfo')
 def nodeinfo():
     _config = Config.query.one()
     if not _config:
-        return Response("", status=500)
+        return Response("", status=500,
+                        content_type="application/jrd+json; charset=utf-8")
 
     resp = {
         "version": "2.0",
