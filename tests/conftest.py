@@ -1,9 +1,11 @@
-import pytest
-
-from app import create_app
-from models import db as _db
-from dbseed import make_db_seed
 import os
+import sys
+import pytest
+mypath = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, mypath + '/../')
+from app import create_app  # noqa: E402
+from models import db as _db  # noqa: E402
+from dbseed import make_db_seed  # noqa: E402
 
 
 @pytest.yield_fixture(scope='session')
