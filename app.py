@@ -22,6 +22,7 @@ from controllers.sound import bp_sound
 from controllers.users import bp_users
 from controllers.api.v1.well_known import bp_wellknown
 from controllers.api.v1.nodeinfo import bp_nodeinfo
+from controllers.api.v1.activitypub import bp_ap
 
 from forms import ExtendedRegisterForm
 from models import db, Config, user_datastore, Role, create_actor
@@ -184,6 +185,7 @@ def create_app(config_filename="config.py"):
 
     app.register_blueprint(bp_wellknown)
     app.register_blueprint(bp_nodeinfo)
+    app.register_blueprint(bp_ap)
 
     # Used in development
     @app.route('/uploads/<string:thing>/<path:stuff>', methods=['GET'])
