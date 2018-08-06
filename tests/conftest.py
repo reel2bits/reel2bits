@@ -23,7 +23,8 @@ def app():
 @pytest.yield_fixture(scope='session')
 def db(app):
     _db.drop_all()
-    _db.engine.connect().execute("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";")
+    _db.engine.connect().execute(
+        "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";")
     _db.create_all()
 
     make_db_seed(_db)
