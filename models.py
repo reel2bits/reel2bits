@@ -13,6 +13,7 @@ from sqlalchemy.sql import func
 from sqlalchemy_searchable import make_searchable
 from sqlalchemy_utils.types.choice import ChoiceType
 from sqlalchemy_utils.types.url import URLType
+from sqlalchemy_utils.types.json import JSONType
 from little_boxes.key import Key as LittleBoxesKey
 from activitypub.utils import ap_url
 from sqlalchemy.dialects.postgresql import UUID
@@ -376,6 +377,22 @@ ACTOR_TYPE_CHOICES = [
     ("Service", "Service"),
 ]
 
+follower = db.Table(
+    'followers',
+    db.metadata,
+    db.Column('id', db.Integer, primary_key=True),
+    db.Column('uuid', UUID(as_uuid=True),
+              server_default=sa_text("uuid_generate_v4()"),
+              unique=True),
+    db.Column('actor_id', db.Integer, db.ForeignKey('actor.id')),
+    db.Column('target_id', db.Integer, db.ForeignKey('actor.id')),
+    db.Column('creation_date', db.DateTime(timezone=False),
+              default=func.now()),
+    db.Column('modification_date', db.DateTime(timezone=False),
+              onupdate=datetime.datetime.now),
+    UniqueConstraint('actor_id', 'target_id', name='unique_following')
+)
+
 
 class Actor(db.Model):
     __tablename__ = "actor"
@@ -402,7 +419,12 @@ class Actor(db.Model):
                                 default=func.now())
     manually_approves_followers = db.Column(db.Boolean, nullable=True,
                                             server_default=None)
-    followers = None  # relation FIXME
+    followers = db.relationship("Actor", secondary=follower,
+                                primaryjoin=id == follower.c.actor_id,
+                                secondaryjoin=id == follower.c.target_id)
+    # Relation on itself, intermediary with actor and target
+    # (Follow is that table)
+    # https://stackoverflow.com/a/31584660
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     user = db.relationship("User", backref=db.backref('actor'))
@@ -424,30 +446,35 @@ class Actor(db.Model):
     def is_local(self):
         return self.domain == current_app.config['AP_DOMAIN']
 
+    def follow(self, target):
+        # FIXME untested logic
+        if target not in self.followers:
+            self.followers.append(target)
+            target.followers.append(self)
 
-class Follow(db.Model):
-    __tablename__ = "follow"
-    ap_type = "Follow"
+    def unfollow(self, target):
+        # FIXME untested logic
+        if target in self.followers:
+            self.followers.remove(target)
+            target.followers.remove(self)
 
+
+class Activity(db.Model):
+    __tablename__ = "activity"
     id = db.Column(db.Integer, primary_key=True)
+
+    actor = db.Column(db.Integer, db.ForeignKey('actor.id'))
 
     uuid = db.Column(UUID(as_uuid=True),
                      server_default=sa_text("uuid_generate_v4()"),
                      unique=True)
-
-    # actor = emitted_follows, Actor, CASCADE delete
-    # target = received_follows, Actor, CASCADE delete
+    url = db.Column(URLType(), unique=True, nullable=True)
+    type = db.Column(db.String(100), index=True)
+    payload = db.Column(JSONType())
     creation_date = db.Column(db.DateTime(timezone=False),
                               default=func.now())
-    modification_date = db.Column(db.DateTime(timezone=False),
-                                  onupdate=datetime.datetime.now)
-
-    # __table_args__ = (
-    #    UniqueConstraint('actor', 'target'),
-    # )
-
-    def get_federation_url(self):
-        return f"{self.actor.url}#follows/{self.uuid}"
+    delivered = db.Column(db.Boolean, default=None, nullable=True)
+    delivered_date = db.Column(db.DateTime(timezone=False), nullable=True)
 
 
 def create_actor(user):
