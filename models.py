@@ -442,9 +442,9 @@ class Follow(db.Model):
     modification_date = db.Column(db.DateTime(timezone=False),
                                   onupdate=datetime.datetime.now)
 
-    #__table_args__ = (
+    # __table_args__ = (
     #    UniqueConstraint('actor', 'target'),
-    #)
+    # )
 
     def get_federation_url(self):
         return f"{self.actor.url}#follows/{self.uuid}"
