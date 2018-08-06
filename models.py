@@ -15,6 +15,8 @@ from sqlalchemy_utils.types.choice import ChoiceType
 from sqlalchemy_utils.types.url import URLType
 from little_boxes.key import Key as LittleBoxesKey
 from activitypub.utils import ap_url
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import text as sa_text
 
 db = SQLAlchemy()
 make_searchable(db.metadata)
@@ -421,6 +423,31 @@ class Actor(db.Model):
 
     def is_local(self):
         return self.domain == current_app.config['AP_DOMAIN']
+
+
+class Follow(db.Model):
+    __tablename__ = "follow"
+    ap_type = "Follow"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    uuid = db.Column(UUID(as_uuid=True),
+                     server_default=sa_text("uuid_generate_v4()"),
+                     unique=True)
+
+    # actor = emitted_follows, Actor, CASCADE delete
+    # target = received_follows, Actor, CASCADE delete
+    creation_date = db.Column(db.DateTime(timezone=False),
+                              default=func.now())
+    modification_date = db.Column(db.DateTime(timezone=False),
+                                  onupdate=datetime.datetime.now)
+
+    #__table_args__ = (
+    #    UniqueConstraint('actor', 'target'),
+    #)
+
+    def get_federation_url(self):
+        return f"{self.actor.url}#follows/{self.uuid}"
 
 
 def create_actor(user):

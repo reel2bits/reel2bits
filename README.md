@@ -20,6 +20,9 @@ Reel2Bits
     cp config.py.sample config.py
     $EDITOR config.py
     export FLASK_ENV=<development or production>
+    $ create your postgresql database, like 'reel2bits'
+    $ with the postgresql shell, run using superuser on the reel2bits database:
+    CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
     flask db upgrade
     flask dbseed
     flask run
