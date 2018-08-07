@@ -475,6 +475,7 @@ class Activity(db.Model):
                               default=func.now())
     delivered = db.Column(db.Boolean, default=None, nullable=True)
     delivered_date = db.Column(db.DateTime(timezone=False), nullable=True)
+    local = db.Column(db.Boolean, default=True)
 
 
 def create_actor(user):
