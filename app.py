@@ -75,6 +75,7 @@ def create_app(config_filename="config.py"):
 
     if app.config['DEBUG'] is True:
         app.jinja_env.auto_reload = True
+        app.logger.setLevel(logging.DEBUG)
 
     # Logging
     if not app.debug:

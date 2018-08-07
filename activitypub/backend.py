@@ -49,9 +49,14 @@ class Reel2BitsBackend(ap.Backend):
     def save(self, box: Box, activity: ap.BaseActivity) -> None:
         """Save an Activity in database"""
 
+        current_app.logger.info(f"asked to save an activity {activity!r}")
+
         # Save remote Actor
         ap_actor = activity.get_actor()
-        domain = urlparse(ap_actor.url)
+        domain = urlparse(ap_actor.id)
+
+        current_app.logger.debug(f"actor domain {domain.netloc} and "
+                                 f"name {ap_actor.name}")
 
         actor = Actor.query.filter(Actor.domain == domain.netloc,
                                    Actor.name == ap_actor.name).first()
@@ -210,7 +215,7 @@ def finish_inbox_processing(iri: str) -> None:
         current_app.logger.info(f"activity={activity!r}")
 
         actor = activity.get_actor()
-        id = current_app.config['BASE_URL']
+        id = activity.get_object().id
 
         if activity.has_type(ap.ActivityType.DELETE):
             backend.inbox_delete(actor, activity)
@@ -266,7 +271,7 @@ def finish_post_to_outbox(iri: str) -> None:
 
         recipients = activity.recipients()
 
-        actor = None  # actor would be a local user here, I guess ?
+        actor = activity.get_actor()
 
         if activity.has_type(ap.ActivityType.DELETE):
             backend.outbox_delete(actor, activity)
