@@ -18,6 +18,8 @@ from little_boxes.key import Key as LittleBoxesKey
 from activitypub.utils import ap_url
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy import text as sa_text
+from little_boxes import activitypub as ap
+from urllib.parse import urlparse
 
 db = SQLAlchemy()
 make_searchable(db.metadata)
@@ -470,6 +472,7 @@ class Activity(db.Model):
                      unique=True)
     url = db.Column(URLType(), unique=True, nullable=True)
     type = db.Column(db.String(100), index=True)
+    box = db.Column(db.String(100))
     payload = db.Column(JSONType())
     creation_date = db.Column(db.DateTime(timezone=False),
                               default=func.now())
@@ -500,5 +503,28 @@ def create_actor(user):
     actor.outbox_url = ap_url("outbox", user.name)
     actor.private_key = key.privkey_pem
     actor.public_key = key.pubkey_pem
+
+    return actor
+
+
+def create_remote_actor(activity_actor: ap.BaseActivity):
+    """
+    :param activity_actor: a Little Boxes Actor object
+    :return: an Actor object
+    """
+    actor = Actor()
+
+    actor.preferred_username = activity_actor.preferredUsername
+    domain = urlparse(activity_actor.url)
+    actor.domain = domain.netloc
+    actor.type = "Person"
+    actor.name = activity_actor.name
+    actor.manually_approves_followers = False
+    actor.url = activity_actor.url
+    actor.shared_inbox_url = activity_actor._data\
+        .get("endpoints", {}).get("sharedInbox")
+    actor.inbox_url = activity_actor.inbox
+    actor.outbox_url = activity_actor.outbot
+    actor.public_key = activity_actor.get_key().pubkey_pem
 
     return actor
