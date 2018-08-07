@@ -327,6 +327,8 @@ def post_to_remote_inbox(payload: str, to: str) -> None:
 
     signature_auth = HTTPSigAuth(key)
 
+    # current_app.logger.debug(f"key=={key.__dict__}")
+
     try:
         current_app.logger.info("payload=%s", payload)
         current_app.logger.info("generating sig")
@@ -338,7 +340,7 @@ def post_to_remote_inbox(payload: str, to: str) -> None:
         if "signature" not in signed_payload:
             generate_signature(signed_payload, key)
 
-            current_app.logger.info("to=%s", to)
+        current_app.logger.info("to=%s", to)
         resp = requests.post(
             to,
             data=json.dumps(signed_payload),
