@@ -91,3 +91,39 @@ def clean_activity(activity: ObjectType) -> Dict[str, Any]:
         if activity["type"] == "Create" and field in activity["object"]:
             del (activity["object"][field])
     return activity
+
+
+def build_ordered_collection(items, actor_id, page, limit=50):
+    total_items = len(items)
+
+    if total_items <= 0:
+        return {
+            "@context": ap.COLLECTION_CTX,
+            "id": f"{actor_id}/followers",
+            "totalItems": 0,
+            "type": ap.ActivityType.ORDERED_COLLECTION.value,
+            "orderedItems": [],
+        }
+
+    if not page:
+        resp = {
+            "@context": ap.COLLECTION_CTX,
+            "id": f"{actor_id}/followers",
+            "totalItems": total_items,
+            "type": ap.ActivityType.ORDERED_COLLECTION.value,
+            "first": {
+                "id": f"{actor_id}/followers?page=0",
+                "orderedItems": [item.url for item in items],
+                "partOf": f"{actor_id}/followers",
+                "totalItems": total_items,
+                "type": ap.ActivityType.ORDERED_COLLECTION_PAGE.value,
+            },
+        }
+        if len(items) == limit:
+            resp["first"]["next"] = (
+                f"{actor_id}/followers?page=1"
+            )
+
+        return resp
+
+    # return resp
