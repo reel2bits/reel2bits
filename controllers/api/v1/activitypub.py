@@ -1,7 +1,10 @@
 from flask import Blueprint, request, abort, current_app, Response, jsonify
 from little_boxes import activitypub
 from little_boxes.httpsig import verify_request
-from activitypub.backend import post_to_inbox
+from activitypub.backend import post_to_inbox, Box
+from activitypub.utils import activity_from_doc
+from models import Activity
+
 
 bp_ap = Blueprint('bp_ap', __name__)
 
@@ -100,3 +103,41 @@ def inbox():
     post_to_inbox(activity)
 
     return Response(status=201)
+
+
+@bp_ap.route('/outbox', methods=["GET", "POST"])
+def outbox():
+    be = activitypub.get_backend()
+    if not be:
+        abort(500)
+    data = request.get_json(force=True)
+    if not data:
+        abort(500)
+    current_app.logger.debug(f"req_headers={request.headers}")
+    current_app.logger.debug(f"raw_data={data}")
+
+
+@bp_ap.route('/outbox/<string:item_id>', methods=["GET", "POST"])
+def outbox_item(item_id):
+    be = activitypub.get_backend()
+    if not be:
+        abort(500)
+    # data = request.get_json()
+    # if not data:
+    #     abort(500)
+    current_app.logger.debug(f"req_headers={request.headers}")
+    # current_app.logger.debug(f"raw_data={data}")
+
+    current_app.logger.debug(f"activity url {be.activity_url(item_id)}")
+
+    item = Activity.query.filter(Activity.box == Box.OUTBOX.value,
+                                 Activity.url == be.activity_url(item_id)
+                                 ).first()
+    if not item:
+        abort(404)
+
+    # check if deleted, if yes, return 410 tombstone gone
+
+    current_app.logger.debug(f"item payload=={item.payload}")
+
+    return jsonify(**activity_from_doc(item.payload))

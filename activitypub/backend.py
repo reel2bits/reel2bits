@@ -9,6 +9,7 @@ from requests.exceptions import HTTPError
 from little_boxes.errors import ActivityGoneError
 from little_boxes.errors import ActivityNotFoundError
 from little_boxes.errors import NotAnActivityError
+from little_boxes.key import Key
 from models import db, Activity, create_remote_actor, Actor
 from urllib.parse import urlparse
 
@@ -54,12 +55,15 @@ class Reel2BitsBackend(ap.Backend):
         # Save remote Actor
         ap_actor = activity.get_actor()
         domain = urlparse(ap_actor.id)
+        current_app.logger.debug(f"actor.id=={ap_actor.__dict__}")
 
         current_app.logger.debug(f"actor domain {domain.netloc} and "
-                                 f"name {ap_actor.name}")
+                                 f"name {ap_actor.preferredUsername}")
 
         actor = Actor.query.filter(Actor.domain == domain.netloc,
-                                   Actor.name == ap_actor.name).first()
+                                   Actor.name == ap_actor.preferredUsername
+                                   ).first()
+
         if not actor:
             actor = create_remote_actor(ap_actor)
             db.session.add(actor)
@@ -108,6 +112,7 @@ def process_new_activity(iri: str) -> None:
 
         actor = activity.get_actor()
         id = actor.id
+        current_app.logger.debug(f"process_new_activity actor {id}")
 
         # Is the activity expected?
         # following = ap.get_backend().following()
@@ -215,7 +220,8 @@ def finish_inbox_processing(iri: str) -> None:
         current_app.logger.info(f"activity={activity!r}")
 
         actor = activity.get_actor()
-        id = activity.get_object().id
+        id = activity.get_object_id()
+        current_app.logger.debug(f"finish_inbox_processing actor {id}")
 
         if activity.has_type(ap.ActivityType.DELETE):
             backend.inbox_delete(actor, activity)
@@ -272,6 +278,7 @@ def finish_post_to_outbox(iri: str) -> None:
         recipients = activity.recipients()
 
         actor = activity.get_actor()
+        current_app.logger.debug(f"finish_post_to_outbox actor {actor!r}")
 
         if activity.has_type(ap.ActivityType.DELETE):
             backend.outbox_delete(actor, activity)
@@ -295,10 +302,10 @@ def finish_post_to_outbox(iri: str) -> None:
                 current_app.logger.info(f"recipients={recipients}")
         activity = ap.clean_activity(activity.to_dict())
 
-        payload = json.dumps(activity)
         for recp in recipients:
             current_app.logger.debug(f"posting to {recp}")
-            post_to_remote_inbox.delay(payload, recp)
+            payload = json.dumps(activity)
+            post_to_remote_inbox(payload, recp)
     except (ActivityGoneError, ActivityNotFoundError):
         current_app.logger.exception(f"no retry")
     except Exception as err:
@@ -307,8 +314,18 @@ def finish_post_to_outbox(iri: str) -> None:
 
 
 def post_to_remote_inbox(payload: str, to: str) -> None:
-    key = None  # Todo get key
-    SigAuth = HTTPSigAuth(key)
+    current_app.logger.debug(f"post_to_remote_inbox {payload}")
+
+    ap_actor = json.loads(payload)["actor"]
+    actor = Actor.query.filter(Actor.url == ap_actor).first()
+    if not actor:
+        current_app.logger.exception("no actor found")
+        return
+
+    key = Key(owner=actor.name)
+    key.load(actor.private_key)
+
+    signature_auth = HTTPSigAuth(key)
 
     try:
         current_app.logger.info("payload=%s", payload)
@@ -325,7 +342,7 @@ def post_to_remote_inbox(payload: str, to: str) -> None:
         resp = requests.post(
             to,
             data=json.dumps(signed_payload),
-            auth=SigAuth,
+            auth=signature_auth,
             headers={
                 "Content-Type": HEADERS[1],
                 "Accept": HEADERS[1],
@@ -349,10 +366,10 @@ def forward_activity(iri: str) -> None:
         recipients = backend.followers_as_recipients()
         current_app.logger.debug(f"Forwarding {activity!r} to {recipients}")
         activity = ap.clean_activity(activity.to_dict())
-        payload = json.dumps(activity)
         for recp in recipients:
             current_app.logger.debug(f"forwarding {activity!r} to {recp}")
-            post_to_remote_inbox.delay(payload, recp)
+            payload = json.dumps(activity)
+            post_to_remote_inbox(payload, recp)
 
     except Exception as err:
         current_app.logger.exception(f"failed to cache attachments for {iri}")
