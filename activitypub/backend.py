@@ -240,8 +240,6 @@ def process_new_activity(iri: str) -> None:
 
         current_app.logger.info(f"new activity {iri} processed")
 
-        # TODO: save Actor in db
-
     except (ActivityGoneError, ActivityNotFoundError):
         current_app.logger.exception(f"failed to process new activity {iri}")
     except Exception as err:
