@@ -277,7 +277,14 @@ def create_app(config_filename="config.py"):
                 password=encrypt_password(password),
                 roles=[role]
             )
+
+            actor = create_actor(u)
+            actor.user = u
+            actor.user_id = u.id
+            db.session.add(actor)
+
             db.session.commit()
+
             if FSConfirmable.requires_confirmation(u):
                 FSConfirmable.send_confirmation_instructions(u)
                 print("Look at your emails for validation instructions.")
