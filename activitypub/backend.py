@@ -47,6 +47,43 @@ class Reel2BitsBackend(ap.Backend):
     def note_url(self, obj_id: str):
         return f"{self.base_url()}/note/{obj_id}"
 
+    def new_follower(self, as_actor: ap.Person, follow: ap.Follow) -> None:
+        current_app.logger.info("new follower")
+        db_actor = Actor.query.filter(Actor.url == as_actor.id).first()
+        db_follow = Actor.query.filter(Actor.url == follow.id).first()
+        if not db_actor:
+            current_app.logger.error(f"cannot find actor {as_actor!r}")
+            return
+        if not db_follow:
+            current_app.logger.error(f"cannot find follow {follow!r}")
+            return
+
+        db_actor.follow(db_follow)
+        db.session.commit()
+        current_app.logger.info("new follower saved")
+
+    def new_following(self, as_actor: ap.Person, follow: ap.Follow) -> None:
+        current_app.logger.info("new following")
+        pass
+
+    def undo_new_follower(self, as_actor: ap.Person, follow: ap.Follow) -> None:
+        current_app.logger.info("undo follower")
+        db_actor = Actor.query.filter(Actor.url == as_actor.id).first()
+        db_follow = Actor.query.filter(Actor.url == follow.id).first()
+        if not db_actor:
+            current_app.logger.error(f"cannot find actor {as_actor!r}")
+            return
+        if not db_follow:
+            current_app.logger.error(f"cannot find follow {follow!r}")
+            return
+
+        db_actor.unfollow(db_follow)
+        db.session.commit()
+        current_app.logger.info("undo follower saved")
+
+    def undo_new_following(self, as_actor: ap.Person, follow: ap.Follow) -> None:
+        pass
+
     def save(self, box: Box, activity: ap.BaseActivity) -> None:
         """Save an Activity in database"""
 
@@ -237,6 +274,7 @@ def finish_inbox_processing(iri: str) -> None:
             # Reply to a Follow with an Accept
             accept = ap.Accept(actor=id, object=activity.to_dict(embed=True))
             post_to_outbox(accept)
+            backend.new_follower(activity.get_object(), activity.get_actor())
         elif activity.has_type(ap.ActivityType.UNDO):
             obj = activity.get_object()
             if obj.has_type(ap.ActivityType.LIKE):
@@ -264,6 +302,7 @@ def post_to_outbox(activity: ap.BaseActivity) -> str:
     activity.set_id(backend.activity_url(obj_id), obj_id)
 
     backend.save(Box.OUTBOX, activity)
+
     finish_post_to_outbox(activity.id)
     return activity.id
 
@@ -290,6 +329,12 @@ def finish_post_to_outbox(iri: str) -> None:
             backend.outbox_announce(actor, activity)
         elif activity.has_type(ap.ActivityType.LIKE):
             backend.outbox_like(actor, activity)
+        elif activity.has_type(ap.ActivityType.FOLLOW):
+            # Reply to a Follow with an Accept
+            # accept = ap.Accept(actor=id, object=activity.to_dict(embed=True))
+            # post_to_outbox(accept)
+            # not sure how to handle that, and it might be an Accept !
+            backend.new_following(activity.get_object(), activity.get_actor())
         elif activity.has_type(ap.ActivityType.UNDO):
             obj = activity.get_object()
             if obj.has_type(ap.ActivityType.LIKE):
