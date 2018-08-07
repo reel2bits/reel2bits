@@ -322,7 +322,7 @@ def post_to_remote_inbox(payload: str, to: str) -> None:
         current_app.logger.exception("no actor found")
         return
 
-    key = Key(owner=actor.name)
+    key = Key(owner=actor.url)
     key.load(actor.private_key)
 
     signature_auth = HTTPSigAuth(key)
