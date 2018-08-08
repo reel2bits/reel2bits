@@ -61,6 +61,7 @@ TODO
 # TODO
   - Transcode and serve FLAC as MP3 CBR (HTML5 doesn't support FLAC)
   - Transcode only for waveform OGG to MP3 CBR (audiowaveform doesn't support OGG)
+  - ActivityPub support is near zero; Only incoming following is handled, and it doesn't works with most of the other AP softwares....
 
 # Licensing
  - MIT License
