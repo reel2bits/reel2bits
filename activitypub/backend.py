@@ -66,13 +66,35 @@ class Reel2BitsBackend(ap.Backend):
         current_app.logger.info("new following")
         pass
 
-    def undo_new_follower(self, as_actor: ap.Person, follow: ap.Follow) \
+    def undo_new_follower(self, as_actor: ap.Person, object: ap.Follow) \
             -> None:
         current_app.logger.info("undo follower")
-        db_actor = Actor.query.filter(Actor.url == as_actor.id).first()
+        current_app.logger.debug(f"{as_actor!r} unfollow-undoed {object!r}")
+        # An unfollow is in fact "Undo an Activity"
+        # ActivityPub is trash.
+
+        undo_activity = object.id
+
+        # fetch the activity
+        activity = Activity.query.filter(Activity.url == undo_activity).first()
+        if not activity:
+            current_app.logger.error(f"cannot find activity"
+                                     f" to undo: {undo_activity}")
+            return
+
+        # Parse the activity
+        ap_activity = ap.parse_activity(activity.payload)
+        if not ap_activity:
+            current_app.logger.error(f"cannot parse undo follower activity")
+            return
+
+        actor = ap_activity.get_actor()
+        follow = ap_activity.get_object()
+
+        db_actor = Actor.query.filter(Actor.url == actor.id).first()
         db_follow = Actor.query.filter(Actor.url == follow.id).first()
         if not db_actor:
-            current_app.logger.error(f"cannot find actor {as_actor!r}")
+            current_app.logger.error(f"cannot find actor {actor!r}")
             return
         if not db_follow:
             current_app.logger.error(f"cannot find follow {follow!r}")
@@ -138,15 +160,14 @@ def post_to_inbox(activity: ap.BaseActivity) -> None:
 
     backend.save(Box.INBOX, activity)
 
-    process_new_activity(activity.id)
+    process_new_activity(activity)
 
-    finish_inbox_processing(activity.id)
+    finish_inbox_processing(activity)
 
 
 # TODO, this must move to Dramatiq queuing
-def process_new_activity(iri: str) -> None:
+def process_new_activity(activity: ap.BaseActivity) -> None:
     try:
-        activity = ap.fetch_remote_activity(iri)
         current_app.logger.info(f"activity={activity!r}")
 
         actor = activity.get_actor()
@@ -232,7 +253,7 @@ def process_new_activity(iri: str) -> None:
         if should_delete:
             current_app.logger.info(f"will soft delete {activity!r}")
 
-            current_app.logger.info(f"{iri} tag_stream={tag_stream}")
+            current_app.logger.info(f"{activity.id} tag_stream={tag_stream}")
         # Update Activity:
         #    {"remote_id": activity.id},
         #        "$set": {
@@ -240,25 +261,26 @@ def process_new_activity(iri: str) -> None:
         #           "meta.forwarded": should_forward,
         #           "meta.deleted": should_delete,
 
-        current_app.logger.info(f"new activity {iri} processed")
+        current_app.logger.info(f"new activity {activity.id} processed")
 
     except (ActivityGoneError, ActivityNotFoundError):
-        current_app.logger.exception(f"failed to process new activity {iri}")
+        current_app.logger.exception(f"failed to process new activity"
+                                     f" {activity.id}")
     except Exception as err:
-        current_app.logger.exception(f"failed to process new activity {iri}")
+        current_app.logger.exception(f"failed to process new activity"
+                                     f" {activity.id}")
 
 
 # TODO, this must move to Dramatiq queueing
-def finish_inbox_processing(iri: str) -> None:
+def finish_inbox_processing(activity: ap.BaseActivity) -> None:
     try:
-        activity = ap.fetch_remote_activity(iri)
         backend = ap.get_backend()
 
         current_app.logger.info(f"activity={activity!r}")
 
         actor = activity.get_actor()
         id = activity.get_object_id()
-        current_app.logger.debug(f"finish_inbox_processing actor {id}")
+        current_app.logger.debug(f"finish_inbox_processing actor {actor}")
 
         if activity.has_type(ap.ActivityType.DELETE):
             backend.inbox_delete(actor, activity)
@@ -288,7 +310,8 @@ def finish_inbox_processing(iri: str) -> None:
             NotAnActivityError):
         current_app.logger.exception(f"no retry")
     except Exception as err:
-        current_app.logger.exception(f"failed to cache attachments for {iri}")
+        current_app.logger.exception(f"failed to cache attachments for"
+                                     f" {activity.id}")
 
 
 def post_to_outbox(activity: ap.BaseActivity) -> str:

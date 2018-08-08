@@ -520,7 +520,7 @@ def create_remote_actor(activity_actor: ap.BaseActivity):
     actor.type = "Person"
     actor.name = activity_actor.preferredUsername  # mastodon don't have .name
     actor.manually_approves_followers = False
-    actor.url = activity_actor.url
+    actor.url = activity_actor.id  # FIXME: or .id ??? [cf backend.py:52-53]
     actor.shared_inbox_url = activity_actor._data\
         .get("endpoints", {}).get("sharedInbox")
     actor.inbox_url = activity_actor.inbox
