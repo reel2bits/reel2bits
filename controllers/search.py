@@ -1,9 +1,10 @@
 from flask import Blueprint, render_template, request, \
-    redirect, url_for, flash
+    redirect, url_for, flash, current_app
 from flask_babelex import gettext
 
 from models import User
 from little_boxes.webfinger import webfinger
+from little_boxes.urlutils import InvalidURLError
 
 bp_search = Blueprint('bp_search', __name__, url_prefix='/search')
 
@@ -24,7 +25,12 @@ def users():
                                who=who, users=local_users)
 
     if not local_users:
-        remote_user = webfinger(who)
+        try:
+            remote_user = webfinger(who)
+        except InvalidURLError:
+            current_app.logger.exception(f"Invalid webfinger URL: {who}")
+            remote_user = False
+
         if not remote_user:
             flash(gettext("User not found"), 'error')
             return redirect(url_for("bp_main.home"))
