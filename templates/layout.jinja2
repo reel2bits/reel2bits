@@ -67,6 +67,13 @@
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 {% if request.endpoint %}
+
+                    <form action="{{ url_for('bp_search.users') }}" class="navbar-form navbar-left" role="search" method="get">
+                      <div class="input-group">
+                        <input name="who" type="text" class="search-input form-control" placeholder="Search user">
+                      </div>
+                    </form>
+
                     <li class="{% if request.endpoint.startswith('bp_main.about') %}active{% endif %}"><a href="{{ url_for('bp_main.about') }}">{{ gettext('About') }}</a></li>
                     {% if current_user.is_authenticated %}
                         <li class="dropdown">

@@ -131,3 +131,9 @@ tr.play-song:hover {
 td.ast-duration {
     text-align: right;
 }
+
+.navbar-form .form-control {
+    display: inline-block;
+    width: 15em !important;
+    vertical-align: middle;
+}

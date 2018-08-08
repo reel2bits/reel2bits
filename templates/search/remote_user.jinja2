@@ -1,0 +1,19 @@
+{% extends "layout.jinja2" %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-10"><h3>{{ gettext("Searching for: <i>%(username)s</i>", username=who) }}</h3></div>
+    </div>
+
+    <br/>
+
+    <div class="row">
+        <div class="col-lg-10">
+            <div class="row_user">
+                Remote user: <a href="{{ user.url }}">{{ user.name }}@instance</a>
+                {{ user }}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
