@@ -66,7 +66,8 @@ class Reel2BitsBackend(ap.Backend):
         current_app.logger.info("new following")
         pass
 
-    def undo_new_follower(self, as_actor: ap.Person, follow: ap.Follow) -> None:
+    def undo_new_follower(self, as_actor: ap.Person, follow: ap.Follow) \
+            -> None:
         current_app.logger.info("undo follower")
         db_actor = Actor.query.filter(Actor.url == as_actor.id).first()
         db_follow = Actor.query.filter(Actor.url == follow.id).first()
@@ -81,7 +82,8 @@ class Reel2BitsBackend(ap.Backend):
         db.session.commit()
         current_app.logger.info("undo follower saved")
 
-    def undo_new_following(self, as_actor: ap.Person, follow: ap.Follow) -> None:
+    def undo_new_following(self, as_actor: ap.Person, follow: ap.Follow) \
+            -> None:
         pass
 
     def save(self, box: Box, activity: ap.BaseActivity) -> None:

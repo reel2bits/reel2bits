@@ -41,7 +41,7 @@ def embed_collection(total_items, first_page_id):
         "totalItems": total_items,
         "first": f"{first_page_id}?page=first",
         "id": first_page_id,
-}
+    }
 
 
 def add_extra_collection(item: Dict[str, Any]) -> Dict[str, Any]:
@@ -50,17 +50,17 @@ def add_extra_collection(item: Dict[str, Any]) -> Dict[str, Any]:
 
     item["object"]["replies"] = embed_collection(
         item.get("meta", {}).get("count_direct_reply", 0),
-        f'{raw_doc["remote_id"]}/replies',
+        f'{item["remote_id"]}/replies',
     )
 
     item["object"]["likes"] = embed_collection(
         item.get("meta", {}).get("count_like", 0),
-        f'{raw_doc["remote_id"]}/likes'
+        f'{item["remote_id"]}/likes'
     )
 
     item["object"]["shares"] = embed_collection(
         item.get("meta", {}).get("count_boost", 0),
-        f'{raw_doc["remote_id"]}/shares'
+        f'{item["remote_id"]}/shares'
     )
 
     return item
