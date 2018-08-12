@@ -1,38 +1,39 @@
-# French translations for PROJECT.
-# Copyright (C) 2017 ORGANIZATION
-# This file is distributed under the same license as the PROJECT project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
+# Polish translations for reel2bits.
+# Copyright (C) 2018 ORGANIZATION
+# This file is distributed under the same license as the reel2bits project.
+# Marcin Mikołajczak <me@m4sk.in>, 2018.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2018-08-12 15:45+0200\n"
-"PO-Revision-Date: 2017-01-02 08:23+0100\n"
-"Last-Translator: \n"
-"Language: fr\n"
-"Language-Team: fr <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n > 1)\n"
+"PO-Revision-Date: 2018-08-12 15:52+0200\n"
+"Last-Translator: Marcin Mikołajczak <me@m4sk.in>\n"
+"Language: pl\n"
+"Language-Team: pl <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.6.0\n"
+"X-Generator: Poedit 2.1.1\n"
 
 #: app.py:162 controllers/admin.py:53
 msgid "Config not found"
-msgstr "Configuration non trouvée"
+msgstr "Nie odnaleziono konfiguracji"
 
 #: app.py:202 app.py:209 app.py:216 app.py:224
 msgid "Whoops, something failed."
-msgstr ""
+msgstr "Ups, coś poszło nie tak."
 
 #: app.py:203
 msgid "Page not found"
-msgstr ""
+msgstr "Nie znaleziono strony"
 
 #: app.py:210
 msgid "Access forbidden"
-msgstr ""
+msgstr "Dostęp wzbroniony"
 
 #: app.py:217
 msgid "Gone"
@@ -40,71 +41,71 @@ msgstr ""
 
 #: app.py:226
 msgid "Something is broken"
-msgstr ""
+msgstr "Coś się zepsuło"
 
 #: forms.py:46
 msgid "Username required"
-msgstr "Nom d'utilisateur requis"
+msgstr "Nazwa użytkownika jest wymagana"
 
 #: forms.py:51
 msgid "Username already taken"
-msgstr "Nom d'utilisateur déjà pris"
+msgstr "Nazwa użytkownika jest już zajęta"
 
 #: forms.py:58
 msgid "Password"
-msgstr "Mot de passe"
+msgstr "Hasło"
 
 #: forms.py:59
 msgid "Name"
-msgstr "Nom"
+msgstr "Nazwa"
 
 #: forms.py:60
 msgid "Email"
-msgstr "Email"
+msgstr "E-mail"
 
 #: forms.py:61
 msgid "Firstname"
-msgstr "Prénom"
+msgstr "Imię"
 
 #: forms.py:62
 msgid "Lastname"
-msgstr "Nom"
+msgstr "Nazwisko"
 
 #: forms.py:63
 msgid "Timezone"
-msgstr "Fuseau horaire"
+msgstr "Strefa czasowa"
 
 #: forms.py:65
 msgid "Locale"
-msgstr "Langue"
+msgstr "Język"
 
 #: forms.py:67
 msgid "Update profile"
-msgstr "Mettre a jour le profil"
+msgstr "Aktualizuj profil"
 
 #: forms.py:72
 msgid "Instance Name"
-msgstr ""
+msgstr "Nazwa instancji"
 
 #: forms.py:73
 msgid "Instance description"
-msgstr ""
+msgstr "Opis instancji"
 
 #: forms.py:75
 msgid "Update config"
-msgstr "Mettre à jour la configuration"
+msgstr "Aktualizuj konfigurację"
 
 #: forms.py:87 forms.py:109 forms.py:130
 msgid "Title"
-msgstr "Titre"
+msgstr "Tytuł"
 
 #: forms.py:88
 msgid "File"
-msgstr "Fichier"
+msgstr "Plik"
 
 #: forms.py:90 forms.py:110 forms.py:133
 msgid "Private"
-msgstr "Privé"
+msgstr "Prywatny"
 
 #: forms.py:93 forms.py:114
 msgid "Album"
@@ -112,134 +113,134 @@ msgstr "Album"
 
 #: forms.py:94 forms.py:115
 msgid "No album"
-msgstr ""
+msgstr "Brak albumów"
 
 #: forms.py:98 forms.py:119 templates/sound/show.jinja2:114
 msgid "Licence"
-msgstr ""
+msgstr "Licencja"
 
 #: forms.py:103 forms.py:124
 msgid "Cannot put private sound in public album"
-msgstr "Impossible de mettre un son privé dans un album public"
+msgstr "Nie można dodać prywatnego utworu do publicznego albumu"
 
 #: forms.py:105 templates/layout.jinja2:63
 msgid "Upload"
-msgstr "Uploader"
+msgstr "Wyślij"
 
 #: forms.py:111 forms.py:132
 msgid "Description"
-msgstr "Description"
+msgstr "Opis"
 
 #: forms.py:126
 msgid "Edit sound"
-msgstr "Éditer le son"
+msgstr "Edytuj utwór"
 
 #: forms.py:135
 msgid "Save"
-msgstr "Sauver"
+msgstr "Zapisz"
 
 #: controllers/admin.py:19
 msgid "Application Logs"
-msgstr "Logs applicatifs"
+msgstr "Dziennik aplikacji"
 
 #: controllers/admin.py:49
 msgid "Application Config"
-msgstr "Configuration Applicative"
+msgstr "Konfiguracja aplikacji"
 
 #: controllers/admin.py:63
 msgid "Configuration updated"
-msgstr "Configuration mise-à-jour"
+msgstr "Zaktualizowano konfigurację"
 
 #: controllers/albums.py:17 templates/album/new.jinja2:7
 #: templates/layout.jinja2:64
 msgid "New album"
-msgstr "Nouvel album"
+msgstr "Nowy album"
 
 #: controllers/albums.py:35
 msgid "Created !"
-msgstr "Crée !"
+msgstr "Utworzono!"
 
 #: controllers/albums.py:48 controllers/search.py:35 controllers/sound.py:21
 #: controllers/users.py:54 controllers/users.py:112 controllers/users.py:132
 msgid "User not found"
-msgstr "Utilisateur non trouvé"
+msgstr "Nie znaleziono użytkownika"
 
 #: controllers/albums.py:53 controllers/albums.py:59 controllers/albums.py:62
 #: controllers/albums.py:80
 msgid "Album not found"
-msgstr "Album non trouvé"
+msgstr "Nie znaleziono albumu"
 
 #: controllers/albums.py:84 controllers/sound.py:161 controllers/sound.py:203
 msgid "Forbidden"
-msgstr ""
+msgstr "Zabroniono"
 
 #: controllers/albums.py:87 controllers/sound.py:164
 #, python-format
 msgid "Edit %(value)s"
-msgstr "Éditer %(value)s"
+msgstr "Edytuj %(value)s"
 
 #: controllers/albums.py:112
 msgid "Public album cannot have private sounds"
-msgstr "Un album public ne peut avoir de son privé"
+msgstr "Publiczny album nie może zawierać prywatnych utworów"
 
 #: controllers/main.py:12
 msgid "Home"
-msgstr "Accueil"
+msgstr "Strona główna"
 
 #: controllers/search.py:15
 msgid "Search user"
-msgstr ""
+msgstr "Szukaj użytkownika"
 
 #: controllers/sound.py:33 controllers/sound.py:39 controllers/sound.py:42
 #: controllers/sound.py:157 controllers/sound.py:199
 msgid "Sound not found"
-msgstr "Son non trouvé"
+msgstr "Nie znaleziono utworu"
 
 #: controllers/sound.py:92 templates/sound/upload.jinja2:7
 msgid "New upload"
-msgstr "Nouvel upload"
+msgstr "Nowe wysyłanie"
 
 #: controllers/sound.py:139
 msgid "Uploaded !"
-msgstr "Envoyé !"
+msgstr "Wysłano!"
 
 #: controllers/users.py:19
 msgid "User Logs"
-msgstr "Logs utilisateur"
+msgstr "Dziennik użytkownika"
 
 #: controllers/users.py:50 controllers/users.py:108
 #: templates/users/profile.jinja2:13 templates/users/profile_albums.jinja2:13
 #, python-format
 msgid "%(value)s' profile"
-msgstr "Profil de %(value)s"
+msgstr "Profil %(value)s"
 
 #: controllers/users.py:128
 msgid "Edit my profile"
-msgstr "Éditer mon profile"
+msgstr "Edytuj profil"
 
 #: controllers/users.py:150
 msgid "Profile updated"
-msgstr ""
+msgstr "Zaktualizowano profil"
 
 #: templates/about.jinja2:19
 #, python-format
 msgid "reel2bits is developped by %(dashie)s and is available under MIT license."
-msgstr ""
+msgstr "reel2bits jest rozwijany przez %(dashie)s i jest dostępny na licencji MIT."
 
 #: templates/about.jinja2:21
 #, python-format
 msgid "Source code is here: %(link)s"
-msgstr ""
+msgstr "Kod źródłowy znajduje się tutaj: %(link)s"
 
 #: templates/about.jinja2:22
 #, python-format
 msgid "Issue tracker is here: %(link)s"
-msgstr ""
+msgstr "Błędy mogą zostać zgłoszone tutaj: %(link)s"
 
 #: templates/error_page.jinja2:7
 #, python-format
 msgid "Maybe you can go back to the %(link)s."
-msgstr ""
+msgstr "Możesz wrócić do %(link)s"
 
 #: templates/error_page.jinja2:7
 msgid "index"
@@ -247,222 +248,222 @@ msgstr ""
 
 #: templates/layout.jinja2:53
 msgid "Toggle navigation"
-msgstr "Inverser la navigation"
+msgstr "Przełącz nawigację"
 
 #: templates/layout.jinja2:65
 msgid "My Profile"
-msgstr "Mon profil"
+msgstr "Mój profil"
 
 #: templates/layout.jinja2:77
 msgid "About"
-msgstr "À propos"
+msgstr "O reel2bits"
 
 #: templates/layout.jinja2:80 templates/layout.jinja2:118
 #, python-format
 msgid "Logged as %(username)s"
-msgstr "Connecté sous %(username)s"
+msgstr "Zalogowano jako %(username)s"
 
 #: templates/admin/logs.jinja2:24 templates/layout.jinja2:82
 msgid "User"
-msgstr "Utilisateur"
+msgstr "Użytkownik"
 
 #: templates/layout.jinja2:83
 msgid "Profile"
-msgstr "Profile"
+msgstr "Profil"
 
 #: templates/layout.jinja2:84
 msgid "Logs"
-msgstr "Logs"
+msgstr "Dziennik"
 
 #: templates/layout.jinja2:87
 msgid "Admin"
-msgstr "Administrateur"
+msgstr "Administrator"
 
 #: templates/layout.jinja2:88
 msgid "App config"
-msgstr "Configuration applicative"
+msgstr "Konfiguracja aplikajci"
 
 #: templates/layout.jinja2:89
 msgid "App logs"
-msgstr "Logs applicatifs"
+msgstr "Dziennik aplikacji"
 
 #: templates/layout.jinja2:92
 msgid "Change password"
-msgstr "Changer mot de passe"
+msgstr "Zmień hasło"
 
 #: templates/layout.jinja2:93
 msgid "Logout"
-msgstr "Se déconnecter"
+msgstr "Wyloguj się"
 
 #: templates/layout.jinja2:98
 msgid "Register"
-msgstr "S'enregistrer"
+msgstr "Zarejestruj się"
 
 #: templates/layout.jinja2:100
 msgid "Login"
-msgstr "Se connecter"
+msgstr "Zaloguj się"
 
 #: templates/layout.jinja2:118
 #, python-format
 msgid "version: %(version)s"
-msgstr ""
+msgstr "wersja: %(version)s"
 
 #: templates/layout.jinja2:121
 msgid "Sources"
-msgstr ""
+msgstr "Źródła"
 
 #: templates/layout.jinja2:123
 msgid "Back to top"
-msgstr "Retour en haut"
+msgstr "Wróć na górę"
 
 #: templates/admin/config.jinja2:8
 msgid "Edit application config"
-msgstr "Éditer la configuration applicative"
+msgstr "Edytuj konfigurację"
 
 #: templates/admin/logs.jinja2:6
 msgid "Application logs (latest 100)"
-msgstr "Logs applicatifs (100 derniers)"
+msgstr "Dziennik aplikacji (ostatnie 100 zdarzeń)"
 
 #: templates/admin/logs.jinja2:9 templates/users/user_logs.jinja2:9
 msgid "Show only:"
-msgstr "Voir:"
+msgstr "Pokaż tylko:"
 
 #: templates/admin/logs.jinja2:10 templates/users/user_logs.jinja2:10
 msgid "all"
-msgstr "tous"
+msgstr "wszystko"
 
 #: templates/admin/logs.jinja2:11 templates/users/user_logs.jinja2:11
 msgid "info"
-msgstr "info"
+msgstr "informacje"
 
 #: templates/admin/logs.jinja2:12 templates/users/user_logs.jinja2:12
 msgid "warning"
-msgstr "attention"
+msgstr "ostrzeżenia"
 
 #: templates/admin/logs.jinja2:13 templates/users/user_logs.jinja2:13
 msgid "error"
-msgstr "erreur"
+msgstr "błędy"
 
 #: templates/admin/logs.jinja2:21 templates/users/user_logs.jinja2:21
 msgid "Date"
-msgstr "Date"
+msgstr "Data"
 
 #: templates/admin/logs.jinja2:22 templates/users/user_logs.jinja2:22
 msgid "Category"
-msgstr "Catégorie"
+msgstr "Kategoria"
 
 #: templates/admin/logs.jinja2:23 templates/users/user_logs.jinja2:23
 msgid "Level"
-msgstr "Niveau"
+msgstr "Poziom"
 
 #: templates/admin/logs.jinja2:25 templates/users/user_logs.jinja2:25
 msgid "Message"
-msgstr "Message"
+msgstr "Wiadomość"
 
 #: templates/admin/logs.jinja2:26
 msgid "Actions"
-msgstr "Actions"
+msgstr "Działania"
 
 #: templates/admin/logs.jinja2:40 templates/album/show.jinja2:92
 #: templates/album/show.jinja2:130 templates/sound/show.jinja2:89
 #: templates/users/user_logs.jinja2:47
 msgid "yes really"
-msgstr "oui vraiment"
+msgstr "tak, na pewno"
 
 #: templates/admin/logs.jinja2:40 templates/album/show.jinja2:92
 #: templates/album/show.jinja2:130 templates/sound/show.jinja2:89
 #: templates/users/user_logs.jinja2:47
 msgid "delete"
-msgstr "supprimer"
+msgstr "usuń"
 
 #: templates/admin/logs.jinja2:64 templates/users/user_logs.jinja2:71
 msgid "Log deletion"
-msgstr "Suppression de logs"
+msgstr "Usuwanie zdarzeń"
 
 #: templates/admin/logs.jinja2:64 templates/users/user_logs.jinja2:71
 msgid "An error occured"
-msgstr "Une erreur est survenue"
+msgstr "Wystąpił błąd"
 
 #: templates/album/edit.jinja2:7
 msgid "Edit album"
-msgstr ""
+msgstr "Edytuj album"
 
 #: templates/album/edit.jinja2:15 templates/album/new.jinja2:15
 #: templates/sound/edit.jinja2:15 templates/sound/upload.jinja2:15
 msgid "What's the title ?"
-msgstr "Quel est le titre ?"
+msgstr "Jaki tytuł?"
 
 #: templates/album/edit.jinja2:16 templates/sound/edit.jinja2:16
 msgid "Add a nice description ?"
-msgstr "Une description sympathique ?"
+msgstr "Dodasz ciekawy opis?"
 
 #: templates/album/edit.jinja2:19 templates/sound/edit.jinja2:24
 #: templates/users/edit.jinja2:27
 msgid "Cancel edit"
-msgstr "Annuler l'édition"
+msgstr "Anuluj edycję"
 
 #: templates/album/show.jinja2:31 templates/sound/show.jinja2:39
 #: templates/users/profile.jinja2:48 templates/users/profile_albums.jinja2:37
 #, python-format
 msgid "%(value)s ago"
-msgstr "il-y-à %(value)s"
+msgstr "%(value)s temu"
 
 #: templates/album/show.jinja2:126 templates/sound/show.jinja2:85
 msgid "edit"
-msgstr "éditer"
+msgstr "edytuj"
 
 #: templates/album/show.jinja2:136
 msgid "This album is empty."
-msgstr "Cet album est vide."
+msgstr "Ten album jest pusty."
 
 #: templates/search/local_user.jinja2:5 templates/search/remote_user.jinja2:5
 #, python-format
 msgid "Searching for: <i>%(username)s</i>"
-msgstr ""
+msgstr "Wyszukiwanie: <i>%(username)s</i>"
 
 #: templates/security/change_password.html:9
 msgid "Set a new password"
-msgstr "Changer le mot de passe"
+msgstr "Ustaw nie hasło"
 
 #: templates/security/forgot_password.html:8
 msgid "You lost your password ? :'("
-msgstr "Vous avez perdu votre mot de passe ? :'("
+msgstr "Zapomniałeś(-aś) hasła? :'("
 
 #: templates/security/login_user.html:9
 msgid "Please Sign In"
-msgstr "Veuillez vous connecter"
+msgstr "Proszę zalogować się"
 
 #: templates/security/register_user.html:8
 msgid "Register user"
-msgstr "Enregistrer un utilisateur"
+msgstr "Zarejestruj użytkownika"
 
 #: templates/sound/edit.jinja2:7
 msgid "Edit upload"
-msgstr "Éditer l'upload"
+msgstr "Edytuj"
 
 #: templates/sound/edit.jinja2:18 templates/sound/upload.jinja2:18
 msgid "If you want to add to a new album you need to create it separately."
-msgstr "Si vous voulez ajouter à un nouvel album, vous devez le créer séparément."
+msgstr "Jeżeli chcesz dodać utwór do nowego albumu, musisz go utworzyć oddzielnie."
 
 #: templates/sound/show.jinja2:24 templates/users/profile.jinja2:65
 msgid "Please wait, song metadatas are processing..."
-msgstr "Veuillez attendre, les métadonnés sont en cours de traitement..."
+msgstr "Poczekaj, metadane utworu są przetwarzane…"
 
 #: templates/sound/show.jinja2:28
 msgid "Please wait, transcoding is on her way..."
-msgstr ""
+msgstr "Poczekaj, trwa transkodowanie…"
 
 #: templates/sound/show.jinja2:110 templates/users/profile.jinja2:57
 msgid "In album:"
-msgstr "Dans l'album:"
+msgstr "W albumie:"
 
 #: templates/sound/show.jinja2:130
 msgid "Type"
-msgstr "Type"
+msgstr "Rodzaj"
 
 #: templates/sound/show.jinja2:131
 msgid "Codec"
-msgstr "Encodeur"
+msgstr "Kodek"
 
 #: templates/sound/show.jinja2:132
 msgid "Format"
@@ -470,58 +471,58 @@ msgstr "Format"
 
 #: templates/sound/show.jinja2:133
 msgid "Channels"
-msgstr "Cannaux"
+msgstr "Kanały"
 
 #: templates/sound/show.jinja2:134
 msgid "Rate"
-msgstr "Rate"
+msgstr ""
 
 #: templates/sound/show.jinja2:137 templates/sound/show.jinja2:140
 msgid "Bitrate"
-msgstr "Bitrate"
+msgstr "Przepustowość"
 
 #: templates/sound/show.jinja2:144
 msgid "Bitrate mode"
-msgstr "Bitrate mode"
+msgstr "Rodzaj przepustowości"
 
 #: templates/users/edit.jinja2:8
 #, python-format
 msgid "Edit profile - %(username)s"
-msgstr "Éditer le profil - %(username)s"
+msgstr "Edytuj profil — %(username)s"
 
 #: templates/users/profile.jinja2:18 templates/users/profile_albums.jinja2:18
 msgid "all sounds"
-msgstr "tous les sons"
+msgstr "wszystkie utwory"
 
 #: templates/users/profile.jinja2:19 templates/users/profile_albums.jinja2:19
 msgid "all albums"
-msgstr "tous les albums"
+msgstr "wszystkie albumy"
 
 #: templates/users/profile.jinja2:23 templates/users/profile_albums.jinja2:23
 msgid "Edit profile"
-msgstr "Éditer le profil"
+msgstr "Edytuj profil"
 
 #: templates/users/profile.jinja2:74
 msgid "This user haven't uploaded any sound :( !"
-msgstr "Cet utilisateur n'a rien uploadé :( !"
+msgstr "Ten użytkownik nie opublikował jeszcze żadnego utworu! :("
 
 #: templates/users/profile_albums.jinja2:38
 #, python-format
 msgid "%(nb)s tracks"
-msgstr "%(nb)s pistes"
+msgstr "%(nb)s utwory"
 
 #: templates/users/profile_albums.jinja2:48
 msgid "This user haven't created any album !"
-msgstr "Cet utilisateur n'a crée aucuns album !"
+msgstr "Ten Użytkownik nie utworzył jeszcze żadnego albumu!"
 
 #: templates/users/user_logs.jinja2:6
 #, python-format
 msgid "%(username)s's logs (latest 100)"
-msgstr "Logs de %(username)s (100 derniers)"
+msgstr "Dziennik użytkownika %(username)s (ostatnie 100 zdarzeń)"
 
 #: templates/users/user_logs.jinja2:24
 msgid "Item ID"
-msgstr ""
+msgstr "ID elementu"
 
 #~ msgid ""
 #~ "reel2bits is developped by %(dashie)s "
@@ -567,4 +568,3 @@ msgstr ""
 
 #~ msgid "Sound"
 #~ msgstr "Son"
-

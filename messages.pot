@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2018-08-04 21:43+0200\n"
+"POT-Creation-Date: 2018-08-12 15:45+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,27 +17,27 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.6.0\n"
 
-#: app.py:143 controllers/admin.py:53
+#: app.py:162 controllers/admin.py:53
 msgid "Config not found"
 msgstr ""
 
-#: app.py:181 app.py:188 app.py:195 app.py:203
+#: app.py:202 app.py:209 app.py:216 app.py:224
 msgid "Whoops, something failed."
 msgstr ""
 
-#: app.py:182
+#: app.py:203
 msgid "Page not found"
 msgstr ""
 
-#: app.py:189
+#: app.py:210
 msgid "Access forbidden"
 msgstr ""
 
-#: app.py:196
+#: app.py:217
 msgid "Gone"
 msgstr ""
 
-#: app.py:205
+#: app.py:226
 msgid "Something is broken"
 msgstr ""
 
@@ -158,8 +158,8 @@ msgstr ""
 msgid "Created !"
 msgstr ""
 
-#: controllers/albums.py:48 controllers/sound.py:21 controllers/users.py:52
-#: controllers/users.py:73 controllers/users.py:93
+#: controllers/albums.py:48 controllers/search.py:35 controllers/sound.py:21
+#: controllers/users.py:54 controllers/users.py:112 controllers/users.py:132
 msgid "User not found"
 msgstr ""
 
@@ -185,6 +185,10 @@ msgstr ""
 msgid "Home"
 msgstr ""
 
+#: controllers/search.py:15
+msgid "Search user"
+msgstr ""
+
 #: controllers/sound.py:33 controllers/sound.py:39 controllers/sound.py:42
 #: controllers/sound.py:157 controllers/sound.py:199
 msgid "Sound not found"
@@ -198,21 +202,21 @@ msgstr ""
 msgid "Uploaded !"
 msgstr ""
 
-#: controllers/users.py:18
+#: controllers/users.py:19
 msgid "User Logs"
 msgstr ""
 
-#: controllers/users.py:48 controllers/users.py:69
+#: controllers/users.py:50 controllers/users.py:108
 #: templates/users/profile.jinja2:13 templates/users/profile_albums.jinja2:13
 #, python-format
 msgid "%(value)s' profile"
 msgstr ""
 
-#: controllers/users.py:89
+#: controllers/users.py:128
 msgid "Edit my profile"
 msgstr ""
 
-#: controllers/users.py:111
+#: controllers/users.py:150
 msgid "Profile updated"
 msgstr ""
 
@@ -248,65 +252,65 @@ msgstr ""
 msgid "My Profile"
 msgstr ""
 
-#: templates/layout.jinja2:70
+#: templates/layout.jinja2:77
 msgid "About"
 msgstr ""
 
-#: templates/layout.jinja2:73 templates/layout.jinja2:111
+#: templates/layout.jinja2:80 templates/layout.jinja2:118
 #, python-format
 msgid "Logged as %(username)s"
 msgstr ""
 
-#: templates/admin/logs.jinja2:24 templates/layout.jinja2:75
+#: templates/admin/logs.jinja2:24 templates/layout.jinja2:82
 msgid "User"
 msgstr ""
 
-#: templates/layout.jinja2:76
+#: templates/layout.jinja2:83
 msgid "Profile"
 msgstr ""
 
-#: templates/layout.jinja2:77
+#: templates/layout.jinja2:84
 msgid "Logs"
 msgstr ""
 
-#: templates/layout.jinja2:80
+#: templates/layout.jinja2:87
 msgid "Admin"
 msgstr ""
 
-#: templates/layout.jinja2:81
+#: templates/layout.jinja2:88
 msgid "App config"
 msgstr ""
 
-#: templates/layout.jinja2:82
+#: templates/layout.jinja2:89
 msgid "App logs"
 msgstr ""
 
-#: templates/layout.jinja2:85
+#: templates/layout.jinja2:92
 msgid "Change password"
 msgstr ""
 
-#: templates/layout.jinja2:86
+#: templates/layout.jinja2:93
 msgid "Logout"
 msgstr ""
 
-#: templates/layout.jinja2:91
+#: templates/layout.jinja2:98
 msgid "Register"
 msgstr ""
 
-#: templates/layout.jinja2:93
+#: templates/layout.jinja2:100
 msgid "Login"
 msgstr ""
 
-#: templates/layout.jinja2:111
+#: templates/layout.jinja2:118
 #, python-format
 msgid "version: %(version)s"
 msgstr ""
 
-#: templates/layout.jinja2:114
+#: templates/layout.jinja2:121
 msgid "Sources"
 msgstr ""
 
-#: templates/layout.jinja2:116
+#: templates/layout.jinja2:123
 msgid "Back to top"
 msgstr ""
 
@@ -408,6 +412,11 @@ msgstr ""
 
 #: templates/album/show.jinja2:136
 msgid "This album is empty."
+msgstr ""
+
+#: templates/search/local_user.jinja2:5 templates/search/remote_user.jinja2:5
+#, python-format
+msgid "Searching for: <i>%(username)s</i>"
 msgstr ""
 
 #: templates/security/change_password.html:9
