@@ -3,8 +3,10 @@ from flask import Blueprint, render_template, request, \
 from flask_babelex import gettext
 
 from models import User
-from little_boxes.webfinger import webfinger
+from little_boxes.webfinger import get_actor_url
 from little_boxes.urlutils import InvalidURLError
+from little_boxes import activitypub as ap
+from urllib.parse import urlparse
 
 bp_search = Blueprint('bp_search', __name__, url_prefix='/search')
 
@@ -26,14 +28,28 @@ def users():
 
     if not local_users:
         try:
-            remote_user = webfinger(who)
+            remote_actor_url = get_actor_url(who, debug=current_app.debug)
         except InvalidURLError:
             current_app.logger.exception(f"Invalid webfinger URL: {who}")
-            remote_user = False
+            remote_actor_url = None
 
-        if not remote_user:
+        if not remote_actor_url:
             flash(gettext("User not found"), 'error')
             return redirect(url_for("bp_main.home"))
 
+        # We need to get the remote Actor
+        backend = ap.get_backend()
+        iri = backend.fetch_iri(remote_actor_url)
+        if not iri:
+            flash(gettext("User not found"), 'error')
+            return redirect(url_for("bp_main.home"))
+
+        domain = urlparse(iri['url'])
+        user = {
+            'name': iri['preferredUsername'],
+            'instance': domain.netloc,
+            'url': iri['url']
+        }
+
         return render_template('search/remote_user.jinja2', pcfg=pcfg,
-                               who=who, user=remote_user)
+                               who=who, user=user)

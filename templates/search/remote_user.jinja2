@@ -10,8 +10,7 @@
     <div class="row">
         <div class="col-lg-10">
             <div class="row_user">
-                Remote user: <a href="{{ user.url }}">{{ user.name }}@instance</a>
-                {{ user }}
+                Remote user: <a href="{{ user['url'] }}">{{ user['name'] }}@{{ user['instance'] }}</a>
             </div>
         </div>
     </div>
