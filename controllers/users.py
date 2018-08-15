@@ -123,28 +123,8 @@ def actor_json(name):
     actors = user.actor
     if len(actors) <= 0:
         return Response("", status=500)
-    actor = actors[0]
 
-    resp = {
-        "@context": [
-            "https://www.w3.org/ns/activitystreams",
-            "https://w3id.org/security/v1",
-        ],
-        "id": actor.url,
-        "type": actor.type.code,
-        "preferredUsername": actor.preferred_username,
-        "inbox": actor.inbox_url,
-        "outbox": actor.outbox_url,
-        "manuallyApprovesFollowers": actor.manually_approves_followers,
-        "publicKey": {
-            "id": actor.private_key_id(),
-            "owner": actor.url,
-            "publicKeyPem": actor.public_key,
-        },
-        "endpoints": {"sharedInbox": actor.shared_inbox_url},
-    }
-
-    response = jsonify(resp)
+    response = jsonify(actors[0].to_dict())
     response.mimetype = "application/activity+json; charset=utf-8"
     return response
 
@@ -229,7 +209,7 @@ def follow():
             return redirect(url_for("bp_users.profile", name=current_user.name))
 
         # 2. Check if we have a local user
-        actor_target = Actor.query.find(Actor.url == remote_actor_url).first()
+        actor_target = Actor.query.filter(Actor.url == remote_actor_url).first()
 
         if not actor_target:
             # 2.5 Fetch and save remote actor
@@ -243,7 +223,7 @@ def follow():
             db.session.add(actor_target)
 
         # 3. Initiate a Follow request from actor_me to actor_target
-        follow = ap.Follow(actor=actor_me, object=actor_target)
+        follow = ap.Follow(actor=actor_me.to_dict(), object=actor_target.to_dict())
         post_to_outbox(follow)
 
     return redirect(url_for("bp_users.profile", name=current_user.name))

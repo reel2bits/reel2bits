@@ -484,6 +484,26 @@ class Actor(db.Model):
             self.followers.remove(target)
             # target.followers.remove(self)
 
+    def to_dict(self):
+        return {
+            "@context": [
+                "https://www.w3.org/ns/activitystreams",
+                "https://w3id.org/security/v1",
+            ],
+            "id": self.url,
+            "type": self.type.code,
+            "preferredUsername": self.preferred_username,
+            "inbox": self.inbox_url,
+            "outbox": self.outbox_url,
+            "manuallyApprovesFollowers": self.manually_approves_followers,
+            "publicKey": {
+                "id": self.private_key_id(),
+                "owner": self.url,
+                "publicKeyPem": self.public_key,
+            },
+            "endpoints": {"sharedInbox": self.shared_inbox_url},
+        }
+
 
 class Activity(db.Model):
     __tablename__ = "activity"
