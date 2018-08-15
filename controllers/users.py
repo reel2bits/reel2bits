@@ -1,13 +1,17 @@
 import pytz
 from flask import Blueprint, render_template, request, \
-    redirect, url_for, flash, Response, json, jsonify
+    redirect, url_for, flash, Response, json, jsonify, current_app
 from flask_babelex import gettext
 from flask_security import login_required, current_user
 
 from forms import UserProfileForm
-from models import db, User, UserLogging, Sound, Album, follower
+from models import db, User, UserLogging, Sound, Album, follower, \
+    Actor, create_remote_actor
 from utils import add_user_log
 from flask_accept import accept_fallback
+from little_boxes.webfinger import get_actor_url
+from little_boxes.urlutils import InvalidURLError
+from little_boxes import activitypub as ap
 
 bp_users = Blueprint('bp_users', __name__)
 
@@ -160,3 +164,51 @@ def edit():
 
     return render_template('users/edit.jinja2', pcfg=pcfg,
                            form=form, user=user)
+
+
+@bp_users.route('/account/follow', methods=['GET'])
+@login_required
+def follow():
+    user = request.args.get("user")
+
+    actor_me = current_user.actor[0]
+
+    local_user = User.query.filter(User.name == user).first()
+
+    if local_user:
+        # Process local follow
+        actor_me.follow(local_user.actor[0])
+        flash(gettext("Follow successful"), "success")
+    else:
+        # Might be a remote follow
+
+        # 1. Webfinger the user
+        try:
+            remote_actor_url = get_actor_url(user, debug=current_app.debug)
+        except InvalidURLError:
+            current_app.logger.exception(f"Invalid webfinger URL: {user}")
+            remote_actor_url = None
+
+        if not remote_actor_url:
+            flash(gettext("User not found"), 'error')
+            return redirect(url_for("bp_users.profile",
+                                    name=current_user.name))
+
+        # 2. Check if we have a local user
+        actor_target = Actor.query.find(Actor.url == remote_actor_url).first()
+
+        if not actor_target:
+            # 2.5 Fetch and save remote actor
+            backend = ap.get_backend()
+            iri = backend.fetch_iri(remote_actor_url)
+            if not iri:
+                flash(gettext("User not found"), 'error')
+                return redirect(url_for("bp_main.home"))
+            act = ap.parse_activity(iri)
+            actor_target = create_remote_actor(act)
+            db.session.add(actor_target)
+
+        # 3. Initiate a Follow request from actor_me to actor_target
+        # how the fuck did I do that
+
+    return redirect(url_for("bp_users.profile", name=current_user.name))
