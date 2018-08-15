@@ -1,0 +1,9 @@
+[tool.black]
+exclude = '''
+/(
+    \.git
+  | \.eggs
+  | \.idea
+  | \__pycache__
+)/
+'''
