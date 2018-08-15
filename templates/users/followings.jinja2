@@ -1,0 +1,24 @@
+{% extends "layout.jinja2" %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-10"><h3>{{ gettext("Followings of") }} <a href="{{ url_for("bp_users.profile", name=user.name) }}">{{ user.name }}</a></h3></div>
+    </div>
+
+    <br/>
+
+    <div class="row">
+        <div class="col-lg-10">
+            {% for f in followers %}
+            <div class="row_user">
+                {% if f.domain %}
+                remote: {{ f.id }}, <a href="{{ f.url }}">{{ f.name }}</a>@{{ f.domain }}
+                {% else %}
+                local: {{ f.id }}, {{ f.name }}
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+{% endblock %}

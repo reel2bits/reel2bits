@@ -1,10 +1,12 @@
-from flask import Blueprint, request, abort, current_app, Response, jsonify
+from flask import Blueprint, request, abort, current_app, Response, jsonify, \
+    flash, render_template, redirect, url_for
 from little_boxes import activitypub
 from little_boxes.httpsig import verify_request
 from activitypub.backend import post_to_inbox, Box
 from activitypub.utils import activity_from_doc, build_ordered_collection
-from models import Activity, User
-
+from models import Activity, User, db, follower
+from flask_accept import accept_fallback
+from flask_babelex import gettext
 
 bp_ap = Blueprint('bp_ap', __name__)
 
@@ -63,7 +65,45 @@ def user_outbox(name):
     current_app.logger.debug(f"raw_data={data}")
 
 
+@bp_ap.route('/user/<string:name>/followings', methods=['GET'])
+@accept_fallback
+def followings(name):
+    pcfg = {"title": gettext(u"%(username)s' followings", username=name)}
+
+    user = User.query.filter(User.name == name).first()
+    if not user:
+        flash(gettext("User not found"), 'error')
+        return redirect(url_for("bp_main.home"))
+
+    followings = db.session.query(follower).filter(
+        follower.c.target_id == user.actor[0].id)
+
+    return render_template('users/followings.jinja2',
+                           pcfg=pcfg,
+                           user=user,
+                           actor=user.actor[0],
+                           followings=followings)
+
+
+@bp_ap.route('/user/<string:name>/followers', methods=['GET'])
+@accept_fallback
+def followers(name):
+    pcfg = {"title": gettext(u"%(username)s' followers", username=name)}
+
+    user = User.query.filter(User.name == name).first()
+    if not user:
+        flash(gettext("User not found"), 'error')
+        return redirect(url_for("bp_main.home"))
+
+    return render_template('users/followers.jinja2',
+                           pcfg=pcfg,
+                           user=user,
+                           actor=user.actor[0],
+                           followers=user.actor[0].followers)
+
+
 @bp_ap.route('/user/<string:name>/followers', methods=["GET", "POST"])
+@followers.support('application/json', 'application/activity+json')
 def user_followers(name):
     be = activitypub.get_backend()
     if not be:

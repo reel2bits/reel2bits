@@ -5,7 +5,7 @@ from flask_babelex import gettext
 from flask_security import login_required, current_user
 
 from forms import UserProfileForm
-from models import db, User, UserLogging, Sound, Album
+from models import db, User, UserLogging, Sound, Album, follower
 from utils import add_user_log
 from flask_accept import accept_fallback
 
@@ -62,8 +62,15 @@ def profile(name):
             Sound.private.is_(False),
             Sound.transcode_state == Sound.TRANSCODE_DONE)
 
+    # FIXME: might be wrong, to check when following will be implemented
+    followings = db.session.query(follower).filter(
+        follower.c.target_id == user.actor[0].id).count()
+    followers = db.session.query(follower).filter(
+        follower.c.actor_id == user.actor[0].id).count()
+
     return render_template('users/profile.jinja2', pcfg=pcfg,
-                           user=user, sounds=sounds)
+                           user=user, sounds=sounds,
+                           followings=followings, followers=followers)
 
 
 @bp_users.route('/user/<string:name>', methods=['GET'])

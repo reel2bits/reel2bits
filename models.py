@@ -379,6 +379,9 @@ ACTOR_TYPE_CHOICES = [
     ("Service", "Service"),
 ]
 
+# This table keeps followings in every way
+# (remote to local, local to local, to remote...)
+# Query this table directly to get list for a specific actor or target
 follower = db.Table(
     'followers',
     db.metadata,
@@ -449,16 +452,16 @@ class Actor(db.Model):
         return self.domain == current_app.config['AP_DOMAIN']
 
     def follow(self, target):
-        # FIXME untested logic
+        # FIXME to check when following will be implemented
         if target not in self.followers:
             self.followers.append(target)
-            target.followers.append(self)
+            # target.followers.append(self)
 
     def unfollow(self, target):
-        # FIXME untested logic
+        # FIXME same
         if target in self.followers:
             self.followers.remove(target)
-            target.followers.remove(self)
+            # target.followers.remove(self)
 
 
 class Activity(db.Model):
