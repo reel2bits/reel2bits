@@ -30,6 +30,7 @@ from flask_accept import accept_fallback
 from little_boxes.webfinger import get_actor_url
 from little_boxes.urlutils import InvalidURLError
 from little_boxes import activitypub as ap
+from activitypub.backend import post_to_outbox
 
 bp_users = Blueprint("bp_users", __name__)
 
@@ -214,6 +215,8 @@ def follow():
     else:
         # Might be a remote follow
 
+        # TODO: check if we don't already follow the remote actor
+
         # 1. Webfinger the user
         try:
             remote_actor_url = get_actor_url(user, debug=current_app.debug)
@@ -240,6 +243,7 @@ def follow():
             db.session.add(actor_target)
 
         # 3. Initiate a Follow request from actor_me to actor_target
-        # how the fuck did I do that
+        follow = ap.Follow(actor=actor_me, object=actor_target)
+        post_to_outbox(follow)
 
     return redirect(url_for("bp_users.profile", name=current_user.name))
