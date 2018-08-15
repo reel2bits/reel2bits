@@ -7,17 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2018-08-12 15:45+0200\n"
+"POT-Creation-Date: 2018-08-15 08:29+0200\n"
 "PO-Revision-Date: 2018-08-12 15:52+0200\n"
 "Last-Translator: Marcin Mikołajczak <me@m4sk.in>\n"
 "Language: pl\n"
 "Language-Team: pl <LL@li.org>\n"
-"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && "
+"(n%100<10 || n%100>=20) ? 1 : 2)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.6.0\n"
-"X-Generator: Poedit 2.1.1\n"
 
 #: app.py:162 controllers/admin.py:53
 msgid "Config not found"
@@ -160,8 +160,9 @@ msgstr "Nowy album"
 msgid "Created !"
 msgstr "Utworzono!"
 
-#: controllers/albums.py:48 controllers/search.py:35 controllers/sound.py:21
-#: controllers/users.py:54 controllers/users.py:112 controllers/users.py:132
+#: controllers/albums.py:48 controllers/search.py:37 controllers/search.py:44
+#: controllers/sound.py:21 controllers/users.py:54 controllers/users.py:112
+#: controllers/users.py:132
 msgid "User not found"
 msgstr "Nie znaleziono użytkownika"
 
@@ -176,8 +177,8 @@ msgstr "Zabroniono"
 
 #: controllers/albums.py:87 controllers/sound.py:164
 #, python-format
-msgid "Edit %(value)s"
-msgstr "Edytuj %(value)s"
+msgid "Edit %(title)s"
+msgstr ""
 
 #: controllers/albums.py:112
 msgid "Public album cannot have private sounds"
@@ -187,7 +188,7 @@ msgstr "Publiczny album nie może zawierać prywatnych utworów"
 msgid "Home"
 msgstr "Strona główna"
 
-#: controllers/search.py:15
+#: controllers/search.py:17
 msgid "Search user"
 msgstr "Szukaj użytkownika"
 
@@ -201,18 +202,17 @@ msgid "New upload"
 msgstr "Nowe wysyłanie"
 
 #: controllers/sound.py:139
-msgid "Uploaded !"
-msgstr "Wysłano!"
+msgid "Uploaded ! Processing will now follow."
+msgstr ""
 
 #: controllers/users.py:19
 msgid "User Logs"
 msgstr "Dziennik użytkownika"
 
 #: controllers/users.py:50 controllers/users.py:108
-#: templates/users/profile.jinja2:13 templates/users/profile_albums.jinja2:13
 #, python-format
-msgid "%(value)s' profile"
-msgstr "Profil %(value)s"
+msgid "%(username)s' profile"
+msgstr ""
 
 #: controllers/users.py:128
 msgid "Edit my profile"
@@ -385,8 +385,9 @@ msgid "An error occured"
 msgstr "Wystąpił błąd"
 
 #: templates/album/edit.jinja2:7
-msgid "Edit album"
-msgstr "Edytuj album"
+#, python-format
+msgid "Edit album %(title)s"
+msgstr ""
 
 #: templates/album/edit.jinja2:15 templates/album/new.jinja2:15
 #: templates/sound/edit.jinja2:15 templates/sound/upload.jinja2:15
@@ -408,7 +409,8 @@ msgstr "Anuluj edycję"
 msgid "%(value)s ago"
 msgstr "%(value)s temu"
 
-#: templates/album/show.jinja2:126 templates/sound/show.jinja2:85
+#: templates/album/show.jinja2:88 templates/album/show.jinja2:126
+#: templates/sound/show.jinja2:85
 msgid "edit"
 msgstr "edytuj"
 
@@ -416,10 +418,31 @@ msgstr "edytuj"
 msgid "This album is empty."
 msgstr "Ten album jest pusty."
 
-#: templates/search/local_user.jinja2:5 templates/search/remote_user.jinja2:5
+#: templates/album/show.jinja2:275
+msgid "Track reorder"
+msgstr ""
+
+#: templates/album/show.jinja2:275
+msgid "success"
+msgstr ""
+
+#: templates/search/local_user.jinja2:5
 #, python-format
 msgid "Searching for: <i>%(username)s</i>"
 msgstr "Wyszukiwanie: <i>%(username)s</i>"
+
+#: templates/search/local_user.jinja2:14
+msgid "Local user:"
+msgstr ""
+
+#: templates/search/remote_user.jinja2:5
+#, python-format
+msgid "Searching for: <i>%(uri)s</i>"
+msgstr ""
+
+#: templates/search/remote_user.jinja2:13
+msgid "Remote user:"
+msgstr ""
 
 #: templates/security/change_password.html:9
 msgid "Set a new password"
@@ -433,13 +456,18 @@ msgstr "Zapomniałeś(-aś) hasła? :'("
 msgid "Please Sign In"
 msgstr "Proszę zalogować się"
 
+#: templates/security/login_user.html:22
+msgid "forgot password :("
+msgstr ""
+
 #: templates/security/register_user.html:8
 msgid "Register user"
 msgstr "Zarejestruj użytkownika"
 
 #: templates/sound/edit.jinja2:7
-msgid "Edit upload"
-msgstr "Edytuj"
+#, python-format
+msgid "Edit upload: %(title)s"
+msgstr ""
 
 #: templates/sound/edit.jinja2:18 templates/sound/upload.jinja2:18
 msgid "If you want to add to a new album you need to create it separately."
@@ -453,9 +481,21 @@ msgstr "Poczekaj, metadane utworu są przetwarzane…"
 msgid "Please wait, transcoding is on her way..."
 msgstr "Poczekaj, trwa transkodowanie…"
 
+#: templates/sound/show.jinja2:97
+msgid "download orig"
+msgstr ""
+
+#: templates/sound/show.jinja2:103
+msgid "download mp3"
+msgstr ""
+
 #: templates/sound/show.jinja2:110 templates/users/profile.jinja2:57
 msgid "In album:"
 msgstr "W albumie:"
+
+#: templates/sound/show.jinja2:129
+msgid "Duration"
+msgstr ""
 
 #: templates/sound/show.jinja2:130
 msgid "Type"
@@ -487,8 +527,17 @@ msgstr "Rodzaj przepustowości"
 
 #: templates/users/edit.jinja2:8
 #, python-format
-msgid "Edit profile - %(username)s"
-msgstr "Edytuj profil — %(username)s"
+msgid "Edit profile: %(username)s"
+msgstr ""
+
+#: templates/users/profile.jinja2:13 templates/users/profile_albums.jinja2:13
+#, python-format
+msgid "%(username)s's profile"
+msgstr ""
+
+#: templates/users/profile.jinja2:18 templates/users/profile_albums.jinja2:18
+msgid "See:"
+msgstr ""
 
 #: templates/users/profile.jinja2:18 templates/users/profile_albums.jinja2:18
 msgid "all sounds"
@@ -523,6 +572,10 @@ msgstr "Dziennik użytkownika %(username)s (ostatnie 100 zdarzeń)"
 #: templates/users/user_logs.jinja2:24
 msgid "Item ID"
 msgstr "ID elementu"
+
+#: templates/users/user_logs.jinja2:40
+msgid "N/A"
+msgstr ""
 
 #~ msgid ""
 #~ "reel2bits is developped by %(dashie)s "
@@ -568,3 +621,22 @@ msgstr "ID elementu"
 
 #~ msgid "Sound"
 #~ msgstr "Son"
+
+#~ msgid "Edit %(value)s"
+#~ msgstr "Edytuj %(value)s"
+
+#~ msgid "Uploaded !"
+#~ msgstr "Wysłano!"
+
+#~ msgid "%(value)s' profile"
+#~ msgstr "Profil %(value)s"
+
+#~ msgid "Edit album"
+#~ msgstr "Edytuj album"
+
+#~ msgid "Edit upload"
+#~ msgstr "Edytuj"
+
+#~ msgid "Edit profile - %(username)s"
+#~ msgstr "Edytuj profil — %(username)s"
+

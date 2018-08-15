@@ -136,7 +136,7 @@ def upload():
             add_user_log(rec.id, user.id, 'sounds', 'info',
                          "Uploaded {0} -- {1}".format(rec.id, rec.title))
 
-            flash(gettext('Uploaded !'), 'success')
+            flash(gettext('Uploaded ! Processing will now follow.'), 'success')
         else:
             return render_template('sound/upload.jinja2', pcfg=pcfg,
                                    form=form, flash='Error with the file')
@@ -161,7 +161,7 @@ def edit(username, soundslug):
         flash(gettext("Forbidden"), "error")
         return redirect(url_for("bp_users.profile", name=username))
 
-    pcfg = {"title": gettext(u'Edit %(value)s', value=sound.title)}
+    pcfg = {"title": gettext(u'Edit %(title)s', title=sound.title)}
 
     form = SoundEditForm(request.form, obj=sound)
 

@@ -7,16 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2018-08-12 15:45+0200\n"
-"PO-Revision-Date: 2017-01-02 08:23+0100\n"
+"POT-Creation-Date: 2018-08-15 08:29+0200\n"
+"PO-Revision-Date: 2018-08-15 08:35+0200\n"
 "Last-Translator: \n"
 "Language: fr\n"
 "Language-Team: fr <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n > 1)\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.6.0\n"
+"X-Generator: Poedit 2.0.6\n"
 
 #: app.py:162 controllers/admin.py:53
 msgid "Config not found"
@@ -24,23 +25,23 @@ msgstr "Configuration non trouvée"
 
 #: app.py:202 app.py:209 app.py:216 app.py:224
 msgid "Whoops, something failed."
-msgstr ""
+msgstr "Whoops, quelque-chose à échoué."
 
 #: app.py:203
 msgid "Page not found"
-msgstr ""
+msgstr "Page non trouvée"
 
 #: app.py:210
 msgid "Access forbidden"
-msgstr ""
+msgstr "Accès refusé"
 
 #: app.py:217
 msgid "Gone"
-msgstr ""
+msgstr "Disparu"
 
 #: app.py:226
 msgid "Something is broken"
-msgstr ""
+msgstr "Quelque-chose est cassé"
 
 #: forms.py:46
 msgid "Username required"
@@ -48,7 +49,7 @@ msgstr "Nom d'utilisateur requis"
 
 #: forms.py:51
 msgid "Username already taken"
-msgstr "Nom d'utilisateur déjà pris"
+msgstr "Nom d'utilisateur déjà utilisé"
 
 #: forms.py:58
 msgid "Password"
@@ -84,11 +85,11 @@ msgstr "Mettre a jour le profil"
 
 #: forms.py:72
 msgid "Instance Name"
-msgstr ""
+msgstr "Nom de l 'instance"
 
 #: forms.py:73
 msgid "Instance description"
-msgstr ""
+msgstr "Description de l'instance"
 
 #: forms.py:75
 msgid "Update config"
@@ -112,15 +113,15 @@ msgstr "Album"
 
 #: forms.py:94 forms.py:115
 msgid "No album"
-msgstr ""
+msgstr "Aucun album"
 
 #: forms.py:98 forms.py:119 templates/sound/show.jinja2:114
 msgid "Licence"
-msgstr ""
+msgstr "License"
 
 #: forms.py:103 forms.py:124
 msgid "Cannot put private sound in public album"
-msgstr "Impossible de mettre un son privé dans un album public"
+msgstr "Impossible de mettre une piste privée dans un album public"
 
 #: forms.py:105 templates/layout.jinja2:63
 msgid "Upload"
@@ -132,7 +133,7 @@ msgstr "Description"
 
 #: forms.py:126
 msgid "Edit sound"
-msgstr "Éditer le son"
+msgstr "Éditer la piste"
 
 #: forms.py:135
 msgid "Save"
@@ -159,8 +160,9 @@ msgstr "Nouvel album"
 msgid "Created !"
 msgstr "Crée !"
 
-#: controllers/albums.py:48 controllers/search.py:35 controllers/sound.py:21
-#: controllers/users.py:54 controllers/users.py:112 controllers/users.py:132
+#: controllers/albums.py:48 controllers/search.py:37 controllers/search.py:44
+#: controllers/sound.py:21 controllers/users.py:54 controllers/users.py:112
+#: controllers/users.py:132
 msgid "User not found"
 msgstr "Utilisateur non trouvé"
 
@@ -171,47 +173,46 @@ msgstr "Album non trouvé"
 
 #: controllers/albums.py:84 controllers/sound.py:161 controllers/sound.py:203
 msgid "Forbidden"
-msgstr ""
+msgstr "Refusé"
 
 #: controllers/albums.py:87 controllers/sound.py:164
 #, python-format
-msgid "Edit %(value)s"
-msgstr "Éditer %(value)s"
+msgid "Edit %(title)s"
+msgstr "Editer %(title)s"
 
 #: controllers/albums.py:112
 msgid "Public album cannot have private sounds"
-msgstr "Un album public ne peut avoir de son privé"
+msgstr "Un album public ne peut avoir de piste privée"
 
 #: controllers/main.py:12
 msgid "Home"
 msgstr "Accueil"
 
-#: controllers/search.py:15
+#: controllers/search.py:17
 msgid "Search user"
-msgstr ""
+msgstr "Chercher un utilisateur"
 
 #: controllers/sound.py:33 controllers/sound.py:39 controllers/sound.py:42
 #: controllers/sound.py:157 controllers/sound.py:199
 msgid "Sound not found"
-msgstr "Son non trouvé"
+msgstr "Piste non trouvé"
 
 #: controllers/sound.py:92 templates/sound/upload.jinja2:7
 msgid "New upload"
 msgstr "Nouvel upload"
 
 #: controllers/sound.py:139
-msgid "Uploaded !"
-msgstr "Envoyé !"
+msgid "Uploaded ! Processing will now follow."
+msgstr "Uploadé ! Le traitement va suivre."
 
 #: controllers/users.py:19
 msgid "User Logs"
 msgstr "Logs utilisateur"
 
 #: controllers/users.py:50 controllers/users.py:108
-#: templates/users/profile.jinja2:13 templates/users/profile_albums.jinja2:13
 #, python-format
-msgid "%(value)s' profile"
-msgstr "Profil de %(value)s"
+msgid "%(username)s' profile"
+msgstr "profil de %(username)s"
 
 #: controllers/users.py:128
 msgid "Edit my profile"
@@ -219,31 +220,31 @@ msgstr "Éditer mon profile"
 
 #: controllers/users.py:150
 msgid "Profile updated"
-msgstr ""
+msgstr "Profil mis à jour"
 
 #: templates/about.jinja2:19
 #, python-format
 msgid "reel2bits is developped by %(dashie)s and is available under MIT license."
-msgstr ""
+msgstr "reel2bits est développé par %(dashie)s et est disponible sous licence MIT."
 
 #: templates/about.jinja2:21
 #, python-format
 msgid "Source code is here: %(link)s"
-msgstr ""
+msgstr "Le code source est ici: %(link)s"
 
 #: templates/about.jinja2:22
 #, python-format
 msgid "Issue tracker is here: %(link)s"
-msgstr ""
+msgstr "Le tracker de bugs est ici: %(link)s"
 
 #: templates/error_page.jinja2:7
 #, python-format
 msgid "Maybe you can go back to the %(link)s."
-msgstr ""
+msgstr "Peut-être vous voudriez aller de nouveau vers la %(link)s."
 
 #: templates/error_page.jinja2:7
 msgid "index"
-msgstr ""
+msgstr "page d'accueil"
 
 #: templates/layout.jinja2:53
 msgid "Toggle navigation"
@@ -305,11 +306,11 @@ msgstr "Se connecter"
 #: templates/layout.jinja2:118
 #, python-format
 msgid "version: %(version)s"
-msgstr ""
+msgstr "version: %(version)s"
 
 #: templates/layout.jinja2:121
 msgid "Sources"
-msgstr ""
+msgstr "Sources"
 
 #: templates/layout.jinja2:123
 msgid "Back to top"
@@ -384,8 +385,9 @@ msgid "An error occured"
 msgstr "Une erreur est survenue"
 
 #: templates/album/edit.jinja2:7
-msgid "Edit album"
-msgstr ""
+#, python-format
+msgid "Edit album %(title)s"
+msgstr "Éditer l'album %(title)s"
 
 #: templates/album/edit.jinja2:15 templates/album/new.jinja2:15
 #: templates/sound/edit.jinja2:15 templates/sound/upload.jinja2:15
@@ -407,7 +409,8 @@ msgstr "Annuler l'édition"
 msgid "%(value)s ago"
 msgstr "il-y-à %(value)s"
 
-#: templates/album/show.jinja2:126 templates/sound/show.jinja2:85
+#: templates/album/show.jinja2:88 templates/album/show.jinja2:126
+#: templates/sound/show.jinja2:85
 msgid "edit"
 msgstr "éditer"
 
@@ -415,10 +418,31 @@ msgstr "éditer"
 msgid "This album is empty."
 msgstr "Cet album est vide."
 
-#: templates/search/local_user.jinja2:5 templates/search/remote_user.jinja2:5
+#: templates/album/show.jinja2:275
+msgid "Track reorder"
+msgstr "Réorganisation des pistes"
+
+#: templates/album/show.jinja2:275
+msgid "success"
+msgstr "succès"
+
+#: templates/search/local_user.jinja2:5
 #, python-format
 msgid "Searching for: <i>%(username)s</i>"
-msgstr ""
+msgstr "Recherche pour: <i>%(username)s</i>"
+
+#: templates/search/local_user.jinja2:14
+msgid "Local user:"
+msgstr "Utilisateur local:"
+
+#: templates/search/remote_user.jinja2:5
+#, python-format
+msgid "Searching for: <i>%(uri)s</i>"
+msgstr "Recherche pour: <i>%(uri)s</i>"
+
+#: templates/search/remote_user.jinja2:13
+msgid "Remote user:"
+msgstr "Utilisateur distant:"
 
 #: templates/security/change_password.html:9
 msgid "Set a new password"
@@ -432,13 +456,18 @@ msgstr "Vous avez perdu votre mot de passe ? :'("
 msgid "Please Sign In"
 msgstr "Veuillez vous connecter"
 
+#: templates/security/login_user.html:22
+msgid "forgot password :("
+msgstr "mot de passe perdu :("
+
 #: templates/security/register_user.html:8
 msgid "Register user"
 msgstr "Enregistrer un utilisateur"
 
 #: templates/sound/edit.jinja2:7
-msgid "Edit upload"
-msgstr "Éditer l'upload"
+#, python-format
+msgid "Edit upload: %(title)s"
+msgstr "Éditer l'upload: %(title)s"
 
 #: templates/sound/edit.jinja2:18 templates/sound/upload.jinja2:18
 msgid "If you want to add to a new album you need to create it separately."
@@ -450,11 +479,23 @@ msgstr "Veuillez attendre, les métadonnés sont en cours de traitement..."
 
 #: templates/sound/show.jinja2:28
 msgid "Please wait, transcoding is on her way..."
-msgstr ""
+msgstr "Veuillez attendre, le transcoding est en cours de traitement..."
+
+#: templates/sound/show.jinja2:97
+msgid "download orig"
+msgstr "télécharger orig"
+
+#: templates/sound/show.jinja2:103
+msgid "download mp3"
+msgstr "télécharger mp3"
 
 #: templates/sound/show.jinja2:110 templates/users/profile.jinja2:57
 msgid "In album:"
 msgstr "Dans l'album:"
+
+#: templates/sound/show.jinja2:129
+msgid "Duration"
+msgstr "Durée"
 
 #: templates/sound/show.jinja2:130
 msgid "Type"
@@ -486,8 +527,17 @@ msgstr "Bitrate mode"
 
 #: templates/users/edit.jinja2:8
 #, python-format
-msgid "Edit profile - %(username)s"
-msgstr "Éditer le profil - %(username)s"
+msgid "Edit profile: %(username)s"
+msgstr "Éditer le profil: %(username)s"
+
+#: templates/users/profile.jinja2:13 templates/users/profile_albums.jinja2:13
+#, python-format
+msgid "%(username)s's profile"
+msgstr "Profil de %(username)s"
+
+#: templates/users/profile.jinja2:18 templates/users/profile_albums.jinja2:18
+msgid "See:"
+msgstr "Voir:"
 
 #: templates/users/profile.jinja2:18 templates/users/profile_albums.jinja2:18
 msgid "all sounds"
@@ -521,50 +571,8 @@ msgstr "Logs de %(username)s (100 derniers)"
 
 #: templates/users/user_logs.jinja2:24
 msgid "Item ID"
-msgstr ""
+msgstr "ID d'Objet"
 
-#~ msgid ""
-#~ "reel2bits is developped by %(dashie)s "
-#~ "and is available under MIT license."
-#~ msgstr ""
-#~ "reel2bits est développé par %(dashie)s "
-#~ "et est disponible sous licence MIT."
-
-#~ msgid "Source code is here: %(link)s"
-#~ msgstr "Code source disponible: %(link)s"
-
-#~ msgid "Issue tracker is here: %(link)s"
-#~ msgstr "Gestionnaire de bugs ici: %(link)s"
-
-#~ msgid "Maybe you can go back to the %(link)s."
-#~ msgstr "Peut-être voulez-vous retourner à %(link)s."
-
-#~ msgid "index"
-#~ msgstr "accueil"
-
-#~ msgid "App Name"
-#~ msgstr "Nom de l'application"
-
-#~ msgid "No HTML5 player supported actually"
-#~ msgstr "Aucun lecteur HTML5 actuellement supporté"
-
-#~ msgid ""
-#~ "Use template for %(link1)s by %(link2)s"
-#~ " and use %(link3)s, reel2bits %(link4)s"
-#~ msgstr ""
-#~ "Utilise une template pour %(link1)s par"
-#~ " %(link2)s et utilise %(link3)s, reel2bits"
-#~ " %(link4)s"
-
-#~ msgid "source code"
-#~ msgstr "code source"
-
-#~ msgid "Running version %(version)s"
-#~ msgstr "Version en cours %(version)s"
-
-#~ msgid "Switch sound"
-#~ msgstr "Changer le son"
-
-#~ msgid "Sound"
-#~ msgstr "Son"
-
+#: templates/users/user_logs.jinja2:40
+msgid "N/A"
+msgstr "N/A"

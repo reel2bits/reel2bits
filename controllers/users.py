@@ -47,7 +47,7 @@ def logs_delete(log_id):
 @bp_users.route('/user/<string:name>', methods=['GET'])
 @accept_fallback
 def profile(name):
-    pcfg = {"title": gettext(u"%(value)s' profile", value=name)}
+    pcfg = {"title": gettext(u"%(username)s' profile", username=name)}
 
     user = User.query.filter(User.name == name).first()
     if not user:
@@ -105,7 +105,7 @@ def actor_json(name):
 
 @bp_users.route('/user/<string:name>/sets', methods=['GET'])
 def profile_albums(name):
-    pcfg = {"title": gettext(u"%(value)s' profile", value=name)}
+    pcfg = {"title": gettext(u"%(username)s' profile", username=name)}
 
     user = User.query.filter(User.name == name).first()
     if not user:

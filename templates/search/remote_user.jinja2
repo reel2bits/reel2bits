@@ -2,7 +2,7 @@
 
 {% block content %}
     <div class="row">
-        <div class="col-lg-10"><h3>{{ gettext("Searching for: <i>%(username)s</i>", username=who) }}</h3></div>
+        <div class="col-lg-10"><h3>{{ gettext("Searching for: <i>%(uri)s</i>", uri=who) }}</h3></div>
     </div>
 
     <br/>
@@ -10,7 +10,7 @@
     <div class="row">
         <div class="col-lg-10">
             <div class="row_user">
-                Remote user: <a href="{{ user['url'] }}">{{ user['name'] }}@{{ user['instance'] }}</a>
+                {{ gettext("Remote user:") }} <a href="{{ user['url'] }}">{{ user['name'] }}@{{ user['instance'] }}</a>
             </div>
         </div>
     </div>

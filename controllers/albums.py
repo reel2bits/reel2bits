@@ -84,7 +84,7 @@ def edit(username, setslug):
         flash(gettext("Forbidden"), 'error')
         return redirect(url_for('bp_users.profile', name=username))
 
-    pcfg = {"title": gettext(u'Edit %(value)s', value=album.title)}
+    pcfg = {"title": gettext(u'Edit %(title)s', title=album.title)}
 
     form = AlbumForm(request.form, obj=album)
 

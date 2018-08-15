@@ -19,7 +19,7 @@
                     {{ wtf.form_field(login_user_form.remember) }}
 
                     {{ wtf.form_field(login_user_form.submit, button_map={'submit': 'success'}) }}
-                    <a href="{{ url_for('security.forgot_password') }}" role="button" class="btn btn-info">forgot password :(</a>
+                    <a href="{{ url_for('security.forgot_password') }}" role="button" class="btn btn-info">{{ gettext("forgot password :(") }}</a>
                 </form>
             </div>
         </div>

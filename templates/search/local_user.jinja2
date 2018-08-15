@@ -11,7 +11,7 @@
         <div class="col-lg-10">
             {% for user in users %}
                 <div class="row_user">
-                    Local user: <a href="{{ url_for('bp_users.profile', name=user.name) }}">{{ user.name }}</a>
+                    {{ gettext("Local user:") }} <a href="{{ url_for('bp_users.profile', name=user.name) }}">{{ user.name }}</a>
                 </div>
             {% endfor %}
         </div>

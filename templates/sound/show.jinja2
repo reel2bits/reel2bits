@@ -94,13 +94,13 @@
                 <tr>
                     <td>
                         <a class="btn btn-info btn-xs" href="{{ url_for('get_uploads_stuff', thing='sounds', stuff=sound.path_sound(orig=True)) }}">
-                            <i class="fa fa-download" aria-hidden="true"></i> download orig
+                            <i class="fa fa-download" aria-hidden="true"></i> {{ gettext("download orig") }}
                         </a>
                     </td>
                     {% if sound.transcode_needed and sound.processing_done() %}
                     <td>
                         <a class="btn btn-info btn-xs" href="{{ url_for('get_uploads_stuff', thing='sounds', stuff=sound.path_sound(orig=False)) }}">
-                            <i class="fa fa-download" aria-hidden="true"></i> download mp3
+                            <i class="fa fa-download" aria-hidden="true"></i> {{ gettext("download mp3") }}
                         </a>
                     </td>
                     {% endif %}
@@ -126,7 +126,7 @@
             </tr>
 
             {% if info %}
-                <tr><td>Duration</td><td colspan="2">{{ duration_song_human(info.duration) }}</td></tr>
+                <tr><td>{{ gettext("Duration") }}</td><td colspan="2">{{ duration_song_human(info.duration) }}</td></tr>
                 {% if info.type_human %}<tr><td>{{ gettext("Type") }}</td><td colspan="2">{{ info.type_human }}</td></tr>{% endif %}
                 {% if info.codec %}<tr><td>{{ gettext("Codec") }}</td><td colspan="2">{{ info.codec }}</td></tr>{% endif %}
                 {% if info.format %}<tr><td>{{ gettext("Format") }}</td><td colspan="2">{{ info.format }} bits</td></tr>{% endif %}

@@ -9,3 +9,9 @@ pybabel update -i messages.pot -d translations
 
 compile documents:
 pybabel compile -d translations
+
+### Language specific
+
+Album / Sound in english
+Album / Piste in french ("piste" sounds better than "son")
+

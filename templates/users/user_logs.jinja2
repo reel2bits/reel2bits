@@ -37,7 +37,7 @@
                         {% elif log.item_id %}
                             {{ log.item_id }}
                         {% else %}
-                            N/A
+                            {{ gettext("N/A") }}
                         {% endif %}
                     </td>
                     <td>{{ log.message | replace('\r\n', '<br>') }}</td>
