@@ -20,9 +20,11 @@ pipeline:
       - apk add cmake gcc g++ make pkgconfig git boost-dev gd-dev libmad-dev libsndfile-dev libid3tag-dev wget postgresql-dev
       - pip install --upgrade pip setuptools
       - pip install --cache-dir=/cache flake8
+      - pip install --cache-dir=/cache black
       - pip install --cache-dir=/cache -r requirements.txt
       - python setup.py install
       - ./tests/install_audiowaveform.sh
+      - black --check .
       - flake8 .
       - python setup.py test
 

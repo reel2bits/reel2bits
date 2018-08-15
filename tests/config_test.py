@@ -4,9 +4,8 @@ TESTING = True
 # Disable CSRF tokens in the Forms (only valid for testing purposes!)
 WTF_CSRF_ENABLED = False
 
-SECRET_KEY = 'udf298euf02uf2f02f2uf0'
-SQLALCHEMY_DATABASE_URI = \
-    'postgresql+psycopg2://postgres@database:5432/reel2bits_test'
+SECRET_KEY = "udf298euf02uf2f02f2uf0"
+SQLALCHEMY_DATABASE_URI = "postgresql+psycopg2://postgres@database:5432/reel2bits_test"
 # SQLALCHEMY_DATABASE_URI = 'sqlite:///ahrl.db'
 # SQLALCHEMY_DATABASE_URI = 'mysql://dashie:saucisse@localhost/ahrl'
 SQLALCHEMY_ECHO = False
@@ -18,8 +17,8 @@ SECURITY_REGISTERABLE = True
 SECURITY_RECOVERABLE = True
 SECURITY_TRACKABLE = False
 SECURITY_CHANGEABLE = True
-SECURITY_PASSWORD_HASH = 'bcrypt'
-SECURITY_PASSWORD_SALT = 'dsadsaasd'
+SECURITY_PASSWORD_HASH = "bcrypt"
+SECURITY_PASSWORD_SALT = "dsadsaasd"
 # SECURITY_URL_PREFIX = '/sec'
 
 SECURITY_SEND_REGISTER_EMAIL = False
@@ -44,7 +43,7 @@ TEMP_DOWNLOAD_FOLDER = "/home/dashie/dev/reel2bits/tmp"
 AUDIOWAVEFORM_BIN = "/usr/local/bin/audiowaveform"
 
 # Sentry
-SENTRY_USER_ATTRS = ['name', 'email']
+SENTRY_USER_ATTRS = ["name", "email"]
 SENTRY_DSN = ""
 
 # Bcrypt algorithm hashing rounds (reduced for testing purposes only!)

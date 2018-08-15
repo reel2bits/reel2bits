@@ -1,61 +1,85 @@
 import pytz
-from flask import Blueprint, render_template, request, \
-    redirect, url_for, flash, Response, json, jsonify, current_app
+from flask import (
+    Blueprint,
+    render_template,
+    request,
+    redirect,
+    url_for,
+    flash,
+    Response,
+    json,
+    jsonify,
+    current_app,
+)
 from flask_babelex import gettext
 from flask_security import login_required, current_user
 
 from forms import UserProfileForm
-from models import db, User, UserLogging, Sound, Album, follower, \
-    Actor, create_remote_actor
+from models import (
+    db,
+    User,
+    UserLogging,
+    Sound,
+    Album,
+    follower,
+    Actor,
+    create_remote_actor,
+)
 from utils import add_user_log
 from flask_accept import accept_fallback
 from little_boxes.webfinger import get_actor_url
 from little_boxes.urlutils import InvalidURLError
 from little_boxes import activitypub as ap
 
-bp_users = Blueprint('bp_users', __name__)
+bp_users = Blueprint("bp_users", __name__)
 
 
-@bp_users.route('/account/logs', methods=['GET'])
+@bp_users.route("/account/logs", methods=["GET"])
 @login_required
 def logs():
-    level = request.args.get('level')
+    level = request.args.get("level")
     pcfg = {"title": gettext("User Logs")}
     if level:
-        _logs = UserLogging.query.filter(UserLogging.level == level.upper(),
-                                         UserLogging.user_id == current_user.id
-                                         ).limit(100).all()
+        _logs = (
+            UserLogging.query.filter(
+                UserLogging.level == level.upper(),
+                UserLogging.user_id == current_user.id,
+            )
+            .limit(100)
+            .all()
+        )
     else:
-        _logs = UserLogging.query.filter(UserLogging.user_id == current_user.id
-                                         ).limit(100).all()
-    return render_template('users/user_logs.jinja2', pcfg=pcfg, logs=_logs)
+        _logs = (
+            UserLogging.query.filter(UserLogging.user_id == current_user.id)
+            .limit(100)
+            .all()
+        )
+    return render_template("users/user_logs.jinja2", pcfg=pcfg, logs=_logs)
 
 
-@bp_users.route('/account/logs/<int:log_id>/delete',
-                methods=['GET', 'DELETE', 'PUT'])
+@bp_users.route("/account/logs/<int:log_id>/delete", methods=["GET", "DELETE", "PUT"])
 @login_required
 def logs_delete(log_id):
-    log = UserLogging.query.filter(UserLogging.id == log_id,
-                                   UserLogging.user_id == current_user.id
-                                   ).first()
+    log = UserLogging.query.filter(
+        UserLogging.id == log_id, UserLogging.user_id == current_user.id
+    ).first()
     if not log:
         _datas = {"status": "error", "id": log_id}
     else:
         db.session.delete(log)
         db.session.commit()
         _datas = {"status": "deleted", "id": log_id}
-    return Response(json.dumps(_datas),
-                    mimetype='application/json;charset=utf-8')
+    return Response(json.dumps(_datas), mimetype="application/json;charset=utf-8")
 
 
-@bp_users.route('/user/<string:name>', methods=['GET'])
+@bp_users.route("/user/<string:name>", methods=["GET"])
 @accept_fallback
 def profile(name):
-    pcfg = {"title": gettext(u"%(username)s' profile", username=name)}
+    pcfg = {"title": gettext("%(username)s' profile", username=name)}
 
     user = User.query.filter(User.name == name).first()
     if not user:
-        flash(gettext("User not found"), 'error')
+        flash(gettext("User not found"), "error")
         return redirect(url_for("bp_main.home"))
 
     if current_user.is_authenticated and user.id == current_user.id:
@@ -64,21 +88,33 @@ def profile(name):
         sounds = Sound.query.filter(
             Sound.user_id == user.id,
             Sound.private.is_(False),
-            Sound.transcode_state == Sound.TRANSCODE_DONE)
+            Sound.transcode_state == Sound.TRANSCODE_DONE,
+        )
 
     # FIXME: might be wrong, to check when following will be implemented
-    followings = db.session.query(follower).filter(
-        follower.c.target_id == user.actor[0].id).count()
-    followers = db.session.query(follower).filter(
-        follower.c.actor_id == user.actor[0].id).count()
+    followings = (
+        db.session.query(follower)
+        .filter(follower.c.target_id == user.actor[0].id)
+        .count()
+    )
+    followers = (
+        db.session.query(follower)
+        .filter(follower.c.actor_id == user.actor[0].id)
+        .count()
+    )
 
-    return render_template('users/profile.jinja2', pcfg=pcfg,
-                           user=user, sounds=sounds,
-                           followings=followings, followers=followers)
+    return render_template(
+        "users/profile.jinja2",
+        pcfg=pcfg,
+        user=user,
+        sounds=sounds,
+        followings=followings,
+        followers=followers,
+    )
 
 
-@bp_users.route('/user/<string:name>', methods=['GET'])
-@profile.support('application/json', 'application/activity+json')
+@bp_users.route("/user/<string:name>", methods=["GET"])
+@profile.support("application/json", "application/activity+json")
 def actor_json(name):
     user = User.query.filter(User.name == name).first()
     if not user:
@@ -91,7 +127,7 @@ def actor_json(name):
     resp = {
         "@context": [
             "https://www.w3.org/ns/activitystreams",
-            "https://w3id.org/security/v1"
+            "https://w3id.org/security/v1",
         ],
         "id": actor.url,
         "type": actor.type.code,
@@ -102,11 +138,9 @@ def actor_json(name):
         "publicKey": {
             "id": actor.private_key_id(),
             "owner": actor.url,
-            "publicKeyPem": actor.public_key
+            "publicKeyPem": actor.public_key,
         },
-        "endpoints": {
-            "sharedInbox": actor.shared_inbox_url
-        }
+        "endpoints": {"sharedInbox": actor.shared_inbox_url},
     }
 
     response = jsonify(resp)
@@ -114,33 +148,33 @@ def actor_json(name):
     return response
 
 
-@bp_users.route('/user/<string:name>/sets', methods=['GET'])
+@bp_users.route("/user/<string:name>/sets", methods=["GET"])
 def profile_albums(name):
-    pcfg = {"title": gettext(u"%(username)s' profile", username=name)}
+    pcfg = {"title": gettext("%(username)s' profile", username=name)}
 
     user = User.query.filter(User.name == name).first()
     if not user:
-        flash(gettext("User not found"), 'error')
+        flash(gettext("User not found"), "error")
         return redirect(url_for("bp_main.home"))
 
     if current_user.is_authenticated and user.id == current_user.id:
         albums = Album.query.filter(Album.user_id == user.id)
     else:
-        albums = Album.query.filter(Album.user_id == user.id,
-                                    Album.private.is_(False))
+        albums = Album.query.filter(Album.user_id == user.id, Album.private.is_(False))
 
-    return render_template('users/profile_albums.jinja2',
-                           pcfg=pcfg, user=user, albums=albums)
+    return render_template(
+        "users/profile_albums.jinja2", pcfg=pcfg, user=user, albums=albums
+    )
 
 
-@bp_users.route('/account/edit', methods=['GET', 'POST'])
+@bp_users.route("/account/edit", methods=["GET", "POST"])
 @login_required
 def edit():
     pcfg = {"title": gettext("Edit my profile")}
 
     user = User.query.filter(User.id == current_user.id).first()
     if not user:
-        flash(gettext("User not found"), 'error')
+        flash(gettext("User not found"), "error")
         return redirect(url_for("bp_main.home"))
 
     form = UserProfileForm(request.form, obj=user)
@@ -155,18 +189,16 @@ def edit():
         db.session.commit()
 
         # log
-        add_user_log(user.id, user.id, 'user', 'info',
-                     "Edited user profile")
+        add_user_log(user.id, user.id, "user", "info", "Edited user profile")
 
         flash(gettext("Profile updated"), "success")
 
-        return redirect(url_for('bp_users.profile', name=user.name))
+        return redirect(url_for("bp_users.profile", name=user.name))
 
-    return render_template('users/edit.jinja2', pcfg=pcfg,
-                           form=form, user=user)
+    return render_template("users/edit.jinja2", pcfg=pcfg, form=form, user=user)
 
 
-@bp_users.route('/account/follow', methods=['GET'])
+@bp_users.route("/account/follow", methods=["GET"])
 @login_required
 def follow():
     user = request.args.get("user")
@@ -190,9 +222,8 @@ def follow():
             remote_actor_url = None
 
         if not remote_actor_url:
-            flash(gettext("User not found"), 'error')
-            return redirect(url_for("bp_users.profile",
-                                    name=current_user.name))
+            flash(gettext("User not found"), "error")
+            return redirect(url_for("bp_users.profile", name=current_user.name))
 
         # 2. Check if we have a local user
         actor_target = Actor.query.find(Actor.url == remote_actor_url).first()
@@ -202,7 +233,7 @@ def follow():
             backend = ap.get_backend()
             iri = backend.fetch_iri(remote_actor_url)
             if not iri:
-                flash(gettext("User not found"), 'error')
+                flash(gettext("User not found"), "error")
                 return redirect(url_for("bp_main.home"))
             act = ap.parse_activity(iri)
             actor_target = create_remote_actor(act)

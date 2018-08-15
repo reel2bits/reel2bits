@@ -7,8 +7,8 @@ Create Date: 2018-08-05 10:47:58.540699
 """
 
 # revision identifiers, used by Alembic.
-revision = 'd3c41a9e2688'
-down_revision = '32f48de123f3'
+revision = "d3c41a9e2688"
+down_revision = "32f48de123f3"
 
 from models import db, User, create_actor  # noqa: E402
 

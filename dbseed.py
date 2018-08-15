@@ -15,12 +15,12 @@ def make_db_seed(db):
 def seed_roles(db):
     print("++ Seeding roles")
     role_usr = Role()
-    role_usr.name = 'user'
-    role_usr.description = 'Simple user'
+    role_usr.name = "user"
+    role_usr.description = "Simple user"
 
     role_adm = Role()
-    role_adm.name = 'admin'
-    role_adm.description = 'Admin user'
+    role_adm.name = "admin"
+    role_adm.description = "Admin user"
 
     db.session.add(role_usr)
     db.session.add(role_adm)
@@ -30,22 +30,22 @@ def seed_roles(db):
 def seed_users(db):
     print("++ Seeding users")
     role_usr = Role()
-    role_usr.name = 'user'
-    role_usr.description = 'Simple user'
+    role_usr.name = "user"
+    role_usr.description = "Simple user"
 
     role_adm = Role()
-    role_adm.name = 'admin'
-    role_adm.description = 'Admin user'
+    role_adm.name = "admin"
+    role_adm.description = "Admin user"
 
     db.session.add(role_usr)
     db.session.add(role_adm)
 
     user_datastore.create_user(
-        email='dashie@sigpipe.me',
-        password='fluttershy',
-        name='toto',
-        timezone='UTC',
-        roles=[role_adm]
+        email="dashie@sigpipe.me",
+        password="fluttershy",
+        name="toto",
+        timezone="UTC",
+        roles=[role_adm],
     )
     db.session.commit()
     return
@@ -53,7 +53,7 @@ def seed_users(db):
 
 def seed_config(db):
     print("++ Seeding config")
-    a = Config(app_name='My reel2bits instance')
+    a = Config(app_name="My reel2bits instance")
     a.app_description = """This is a reel2bits instance"""
     db.session.add(a)
     db.session.commit()

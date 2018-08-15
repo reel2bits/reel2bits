@@ -10,8 +10,7 @@ import magic
 import mutagen
 
 from models import db, SoundInfo, Sound
-from utils import get_waveform, create_png_waveform, \
-    duration_song_human, add_user_log
+from utils import get_waveform, create_png_waveform, duration_song_human, add_user_log
 from pydub import AudioSegment
 from os.path import splitext
 from flask_mail import Message
@@ -23,9 +22,11 @@ from app import create_app, mail
 app = create_app()
 ctx = app.app_context()
 
-redis_broker = RedisBroker(host=app.config['BROKER_REDIS_HOST'],
-                           port=app.config['BROKER_REDIS_PORT'],
-                           db=app.config['BROKER_REDIS_DB'])
+redis_broker = RedisBroker(
+    host=app.config["BROKER_REDIS_HOST"],
+    port=app.config["BROKER_REDIS_PORT"],
+    db=app.config["BROKER_REDIS_DB"],
+)
 dramatiq.set_broker(redis_broker)
 
 
@@ -36,75 +37,77 @@ def get_basic_infos(fname):
 
     # We are going to get: duration (in seconds), format (bits), rate (Hz),
     # channels (count), codec (or not)
-    infos = {'duration': None,
-             'format': None,
-             'rate': None,
-             'channels': None,
-             'codec': None,
-             'bitrate': None,
-             'bitrate_mode': None,
-             'type': None,
-             'type_human': None}
+    infos = {
+        "duration": None,
+        "format": None,
+        "rate": None,
+        "channels": None,
+        "codec": None,
+        "bitrate": None,
+        "bitrate_mode": None,
+        "type": None,
+        "type_human": None,
+    }
 
     # WAV
     if mt == "audio/x-wav":
-        with contextlib.closing(wave.open(fname, 'r')) as f:
+        with contextlib.closing(wave.open(fname, "r")) as f:
             frames = f.getnframes()
             rate = f.getframerate()
             duration = frames / float(rate)
 
-            infos['duration'] = round(duration, 1)
-            infos['channels'] = f.getnchannels()
-            infos['rate'] = f.getframerate()
-            infos['codec'] = "PCM"
-            infos['format'] = f.getsampwidth() * 8
-            infos['type'] = "WAV"
-        infos['type_human'] = "WAV"
+            infos["duration"] = round(duration, 1)
+            infos["channels"] = f.getnchannels()
+            infos["rate"] = f.getframerate()
+            infos["codec"] = "PCM"
+            infos["format"] = f.getsampwidth() * 8
+            infos["type"] = "WAV"
+        infos["type_human"] = "WAV"
     # MP3
     elif mt == "audio/mpeg":
         muta = mutagen.File(fname)
         if muta is None:
             print("! ERROR mutagen is null")
             return infos
-        infos['duration'] = muta.info.length
-        infos['channels'] = muta.info.channels
-        infos['rate'] = muta.info.sample_rate
-        infos['codec'] = muta.info.encoder_info
-        infos['bitrate'] = muta.info.bitrate
+        infos["duration"] = muta.info.length
+        infos["channels"] = muta.info.channels
+        infos["rate"] = muta.info.sample_rate
+        infos["codec"] = muta.info.encoder_info
+        infos["bitrate"] = muta.info.bitrate
         if muta.info.bitrate_mode == mutagen.mp3.BitrateMode.CBR:
-            infos['bitrate_mode'] = "CBR"
+            infos["bitrate_mode"] = "CBR"
         elif muta.info.bitrate_mode == mutagen.mp3.BitrateMode.VBR:
-            infos['bitrate_mode'] = "VBR"
+            infos["bitrate_mode"] = "VBR"
         else:
-            infos['bitrate_mode'] = "ABR"
-        infos['type'] = "MP3"
-        infos['type_human'] = "Mpeg 3"
+            infos["bitrate_mode"] = "ABR"
+        infos["type"] = "MP3"
+        infos["type_human"] = "Mpeg 3"
     # OGG
     elif mt == "audio/ogg":
         muta = mutagen.File(fname)
         if muta is None:
             print("! ERROR mutagen is null")
             return infos
-        infos['duration'] = muta.info.length
-        infos['channels'] = muta.info.channels
-        infos['rate'] = muta.info.sample_rate
-        infos['bitrate'] = muta.info.bitrate
-        infos['type'] = "OGG"
-        infos['type_human'] = "Ogg Vorbis"
+        infos["duration"] = muta.info.length
+        infos["channels"] = muta.info.channels
+        infos["rate"] = muta.info.sample_rate
+        infos["bitrate"] = muta.info.bitrate
+        infos["type"] = "OGG"
+        infos["type_human"] = "Ogg Vorbis"
     # FLAC
     elif mt == "audio/x-flac" or mt == "audio/flac":
         muta = mutagen.File(fname)
         if muta is None:
             print("! ERROR mutagen is null")
             return infos
-        infos['duration'] = muta.info.length
-        infos['channels'] = muta.info.channels
-        infos['rate'] = muta.info.sample_rate
-        infos['bitrate'] = muta.info.bitrate
-        if 'encoder' in muta.vc:
-            infos['codec'] = ' '.join(muta.vc['encoder'])
-        infos['type'] = "FLAC"
-        infos['type_human'] = "FLAC"
+        infos["duration"] = muta.info.length
+        infos["channels"] = muta.info.channels
+        infos["rate"] = muta.info.sample_rate
+        infos["bitrate"] = muta.info.bitrate
+        if "encoder" in muta.vc:
+            infos["codec"] = " ".join(muta.vc["encoder"])
+        infos["type"] = "FLAC"
+        infos["type_human"] = "FLAC"
     else:
         print("! ERROR not supported")
 
@@ -124,35 +127,41 @@ def work_transcode(sound_id):
         print("- Sound ID {id} doesn't need transcoding".format(id=sound_id))
         sound.transcode_state = Sound.TRANSCODE_DONE
         db.session.commit()
-        add_user_log(sound.id, sound.user.id, 'sounds', 'info',
-                     "Transcoding not needed for: {0} -- {1}".format(
-                         sound.id, sound.title))
+        add_user_log(
+            sound.id,
+            sound.user.id,
+            "sounds",
+            "info",
+            "Transcoding not needed for: {0} -- {1}".format(sound.id, sound.title),
+        )
         return
     if not sound.transcode_state == Sound.TRANSCODE_WAITING:
-        print("- Sound ID {id} transcoding != TRANSCODE_WAITING".format(
-            id=sound_id))
+        print("- Sound ID {id} transcoding != TRANSCODE_WAITING".format(id=sound_id))
         return
 
     print("File: {0}: {1}".format(sound.id, sound.title))
-    add_user_log(sound.id, sound.user.id, 'sounds', 'info',
-                 "Transcoding started for: {0} -- {1}".format(sound.id,
-                                                              sound.title))
+    add_user_log(
+        sound.id,
+        sound.user.id,
+        "sounds",
+        "info",
+        "Transcoding started for: {0} -- {1}".format(sound.id, sound.title),
+    )
 
-    fname = os.path.join(app.config['UPLOADED_SOUNDS_DEST'],
-                         sound.user.slug, sound.filename)
+    fname = os.path.join(
+        app.config["UPLOADED_SOUNDS_DEST"], sound.user.slug, sound.filename
+    )
     _file, _ext = splitext(fname)
 
     _start = time.time()
 
     a = AudioSegment.from_file(fname)
-    a.export("{0}.mp3".format(_file), format='mp3', bitrate='196k')
+    a.export("{0}.mp3".format(_file), format="mp3", bitrate="196k")
 
     print("From: {0}".format(fname))
     print("Transcoded: {0}.mp3".format(_file))
-    elapsed = (time.time() - _start)
-    print("Transcoding done: ({0}) {1}".format(
-        elapsed,
-        duration_song_human(elapsed)))
+    elapsed = time.time() - _start
+    print("Transcoding done: ({0}) {1}".format(elapsed, duration_song_human(elapsed)))
 
     sound.transcode_state = Sound.TRANSCODE_DONE
 
@@ -163,9 +172,13 @@ def work_transcode(sound_id):
     sound.filename_transcoded = "{0}.mp3".format(_a)
     db.session.commit()
 
-    add_user_log(sound.id, sound.user.id, 'sounds', 'info',
-                 "Transcoding finished for: {0} -- {1}".format(sound.id,
-                                                               sound.title))
+    add_user_log(
+        sound.id,
+        sound.user.id,
+        "sounds",
+        "info",
+        "Transcoding finished for: {0} -- {1}".format(sound.id, sound.title),
+    )
 
 
 def work_metadatas(sound_id, force=False):
@@ -174,9 +187,13 @@ def work_metadatas(sound_id, force=False):
         print("- Cant find sound ID %(id)s in database".format(id=sound_id))
         return
 
-    add_user_log(sound.id, sound.user.id, 'sounds', 'info',
-                 "Metadatas gathering started for: {0} -- {1}".format(
-                     sound.id, sound.title))
+    add_user_log(
+        sound.id,
+        sound.user.id,
+        "sounds",
+        "info",
+        "Metadatas gathering started for: {0} -- {1}".format(sound.id, sound.title),
+    )
 
     _infos = sound.sound_infos.first()
 
@@ -186,24 +203,24 @@ def work_metadatas(sound_id, force=False):
 
     # Generate Basic infos
 
-    fname = os.path.join(app.config['UPLOADED_SOUNDS_DEST'],
-                         sound.user.slug, sound.filename)
+    fname = os.path.join(
+        app.config["UPLOADED_SOUNDS_DEST"], sound.user.slug, sound.filename
+    )
 
     if not _infos.done_basic or force:
-        print("- WORKING BASIC on {0}, {1}".format(sound.id,
-                                                   sound.filename))
+        print("- WORKING BASIC on {0}, {1}".format(sound.id, sound.filename))
         basic_infos = get_basic_infos(fname)
         print("- Our file got basic infos: {0}".format(basic_infos))
-        _infos.duration = basic_infos['duration']
-        _infos.channels = basic_infos['channels']
-        _infos.rate = basic_infos['rate']
-        _infos.codec = basic_infos['codec']
-        _infos.format = basic_infos['format']
-        _infos.bitrate = basic_infos['bitrate']
-        _infos.bitrate_mode = basic_infos['bitrate_mode']
+        _infos.duration = basic_infos["duration"]
+        _infos.channels = basic_infos["channels"]
+        _infos.rate = basic_infos["rate"]
+        _infos.codec = basic_infos["codec"]
+        _infos.format = basic_infos["format"]
+        _infos.bitrate = basic_infos["bitrate"]
+        _infos.bitrate_mode = basic_infos["bitrate_mode"]
         _infos.done_basic = True
-        _infos.type = basic_infos['type']
-        _infos.type_human = basic_infos['type_human']
+        _infos.type = basic_infos["type"]
+        _infos.type_human = basic_infos["type_human"]
 
     if not _infos.done_waveform or force:
         if sound.transcode_state == Sound.TRANSCODE_DONE:
@@ -213,22 +230,24 @@ def work_metadatas(sound_id, force=False):
         else:
             fname_t = fname
 
-        print("- WORKING WAVEFORM on {0}, {1}".format(sound.id,
-                                                      sound.filename))
+        print("- WORKING WAVEFORM on {0}, {1}".format(sound.id, sound.filename))
         waveform_infos = get_waveform_infos(fname_t)
-        print("- Our file got waveform infos: {0}".format(
-            waveform_infos))
+        print("- Our file got waveform infos: {0}".format(waveform_infos))
         _infos.waveform = waveform_infos
         if not waveform_infos:
             _infos.waveform_error = True
-            add_user_log(sound.id, sound.user.id, 'sounds', 'info',
-                         "Got an error when generating waveform"
-                         " for: {0} -- {1}".format(
-                             sound.id, sound.title))
+            add_user_log(
+                sound.id,
+                sound.user.id,
+                "sounds",
+                "info",
+                "Got an error when generating waveform"
+                " for: {0} -- {1}".format(sound.id, sound.title),
+            )
         else:
             fdir_wf = os.path.join(
-                app.config['UPLOADS_DEFAULT_DEST'],
-                'waveforms', sound.user.slug)
+                app.config["UPLOADS_DEFAULT_DEST"], "waveforms", sound.user.slug
+            )
             fname_wf = os.path.join(fdir_wf, sound.filename)
 
             if not os.path.isdir(fdir_wf):
@@ -240,9 +259,13 @@ def work_metadatas(sound_id, force=False):
     db.session.add(_infos)
     db.session.commit()
 
-    add_user_log(sound.id, sound.user.id, 'sounds', 'info',
-                 "Metadatas gathering finished for: {0} -- {1}".format(
-                     sound.id, sound.title))
+    add_user_log(
+        sound.id,
+        sound.user.id,
+        "sounds",
+        "info",
+        "Metadatas gathering finished for: {0} -- {1}".format(sound.id, sound.title),
+    )
 
 
 @dramatiq.actor(queue_name="upload_workflow", max_retries=3)
@@ -263,11 +286,13 @@ def upload_workflow(sound_id):
         work_transcode(sound_id)
         print("TRANSCODE finished")
 
-        msg = Message(subject="Song processing finished",
-                      recipients=[sound.user.email],
-                      sender=app.config['MAIL_DEFAULT_SENDER'])
-        msg.body = render_template('email/song_processed.txt', sound=sound)
-        msg.html = render_template('email/song_processed.html', sound=sound)
+        msg = Message(
+            subject="Song processing finished",
+            recipients=[sound.user.email],
+            sender=app.config["MAIL_DEFAULT_SENDER"],
+        )
+        msg.body = render_template("email/song_processed.txt", sound=sound)
+        msg.html = render_template("email/song_processed.html", sound=sound)
         mail.send(msg)
 
         print("UPLOAD WORKFLOW finished")

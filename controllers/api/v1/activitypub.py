@@ -1,5 +1,15 @@
-from flask import Blueprint, request, abort, current_app, Response, jsonify, \
-    flash, render_template, redirect, url_for
+from flask import (
+    Blueprint,
+    request,
+    abort,
+    current_app,
+    Response,
+    jsonify,
+    flash,
+    render_template,
+    redirect,
+    url_for,
+)
 from little_boxes import activitypub
 from little_boxes.httpsig import verify_request
 from activitypub.backend import post_to_inbox, Box
@@ -8,10 +18,10 @@ from models import Activity, User, db, follower
 from flask_accept import accept_fallback
 from flask_babelex import gettext
 
-bp_ap = Blueprint('bp_ap', __name__)
+bp_ap = Blueprint("bp_ap", __name__)
 
 
-@bp_ap.route('/user/<string:name>/inbox', methods=["GET", "POST"])
+@bp_ap.route("/user/<string:name>/inbox", methods=["GET", "POST"])
 def user_inbox(name):
     be = activitypub.get_backend()
     if not be:
@@ -24,21 +34,21 @@ def user_inbox(name):
     current_app.logger.debug(f"raw_data={data}")
 
     try:
-        if not verify_request(request.method,
-                              request.path,
-                              request.headers,
-                              request.data):
+        if not verify_request(
+            request.method, request.path, request.headers, request.data
+        ):
             raise Exception("failed to verify request")
     except Exception:
         current_app.logger.exception("failed to verify request")
         try:
             data = be.fetch_iri(data["id"])
         except Exception:
-            current_app.logger.exception(f"failed to fetch remote id "
-                                         f"at {data['id']}")
+            current_app.logger.exception(
+                f"failed to fetch remote id " f"at {data['id']}"
+            )
             resp = {
                 "error": "failed to verify request "
-                         "(using HTTP signatures or fetching the IRI)"
+                "(using HTTP signatures or fetching the IRI)"
             }
             response = jsonify(resp)
             response.mimetype = "application/json; charset=utf-8"
@@ -53,7 +63,7 @@ def user_inbox(name):
     return Response(status=201)
 
 
-@bp_ap.route('/user/<string:name>/outbox', methods=["GET", "POST"])
+@bp_ap.route("/user/<string:name>/outbox", methods=["GET", "POST"])
 def user_outbox(name):
     be = activitypub.get_backend()
     if not be:
@@ -65,45 +75,50 @@ def user_outbox(name):
     current_app.logger.debug(f"raw_data={data}")
 
 
-@bp_ap.route('/user/<string:name>/followings', methods=['GET'])
+@bp_ap.route("/user/<string:name>/followings", methods=["GET"])
 @accept_fallback
 def followings(name):
-    pcfg = {"title": gettext(u"%(username)s' followings", username=name)}
+    pcfg = {"title": gettext("%(username)s' followings", username=name)}
 
     user = User.query.filter(User.name == name).first()
     if not user:
-        flash(gettext("User not found"), 'error')
+        flash(gettext("User not found"), "error")
         return redirect(url_for("bp_main.home"))
 
     followings = db.session.query(follower).filter(
-        follower.c.target_id == user.actor[0].id)
+        follower.c.target_id == user.actor[0].id
+    )
 
-    return render_template('users/followings.jinja2',
-                           pcfg=pcfg,
-                           user=user,
-                           actor=user.actor[0],
-                           followings=followings)
+    return render_template(
+        "users/followings.jinja2",
+        pcfg=pcfg,
+        user=user,
+        actor=user.actor[0],
+        followings=followings,
+    )
 
 
-@bp_ap.route('/user/<string:name>/followers', methods=['GET'])
+@bp_ap.route("/user/<string:name>/followers", methods=["GET"])
 @accept_fallback
 def followers(name):
-    pcfg = {"title": gettext(u"%(username)s' followers", username=name)}
+    pcfg = {"title": gettext("%(username)s' followers", username=name)}
 
     user = User.query.filter(User.name == name).first()
     if not user:
-        flash(gettext("User not found"), 'error')
+        flash(gettext("User not found"), "error")
         return redirect(url_for("bp_main.home"))
 
-    return render_template('users/followers.jinja2',
-                           pcfg=pcfg,
-                           user=user,
-                           actor=user.actor[0],
-                           followers=user.actor[0].followers)
+    return render_template(
+        "users/followers.jinja2",
+        pcfg=pcfg,
+        user=user,
+        actor=user.actor[0],
+        followers=user.actor[0].followers,
+    )
 
 
-@bp_ap.route('/user/<string:name>/followers', methods=["GET", "POST"])
-@followers.support('application/json', 'application/activity+json')
+@bp_ap.route("/user/<string:name>/followers", methods=["GET", "POST"])
+@followers.support("application/json", "application/activity+json")
 def user_followers(name):
     be = activitypub.get_backend()
     if not be:
@@ -122,15 +137,11 @@ def user_followers(name):
     followers = actor.followers
 
     return jsonify(
-        **build_ordered_collection(
-            followers,
-            actor.url,
-            request.args.get("page")
-        )
+        **build_ordered_collection(followers, actor.url, request.args.get("page"))
     )
 
 
-@bp_ap.route('/inbox', methods=["GET", "POST"])
+@bp_ap.route("/inbox", methods=["GET", "POST"])
 def inbox():
     be = activitypub.get_backend()
     if not be:
@@ -143,21 +154,21 @@ def inbox():
     current_app.logger.debug(f"raw_data={data}")
 
     try:
-        if not verify_request(request.method,
-                              request.path,
-                              request.headers,
-                              request.data):
+        if not verify_request(
+            request.method, request.path, request.headers, request.data
+        ):
             raise Exception("failed to verify request")
     except Exception:
         current_app.logger.exception("failed to verify request")
         try:
             data = be.fetch_iri(data["id"])
         except Exception:
-            current_app.logger.exception(f"failed to fetch remote id "
-                                         f"at {data['id']}")
+            current_app.logger.exception(
+                f"failed to fetch remote id " f"at {data['id']}"
+            )
             resp = {
                 "error": "failed to verify request "
-                         "(using HTTP signatures or fetching the IRI)"
+                "(using HTTP signatures or fetching the IRI)"
             }
             response = jsonify(resp)
             response.mimetype = "application/json; charset=utf-8"
@@ -172,7 +183,7 @@ def inbox():
     return Response(status=201)
 
 
-@bp_ap.route('/outbox', methods=["GET", "POST"])
+@bp_ap.route("/outbox", methods=["GET", "POST"])
 def outbox():
     be = activitypub.get_backend()
     if not be:
@@ -184,7 +195,7 @@ def outbox():
     current_app.logger.debug(f"raw_data={data}")
 
 
-@bp_ap.route('/outbox/<string:item_id>', methods=["GET", "POST"])
+@bp_ap.route("/outbox/<string:item_id>", methods=["GET", "POST"])
 def outbox_item(item_id):
     be = activitypub.get_backend()
     if not be:
@@ -197,9 +208,9 @@ def outbox_item(item_id):
 
     current_app.logger.debug(f"activity url {be.activity_url(item_id)}")
 
-    item = Activity.query.filter(Activity.box == Box.OUTBOX.value,
-                                 Activity.url == be.activity_url(item_id)
-                                 ).first()
+    item = Activity.query.filter(
+        Activity.box == Box.OUTBOX.value, Activity.url == be.activity_url(item_id)
+    ).first()
     if not item:
         abort(404)
 

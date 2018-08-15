@@ -13,8 +13,8 @@ from models import db, Role, Logging, Config, UserLogging
 def gcfg():
     _config = Config.query.one()
     if not _config:
-        return {'app_name': "ree2bits"}
-    return {'app_name': _config.app_name}
+        return {"app_name": "ree2bits"}
+    return {"app_name": _config.app_name}
 
 
 class InvalidUsage(Exception):
@@ -29,14 +29,14 @@ class InvalidUsage(Exception):
 
     def to_dict(self):
         rv = dict(self.payload or ())
-        rv['message'] = self.message
-        rv['status'] = 'error'
-        rv['code'] = self.status_code
+        rv["message"] = self.message
+        rv["status"] = "error"
+        rv["code"] = self.status_code
         return rv
 
 
 def is_admin():
-    adm = Role.query.filter(Role.name == 'admin').first()
+    adm = Role.query.filter(Role.name == "admin").first()
     if not current_user or not current_user.is_authenticated or not adm:
         return False
     if adm in current_user.roles:
@@ -60,13 +60,19 @@ def add_log(category, level, message):
 # - global
 def add_user_log(item, user, category, level, message):
     if not category or not level or not message or not item:
-        print(
-            "!! Fatal error in add_user_log() one of three variables not set")
-    print("[LOG][{0}][{1}][u:{2}i:{3}] {4}".format(level.upper(),
-                                                   category, user,
-                                                   item, message))
-    a = UserLogging(category=category, level=level.upper(), message=message,
-                    item_id=item, user_id=user)
+        print("!! Fatal error in add_user_log() one of three variables not set")
+    print(
+        "[LOG][{0}][{1}][u:{2}i:{3}] {4}".format(
+            level.upper(), category, user, item, message
+        )
+    )
+    a = UserLogging(
+        category=category,
+        level=level.upper(),
+        message=message,
+        item_id=item,
+        user_id=user,
+    )
     db.session.add(a)
     db.session.commit()
 
@@ -85,15 +91,15 @@ def duration_elapsed_human(seconds):
     years = int(years)
 
     if years > 0:
-        return '%d y' % years
+        return "%d y" % years
     elif days > 0:
-        return '%d d' % days
+        return "%d d" % days
     elif hours > 0:
-        return '%d h' % hours + 's' * (hours != 1)
+        return "%d h" % hours + "s" * (hours != 1)
     elif minutes > 0:
-        return '%d mn' % minutes + 's' * (minutes != 1)
+        return "%d mn" % minutes + "s" * (minutes != 1)
     else:
-        return 'right now'
+        return "right now"
 
 
 def duration_song_human(seconds):
@@ -112,28 +118,40 @@ def duration_song_human(seconds):
     years = int(years)
 
     if years > 0:
-        return '%d year' % years + 's' * (years != 1)
+        return "%d year" % years + "s" * (years != 1)
     elif days > 0:
-        return '%d day' % days + 's' * (days != 1)
+        return "%d day" % days + "s" * (days != 1)
     elif hours > 0:
-        return '%d hour' % hours + 's' * (hours != 1)
+        return "%d hour" % hours + "s" * (hours != 1)
     elif minutes > 0:
-        return '%d mn' % minutes + 's' * (minutes != 1)
+        return "%d mn" % minutes + "s" * (minutes != 1)
     else:
-        return '%.2f sec' % seconds + 's' * (seconds != 1)
+        return "%.2f sec" % seconds + "s" * (seconds != 1)
 
 
 def get_waveform(filename):
-    binary = current_app.config['AUDIOWAVEFORM_BIN']
+    binary = current_app.config["AUDIOWAVEFORM_BIN"]
     if not os.path.exists(binary) or not os.path.exists(filename):
-        add_log("AUDIOWAVEFORM", "ERROR", "Filename {0} or binary {1} invalid"
-                .format(filename, binary))
+        add_log(
+            "AUDIOWAVEFORM",
+            "ERROR",
+            "Filename {0} or binary {1} invalid".format(filename, binary),
+        )
         return None
 
     tmpjson = "{0}.json".format(filename)
 
-    cmd = [binary, '-i', filename, '--pixels-per-second',
-           '10', '-b', '8', '-o', tmpjson]
+    cmd = [
+        binary,
+        "-i",
+        filename,
+        "--pixels-per-second",
+        "10",
+        "-b",
+        "8",
+        "-o",
+        tmpjson,
+    ]
 
     """
     Failed: Can't generate "xxx" from "xxx"
@@ -155,8 +173,7 @@ def get_waveform(filename):
     """
 
     try:
-        process = subprocess.run(cmd, stdout=subprocess.PIPE,
-                                 stderr=subprocess.PIPE)
+        process = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         if not process:
             add_log("AUDIOWAVEFORM", "ERROR", "Subprocess returned None")
             return None
@@ -167,11 +184,10 @@ def get_waveform(filename):
     print("- Command ran with: {0}".format(process.args))
 
     if process.stderr.startswith(b"Can't generate"):
-        add_log("AUDIOWAVEFORM", "ERROR", "Process error: {0}".format(
-            process.stderr))
+        add_log("AUDIOWAVEFORM", "ERROR", "Process error: {0}".format(process.stderr))
         return None
 
-    with open(tmpjson, 'r') as f:
+    with open(tmpjson, "r") as f:
         json = f.readlines()
 
     os.unlink(tmpjson)
@@ -182,20 +198,31 @@ def get_waveform(filename):
 
 
 def create_png_waveform(fn_audio, fn_png):
-    binary = current_app.config['AUDIOWAVEFORM_BIN']
+    binary = current_app.config["AUDIOWAVEFORM_BIN"]
     if not os.path.exists(binary) or not os.path.exists(fn_audio):
         add_log(
-            "AUDIOWAVEFORM_PNG", "ERROR", "Filename {0} or binary {1} invalid"
-            .format(fn_audio, binary))
+            "AUDIOWAVEFORM_PNG",
+            "ERROR",
+            "Filename {0} or binary {1} invalid".format(fn_audio, binary),
+        )
         return None
 
     pngwf = "{0}.png".format(fn_png)
-    cmd = [binary, '-i', fn_audio, '--width', '384', '--height', '64',
-           '--no-axis-labels', '-o', pngwf]
+    cmd = [
+        binary,
+        "-i",
+        fn_audio,
+        "--width",
+        "384",
+        "--height",
+        "64",
+        "--no-axis-labels",
+        "-o",
+        pngwf,
+    ]
 
     try:
-        process = subprocess.run(cmd, stdout=subprocess.PIPE,
-                                 stderr=subprocess.PIPE)
+        process = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         if not process:
             add_log("AUDIOWAVEFORM_PNG", "ERROR", "Subprocess returned None")
             return None
@@ -206,8 +233,9 @@ def create_png_waveform(fn_audio, fn_png):
     print("- Command ran with: {0}".format(process.args))
 
     if process.stderr.startswith(b"Can't generate"):
-        add_log("AUDIOWAVEFORM_PNG", "ERROR", "Process error: {0}".format(
-            process.stderr))
+        add_log(
+            "AUDIOWAVEFORM_PNG", "ERROR", "Process error: {0}".format(process.stderr)
+        )
         return None
 
     return True
@@ -218,7 +246,7 @@ def get_hashed_filename(filename):
 
     fs_fname = hashlib.sha256()
     hashed_format = "%s-%s" % (f_n, datetime.datetime.now())
-    fs_fname.update(hashed_format.encode('utf-8'))
+    fs_fname.update(hashed_format.encode("utf-8"))
     fs_fname = fs_fname.hexdigest()
 
     return fs_fname + f_e

@@ -12,11 +12,9 @@ def ap_url(klass, username):
     elif klass == "shared_inbox":
         return f"https://{current_app.config['AP_DOMAIN']}/inbox"
     elif klass == "inbox":
-        return f"https://{current_app.config['AP_DOMAIN']}" \
-               f"/user/{username}/inbox"
+        return f"https://{current_app.config['AP_DOMAIN']}" f"/user/{username}/inbox"
     elif klass == "outbox":
-        return f"https://{current_app.config['AP_DOMAIN']}" \
-               f"/user/{username}/outbox"
+        return f"https://{current_app.config['AP_DOMAIN']}" f"/user/{username}/outbox"
     else:
         return None
 
@@ -24,10 +22,10 @@ def ap_url(klass, username):
 def full_url(path):
     if path.startswith("http://") or path.startswith("https://"):
         return path
-    root = current_app.config['AP_DOMAIN']
-    if path.startswith('/'):
+    root = current_app.config["AP_DOMAIN"]
+    if path.startswith("/"):
         return root + path[1:]
-    elif path.startswith('/'):
+    elif path.startswith("/"):
         return root + "/" + path
     else:
         return root + path
@@ -54,13 +52,11 @@ def add_extra_collection(item: Dict[str, Any]) -> Dict[str, Any]:
     )
 
     item["object"]["likes"] = embed_collection(
-        item.get("meta", {}).get("count_like", 0),
-        f'{item["remote_id"]}/likes'
+        item.get("meta", {}).get("count_like", 0), f'{item["remote_id"]}/likes'
     )
 
     item["object"]["shares"] = embed_collection(
-        item.get("meta", {}).get("count_boost", 0),
-        f'{item["remote_id"]}/shares'
+        item.get("meta", {}).get("count_boost", 0), f'{item["remote_id"]}/shares'
     )
 
     return item
@@ -72,8 +68,7 @@ def remove_context(activity: Dict[str, Any]) -> Dict[str, Any]:
     return activity
 
 
-def activity_from_doc(item: Dict[str, Any], embed: bool = False) \
-        -> Dict[str, Any]:
+def activity_from_doc(item: Dict[str, Any], embed: bool = False) -> Dict[str, Any]:
     item = add_extra_collection(item)
     activity = clean_activity(item)
     if embed:
@@ -120,9 +115,7 @@ def build_ordered_collection(items, actor_id, page, limit=50):
             },
         }
         if len(items) == limit:
-            resp["first"]["next"] = (
-                f"{actor_id}/followers?page=1"
-            )
+            resp["first"]["next"] = f"{actor_id}/followers?page=1"
 
         return resp
 
