@@ -14,21 +14,14 @@ def test_webfinger(client, session):
     datas = rv.json
 
     assert "aliases" in datas
-    assert (
-        f"https://{current_app.config['AP_DOMAIN']}/user/TestWebfinger"
-        in datas["aliases"]
-    )
+    assert f"https://{current_app.config['AP_DOMAIN']}/user/TestWebfinger" in datas["aliases"]
     assert "links" in datas
     assert "subject" in datas
-    assert (
-        datas["subject"] == f"acct:TestWebfinger@" f"{current_app.config['AP_DOMAIN']}"
-    )
+    assert datas["subject"] == f"acct:TestWebfinger@" f"{current_app.config['AP_DOMAIN']}"
 
 
 def test_webfinger_case(client, session):
-    register(
-        client, "dashie+webfingercase@sigpipe.me", "fluttershy", "TestWebfingerCase"
-    )
+    register(client, "dashie+webfingercase@sigpipe.me", "fluttershy", "TestWebfingerCase")
     logout(client)
 
     rv = client.get("/.well-known/webfinger?resource=acct:testwebfingercase@localhost")
@@ -39,22 +32,14 @@ def test_webfinger_case(client, session):
     datas = rv.json
 
     assert "aliases" in datas
-    assert (
-        f"https://{current_app.config['AP_DOMAIN']}"
-        f"/user/TestWebfingerCase" in datas["aliases"]
-    )
+    assert f"https://{current_app.config['AP_DOMAIN']}" f"/user/TestWebfingerCase" in datas["aliases"]
     assert "links" in datas
     assert "subject" in datas
-    assert (
-        datas["subject"] == f"acct:TestWebfingerCase@"
-        f"{current_app.config['AP_DOMAIN']}"
-    )
+    assert datas["subject"] == f"acct:TestWebfingerCase@" f"{current_app.config['AP_DOMAIN']}"
 
 
 def test_unknown_webfinger(client, session):
-    rv = client.get(
-        "/.well-known/webfinger?resource=acct:TestWebfinger83294289@localhost"
-    )
+    rv = client.get("/.well-known/webfinger?resource=acct:TestWebfinger83294289@localhost")
     assert rv.headers["Content-Type"] == "application/jrd+json; charset=utf-8"
     assert rv.status_code == 404
 

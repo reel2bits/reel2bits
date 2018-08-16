@@ -16,9 +16,7 @@ from alembic import op  # noqa: E402
 
 def upgrade():
     op.add_column("sound_info", sa.Column("bitrate", sa.Integer(), nullable=True))
-    op.add_column(
-        "sound_info", sa.Column("bitrate_mode", sa.String(length=10), nullable=True)
-    )
+    op.add_column("sound_info", sa.Column("bitrate_mode", sa.String(length=10), nullable=True))
 
 
 def downgrade():

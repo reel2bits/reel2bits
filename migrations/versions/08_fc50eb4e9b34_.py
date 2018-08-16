@@ -15,9 +15,7 @@ from alembic import op  # noqa: E402
 
 
 def upgrade():
-    op.add_column(
-        "sound_info", sa.Column("type_human", sa.String(length=20), nullable=True)
-    )
+    op.add_column("sound_info", sa.Column("type_human", sa.String(length=20), nullable=True))
 
 
 def downgrade():

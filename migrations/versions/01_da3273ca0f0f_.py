@@ -19,9 +19,7 @@ def upgrade():
         "sound",
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("title", sa.String(length=255), nullable=True),
-        sa.Column(
-            "uploaded", sa.DateTime(), server_default=sa.text("now()"), nullable=True
-        ),
+        sa.Column("uploaded", sa.DateTime(), server_default=sa.text("now()"), nullable=True),
         sa.Column("description", sa.UnicodeText(), nullable=True),
         sa.Column("public", sa.Boolean(), nullable=False),
         sa.Column("slug", sa.String(length=255), nullable=True),

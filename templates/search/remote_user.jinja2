@@ -10,7 +10,12 @@
     <div class="row">
         <div class="col-lg-10">
             <div class="row_user">
-                {{ gettext("Remote user:") }} <a href="{{ user['url'] }}">{{ user['name'] }}@{{ user['instance'] }}</a> - <a href="{{ url_for("bp_users.follow", user=user['url']) }}">follow</a> - <a href="{{ url_for("bp_users.unfollow", user=user['url']) }}">unfollow</a>
+                {{ gettext("Remote user:") }} <a href="{{ user['url'] }}">{{ user['name'] }}@{{ user['instance'] }}</a> -
+                {% if user.follow %}
+                    <a href="{{ url_for("bp_users.unfollow", user=user['url']) }}">unfollow</a>
+                {% else %}
+                    <a href="{{ url_for("bp_users.follow", user=user['url']) }}">follow</a>
+                {% endif %}
             </div>
         </div>
     </div>

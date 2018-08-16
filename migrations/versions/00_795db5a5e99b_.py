@@ -63,9 +63,7 @@ def upgrade():
         sa.Column("category", sa.String(length=255), nullable=False),
         sa.Column("level", sa.String(length=255), nullable=False),
         sa.Column("message", sa.Text(), nullable=False),
-        sa.Column(
-            "timestamp", sa.DateTime(), server_default=sa.text("now()"), nullable=True
-        ),
+        sa.Column("timestamp", sa.DateTime(), server_default=sa.text("now()"), nullable=True),
         sa.Column("user_id", sa.Integer(), nullable=True),
         sa.ForeignKeyConstraint(["user_id"], ["user.id"]),
         sa.PrimaryKeyConstraint("id"),
@@ -83,9 +81,7 @@ def upgrade():
         sa.Column("category", sa.String(length=255), nullable=False),
         sa.Column("level", sa.String(length=255), nullable=False),
         sa.Column("message", sa.Text(), nullable=False),
-        sa.Column(
-            "timestamp", sa.DateTime(), server_default=sa.text("now()"), nullable=True
-        ),
+        sa.Column("timestamp", sa.DateTime(), server_default=sa.text("now()"), nullable=True),
         sa.Column("user_id", sa.Integer(), nullable=False),
         sa.ForeignKeyConstraint(["user_id"], ["user.id"]),
         sa.PrimaryKeyConstraint("id"),

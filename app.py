@@ -4,16 +4,7 @@ import os
 import subprocess
 from logging.handlers import RotatingFileHandler
 from flask_babelex import gettext, Babel
-from flask import (
-    Flask,
-    render_template,
-    g,
-    send_from_directory,
-    jsonify,
-    safe_join,
-    request,
-    flash,
-)
+from flask import Flask, render_template, g, send_from_directory, jsonify, safe_join, request, flash
 from flask_bootstrap import Bootstrap
 from flask_mail import Mail
 from flask_migrate import Migrate
@@ -35,13 +26,7 @@ from controllers.api.v1.activitypub import bp_ap
 
 from forms import ExtendedRegisterForm
 from models import db, Config, user_datastore, Role, create_actor
-from utils import (
-    InvalidUsage,
-    is_admin,
-    duration_elapsed_human,
-    duration_song_human,
-    add_user_log,
-)
+from utils import InvalidUsage, is_admin, duration_elapsed_human, duration_song_human, add_user_log
 
 import texttable
 from flask_debugtoolbar import DebugToolbarExtension
@@ -92,12 +77,8 @@ def create_app(config_filename="config.py"):
 
     # Logging
     if not app.debug:
-        formatter = logging.Formatter(
-            "%(asctime)s %(levelname)s: %(message)s " "[in %(pathname)s:%(lineno)d]"
-        )
-        file_handler = RotatingFileHandler(
-            "%s/errors_app.log" % os.getcwd(), "a", 1000000, 1
-        )
+        formatter = logging.Formatter("%(asctime)s %(levelname)s: %(message)s " "[in %(pathname)s:%(lineno)d]")
+        file_handler = RotatingFileHandler("%s/errors_app.log" % os.getcwd(), "a", 1000000, 1)
         file_handler.setLevel(logging.DEBUG)
         file_handler.setFormatter(formatter)
         app.logger.addHandler(file_handler)
@@ -115,10 +96,7 @@ def create_app(config_filename="config.py"):
 
     # Setup Flask-Security
     security = Security(  # noqa: F841
-        app,
-        user_datastore,
-        register_form=ExtendedRegisterForm,
-        confirm_register_form=ExtendedRegisterForm,
+        app, user_datastore, register_form=ExtendedRegisterForm, confirm_register_form=ExtendedRegisterForm
     )
 
     @FlaskSecuritySignals.password_reset.connect_via(app)
@@ -126,17 +104,13 @@ def create_app(config_filename="config.py"):
     def log_password_reset(sender, user):
         if not user:
             return
-        add_user_log(
-            user.id, user.id, "user", "info", "Your password has been changed !"
-        )
+        add_user_log(user.id, user.id, "user", "info", "Your password has been changed !")
 
     @FlaskSecuritySignals.reset_password_instructions_sent.connect_via(app)
     def log_reset_password_instr(sender, user, token):
         if not user:
             return
-        add_user_log(
-            user.id, user.id, "user", "info", "Password reset instructions sent."
-        )
+        add_user_log(user.id, user.id, "user", "info", "Password reset instructions sent.")
 
     @FlaskSecuritySignals.user_registered.connect_via(app)
     def create_actor_for_registered_user(app, user, confirm_token):
@@ -236,12 +210,7 @@ def create_app(config_filename="config.py"):
 
     @app.errorhandler(410)
     def err_gone(msg):
-        pcfg = {
-            "title": gettext("Whoops, something failed."),
-            "error": 410,
-            "message": gettext("Gone"),
-            "e": msg,
-        }
+        pcfg = {"title": gettext("Whoops, something failed."), "error": 410, "message": gettext("Gone"), "e": msg}
         return render_template("error_page.jinja2", pcfg=pcfg), 410
 
     if not app.debug:
@@ -289,9 +258,7 @@ def create_app(config_filename="config.py"):
         """Create an user"""
         username = click.prompt("Username", type=str)
         email = click.prompt("Email", type=str)
-        password = click.prompt(
-            "Password", type=str, hide_input=True, confirmation_prompt=True
-        )
+        password = click.prompt("Password", type=str, hide_input=True, confirmation_prompt=True)
         while True:
             role = click.prompt("Role [admin/user]", type=str)
             if role == "admin" or role == "user":
@@ -302,10 +269,7 @@ def create_app(config_filename="config.py"):
             if not role:
                 raise click.UsageError("Roles not present in database")
             u = user_datastore.create_user(
-                name=username,
-                email=email,
-                password=encrypt_password(password),
-                roles=[role],
+                name=username, email=email, password=encrypt_password(password), roles=[role]
             )
 
             actor = create_actor(u)

@@ -47,13 +47,10 @@ def add_extra_collection(item: Dict[str, Any]) -> Dict[str, Any]:
         return item
 
     item["object"]["replies"] = embed_collection(
-        item.get("meta", {}).get("count_direct_reply", 0),
-        f'{item["remote_id"]}/replies',
+        item.get("meta", {}).get("count_direct_reply", 0), f'{item["remote_id"]}/replies'
     )
 
-    item["object"]["likes"] = embed_collection(
-        item.get("meta", {}).get("count_like", 0), f'{item["remote_id"]}/likes'
-    )
+    item["object"]["likes"] = embed_collection(item.get("meta", {}).get("count_like", 0), f'{item["remote_id"]}/likes')
 
     item["object"]["shares"] = embed_collection(
         item.get("meta", {}).get("count_boost", 0), f'{item["remote_id"]}/shares'

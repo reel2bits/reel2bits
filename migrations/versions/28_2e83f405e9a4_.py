@@ -21,12 +21,7 @@ def upgrade():
         "activity",
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("actor", sa.Integer(), nullable=True),
-        sa.Column(
-            "uuid",
-            postgresql.UUID(as_uuid=True),
-            server_default=sa.text("uuid_generate_v4()"),
-            nullable=True,
-        ),
+        sa.Column("uuid", postgresql.UUID(as_uuid=True), server_default=sa.text("uuid_generate_v4()"), nullable=True),
         sa.Column("url", sqlalchemy_utils.types.url.URLType(), nullable=True),
         sa.Column("type", sa.String(length=100), nullable=True),
         sa.Column("payload", sqlalchemy_utils.types.json.JSONType(), nullable=True),
@@ -42,12 +37,7 @@ def upgrade():
     op.create_table(
         "followers",
         sa.Column("id", sa.Integer(), nullable=False),
-        sa.Column(
-            "uuid",
-            postgresql.UUID(as_uuid=True),
-            server_default=sa.text("uuid_generate_v4()"),
-            nullable=True,
-        ),
+        sa.Column("uuid", postgresql.UUID(as_uuid=True), server_default=sa.text("uuid_generate_v4()"), nullable=True),
         sa.Column("actor_id", sa.Integer(), nullable=True),
         sa.Column("target_id", sa.Integer(), nullable=True),
         sa.Column("creation_date", sa.DateTime(), nullable=True),
@@ -66,21 +56,10 @@ def downgrade():
         "follow",
         sa.Column("id", sa.INTEGER(), autoincrement=True, nullable=False),
         sa.Column(
-            "uuid",
-            postgresql.UUID(),
-            server_default=sa.text("uuid_generate_v4()"),
-            autoincrement=False,
-            nullable=True,
+            "uuid", postgresql.UUID(), server_default=sa.text("uuid_generate_v4()"), autoincrement=False, nullable=True
         ),
-        sa.Column(
-            "creation_date", postgresql.TIMESTAMP(), autoincrement=False, nullable=True
-        ),
-        sa.Column(
-            "modification_date",
-            postgresql.TIMESTAMP(),
-            autoincrement=False,
-            nullable=True,
-        ),
+        sa.Column("creation_date", postgresql.TIMESTAMP(), autoincrement=False, nullable=True),
+        sa.Column("modification_date", postgresql.TIMESTAMP(), autoincrement=False, nullable=True),
         sa.PrimaryKeyConstraint("id", name="follow_pkey"),
         sa.UniqueConstraint("uuid", name="follow_uuid_key"),
     )

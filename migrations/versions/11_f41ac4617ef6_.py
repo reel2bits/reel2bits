@@ -20,7 +20,5 @@ def upgrade():
 
 
 def downgrade():
-    op.add_column(
-        "sound", sa.Column("public", sa.BOOLEAN(), autoincrement=False, nullable=False)
-    )
+    op.add_column("sound", sa.Column("public", sa.BOOLEAN(), autoincrement=False, nullable=False))
     op.drop_column("sound", "private")

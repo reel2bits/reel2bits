@@ -25,9 +25,7 @@ def upgrade():
         sa.Column("inbox_url", sqlalchemy_utils.types.url.URLType(), nullable=True),
         sa.Column("following_url", sqlalchemy_utils.types.url.URLType(), nullable=True),
         sa.Column("followers_url", sqlalchemy_utils.types.url.URLType(), nullable=True),
-        sa.Column(
-            "shared_inbox_url", sqlalchemy_utils.types.url.URLType(), nullable=True
-        ),
+        sa.Column("shared_inbox_url", sqlalchemy_utils.types.url.URLType(), nullable=True),
         sa.Column(
             "type",
             sqlalchemy_utils.types.choice.ChoiceType(choices=ACTOR_TYPE_CHOICES),
@@ -46,9 +44,7 @@ def upgrade():
         sa.Column("user_id", sa.Integer(), nullable=True),
         sa.ForeignKeyConstraint(["user_id"], ["user.id"]),
         sa.PrimaryKeyConstraint("id"),
-        sa.UniqueConstraint(
-            "domain", "preferred_username", name="_domain_pref_username_uc"
-        ),
+        sa.UniqueConstraint("domain", "preferred_username", name="_domain_pref_username_uc"),
     )
     op.create_index(op.f("ix_actor_url"), "actor", ["url"], unique=True)
 

@@ -34,19 +34,13 @@ def test_register_two_identical_users(client, session):
     resp = client.post(
         "/register",
         data=dict(
-            email="dashie+imunique@sigpipe.me",
-            password="fluttershy",
-            password_confirm="fluttershy",
-            name="ImUnique",
+            email="dashie+imunique@sigpipe.me", password="fluttershy", password_confirm="fluttershy", name="ImUnique"
         ),
         follow_redirects=True,
     )
     # should error
     assert b"Logged as" not in resp.data
-    assert (
-        b"dashie+imunique@sigpipe.me is already associated "
-        b"with an account." in resp.data
-    )
+    assert b"dashie+imunique@sigpipe.me is already associated " b"with an account." in resp.data
     assert b"Username already taken" in resp.data
     assert resp.status_code == 200
 
@@ -64,11 +58,7 @@ def test_change_password(client, session):
     # Change password
     resp = client.post(
         "/change",
-        data=dict(
-            password=init_password,
-            new_password=new_password,
-            new_password_confirm=new_password,
-        ),
+        data=dict(password=init_password, new_password=new_password, new_password_confirm=new_password),
         follow_redirects=True,
     )
 

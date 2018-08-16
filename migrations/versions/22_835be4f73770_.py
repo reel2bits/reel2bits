@@ -15,12 +15,8 @@ from alembic import op  # noqa: E402
 
 
 def upgrade():
-    op.alter_column(
-        "user_logging", "sound_id", existing_type=sa.INTEGER(), nullable=True
-    )
+    op.alter_column("user_logging", "sound_id", existing_type=sa.INTEGER(), nullable=True)
 
 
 def downgrade():
-    op.alter_column(
-        "user_logging", "sound_id", existing_type=sa.INTEGER(), nullable=False
-    )
+    op.alter_column("user_logging", "sound_id", existing_type=sa.INTEGER(), nullable=False)

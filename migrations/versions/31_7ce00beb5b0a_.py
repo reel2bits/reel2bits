@@ -16,10 +16,7 @@ import sqlalchemy_utils  # noqa: E402
 
 
 def upgrade():
-    op.add_column(
-        "followers",
-        sa.Column("activity_url", sqlalchemy_utils.types.url.URLType(), nullable=True),
-    )
+    op.add_column("followers", sa.Column("activity_url", sqlalchemy_utils.types.url.URLType(), nullable=True))
     op.create_unique_constraint(None, "followers", ["activity_url"])
 
 

@@ -60,12 +60,8 @@ class Role(db.Model, RoleMixin):
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(
-        db.String(255), unique=True, nullable=False, info={"label": "Email"}
-    )
-    name = db.Column(
-        db.String(255), unique=True, nullable=False, info={"label": "Username"}
-    )
+    email = db.Column(db.String(255), unique=True, nullable=False, info={"label": "Email"})
+    name = db.Column(db.String(255), unique=True, nullable=False, info={"label": "Username"})
     password = db.Column(db.String(255), nullable=False, info={"label": "Password"})
     active = db.Column(db.Boolean())
     confirmed_at = db.Column(db.DateTime())
@@ -75,25 +71,15 @@ class User(db.Model, UserMixin):
 
     locale = db.Column(db.String(5), default="en")
 
-    timezone = db.Column(
-        db.String(255), nullable=False, default="UTC"
-    )  # Managed and fed by pytz
+    timezone = db.Column(db.String(255), nullable=False, default="UTC")  # Managed and fed by pytz
 
     slug = db.Column(db.String(255), unique=True, nullable=True)
 
-    roles = db.relationship(
-        "Role", secondary=roles_users, backref=db.backref("users", lazy="dynamic")
-    )
-    apitokens = db.relationship(
-        "Apitoken", backref="user", lazy="dynamic", cascade="delete"
-    )
+    roles = db.relationship("Role", secondary=roles_users, backref=db.backref("users", lazy="dynamic"))
+    apitokens = db.relationship("Apitoken", backref="user", lazy="dynamic", cascade="delete")
 
-    user_loggings = db.relationship(
-        "UserLogging", backref="user", lazy="dynamic", cascade="delete"
-    )
-    loggings = db.relationship(
-        "Logging", backref="user", lazy="dynamic", cascade="delete"
-    )
+    user_loggings = db.relationship("UserLogging", backref="user", lazy="dynamic", cascade="delete")
+    loggings = db.relationship("Logging", backref="user", lazy="dynamic", cascade="delete")
 
     sounds = db.relationship("Sound", backref="user", lazy="dynamic", cascade="delete")
     albums = db.relationship("Album", backref="user", lazy="dynamic", cascade="delete")
@@ -116,6 +102,9 @@ class User(db.Model, UserMixin):
     def name_insensitive(cls):
         return CaseInsensitiveComparator(cls.name)
 
+    def __repr__(self):
+        return f"<User(id='{self.id}', name='{self.name}')>"
+
 
 event.listen(User.name, "set", User.generate_slug, retval=False)
 
@@ -123,12 +112,8 @@ event.listen(User.name, "set", User.generate_slug, retval=False)
 class Apitoken(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer(), db.ForeignKey("user.id"), nullable=False)
-    token = db.Column(
-        db.String(255), unique=True, nullable=False, info={"label": "Token"}
-    )
-    secret = db.Column(
-        db.String(255), unique=True, nullable=False, info={"label": "Secret"}
-    )
+    token = db.Column(db.String(255), unique=True, nullable=False, info={"label": "Token"})
+    secret = db.Column(db.String(255), unique=True, nullable=False, info={"label": "Secret"})
 
 
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
@@ -144,9 +129,7 @@ class Logging(db.Model):
     category = db.Column(db.String(255), nullable=False, default="General")
     level = db.Column(db.String(255), nullable=False, default="INFO")
     message = db.Column(db.Text, nullable=False)
-    timestamp = db.Column(
-        db.DateTime(timezone=False), server_default=func.now(), onupdate=func.now()
-    )
+    timestamp = db.Column(db.DateTime(timezone=False), server_default=func.now(), onupdate=func.now())
 
     user_id = db.Column(db.Integer(), db.ForeignKey("user.id"), nullable=True)
 
@@ -160,9 +143,7 @@ class UserLogging(db.Model):
     category = db.Column(db.String(255), nullable=False, default="General")
     level = db.Column(db.String(255), nullable=False, default="INFO")
     message = db.Column(db.Text, nullable=False)
-    timestamp = db.Column(
-        db.DateTime(timezone=False), server_default=func.now(), onupdate=func.now()
-    )
+    timestamp = db.Column(db.DateTime(timezone=False), server_default=func.now(), onupdate=func.now())
     item_id = db.Column(db.Integer(), nullable=True)
 
     user_id = db.Column(db.Integer(), db.ForeignKey("user.id"), nullable=False)
@@ -206,9 +187,7 @@ class Sound(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255), nullable=True)
     uploaded = db.Column(db.DateTime(timezone=False), default=func.now())
-    updated = db.Column(
-        db.DateTime(timezone=False), default=func.now(), onupdate=func.now()
-    )
+    updated = db.Column(db.DateTime(timezone=False), default=func.now(), onupdate=func.now())
     # TODO genre
     # TODO tags
     # TODO picture ?
@@ -228,9 +207,7 @@ class Sound(db.Model):
 
     user_id = db.Column(db.Integer(), db.ForeignKey("user.id"), nullable=False)
     album_id = db.Column(db.Integer(), db.ForeignKey("album.id"), nullable=True)
-    sound_infos = db.relationship(
-        "SoundInfo", backref="sound_info", lazy="dynamic", cascade="delete"
-    )
+    sound_infos = db.relationship("SoundInfo", backref="sound_info", lazy="dynamic", cascade="delete")
 
     timeline = db.relationship("Timeline", uselist=False, back_populates="sound")
 
@@ -245,11 +222,7 @@ class Sound(db.Model):
         return os.path.join(self.user.slug, "{0}.png".format(self.filename))
 
     def path_sound(self, orig=False):
-        if (
-            self.transcode_needed
-            and self.transcode_state == self.TRANSCODE_DONE
-            and not orig
-        ):
+        if self.transcode_needed and self.transcode_state == self.TRANSCODE_DONE and not orig:
             return os.path.join(self.user.slug, self.filename_transcoded)
         else:
             return os.path.join(self.user.slug, self.filename)
@@ -273,9 +246,7 @@ class Album(db.Model):
     title = db.Column(db.String(255), nullable=True)
     created = db.Column(db.DateTime(timezone=False), default=datetime.datetime.utcnow)
     updated = db.Column(
-        db.DateTime(timezone=False),
-        default=datetime.datetime.utcnow,
-        onupdate=datetime.datetime.utcnow,
+        db.DateTime(timezone=False), default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow
     )
     # TODO tags
     description = db.Column(db.UnicodeText(), nullable=True)
@@ -365,11 +336,7 @@ def make_sound_slug(mapper, connection, target):
             title = "{0} {1}".format(target.id, target.title)
 
     slug = slugify(title[:255])
-    connection.execute(
-        Sound.__table__.update()
-        .where(Sound.__table__.c.id == target.id)
-        .values(slug=slug)
-    )
+    connection.execute(Sound.__table__.update().where(Sound.__table__.c.id == target.id).values(slug=slug))
 
 
 @event.listens_for(Album, "after_update")
@@ -377,11 +344,7 @@ def make_sound_slug(mapper, connection, target):
 def make_album_slug(mapper, connection, target):
     title = "{0} {1}".format(target.id, target.title)
     slug = slugify(title[:255])
-    connection.execute(
-        Album.__table__.update()
-        .where(Album.__table__.c.id == target.id)
-        .values(slug=slug)
-    )
+    connection.execute(Album.__table__.update().where(Album.__table__.c.id == target.id).values(slug=slug))
 
 
 # #### Federation ####
@@ -402,20 +365,17 @@ class Follower(db.Model):
     __tablename__ = "followers"
 
     id = db.Column(db.Integer, primary_key=True)
-    uuid = db.Column(
-        UUID(as_uuid=True), server_default=sa_text("uuid_generate_v4()"), unique=True
-    )
+    uuid = db.Column(UUID(as_uuid=True), server_default=sa_text("uuid_generate_v4()"), unique=True)
     actor_id = db.Column(db.Integer, db.ForeignKey("actor.id"))
     target_id = db.Column(db.Integer, db.ForeignKey("actor.id"))
     activity_url = db.Column(URLType(), unique=True, nullable=True)
     creation_date = db.Column(db.DateTime(timezone=False), default=func.now())
-    modification_date = db.Column(
-        db.DateTime(timezone=False), onupdate=datetime.datetime.now
-    )
+    modification_date = db.Column(db.DateTime(timezone=False), onupdate=datetime.datetime.now)
 
-    __table_args__ = (
-        UniqueConstraint("actor_id", "target_id", name="unique_following"),
-    )
+    __table_args__ = (UniqueConstraint("actor_id", "target_id", name="unique_following"),)
+
+    def __repr__(self):
+        return f"<Follower(id='{self.id}', actor_id='{self.actor_id}', target_id='{self.target_id}')>"
 
 
 class Actor(db.Model):
@@ -439,17 +399,11 @@ class Actor(db.Model):
     private_key = db.Column(db.String(5000), nullable=True)
     creation_date = db.Column(db.DateTime(timezone=False), default=func.now())
     last_fetch_date = db.Column(db.DateTime(timezone=False), default=func.now())
-    manually_approves_followers = db.Column(
-        db.Boolean, nullable=True, server_default=None
-    )
+    manually_approves_followers = db.Column(db.Boolean, nullable=True, server_default=None)
     # Who follows self
-    followers = db.relationship(
-        "Follower", backref="followers", primaryjoin=id == Follower.target_id
-    )
+    followers = db.relationship("Follower", backref="followers", primaryjoin=id == Follower.target_id)
     # Who self follows
-    followings = db.relationship(
-        "Follower", backref="followings", primaryjoin=id == Follower.actor_id
-    )
+    followings = db.relationship("Follower", backref="followings", primaryjoin=id == Follower.actor_id)
     # Relation on itself, intermediary with actor and target
     # By using an Association Object, which isn't possible except by using
     # two relations. This may be better than only one, and some hackish things
@@ -458,11 +412,10 @@ class Actor(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=True)
     user = db.relationship("User", backref=db.backref("actor"))
 
-    __table_args__ = (
-        UniqueConstraint(
-            "domain", "preferred_username", name="_domain_pref_username_uc"
-        ),
-    )
+    __table_args__ = (UniqueConstraint("domain", "preferred_username", name="_domain_pref_username_uc"),)
+
+    def __repr__(self):
+        return f"<Actor(id='{self.id}', user_id='{self.user_id}', preferredUsername='{self.preferred_username}', domain='{self.domain}')>"
 
     def webfinger_subject(self):
         return f"{self.preferred_username}@{self.domain}"
@@ -479,9 +432,7 @@ class Actor(db.Model):
     def follow(self, activity_url, target):
         current_app.logger.debug(f"saving: {self.id} following {target.id}")
 
-        rel = Follower.query.filter(
-            Follower.actor_id == self.id, Follower.target_id == target.id
-        ).first()
+        rel = Follower.query.filter(Follower.actor_id == self.id, Follower.target_id == target.id).first()
 
         if not rel:
             rel = Follower()
@@ -494,30 +445,21 @@ class Actor(db.Model):
     def unfollow(self, target):
         current_app.logger.debug(f"saving: {self.id} unfollowing {target.id}")
 
-        rel = Follower.query.filter(
-            Follower.actor_id == self.id, Follower.target_id == target.id
-        ).first()
+        rel = Follower.query.filter(Follower.actor_id == self.id, Follower.target_id == target.id).first()
         if rel:
             db.session.delete(rel)
             db.session.commit()
 
     def to_dict(self):
         return {
-            "@context": [
-                "https://www.w3.org/ns/activitystreams",
-                "https://w3id.org/security/v1",
-            ],
+            "@context": ["https://www.w3.org/ns/activitystreams", "https://w3id.org/security/v1"],
             "id": self.url,
             "type": self.type.code,
             "preferredUsername": self.preferred_username,
             "inbox": self.inbox_url,
             "outbox": self.outbox_url,
             "manuallyApprovesFollowers": self.manually_approves_followers,
-            "publicKey": {
-                "id": self.private_key_id(),
-                "owner": self.url,
-                "publicKeyPem": self.public_key,
-            },
+            "publicKey": {"id": self.private_key_id(), "owner": self.url, "publicKeyPem": self.public_key},
             "endpoints": {"sharedInbox": self.shared_inbox_url},
         }
 
@@ -528,9 +470,7 @@ class Activity(db.Model):
 
     actor = db.Column(db.Integer, db.ForeignKey("actor.id"))
 
-    uuid = db.Column(
-        UUID(as_uuid=True), server_default=sa_text("uuid_generate_v4()"), unique=True
-    )
+    uuid = db.Column(UUID(as_uuid=True), server_default=sa_text("uuid_generate_v4()"), unique=True)
     url = db.Column(URLType(), unique=True, nullable=True)
     type = db.Column(db.String(100), index=True)
     box = db.Column(db.String(100))
@@ -581,9 +521,7 @@ def create_remote_actor(activity_actor: ap.BaseActivity):
     actor.name = activity_actor.preferredUsername  # mastodon don't have .name
     actor.manually_approves_followers = False
     actor.url = activity_actor.id  # FIXME: or .id ??? [cf backend.py:52-53]
-    actor.shared_inbox_url = activity_actor._data.get("endpoints", {}).get(
-        "sharedInbox"
-    )
+    actor.shared_inbox_url = activity_actor._data.get("endpoints", {}).get("sharedInbox")
     actor.inbox_url = activity_actor.inbox
     actor.outbox_url = activity_actor.outbot
     actor.public_key = activity_actor.get_key().pubkey_pem

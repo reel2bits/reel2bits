@@ -23,9 +23,7 @@ app = create_app()
 ctx = app.app_context()
 
 redis_broker = RedisBroker(
-    host=app.config["BROKER_REDIS_HOST"],
-    port=app.config["BROKER_REDIS_PORT"],
-    db=app.config["BROKER_REDIS_DB"],
+    host=app.config["BROKER_REDIS_HOST"], port=app.config["BROKER_REDIS_PORT"], db=app.config["BROKER_REDIS_DB"]
 )
 dramatiq.set_broker(redis_broker)
 
@@ -141,16 +139,10 @@ def work_transcode(sound_id):
 
     print("File: {0}: {1}".format(sound.id, sound.title))
     add_user_log(
-        sound.id,
-        sound.user.id,
-        "sounds",
-        "info",
-        "Transcoding started for: {0} -- {1}".format(sound.id, sound.title),
+        sound.id, sound.user.id, "sounds", "info", "Transcoding started for: {0} -- {1}".format(sound.id, sound.title)
     )
 
-    fname = os.path.join(
-        app.config["UPLOADED_SOUNDS_DEST"], sound.user.slug, sound.filename
-    )
+    fname = os.path.join(app.config["UPLOADED_SOUNDS_DEST"], sound.user.slug, sound.filename)
     _file, _ext = splitext(fname)
 
     _start = time.time()
@@ -173,11 +165,7 @@ def work_transcode(sound_id):
     db.session.commit()
 
     add_user_log(
-        sound.id,
-        sound.user.id,
-        "sounds",
-        "info",
-        "Transcoding finished for: {0} -- {1}".format(sound.id, sound.title),
+        sound.id, sound.user.id, "sounds", "info", "Transcoding finished for: {0} -- {1}".format(sound.id, sound.title)
     )
 
 
@@ -203,9 +191,7 @@ def work_metadatas(sound_id, force=False):
 
     # Generate Basic infos
 
-    fname = os.path.join(
-        app.config["UPLOADED_SOUNDS_DEST"], sound.user.slug, sound.filename
-    )
+    fname = os.path.join(app.config["UPLOADED_SOUNDS_DEST"], sound.user.slug, sound.filename)
 
     if not _infos.done_basic or force:
         print("- WORKING BASIC on {0}, {1}".format(sound.id, sound.filename))
@@ -241,13 +227,10 @@ def work_metadatas(sound_id, force=False):
                 sound.user.id,
                 "sounds",
                 "info",
-                "Got an error when generating waveform"
-                " for: {0} -- {1}".format(sound.id, sound.title),
+                "Got an error when generating waveform" " for: {0} -- {1}".format(sound.id, sound.title),
             )
         else:
-            fdir_wf = os.path.join(
-                app.config["UPLOADS_DEFAULT_DEST"], "waveforms", sound.user.slug
-            )
+            fdir_wf = os.path.join(app.config["UPLOADS_DEFAULT_DEST"], "waveforms", sound.user.slug)
             fname_wf = os.path.join(fdir_wf, sound.filename)
 
             if not os.path.isdir(fdir_wf):
@@ -287,9 +270,7 @@ def upload_workflow(sound_id):
         print("TRANSCODE finished")
 
         msg = Message(
-            subject="Song processing finished",
-            recipients=[sound.user.email],
-            sender=app.config["MAIL_DEFAULT_SENDER"],
+            subject="Song processing finished", recipients=[sound.user.email], sender=app.config["MAIL_DEFAULT_SENDER"]
         )
         msg.body = render_template("email/song_processed.txt", sound=sound)
         msg.html = render_template("email/song_processed.html", sound=sound)

@@ -15,9 +15,7 @@ import sqlalchemy as sa  # noqa: E402
 
 
 def upgrade():
-    op.add_column(
-        "sound", sa.Column("licence", sa.Integer(), nullable=False, server_default="0")
-    )
+    op.add_column("sound", sa.Column("licence", sa.Integer(), nullable=False, server_default="0"))
 
 
 def downgrade():

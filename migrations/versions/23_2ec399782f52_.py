@@ -21,11 +21,6 @@ def upgrade():
 
 
 def downgrade():
-    op.add_column(
-        "user_logging",
-        sa.Column("sound_id", sa.INTEGER(), autoincrement=False, nullable=True),
-    )
-    op.create_foreign_key(
-        "user_logging_sound_id_fkey", "user_logging", "sound", ["sound_id"], ["id"]
-    )
+    op.add_column("user_logging", sa.Column("sound_id", sa.INTEGER(), autoincrement=False, nullable=True))
+    op.create_foreign_key("user_logging_sound_id_fkey", "user_logging", "sound", ["sound_id"], ["id"])
     op.drop_column("user_logging", "item_id")

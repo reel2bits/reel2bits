@@ -15,14 +15,9 @@ from alembic import op  # noqa: E402
 
 
 def upgrade():
-    op.add_column(
-        "sound", sa.Column("filename_transcoded", sa.String(length=255), nullable=True)
-    )
+    op.add_column("sound", sa.Column("filename_transcoded", sa.String(length=255), nullable=True))
     op.add_column("sound", sa.Column("transcode_needed", sa.Boolean(), nullable=True))
-    op.add_column(
-        "sound",
-        sa.Column("transcode_state", sa.Integer(), server_default="0", nullable=False),
-    )
+    op.add_column("sound", sa.Column("transcode_state", sa.Integer(), server_default="0", nullable=False))
 
 
 def downgrade():

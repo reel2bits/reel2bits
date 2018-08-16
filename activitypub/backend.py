@@ -45,9 +45,7 @@ class Reel2BitsBackend(ap.Backend):
     def note_url(self, obj_id: str):
         return f"{self.base_url()}/note/{obj_id}"
 
-    def new_follower(
-        self, activity: ap.BaseActivity, as_actor: ap.Person, follow: ap.Follow
-    ) -> None:
+    def new_follower(self, activity: ap.BaseActivity, as_actor: ap.Person, follow: ap.Follow) -> None:
         current_app.logger.info("new follower")
 
         db_actor = Actor.query.filter(Actor.url == as_actor.id).first()
@@ -59,9 +57,7 @@ class Reel2BitsBackend(ap.Backend):
             current_app.logger.error(f"cannot find follow {follow!r}")
             return
 
-        current_app.logger.info(
-            f"{db_actor.name} wanted " f"to follow {db_follow.name}"
-        )
+        current_app.logger.info(f"{db_actor.name} wanted " f"to follow {db_follow.name}")
 
         db_actor.follow(activity.id, db_follow)
         db.session.commit()
@@ -100,9 +96,7 @@ class Reel2BitsBackend(ap.Backend):
         # fetch the activity
         activity = Activity.query.filter(Activity.url == undo_activity).first()
         if not activity:
-            current_app.logger.error(
-                f"cannot find activity" f" to undo: {undo_activity}"
-            )
+            current_app.logger.error(f"cannot find activity" f" to undo: {undo_activity}")
             return
 
         # Parse the activity
@@ -171,13 +165,9 @@ class Reel2BitsBackend(ap.Backend):
         domain = urlparse(ap_actor.id)
         current_app.logger.debug(f"actor.id=={ap_actor.__dict__}")
 
-        current_app.logger.debug(
-            f"actor domain {domain.netloc} and " f"name {ap_actor.preferredUsername}"
-        )
+        current_app.logger.debug(f"actor domain {domain.netloc} and " f"name {ap_actor.preferredUsername}")
 
-        actor = Actor.query.filter(
-            Actor.domain == domain.netloc, Actor.name == ap_actor.preferredUsername
-        ).first()
+        actor = Actor.query.filter(Actor.domain == domain.netloc, Actor.name == ap_actor.preferredUsername).first()
 
         if not actor:
             actor = create_remote_actor(ap_actor)
@@ -256,9 +246,7 @@ def process_new_activity(activity: ap.BaseActivity) -> None:
             if note.inReplyTo:
                 try:
                     reply = ap.fetch_remote_activity(note.inReplyTo)
-                    if (
-                        reply.id.startswith(id) or reply.has_mention(id)
-                    ) and activity.is_public():
+                    if (reply.id.startswith(id) or reply.has_mention(id)) and activity.is_public():
                         # The reply is public "local reply", forward the
                         # reply (i.e. the original activity) to the
                         # original recipients
@@ -284,9 +272,7 @@ def process_new_activity(activity: ap.BaseActivity) -> None:
                 should_forward = False
 
         elif activity.has_type(ap.ActivityType.DELETE):
-            note = Activity.query.filter(
-                Activity.id == activity.get_object().id
-            ).first()
+            note = Activity.query.filter(Activity.id == activity.get_object().id).first()
             if note and note["meta"].get("forwarded", False):
                 # If the activity was originally forwarded, forward the
                 # delete too
@@ -319,13 +305,9 @@ def process_new_activity(activity: ap.BaseActivity) -> None:
         current_app.logger.info(f"new activity {activity.id} processed")
 
     except (ActivityGoneError, ActivityNotFoundError):
-        current_app.logger.exception(
-            f"failed to process new activity" f" {activity.id}"
-        )
+        current_app.logger.exception(f"failed to process new activity" f" {activity.id}")
     except Exception as err:
-        current_app.logger.exception(
-            f"failed to process new activity" f" {activity.id}"
-        )
+        current_app.logger.exception(f"failed to process new activity" f" {activity.id}")
 
 
 # TODO, this must move to Dramatiq queueing
@@ -371,9 +353,7 @@ def finish_inbox_processing(activity: ap.BaseActivity) -> None:
     except (ActivityGoneError, ActivityNotFoundError, NotAnActivityError):
         current_app.logger.exception(f"no retry")
     except Exception as err:
-        current_app.logger.exception(
-            f"failed to cache attachments for" f" {activity.id}"
-        )
+        current_app.logger.exception(f"failed to cache attachments for" f" {activity.id}")
 
 
 def post_to_outbox(activity: ap.BaseActivity) -> str:
@@ -468,11 +448,7 @@ def post_to_remote_inbox(payload: str, to: str) -> None:
             to,
             data=json.dumps(signed_payload),
             auth=signature_auth,
-            headers={
-                "Content-Type": HEADERS[1],
-                "Accept": HEADERS[1],
-                "User-Agent": backend.user_agent(),
-            },
+            headers={"Content-Type": HEADERS[1], "Accept": HEADERS[1], "User-Agent": backend.user_agent()},
         )
         current_app.logger.info("resp=%s", resp)
         current_app.logger.info("resp_body=%s", resp.text)

@@ -1,13 +1,4 @@
-from flask import (
-    Blueprint,
-    render_template,
-    request,
-    redirect,
-    url_for,
-    flash,
-    Response,
-    json,
-)
+from flask import Blueprint, render_template, request, redirect, url_for, flash, Response, json
 from flask_babelex import gettext
 from flask_security import login_required
 

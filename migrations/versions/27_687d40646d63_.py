@@ -18,20 +18,12 @@ from sqlalchemy.dialects import postgresql  # noqa: E402
 def upgrade():
     print("This migration may fails if you don't already have the " "extension created")
     print("If you get an error about 'function uuid_generate_v4() " "does not exist'")
-    print(
-        "please run 'CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";' "
-        "from postgresql shell"
-    )
+    print("please run 'CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";' " "from postgresql shell")
     print("with a valid superuser on your database.")
     op.create_table(
         "follow",
         sa.Column("id", sa.Integer(), nullable=False),
-        sa.Column(
-            "uuid",
-            postgresql.UUID(as_uuid=True),
-            server_default=sa.text("uuid_generate_v4()"),
-            nullable=True,
-        ),
+        sa.Column("uuid", postgresql.UUID(as_uuid=True), server_default=sa.text("uuid_generate_v4()"), nullable=True),
         sa.Column("creation_date", sa.DateTime(), nullable=True),
         sa.Column("modification_date", sa.DateTime(), nullable=True),
         sa.PrimaryKeyConstraint("id"),

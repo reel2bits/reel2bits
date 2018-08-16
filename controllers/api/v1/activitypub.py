@@ -1,15 +1,4 @@
-from flask import (
-    Blueprint,
-    request,
-    abort,
-    current_app,
-    Response,
-    jsonify,
-    flash,
-    render_template,
-    redirect,
-    url_for,
-)
+from flask import Blueprint, request, abort, current_app, Response, jsonify, flash, render_template, redirect, url_for
 from little_boxes import activitypub
 from little_boxes.httpsig import verify_request
 from activitypub.backend import post_to_inbox, Box
@@ -34,22 +23,15 @@ def user_inbox(name):
     current_app.logger.debug(f"raw_data={data}")
 
     try:
-        if not verify_request(
-            request.method, request.path, request.headers, request.data
-        ):
+        if not verify_request(request.method, request.path, request.headers, request.data):
             raise Exception("failed to verify request")
     except Exception:
         current_app.logger.exception("failed to verify request")
         try:
             data = be.fetch_iri(data["id"])
         except Exception:
-            current_app.logger.exception(
-                f"failed to fetch remote id " f"at {data['id']}"
-            )
-            resp = {
-                "error": "failed to verify request "
-                "(using HTTP signatures or fetching the IRI)"
-            }
+            current_app.logger.exception(f"failed to fetch remote id " f"at {data['id']}")
+            resp = {"error": "failed to verify request " "(using HTTP signatures or fetching the IRI)"}
             response = jsonify(resp)
             response.mimetype = "application/json; charset=utf-8"
             response.status = 422
@@ -87,13 +69,7 @@ def followings(name):
 
     followings = user.actor[0].followings
 
-    return render_template(
-        "users/followings.jinja2",
-        pcfg=pcfg,
-        user=user,
-        actor=user.actor[0],
-        followings=followings,
-    )
+    return render_template("users/followings.jinja2", pcfg=pcfg, user=user, actor=user.actor[0], followings=followings)
 
 
 @bp_ap.route("/user/<string:name>/followers", methods=["GET"])
@@ -107,11 +83,7 @@ def followers(name):
         return redirect(url_for("bp_main.home"))
 
     return render_template(
-        "users/followers.jinja2",
-        pcfg=pcfg,
-        user=user,
-        actor=user.actor[0],
-        followers=user.actor[0].followers,
+        "users/followers.jinja2", pcfg=pcfg, user=user, actor=user.actor[0], followers=user.actor[0].followers
     )
 
 
@@ -134,9 +106,7 @@ def user_followers(name):
     actor = user.actor[0]
     followers = actor.followers
 
-    return jsonify(
-        **build_ordered_collection(followers, actor.url, request.args.get("page"))
-    )
+    return jsonify(**build_ordered_collection(followers, actor.url, request.args.get("page")))
 
 
 @bp_ap.route("/inbox", methods=["GET", "POST"])
@@ -152,22 +122,15 @@ def inbox():
     current_app.logger.debug(f"raw_data={data}")
 
     try:
-        if not verify_request(
-            request.method, request.path, request.headers, request.data
-        ):
+        if not verify_request(request.method, request.path, request.headers, request.data):
             raise Exception("failed to verify request")
     except Exception:
         current_app.logger.exception("failed to verify request")
         try:
             data = be.fetch_iri(data["id"])
         except Exception:
-            current_app.logger.exception(
-                f"failed to fetch remote id " f"at {data['id']}"
-            )
-            resp = {
-                "error": "failed to verify request "
-                "(using HTTP signatures or fetching the IRI)"
-            }
+            current_app.logger.exception(f"failed to fetch remote id " f"at {data['id']}")
+            resp = {"error": "failed to verify request " "(using HTTP signatures or fetching the IRI)"}
             response = jsonify(resp)
             response.mimetype = "application/json; charset=utf-8"
             response.status = 422
@@ -206,9 +169,7 @@ def outbox_item(item_id):
 
     current_app.logger.debug(f"activity url {be.activity_url(item_id)}")
 
-    item = Activity.query.filter(
-        Activity.box == Box.OUTBOX.value, Activity.url == be.activity_url(item_id)
-    ).first()
+    item = Activity.query.filter(Activity.box == Box.OUTBOX.value, Activity.url == be.activity_url(item_id)).first()
     if not item:
         abort(404)
 

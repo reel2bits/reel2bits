@@ -41,11 +41,7 @@ def seed_users(db):
     db.session.add(role_adm)
 
     user_datastore.create_user(
-        email="dashie@sigpipe.me",
-        password="fluttershy",
-        name="toto",
-        timezone="UTC",
-        roles=[role_adm],
+        email="dashie@sigpipe.me", password="fluttershy", name="toto", timezone="UTC", roles=[role_adm]
     )
     db.session.commit()
     return
