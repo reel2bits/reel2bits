@@ -149,8 +149,6 @@ def follow():
     else:
         # Might be a remote follow
 
-        # TODO: check if we don't already follow the remote actor
-
         # 1. Webfinger the user
         try:
             remote_actor_url = get_actor_url(user, debug=current_app.debug)
@@ -176,10 +174,16 @@ def follow():
             actor_target = create_remote_actor(act)
             db.session.add(actor_target)
 
-        # 3. Initiate a Follow request from actor_me to actor_target
-        follow = ap.Follow(actor=actor_me.to_dict(), object=actor_target.to_dict())
-        post_to_outbox(follow)
-        flash(gettext("Follow request have been transmitted"), "success")
+        # 2.7 Check if we already have a relation
+        rel = Follower.query.filter(Follower.actor_id == actor_me.id, Follower.target_id == actor_target.id).first()
+
+        if not rel:
+            # 3. Initiate a Follow request from actor_me to actor_target
+            follow = ap.Follow(actor=actor_me.to_dict(), object=actor_target.to_dict())
+            post_to_outbox(follow)
+            flash(gettext("Follow request have been transmitted"), "success")
+        else:
+            flash(gettext("You already follow this user", "info"))
 
     return redirect(url_for("bp_users.profile", name=current_user.name))
 
@@ -199,8 +203,6 @@ def unfollow():
         flash(gettext("Unfollow successful"), "success")
     else:
         # Might be a remote unfollow
-
-        # TODO: check if we don't have already unfollowed the remote actor
 
         # 1. Webfinger the user
         try:
