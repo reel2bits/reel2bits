@@ -477,24 +477,29 @@ class Actor(db.Model):
         return self.domain == current_app.config["AP_DOMAIN"]
 
     def follow(self, activity_url, target):
-        # FIXME to check when following will be implemented
-        # FIXME: Add activity_url
         current_app.logger.debug(f"saving: {self.id} following {target.id}")
 
-        if target not in self.followers:
+        rel = Follower.query.filter(
+            Follower.actor_id == self.id, Follower.target_id == target.id
+        ).first()
+
+        if not rel:
             rel = Follower()
             rel.actor_id = self.id
             rel.target_id = target.id
             rel.activity_url = activity_url
             db.session.add(rel)
             db.session.commit()
-            # Not using an .append() on relationship to avoid field overwrite
 
     def unfollow(self, target):
-        # FIXME same
-        if target in self.followers:
-            self.followers.remove(target)
-            # target.followers.remove(self)
+        current_app.logger.debug(f"saving: {self.id} unfollowing {target.id}")
+
+        rel = Follower.query.filter(
+            Follower.actor_id == self.id, Follower.target_id == target.id
+        ).first()
+        if rel:
+            db.session.delete(rel)
+            db.session.commit()
 
     def to_dict(self):
         return {

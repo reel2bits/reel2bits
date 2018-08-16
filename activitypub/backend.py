@@ -49,6 +49,7 @@ class Reel2BitsBackend(ap.Backend):
         self, activity: ap.BaseActivity, as_actor: ap.Person, follow: ap.Follow
     ) -> None:
         current_app.logger.info("new follower")
+
         db_actor = Actor.query.filter(Actor.url == as_actor.id).first()
         db_follow = Actor.query.filter(Actor.url == follow.id).first()
         if not db_actor:
@@ -128,41 +129,36 @@ class Reel2BitsBackend(ap.Backend):
 
     def undo_new_following(self, as_actor: ap.Person, object: ap.Follow) -> None:
         current_app.logger.info("undo following")
-        current_app.logger.debug(f"{as_actor!r} unfollowing-undoed {object!r}")
+
+        actor_me = object.get_actor()
+
+        current_app.logger.debug(f"{actor_me!r} unfollowing-undoed {object!r}")
         # An unfollowing is in fact "Undo an Activity"
         # ActivityPub is trash.
 
-        undo_activity = object.id
-
-        # fetch the activity
-        activity = Activity.query.filter(Activity.url == undo_activity).first()
-        if not activity:
-            current_app.logger.error(
-                f"cannot find activity" f" to undo: {undo_activity}"
-            )
+        follow_activity = Activity.query.filter(Activity.url == object.id).first()
+        if not follow_activity:
+            current_app.logger.error(f"cannot find activity {object}")
             return
 
-        # Parse the activity
-        ap_activity = ap.parse_activity(activity.payload)
-        if not ap_activity:
-            current_app.logger.error(f"cannot parse undo following activity")
-            return
+        activity = ap.parse_activity(payload=follow_activity.payload)
 
-        actor = ap_activity.get_actor()
-        follow = ap_activity.get_object()
+        ap_actor_me = follow_activity.actor
+        ap_actor_target = activity.get_object_id()
 
-        db_actor = Actor.query.filter(Actor.url == actor.id).first()
-        db_follow = Actor.query.filter(Actor.url == follow.id).first()
+        db_actor = Actor.query.filter(Actor.id == ap_actor_me).first()
+        db_follow = Actor.query.filter(Actor.url == ap_actor_target).first()
         if not db_actor:
-            current_app.logger.error(f"cannot find actor {actor!r}")
+            current_app.logger.error(f"cannot find actor {ap_actor_me!r}")
             return
         if not db_follow:
-            current_app.logger.error(f"cannot find follow {follow!r}")
+            current_app.logger.error(f"cannot find follow {ap_actor_target!r}")
             return
 
         # FIXME: may be the reverse, db_follow unfollow db_actor
         db_actor.unfollow(db_follow)
         db.session.commit()
+
         current_app.logger.info("undo following saved")
 
     def save(self, box: Box, activity: ap.BaseActivity) -> None:
@@ -357,7 +353,7 @@ def finish_inbox_processing(activity: ap.BaseActivity) -> None:
             # Reply to a Follow with an Accept
             accept = ap.Accept(actor=id, object=activity.to_dict(embed=True))
             post_to_outbox(accept)
-            backend.new_follower(activity, activity.get_object(), activity.get_actor())
+            backend.new_follower(activity, activity.get_actor(), activity.get_object())
         elif activity.has_type(ap.ActivityType.ACCEPT):
             obj = activity.get_object()
             # FIXME: probably other types to ACCEPT the Activity
