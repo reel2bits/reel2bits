@@ -442,9 +442,11 @@ class Actor(db.Model):
     manually_approves_followers = db.Column(
         db.Boolean, nullable=True, server_default=None
     )
+    # Who follows self
     followers = db.relationship(
         "Follower", backref="followers", primaryjoin=id == Follower.target_id
     )
+    # Who self follows
     followings = db.relationship(
         "Follower", backref="followings", primaryjoin=id == Follower.actor_id
     )

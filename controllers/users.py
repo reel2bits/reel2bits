@@ -93,9 +93,9 @@ def profile(name):
             Sound.transcode_state == Sound.TRANSCODE_DONE,
         )
 
-    # FIXME: might be wrong, to check when following will be implemented
-    followings = Follower.query.filter(Follower.target_id == user.actor[0].id).count()
-    followers = Follower.query.filter(Follower.actor_id == user.actor[0].id).count()
+    # FIXME better SQL for counting thoses relations
+    followings = len(user.actor[0].followings)
+    followers = len(user.actor[0].followers)
 
     return render_template(
         "users/profile.jinja2",
