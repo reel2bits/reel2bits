@@ -21,8 +21,9 @@ from models import (
     UserLogging,
     Sound,
     Album,
-    follower,
+    Follower,
     Actor,
+    Activity,
     create_remote_actor,
 )
 from utils import add_user_log
@@ -93,16 +94,8 @@ def profile(name):
         )
 
     # FIXME: might be wrong, to check when following will be implemented
-    followings = (
-        db.session.query(follower)
-        .filter(follower.c.target_id == user.actor[0].id)
-        .count()
-    )
-    followers = (
-        db.session.query(follower)
-        .filter(follower.c.actor_id == user.actor[0].id)
-        .count()
-    )
+    followings = Follower.query.filter(Follower.target_id == user.actor[0].id).count()
+    followers = Follower.query.filter(Follower.actor_id == user.actor[0].id).count()
 
     return render_template(
         "users/profile.jinja2",
@@ -225,5 +218,91 @@ def follow():
         # 3. Initiate a Follow request from actor_me to actor_target
         follow = ap.Follow(actor=actor_me.to_dict(), object=actor_target.to_dict())
         post_to_outbox(follow)
+        flash(gettext("Follow request have been transmitted"), "success")
+
+    return redirect(url_for("bp_users.profile", name=current_user.name))
+
+
+@bp_users.route("/account/unfollow", methods=["GET"])
+@login_required
+def unfollow():
+    user = request.args.get("user")
+
+    actor_me = current_user.actor[0]
+
+    local_user = User.query.filter(User.name == user).first()
+
+    if local_user:
+        # Process local unfollow
+        actor_me.unfollow(local_user.actor[0])
+        flash(gettext("Unfollow successful"), "success")
+    else:
+        # Might be a remote unfollow
+
+        # TODO: check if we don't have already unfollowed the remote actor
+
+        # 1. Webfinger the user
+        try:
+            remote_actor_url = get_actor_url(user, debug=current_app.debug)
+        except InvalidURLError:
+            current_app.logger.exception(f"Invalid webfinger URL: {user}")
+            remote_actor_url = None
+
+        if not remote_actor_url:
+            flash(gettext("User not found"), "error")
+            return redirect(url_for("bp_users.profile", name=current_user.name))
+
+        # 2. Check if we have a local user
+        actor_target = Actor.query.filter(Actor.url == remote_actor_url).first()
+
+        if not actor_target:
+            # 2.5 Fetch and save remote actor
+            backend = ap.get_backend()
+            iri = backend.fetch_iri(remote_actor_url)
+            if not iri:
+                flash(gettext("User not found"), "error")
+                return redirect(url_for("bp_main.home"))
+            act = ap.parse_activity(iri)
+            actor_target = create_remote_actor(act)
+            db.session.add(actor_target)
+
+        # 2.5 Get the relation of the follow
+        follow_relation = Follower.query.filter(
+            Follower.actor_id == actor_me.id, Follower.target_id == actor_target.id
+        ).first()
+        if not follow_relation:
+            flash(gettext("You don't follow this user"), "error")
+            return redirect(url_for("bp_users.profile", name=current_user.name))
+
+        # 3. Fetch the Activity of the Follow
+        accept_activity = Activity.query.filter(
+            Activity.url == follow_relation.activity_url
+        ).first()
+        if not accept_activity:
+            current_app.logger.error(
+                f"cannot find accept activity {follow_relation.activity_url}"
+            )
+            flash(gettext("Whoops, something went wrong"))
+            return redirect(url_for("bp_users.profile", name=current_user.name))
+        # Then the Activity ID of the Accept will be the object id
+        activity = ap.parse_activity(payload=accept_activity.payload)
+
+        # Get the final activity (the Follow one)
+        follow_activity = Activity.query.filter(
+            Activity.url == activity.get_object_id()
+        ).first()
+        if not follow_activity:
+            current_app.logger.error(
+                f"cannot find follow activity {activity.get_object_id()}"
+            )
+            flash(gettext("Whoops, something went wrong"))
+            return redirect(url_for("bp_users.profile", name=current_user.name))
+
+        ap_follow_activity = ap.parse_activity(payload=follow_activity.payload)
+
+        # 4. Initiate a Follow request from actor_me to actor_target
+        unfollow = ap_follow_activity.build_undo()
+        post_to_outbox(unfollow)
+        flash(gettext("Unfollow request have been transmitted"), "success")
 
     return redirect(url_for("bp_users.profile", name=current_user.name))

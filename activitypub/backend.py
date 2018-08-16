@@ -45,7 +45,9 @@ class Reel2BitsBackend(ap.Backend):
     def note_url(self, obj_id: str):
         return f"{self.base_url()}/note/{obj_id}"
 
-    def new_follower(self, as_actor: ap.Person, follow: ap.Follow) -> None:
+    def new_follower(
+        self, activity: ap.BaseActivity, as_actor: ap.Person, follow: ap.Follow
+    ) -> None:
         current_app.logger.info("new follower")
         db_actor = Actor.query.filter(Actor.url == as_actor.id).first()
         db_follow = Actor.query.filter(Actor.url == follow.id).first()
@@ -60,27 +62,29 @@ class Reel2BitsBackend(ap.Backend):
             f"{db_actor.name} wanted " f"to follow {db_follow.name}"
         )
 
-        db_actor.follow(db_follow)
+        db_actor.follow(activity.id, db_follow)
         db.session.commit()
         current_app.logger.info("new follower saved")
 
-    def new_following(self, as_actor: ap.Person, follow: ap.Follow) -> None:
+    def new_following(self, activity: ap.BaseActivity, obj: ap.BaseActivity) -> None:
         current_app.logger.info("new following")
-        db_actor = Actor.query.filter(Actor.url == as_actor.id).first()
-        db_follow = Actor.query.filter(Actor.url == follow.id).first()
-        if not db_actor:
-            current_app.logger.error(f"cannot find actor {as_actor!r}")
+
+        ap_from = obj.get_actor()  # Who initiated the follow
+        ap_to = activity.get_actor()  # who to be followed
+
+        db_from = Actor.query.filter(Actor.url == ap_from.id).first()
+        db_to = Actor.query.filter(Actor.url == ap_to.id).first()
+        if not db_from:
+            current_app.logger.error(f"cannot find actor {ap_from!r}")
             return
-        if not db_follow:
-            current_app.logger.error(f"cannot find follow {follow!r}")
+        if not db_to:
+            current_app.logger.error(f"cannot find follow {ap_to!r}")
             return
 
-        current_app.logger.info(
-            f"{db_actor.name} wanted " f"to follow {db_follow.name}"
-        )
+        current_app.logger.info(f"{db_from.name} wanted to follow {db_to.name}")
 
         # FIXME: may be the reverse, db_follow follow db_actor
-        db_actor.follow(db_follow)
+        db_from.follow(activity.id, db_to)
         db.session.commit()
         current_app.logger.info("new following saved")
 
@@ -353,13 +357,13 @@ def finish_inbox_processing(activity: ap.BaseActivity) -> None:
             # Reply to a Follow with an Accept
             accept = ap.Accept(actor=id, object=activity.to_dict(embed=True))
             post_to_outbox(accept)
-            backend.new_follower(activity.get_object(), activity.get_actor())
+            backend.new_follower(activity, activity.get_object(), activity.get_actor())
         elif activity.has_type(ap.ActivityType.ACCEPT):
             obj = activity.get_object()
             # FIXME: probably other types to ACCEPT the Activity
             if obj.has_type(ap.ActivityType.FOLLOW):
                 # Accept new follower
-                backend.new_following(activity.get_object(), activity.get_actor())
+                backend.new_following(activity, obj)
         elif activity.has_type(ap.ActivityType.UNDO):
             obj = activity.get_object()
             if obj.has_type(ap.ActivityType.LIKE):
@@ -414,12 +418,6 @@ def finish_post_to_outbox(iri: str) -> None:
             backend.outbox_announce(actor, activity)
         elif activity.has_type(ap.ActivityType.LIKE):
             backend.outbox_like(actor, activity)
-        elif activity.has_type(ap.ActivityType.FOLLOW):
-            # Reply to a Follow with an Accept
-            # accept = ap.Accept(actor=id, object=activity.to_dict(embed=True))
-            # post_to_outbox(accept)
-            # not sure how to handle that, and it might be an Accept !
-            backend.new_following(activity.get_object(), activity.get_actor())
         elif activity.has_type(ap.ActivityType.UNDO):
             obj = activity.get_object()
             if obj.has_type(ap.ActivityType.LIKE):
@@ -429,12 +427,12 @@ def finish_post_to_outbox(iri: str) -> None:
             elif obj.has_type(ap.ActivityType.FOLLOW):
                 backend.undo_new_following(actor, obj)
 
-                current_app.logger.info(f"recipients={recipients}")
+        current_app.logger.info(f"recipients={recipients}")
         activity = ap.clean_activity(activity.to_dict())
 
+        payload = json.dumps(activity)
         for recp in recipients:
             current_app.logger.debug(f"posting to {recp}")
-            payload = json.dumps(activity)
             post_to_remote_inbox(payload, recp)
     except (ActivityGoneError, ActivityNotFoundError):
         current_app.logger.exception(f"no retry")

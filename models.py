@@ -394,27 +394,28 @@ ACTOR_TYPE_CHOICES = [
     ("Service", "Service"),
 ]
 
+
 # This table keeps followings in every way
 # (remote to local, local to local, to remote...)
 # Query this table directly to get list for a specific actor or target
-follower = db.Table(
-    "followers",
-    db.metadata,
-    db.Column("id", db.Integer, primary_key=True),
-    db.Column(
-        "uuid",
-        UUID(as_uuid=True),
-        server_default=sa_text("uuid_generate_v4()"),
-        unique=True,
-    ),
-    db.Column("actor_id", db.Integer, db.ForeignKey("actor.id")),
-    db.Column("target_id", db.Integer, db.ForeignKey("actor.id")),
-    db.Column("creation_date", db.DateTime(timezone=False), default=func.now()),
-    db.Column(
-        "modification_date", db.DateTime(timezone=False), onupdate=datetime.datetime.now
-    ),
-    UniqueConstraint("actor_id", "target_id", name="unique_following"),
-)
+class Follower(db.Model):
+    __tablename__ = "followers"
+
+    id = db.Column(db.Integer, primary_key=True)
+    uuid = db.Column(
+        UUID(as_uuid=True), server_default=sa_text("uuid_generate_v4()"), unique=True
+    )
+    actor_id = db.Column(db.Integer, db.ForeignKey("actor.id"))
+    target_id = db.Column(db.Integer, db.ForeignKey("actor.id"))
+    activity_url = db.Column(URLType(), unique=True, nullable=True)
+    creation_date = db.Column(db.DateTime(timezone=False), default=func.now())
+    modification_date = db.Column(
+        db.DateTime(timezone=False), onupdate=datetime.datetime.now
+    )
+
+    __table_args__ = (
+        UniqueConstraint("actor_id", "target_id", name="unique_following"),
+    )
 
 
 class Actor(db.Model):
@@ -442,14 +443,15 @@ class Actor(db.Model):
         db.Boolean, nullable=True, server_default=None
     )
     followers = db.relationship(
-        "Actor",
-        secondary=follower,
-        primaryjoin=id == follower.c.actor_id,
-        secondaryjoin=id == follower.c.target_id,
+        "Follower", backref="followers", primaryjoin=id == Follower.target_id
+    )
+    followings = db.relationship(
+        "Follower", backref="followings", primaryjoin=id == Follower.actor_id
     )
     # Relation on itself, intermediary with actor and target
-    # (Follow is that table)
-    # https://stackoverflow.com/a/31584660
+    # By using an Association Object, which isn't possible except by using
+    # two relations. This may be better than only one, and some hackish things
+    # by querying directly the old db.Table definition
 
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=True)
     user = db.relationship("User", backref=db.backref("actor"))
@@ -472,11 +474,19 @@ class Actor(db.Model):
     def is_local(self):
         return self.domain == current_app.config["AP_DOMAIN"]
 
-    def follow(self, target):
+    def follow(self, activity_url, target):
         # FIXME to check when following will be implemented
+        # FIXME: Add activity_url
+        current_app.logger.debug(f"saving: {self.id} following {target.id}")
+
         if target not in self.followers:
-            self.followers.append(target)
-            # target.followers.append(self)
+            rel = Follower()
+            rel.actor_id = self.id
+            rel.target_id = target.id
+            rel.activity_url = activity_url
+            db.session.add(rel)
+            db.session.commit()
+            # Not using an .append() on relationship to avoid field overwrite
 
     def unfollow(self, target):
         # FIXME same

@@ -14,7 +14,7 @@ from little_boxes import activitypub
 from little_boxes.httpsig import verify_request
 from activitypub.backend import post_to_inbox, Box
 from activitypub.utils import activity_from_doc, build_ordered_collection
-from models import Activity, User, db, follower
+from models import Activity, User, Follower
 from flask_accept import accept_fallback
 from flask_babelex import gettext
 
@@ -85,9 +85,7 @@ def followings(name):
         flash(gettext("User not found"), "error")
         return redirect(url_for("bp_main.home"))
 
-    followings = db.session.query(follower).filter(
-        follower.c.target_id == user.actor[0].id
-    )
+    followings = Follower.query.filter(Follower.target_id == user.actor[0].id)
 
     return render_template(
         "users/followings.jinja2",
