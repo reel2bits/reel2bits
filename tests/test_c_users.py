@@ -14,15 +14,19 @@ def test_login_logout(client, session):
     register(client, "dashie@sigpipe.me", "fluttershy", "UserA")
 
     rv = login(client, "dashie@sigpipe.me", "fluttershy")
+    assert rv.status_code == 200
     assert b"Logged as UserA" in rv.data
 
     rv = logout(client)
+    assert rv.status_code == 200
     assert b"UserA" not in rv.data
 
     rv = login(client, "dashie@sigpipe.me" + "x", "fluttershy")
+    assert rv.status_code == 200
     assert b"Specified user does not exist" in rv.data
 
     rv = login(client, "dashie@sigpipe.me", "fluttershy" + "x")
+    assert rv.status_code == 200
     assert b"Invalid password" in rv.data
 
 
