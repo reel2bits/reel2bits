@@ -116,8 +116,6 @@ def edit():
     form.timezone.choices = [[str(i), str(i)] for i in pytz.all_timezones]
 
     if form.validate_on_submit():
-        user.lastname = form.lastname.data
-        user.firstname = form.firstname.data
         user.timezone = form.timezone.data
         user.locale = form.locale.data
 

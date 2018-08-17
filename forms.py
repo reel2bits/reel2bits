@@ -54,8 +54,6 @@ class UserProfileForm(ModelForm):
     password = PasswordField(gettext("Password"), [Length(max=255)])
     name = StringField(gettext("Name"), [Length(max=255)])
     email = StringField(gettext("Email"), [Length(max=255)])
-    firstname = StringField(gettext("Firstname"), [Length(max=32)])
-    lastname = StringField(gettext("Lastname"), [Length(max=32)])
     timezone = SelectField(coerce=str, label=gettext("Timezone"), default="UTC")
     locale = SelectField(gettext("Locale"), default="en", choices=[["en", "English"], ["fr", "French"]])
     submit = SubmitField(gettext("Update profile"))
