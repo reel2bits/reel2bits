@@ -118,6 +118,7 @@ def edit():
     if form.validate_on_submit():
         user.timezone = form.timezone.data
         user.locale = form.locale.data
+        user.display_name = form.display_name.data
 
         db.session.commit()
 

@@ -2,7 +2,7 @@
 
 {% block content %}
     <div class="row">
-        <div class="col-lg-10"><h3>{{ gettext("Followings of") }} <a href="{{ url_for("bp_users.profile", name=user.name) }}">{{ user.name }}</a></h3></div>
+        <div class="col-lg-10"><h3>{{ gettext("Followings of") }} <a href="{{ url_for("bp_users.profile", name=user.name) }}">{{ user.username() }}</a></h3></div>
     </div>
 
     <br/>

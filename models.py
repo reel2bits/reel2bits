@@ -66,6 +66,8 @@ class User(db.Model, UserMixin):
     active = db.Column(db.Boolean())
     confirmed_at = db.Column(db.DateTime())
 
+    display_name = db.Column(db.String(30), nullable=True, info={"label": "Display name"})
+
     locale = db.Column(db.String(5), default="en")
 
     timezone = db.Column(db.String(255), nullable=False, default="UTC")  # Managed and fed by pytz
@@ -101,6 +103,14 @@ class User(db.Model, UserMixin):
 
     def __repr__(self):
         return f"<User(id='{self.id}', name='{self.name}')>"
+
+    def username(self):
+        if not self.display_name:
+            return self.name
+        elif len(self.display_name) > 0:
+            return self.display_name
+        else:
+            return self.name
 
 
 event.listen(User.name, "set", User.generate_slug, retval=False)
@@ -344,6 +354,13 @@ def make_album_slug(mapper, connection, target):
     connection.execute(Album.__table__.update().where(Album.__table__.c.id == target.id).values(slug=slug))
 
 
+@event.listens_for(User, "after_update")
+def update_user_actor(mapper, connection, target):
+    connection.execute(
+        Actor.__table__.update().where(Actor.__table__.c.user_id == target.id).values(name=target.display_name)
+    )
+
+
 # #### Federation ####
 
 ACTOR_TYPE_CHOICES = [
@@ -453,6 +470,7 @@ class Actor(db.Model):
             "id": self.url,
             "type": self.type.code,
             "preferredUsername": self.preferred_username,
+            "name": self.name,
             "inbox": self.inbox_url,
             "outbox": self.outbox_url,
             "manuallyApprovesFollowers": self.manually_approves_followers,
@@ -492,7 +510,7 @@ def create_actor(user):
     actor.preferred_username = user.name
     actor.domain = current_app.config["AP_DOMAIN"]
     actor.type = "Person"
-    actor.name = user.name
+    actor.name = user.display_name
     actor.manually_approves_followers = False
     actor.url = ap_url("url", user.name)
     actor.shared_inbox_url = ap_url("shared_inbox", user.name)

@@ -10,7 +10,7 @@
 
 {% block content %}
     <div class="row">
-        <div class="col-lg-9"><h3>{{ gettext("%(username)s's profile", username=user.name) }}</h3></div>
+        <div class="col-lg-9"><h3>{{ gettext("%(username)s's profile", username=user.username()) }}</h3></div>
         <div class="col-lg-3">
             <a href="{{ url_for("bp_ap.followings", name=user.name) }}">{{ gettext("Followings: %(count)s", count=followings) }}</a>
             |
