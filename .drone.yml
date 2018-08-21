@@ -31,7 +31,7 @@ pipeline:
   migrations:
     image: python:3-alpine
     commands:
-      - apk -U add sox sox-dev taglib taglib-dev libmagic file-dev libffi libffi-dev
+      - apk -U add sox sox-dev taglib taglib-dev libmagic file-dev libffi libffi-dev postgresql-client
       - apk add cmake gcc g++ make pkgconfig git boost-dev gd-dev libmad-dev libsndfile-dev libid3tag-dev wget postgresql-dev
       - pip install --upgrade pip setuptools
       - pip install --cache-dir=/cache flake8
