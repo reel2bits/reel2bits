@@ -40,7 +40,7 @@ pipeline:
       - python setup.py install
       - psql -U postgres -h database -w -c 'CREATE DATABASE reel2bits'
       - cp config.py.sample config.py
-      - flask db migrate
+      - flask db upgrade
 
   rebuild-cache:
       image: drillster/drone-volume-cache
