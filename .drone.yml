@@ -28,6 +28,20 @@ pipeline:
       - flake8 .
       - python setup.py test
 
+  migrations:
+    image: python:3-alpine
+    commands:
+      - apk -U add sox sox-dev taglib taglib-dev libmagic file-dev libffi libffi-dev
+      - apk add cmake gcc g++ make pkgconfig git boost-dev gd-dev libmad-dev libsndfile-dev libid3tag-dev wget postgresql-dev
+      - pip install --upgrade pip setuptools
+      - pip install --cache-dir=/cache flake8
+      - pip install --cache-dir=/cache black
+      - pip install --cache-dir=/cache -r requirements.txt
+      - python setup.py install
+      - psql -U postgres -h database -w -c 'CREATE DATABASE reel2bits'
+      - cp config.py.sample config.py
+      - flask db migrate
+
   rebuild-cache:
       image: drillster/drone-volume-cache
       rebuild: true

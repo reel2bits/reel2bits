@@ -14,7 +14,7 @@ from models import db, User  # noqa: E402
 
 
 def upgrade():
-    for user in User.query.all():
+    for user in db.session.query(User.id, User.slug, User.name).all():
         # no need to slugify, the user name is restricted to a-Z0-9_
         user.slug = user.name
     db.session.commit()

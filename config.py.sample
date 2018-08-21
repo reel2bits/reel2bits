@@ -25,7 +25,7 @@ SERVER_NAME = AP_DOMAIN
 BASE_URL = "https://" + AP_DOMAIN
 
 SQLALCHEMY_DATABASE_URI = \
-    'postgresql+psycopg2://user:password@localhost/reel2bits'
+    'postgresql+psycopg2://postgres@database/reel2bits'
 
 # Should users confirm theire email address ?
 SECURITY_CONFIRMABLE = True

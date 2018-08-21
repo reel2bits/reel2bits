@@ -24,4 +24,4 @@ sqlalchemy_searchable
 flask_debugtoolbar
 redis
 flask-accept
-git+https://github.com/tsileo/little-boxes/
+git+https://github.com/tsileo/little-boxes/#egg=little-boxes
