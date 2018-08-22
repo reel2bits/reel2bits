@@ -10,7 +10,7 @@ from little_boxes.errors import ActivityGoneError
 from little_boxes.errors import ActivityNotFoundError
 from little_boxes.errors import NotAnActivityError
 from little_boxes.key import Key
-from models import db, Activity, create_remote_actor, Actor
+from models import db, Activity, create_remote_actor, Actor, User
 from urllib.parse import urlparse
 
 
@@ -169,9 +169,19 @@ class Reel2BitsBackend(ap.Backend):
 
         actor = Actor.query.filter(Actor.domain == domain.netloc, Actor.name == ap_actor.preferredUsername).first()
 
+        # FIXME TODO: check if it still works with unknown remote actor
         if not actor:
-            actor = create_remote_actor(ap_actor)
-            db.session.add(actor)
+            current_app.logger.debug(f"cannot find actor")
+            actor = Actor.query.filter(Actor.url == ap_actor.id).first()
+            if not actor:
+                current_app.logger.debug(f"actor {ap_actor.id} not found")
+                actor = create_remote_actor(ap_actor)
+                db.session.add(actor)
+                current_app.logger.debug("created one in DB")
+            else:
+                current_app.logger.debug(f"got local one {actor.url}")
+        else:
+            current_app.logger.debug(f"got remote one {actor.url}")
 
         # Save Activity
         act = Activity()
@@ -189,6 +199,9 @@ class Reel2BitsBackend(ap.Backend):
         db.session.add(act)
 
         db.session.commit()
+
+    def outbox_update(self, as_actor: ap.Person, activity: ap.BaseActivity):
+        current_app.logger.debug(f"outbox_update {activity!r} as {as_actor!r}")
 
 
 # We received an activity, now we have to process it in two steps
@@ -474,3 +487,14 @@ def forward_activity(iri: str) -> None:
 
     except Exception as err:
         current_app.logger.exception(f"failed to cache attachments for {iri}")
+
+
+def send_update_profile(user: User) -> None:
+    # FIXME: not sure at all about that
+    actor = user.actor[0]
+    raw_update = dict(
+        to=[follower.actor.url for follower in actor.followers], actor=actor.to_dict(), object=actor.to_dict()
+    )
+    current_app.logger.debug(f"recipients: {raw_update['to']}")
+    update = ap.Update(**raw_update)
+    post_to_outbox(update)

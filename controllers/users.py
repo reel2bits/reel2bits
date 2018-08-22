@@ -10,7 +10,7 @@ from flask_accept import accept_fallback
 from little_boxes.webfinger import get_actor_url
 from little_boxes.urlutils import InvalidURLError
 from little_boxes import activitypub as ap
-from activitypub.backend import post_to_outbox
+from activitypub.backend import post_to_outbox, send_update_profile
 
 bp_users = Blueprint("bp_users", __name__)
 
@@ -126,6 +126,9 @@ def edit():
         add_user_log(user.id, user.id, "user", "info", "Edited user profile")
 
         flash(gettext("Profile updated"), "success")
+
+        # trigger a profile update
+        send_update_profile(user)
 
         return redirect(url_for("bp_users.profile", name=user.name))
 
