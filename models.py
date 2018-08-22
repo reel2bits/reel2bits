@@ -386,6 +386,9 @@ class Follower(db.Model):
     creation_date = db.Column(db.DateTime(timezone=False), default=func.now())
     modification_date = db.Column(db.DateTime(timezone=False), onupdate=datetime.datetime.now)
 
+    actor = db.relationship("Actor", foreign_keys=[actor_id])
+    target = db.relationship("Actor", foreign_keys=[target_id])
+
     __table_args__ = (UniqueConstraint("actor_id", "target_id", name="unique_following"),)
 
     def __repr__(self):
