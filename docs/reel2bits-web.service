@@ -6,7 +6,8 @@ After=network.target
 Type=simple
 User=reel2bits
 WorkingDirectory=/home/reel2bits/reel2bits
-ExecStart=/home/reel2bits/reel2bits/venv/bin/gunicorn -w 2 -b 127.0.0.1:8000 --error-logfile=errors.log --access-logfile=access.log --chdir=/home/reel2bits/reel2bits app:create_app
+Environment="FLASK_ENV=production"
+ExecStart=/home/reel2bits/reel2bits/venv/bin/waitress-serve --call 'app:create_app' --host 0.0.0.0 --port 8000
 TimeoutSec=15
 Restart=always
 

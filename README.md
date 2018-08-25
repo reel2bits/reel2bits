@@ -14,7 +14,8 @@ Reel2Bits
     Makes sure that encoding is/will be in UNICODE/UTF-8
     git clone http://dev.sigpipe.me/dashie/reel2bits
     cd reel2bits
-    pip3 install --requirement requirements.txt  # if present
+    pip3 install --requirement requirements.txt
+    python3 setup.py install
     # Install Pydub dependencies: https://github.com/jiaaro/pydub#dependencies
     cp config.py.sample config.py
     $EDITOR config.py
@@ -23,7 +24,7 @@ Reel2Bits
     $ with the postgresql shell, run using superuser on the reel2bits database:
     CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
     flask db upgrade
-    flask dbseed
+    flask seed
     flask run
     Don't forget to update default Config by getting to "Your user" (top right) then "Config"
 
@@ -54,6 +55,9 @@ Or if you have disabled registration, use the ``` flask createuser ``` command t
     pip install gunicorn
     
 Copy systemd services files ```docs/reel2bits-*.service``` to ```/etc/systemd/system/``` and adapt them to your setup.
+
+    systemctl enable reel2bits-web reel2bits-worker
+    systemctl start reel2bits-web reel2bits-worker
 
 # Docker
 
