@@ -17,7 +17,7 @@ dramatiq
 flask_bootstrap
 flask_mail
 flask_migrate
-flask_security
+git+https://github.com/mattupstate/flask-security#egg=Flask-Security
 flask_uploads
 wtforms_alchemy
 sqlalchemy_searchable
