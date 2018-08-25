@@ -6,15 +6,14 @@ Reel2Bits
 <img src="https://img.shields.io/badge/python-%3E%3D3.6-blue.svg"/> [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 
 # Versions requirement
- - Python >= 3.6 (all under 3.6 are not supported)
+ - Python >= 3.6 (all under 3.6 are not supported) (say bye-bye to debian stable, sorry)
+ - try https://github.com/chriskuehl/python3.6-debian-stretch if you use debian stable
 
 # Installation
     Install a BDD (mysql is supported, SQLite maybe, PostgreSQL should be)
     Makes sure that encoding is/will be in UNICODE/UTF-8
     git clone http://dev.sigpipe.me/dashie/reel2bits
     cd reel2bits
-    git submodule init
-    git submodule update
     pip3 install --requirement requirements.txt  # if present
     # Install Pydub dependencies: https://github.com/jiaaro/pydub#dependencies
     cp config.py.sample config.py
@@ -39,7 +38,22 @@ Or if you have disabled registration, use the ``` flask createuser ``` command t
 
 # Production running
 
-TODO
+    sudo easy_install3 virtualenv
+    sudo su - reel2bits
+    cd reel2bits
+    
+    >> install -> git part
+    
+    virtualenv -p /usr/bin/python3 venv
+    or if python 3.6 from github repo:
+    virtualenv -ppython3.6 venv
+    
+    source venv/bin/activate
+    >> get back to install part
+    
+    pip install gunicorn
+    
+Copy systemd services files ```docs/reel2bits-*.service``` to ```/etc/systemd/system/``` and adapt them to your setup.
 
 # Docker
 
