@@ -1,9 +1,10 @@
 from little_boxes import activitypub as ap
-from flask import current_app, g
+from flask import current_app
 import requests
 from models import db, Activity, create_remote_actor, Actor
 from urllib.parse import urlparse
 from .vars import Box
+from app import __VERSION__
 
 
 class Reel2BitsBackend(ap.Backend):
@@ -12,7 +13,7 @@ class Reel2BitsBackend(ap.Backend):
 
     def user_agent(self) -> str:
         url = current_app.config["BASE_URL"]
-        return f"{requests.utils.default_user_agent()} " f"(reel2bits/{g.cfg['REEL2BITS_VERSION_VER']}; +{url})"
+        return f"{requests.utils.default_user_agent()} " f"(reel2bits/{__VERSION__}; +{url})"
 
     def base_url(self):
         return current_app.config["BASE_URL"]
