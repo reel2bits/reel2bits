@@ -58,6 +58,8 @@ Copy systemd services files ```docs/reel2bits-*.service``` to ```/etc/systemd/sy
 
     systemctl enable reel2bits-web reel2bits-worker
     systemctl start reel2bits-web reel2bits-worker
+    
+Use ```docs/reel2bits.nginx``` as vhost template for ```X-Accel-Redirect``` part.
 
 # Docker
 
