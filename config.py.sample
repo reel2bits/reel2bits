@@ -14,9 +14,8 @@ SENTRY_USER_ATTRS = ['name', 'email']
 SENTRY_DSN = ""
 
 # Redis configuration for broker, used for async background tasks
-BROKER_REDIS_HOST = "127.0.0.1"
-BROKER_REDIS_PORT = 6379
-BROKER_REDIS_DB = 0
+CELERY_BROKER_URL = "redis://127.0.0.1:6379/0"
+CELERY_RESULT_BACKEND = "redis://127.0.0.1:6379/0"
 
 # They needs to be identical
 # You can't change them after setup !

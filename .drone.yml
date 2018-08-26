@@ -85,3 +85,5 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_DB=reel2bits_test
+  redis:
+    image: redis
