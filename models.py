@@ -136,7 +136,9 @@ class Logging(db.Model):
     category = db.Column(db.String(255), nullable=False, default="General")
     level = db.Column(db.String(255), nullable=False, default="INFO")
     message = db.Column(db.Text, nullable=False)
-    timestamp = db.Column(db.DateTime(timezone=False), server_default=func.now(), onupdate=func.now())
+    timestamp = db.Column(
+        db.DateTime(timezone=False), default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow
+    )
 
     user_id = db.Column(db.Integer(), db.ForeignKey("user.id"), nullable=True)
 
@@ -150,7 +152,9 @@ class UserLogging(db.Model):
     category = db.Column(db.String(255), nullable=False, default="General")
     level = db.Column(db.String(255), nullable=False, default="INFO")
     message = db.Column(db.Text, nullable=False)
-    timestamp = db.Column(db.DateTime(timezone=False), server_default=func.now(), onupdate=func.now())
+    timestamp = db.Column(
+        db.DateTime(timezone=False), default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow
+    )
     item_id = db.Column(db.Integer(), nullable=True)
 
     user_id = db.Column(db.Integer(), db.ForeignKey("user.id"), nullable=False)
@@ -193,8 +197,10 @@ class Sound(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255), nullable=True)
-    uploaded = db.Column(db.DateTime(timezone=False), default=func.now())
-    updated = db.Column(db.DateTime(timezone=False), default=func.now(), onupdate=func.now())
+    uploaded = db.Column(db.DateTime(timezone=False), default=datetime.datetime.utcnow)
+    updated = db.Column(
+        db.DateTime(timezone=False), default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow
+    )
     # TODO genre
     # TODO tags
     # TODO picture ?
@@ -383,7 +389,7 @@ class Follower(db.Model):
     actor_id = db.Column(db.Integer, db.ForeignKey("actor.id"))
     target_id = db.Column(db.Integer, db.ForeignKey("actor.id"))
     activity_url = db.Column(URLType(), unique=True, nullable=True)
-    creation_date = db.Column(db.DateTime(timezone=False), default=func.now())
+    creation_date = db.Column(db.DateTime(timezone=False), default=datetime.datetime.utcnow)
     modification_date = db.Column(db.DateTime(timezone=False), onupdate=datetime.datetime.now)
 
     actor = db.relationship("Actor", foreign_keys=[actor_id])
@@ -414,8 +420,8 @@ class Actor(db.Model):
     preferred_username = db.Column(db.String(200), nullable=True)
     public_key = db.Column(db.String(5000), nullable=True)
     private_key = db.Column(db.String(5000), nullable=True)
-    creation_date = db.Column(db.DateTime(timezone=False), default=func.now())
-    last_fetch_date = db.Column(db.DateTime(timezone=False), default=func.now())
+    creation_date = db.Column(db.DateTime(timezone=False), default=datetime.datetime.utcnow)
+    last_fetch_date = db.Column(db.DateTime(timezone=False), default=datetime.datetime.utcnow)
     manually_approves_followers = db.Column(db.Boolean, nullable=True, server_default=None)
     # Who follows self
     followers = db.relationship("Follower", backref="followers", primaryjoin=id == Follower.target_id)
@@ -493,7 +499,7 @@ class Activity(db.Model):
     type = db.Column(db.String(100), index=True)
     box = db.Column(db.String(100))
     payload = db.Column(JSONType())
-    creation_date = db.Column(db.DateTime(timezone=False), default=func.now())
+    creation_date = db.Column(db.DateTime(timezone=False), default=datetime.datetime.utcnow)
     delivered = db.Column(db.Boolean, default=None, nullable=True)
     delivered_date = db.Column(db.DateTime(timezone=False), nullable=True)
     local = db.Column(db.Boolean, default=True)
