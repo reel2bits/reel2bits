@@ -302,7 +302,7 @@ def process_new_activity(activity: ap.BaseActivity) -> None:
 
         if should_forward:
             current_app.logger.info(f"will forward {activity!r} to followers")
-            forward_activity.delay(activity.id)
+            forward_activity.send(activity.id)
 
         if should_delete:
             current_app.logger.info(f"will soft delete {activity!r}")
