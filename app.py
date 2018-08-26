@@ -266,6 +266,11 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
             }
             return render_template("error_page.jinja2", pcfg=pcfg), 500
 
+    @app.after_request
+    def set_x_powered_by(response):
+        response.headers["X-Powered-By"] = "reel2bits"
+        return response
+
     # Other commands
     @app.cli.command()
     def routes():
