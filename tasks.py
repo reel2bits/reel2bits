@@ -62,8 +62,9 @@ def upload_workflow(self, sound_id):
 
 
 @celery.task(bind=True, max_retries=3)
-def process_new_activity(self, activity: ap.BaseActivity) -> None:
+def process_new_activity(self, iri: str) -> None:
     try:
+        activity = ap.fetch_remote_activity(iri)
         current_app.logger.info(f"activity={activity!r}")
 
         actor = activity.get_actor()
@@ -157,16 +158,17 @@ def process_new_activity(self, activity: ap.BaseActivity) -> None:
         current_app.logger.info(f"new activity {activity.id} processed")
 
     except (ActivityGoneError, ActivityNotFoundError):
-        current_app.logger.exception(f"failed to process new activity" f" {activity.id}")
+        current_app.logger.exception(f"failed to process new activity" f" {iri}")
     except Exception as err:
-        current_app.logger.exception(f"failed to process new activity" f" {activity.id}")
+        current_app.logger.exception(f"failed to process new activity" f" {iri}")
 
 
 @celery.task(bind=True, max_retries=3)
-def finish_inbox_processing(self, activity: ap.BaseActivity) -> None:
+def finish_inbox_processing(self, iri: str) -> None:
     try:
         backend = ap.get_backend()
 
+        activity = ap.fetch_remote_activity(iri)
         current_app.logger.info(f"activity={activity!r}")
 
         actor = activity.get_actor()
@@ -205,7 +207,7 @@ def finish_inbox_processing(self, activity: ap.BaseActivity) -> None:
     except (ActivityGoneError, ActivityNotFoundError, NotAnActivityError):
         current_app.logger.exception(f"no retry")
     except Exception as err:
-        current_app.logger.exception(f"failed to cache attachments for" f" {activity.id}")
+        current_app.logger.exception(f"failed to cache attachments for" f" {iri}")
 
 
 @celery.task(bind=True, max_retries=3)
@@ -316,7 +318,7 @@ def forward_activity(self, iri: str) -> None:
 
 
 # We received an activity, now we have to process it in two steps
-def post_to_inbox(self, activity: ap.BaseActivity) -> None:
+def post_to_inbox(activity: ap.BaseActivity) -> None:
     # actor = activity.get_actor()
     backend = ap.get_backend()
 
@@ -328,9 +330,9 @@ def post_to_inbox(self, activity: ap.BaseActivity) -> None:
 
     backend.save(Box.INBOX, activity)
 
-    process_new_activity.delay(activity)
+    process_new_activity.delay(activity.id)
 
-    finish_inbox_processing.delay(activity)
+    finish_inbox_processing.delay(activity.id)
 
 
 def post_to_outbox(activity: ap.BaseActivity) -> str:
