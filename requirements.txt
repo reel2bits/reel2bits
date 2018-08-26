@@ -13,7 +13,7 @@ sqlalchemy
 mutagen
 pydub
 bcrypt
-dramatiq
+celery
 flask_bootstrap
 flask_mail
 flask_migrate

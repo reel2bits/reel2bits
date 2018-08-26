@@ -28,7 +28,6 @@ from little_boxes import activitypub as ap
 from activitypub.backend import Reel2BitsBackend
 
 from celery import Celery
-from config import CELERY_BROKER_URL
 
 __VERSION__ = "0.0.1"
 
@@ -44,12 +43,26 @@ except ImportError as e:
 
 mail = Mail()
 
-celery = Celery(__name__, broker=CELERY_BROKER_URL)
+
+def make_celery(remoulade):
+    celery = Celery(remoulade.import_name, broker=remoulade.config["CELERY_BROKER_URL"])
+    celery.conf.update(remoulade.config)
+    TaskBase = celery.Task
+
+    class ContextTask(TaskBase):
+        abstract = True
+
+        def __call__(self, *args, **kwargs):
+            with remoulade.app_context():
+                return TaskBase.__call__(self, *args, **kwargs)
+
+    celery.Task = ContextTask
+    return celery  # omnomnom
 
 
-def create_app(config_filename="config.py"):
+def create_app(config_filename="config.py", app_name=None, register_blueprints=True):
     # App configuration
-    app = Flask(__name__)
+    app = Flask(app_name or __name__)
     app.config.from_pyfile(config_filename)
 
     Bootstrap(app)
@@ -88,9 +101,6 @@ def create_app(config_filename="config.py"):
     # ActivityPub backend
     back = Reel2BitsBackend()
     ap.use_backend(back)
-
-    # Setup Celery
-    celery.conf.update(app.config)
 
     # Setup Flask-Security
     security = Security(  # noqa: F841
@@ -169,41 +179,42 @@ def create_app(config_filename="config.py"):
     sounds = UploadSet("sounds", AUDIO)
     configure_uploads(app, sounds)
 
-    from controllers.main import bp_main
+    if register_blueprints:
+        from controllers.main import bp_main
 
-    app.register_blueprint(bp_main)
+        app.register_blueprint(bp_main)
 
-    from controllers.users import bp_users
+        from controllers.users import bp_users
 
-    app.register_blueprint(bp_users)
+        app.register_blueprint(bp_users)
 
-    from controllers.admin import bp_admin
+        from controllers.admin import bp_admin
 
-    app.register_blueprint(bp_admin)
+        app.register_blueprint(bp_admin)
 
-    from controllers.sound import bp_sound
+        from controllers.sound import bp_sound
 
-    app.register_blueprint(bp_sound)
+        app.register_blueprint(bp_sound)
 
-    from controllers.albums import bp_albums
+        from controllers.albums import bp_albums
 
-    app.register_blueprint(bp_albums)
+        app.register_blueprint(bp_albums)
 
-    from controllers.search import bp_search
+        from controllers.search import bp_search
 
-    app.register_blueprint(bp_search)
+        app.register_blueprint(bp_search)
 
-    from controllers.api.v1.well_known import bp_wellknown
+        from controllers.api.v1.well_known import bp_wellknown
 
-    app.register_blueprint(bp_wellknown)
+        app.register_blueprint(bp_wellknown)
 
-    from controllers.api.v1.nodeinfo import bp_nodeinfo
+        from controllers.api.v1.nodeinfo import bp_nodeinfo
 
-    app.register_blueprint(bp_nodeinfo)
+        app.register_blueprint(bp_nodeinfo)
 
-    from controllers.api.v1.activitypub import bp_ap
+        from controllers.api.v1.activitypub import bp_ap
 
-    app.register_blueprint(bp_ap)
+        app.register_blueprint(bp_ap)
 
     @app.route("/uploads/<string:thing>/<path:stuff>", methods=["GET"])
     def get_uploads_stuff(thing, stuff):

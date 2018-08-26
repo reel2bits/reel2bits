@@ -3,7 +3,7 @@ from __future__ import print_function
 from models import Sound, User
 from flask_mail import Message
 from flask import render_template
-from app import celery, mail
+from app import mail, create_app, make_celery
 from transcoding_utils import work_transcode, work_metadatas
 from little_boxes import activitypub as ap
 from little_boxes.linked_data_sig import generate_signature
@@ -18,8 +18,13 @@ from little_boxes.errors import NotAnActivityError
 from little_boxes.key import Key
 from models import Activity, Actor
 from activitypub.vars import HEADERS, Box
+from controllers.sound import bp_sound
 
 # TRANSCODING
+
+# Make some gloubiboulga about Flask app context
+app = create_app(register_blueprints=False)
+celery = make_celery(app)
 
 
 @celery.task(bind=True, max_retries=3)
@@ -38,6 +43,8 @@ def upload_workflow(self, sound_id):
     print("TRANSCODE started")
     work_transcode(sound_id)
     print("TRANSCODE finished")
+
+    app.register_blueprint(bp_sound)
 
     msg = Message(
         subject="Song processing finished",

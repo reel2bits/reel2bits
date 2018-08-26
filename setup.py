@@ -37,7 +37,7 @@ setup(
         "python-slugify",
         "python-magic",
         "redis",
-        "dramatiq",
+        "celery",
         "flask-accept",
     ],
     setup_requires=["pytest-runner"],
