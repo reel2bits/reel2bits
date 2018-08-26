@@ -184,21 +184,28 @@ class Reel2BitsBackend(ap.Backend):
 
     def _fetch_iri(self, iri: str) -> ap.ObjectType:
         base_url = current_app.config["BASE_URL"]
-        if iri.startswith(base_url):
-            # local activity
 
+        # Check if owned
+        if iri.startswith(base_url):
             actor = Actor.query.filter(Actor.url == iri).first()
             if actor:
-                current_app.logger.debug(f"fetch_iri: local actor {actor!r}")
+                current_app.logger.debug(f"fetch_iri: owned local actor {actor!r}")
                 return actor.to_dict()
 
+            activity = Activity.query.filter(Activity.url == iri, Activity.box == Box.OUTBOX.value).first()
+            if activity:
+                current_app.logger.debug(f"fetch_iri: owned local activity {activity!r}")
+                return activity.payload
+        else:
+            # Check if in the inbox
             activity = Activity.query.filter(Activity.url == iri).first()
             if activity:
                 current_app.logger.debug(f"fetch_iri: local activity {activity!r}")
                 return activity.payload
-        else:
-            current_app.logger.debug(f"fetch_iri: cannot find locally, fetching remote")
-            return super().fetch_iri(iri)
+
+        current_app.logger.debug(f"fetch_iri: cannot find locally, fetching remote")
+        return super().fetch_iri(iri)
 
     def fetch_iri(self, iri: str) -> ap.ObjectType:
+        current_app.logger.debug(f"asked to fetch {iri}")
         return self._fetch_iri(iri)
