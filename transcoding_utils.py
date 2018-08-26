@@ -4,7 +4,6 @@ import contextlib
 import os
 import wave
 import time
-import dramatiq
 
 import magic
 import mutagen
@@ -13,19 +12,7 @@ from models import db, SoundInfo, Sound
 from utils import get_waveform, create_png_waveform, duration_song_human, add_user_log
 from pydub import AudioSegment
 from os.path import splitext
-from flask_mail import Message
-from dramatiq.brokers.redis import RedisBroker
-from flask import render_template
-
-from app import create_app, mail
-
-app = create_app()
-ctx = app.app_context()
-
-redis_broker = RedisBroker(
-    host=app.config["BROKER_REDIS_HOST"], port=app.config["BROKER_REDIS_PORT"], db=app.config["BROKER_REDIS_DB"]
-)
-dramatiq.set_broker(redis_broker)
+from flask import current_app
 
 
 def get_basic_infos(fname):
@@ -142,7 +129,7 @@ def work_transcode(sound_id):
         sound.id, sound.user.id, "sounds", "info", "Transcoding started for: {0} -- {1}".format(sound.id, sound.title)
     )
 
-    fname = os.path.join(app.config["UPLOADED_SOUNDS_DEST"], sound.user.slug, sound.filename)
+    fname = os.path.join(current_app.config["UPLOADED_SOUNDS_DEST"], sound.user.slug, sound.filename)
     _file, _ext = splitext(fname)
 
     _start = time.time()
@@ -191,7 +178,7 @@ def work_metadatas(sound_id, force=False):
 
     # Generate Basic infos
 
-    fname = os.path.join(app.config["UPLOADED_SOUNDS_DEST"], sound.user.slug, sound.filename)
+    fname = os.path.join(current_app.config["UPLOADED_SOUNDS_DEST"], sound.user.slug, sound.filename)
 
     if not _infos.done_basic or force:
         print("- WORKING BASIC on {0}, {1}".format(sound.id, sound.filename))
@@ -230,7 +217,7 @@ def work_metadatas(sound_id, force=False):
                 "Got an error when generating waveform" " for: {0} -- {1}".format(sound.id, sound.title),
             )
         else:
-            fdir_wf = os.path.join(app.config["UPLOADS_DEFAULT_DEST"], "waveforms", sound.user.slug)
+            fdir_wf = os.path.join(current_app.config["UPLOADS_DEFAULT_DEST"], "waveforms", sound.user.slug)
             fname_wf = os.path.join(fdir_wf, sound.filename)
 
             if not os.path.isdir(fdir_wf):
@@ -249,31 +236,3 @@ def work_metadatas(sound_id, force=False):
         "info",
         "Metadatas gathering finished for: {0} -- {1}".format(sound.id, sound.title),
     )
-
-
-@dramatiq.actor(queue_name="upload_workflow", max_retries=3)
-def upload_workflow(sound_id):
-    with app.app_context():
-        print("UPLOAD WORKFLOW started")
-
-        sound = Sound.query.get(sound_id)
-        if not sound:
-            print("- Cant find sound ID {id} in database".format(id=sound_id))
-            return
-
-        print("METADATAS started")
-        work_metadatas(sound_id)
-        print("METADATAS finished")
-
-        print("TRANSCODE started")
-        work_transcode(sound_id)
-        print("TRANSCODE finished")
-
-        msg = Message(
-            subject="Song processing finished", recipients=[sound.user.email], sender=app.config["MAIL_DEFAULT_SENDER"]
-        )
-        msg.body = render_template("email/song_processed.txt", sound=sound)
-        msg.html = render_template("email/song_processed.html", sound=sound)
-        mail.send(msg)
-
-        print("UPLOAD WORKFLOW finished")

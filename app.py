@@ -27,6 +27,9 @@ import click
 from little_boxes import activitypub as ap
 from activitypub.backend import Reel2BitsBackend
 
+from celery import Celery
+from config import CELERY_BROKER_URL
+
 __VERSION__ = "0.0.1"
 
 try:
@@ -40,6 +43,8 @@ except ImportError as e:
     HAS_SENTRY = False
 
 mail = Mail()
+
+celery = Celery(__name__, broker=CELERY_BROKER_URL)
 
 
 def create_app(config_filename="config.py"):
@@ -83,6 +88,9 @@ def create_app(config_filename="config.py"):
     # ActivityPub backend
     back = Reel2BitsBackend()
     ap.use_backend(back)
+
+    # Setup Celery
+    celery.conf.update(app.config)
 
     # Setup Flask-Security
     security = Security(  # noqa: F841
