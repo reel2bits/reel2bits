@@ -26,6 +26,7 @@ pipeline:
       - ./tests/install_audiowaveform.sh
       - black --check .
       - flake8 .
+      - cp tests/config_test.py config.py
       - python setup.py test
 
   migrations:
