@@ -10,7 +10,7 @@ from flask_accept import accept_fallback
 from little_boxes.webfinger import get_actor_url
 from little_boxes.urlutils import InvalidURLError
 from little_boxes import activitypub as ap
-from activitypub.backend import post_to_outbox, send_update_profile
+from tasks import post_to_outbox, send_update_profile
 
 bp_users = Blueprint("bp_users", __name__)
 

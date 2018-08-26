@@ -1,7 +1,8 @@
 from flask import Blueprint, request, abort, current_app, Response, jsonify, flash, render_template, redirect, url_for
 from little_boxes import activitypub
 from little_boxes.httpsig import verify_request
-from activitypub.backend import post_to_inbox, Box
+from activitypub.vars import Box
+from tasks import post_to_inbox
 from activitypub.utils import activity_from_doc, build_ordered_collection
 from models import Activity, User
 from flask_accept import accept_fallback
