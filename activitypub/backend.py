@@ -181,3 +181,24 @@ class Reel2BitsBackend(ap.Backend):
 
     def outbox_update(self, as_actor: ap.Person, activity: ap.BaseActivity):
         current_app.logger.debug(f"outbox_update {activity!r} as {as_actor!r}")
+
+    def _fetch_iri(self, iri: str) -> ap.ObjectType:
+        base_url = current_app.config["BASE_URL"]
+        if iri.startswith(base_url):
+            # local activity
+
+            actor = Actor.query.filter(Actor.url == iri).first()
+            if actor:
+                current_app.logger.debug(f"fetch_iri: local actor {actor!r}")
+                return actor.to_dict()
+
+            activity = Activity.query.filter(Activity.url == iri).first()
+            if activity:
+                current_app.logger.debug(f"fetch_iri: local activity {activity!r}")
+                return activity.payload
+        else:
+            current_app.logger.debug(f"fetch_iri: cannot find locally, fetching remote")
+            return super().fetch_iri(iri)
+
+    def fetch_iri(self, iri: str) -> ap.ObjectType:
+        return self._fetch_iri(iri)
