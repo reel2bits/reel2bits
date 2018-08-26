@@ -4,7 +4,7 @@ import os
 import subprocess
 from logging.handlers import RotatingFileHandler
 from flask_babelex import gettext, Babel
-from flask import Flask, render_template, g, send_from_directory, jsonify, safe_join, request, flash
+from flask import Flask, render_template, g, send_from_directory, jsonify, safe_join, request, flash, Response
 from flask_bootstrap import Bootstrap
 from flask_mail import Mail
 from flask_migrate import Migrate
@@ -115,6 +115,7 @@ def create_app(config_filename="config.py"):
     @FlaskSecuritySignals.user_registered.connect_via(app)
     def create_actor_for_registered_user(app, user, confirm_token):
         if not user:
+
             return
         actor = create_actor(user)
         actor.user = user
@@ -181,12 +182,18 @@ def create_app(config_filename="config.py"):
     app.register_blueprint(bp_nodeinfo)
     app.register_blueprint(bp_ap)
 
-    # Used in development
     @app.route("/uploads/<string:thing>/<path:stuff>", methods=["GET"])
     def get_uploads_stuff(thing, stuff):
-        directory = safe_join(app.config["UPLOADS_DEFAULT_DEST"], thing)
-        print("Get {0} from {1}".format(stuff, directory))
-        return send_from_directory(directory, stuff, as_attachment=True)
+        if app.debug:
+            directory = safe_join(app.config["UPLOADS_DEFAULT_DEST"], thing)
+            app.logger.debug(f"serving {stuff} from {directory}")
+            return send_from_directory(directory, stuff, as_attachment=True)
+        else:
+            app.logger.debug(f"X-Accel-Redirect serving {stuff}")
+            resp = Response("")
+            resp.headers["Content-Disposition"] = f"attachment; filename={stuff}"
+            resp.headers["X-Accel-Redirect"] = f"/_protected/media/tracks/{thing}/{stuff}"
+            return resp
 
     @app.errorhandler(404)
     def page_not_found(msg):
