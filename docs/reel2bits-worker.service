@@ -7,7 +7,7 @@ Type=simple
 User=reel2bits
 WorkingDirectory=/home/reel2bits/reel2bits
 Environment="FLASK_ENV=production"
-ExecStart=/home/reel2bits/reel2bits/venv/bin/dramatiq workers -Q upload_workflow
+ExecStart=/home/reel2bits/reel2bits/venv/bin/celery worker -A tasks --loglevel=error
 TimeoutSec=15
 Restart=always
 

@@ -71,13 +71,8 @@ TODO
 # Workers
   Run the workers using:
   
-    $ dramatiq workers -Q <queue name>
-    
-  See also 'dramatiq --help' for all config (threads etc.) infos
-
-  List of queues and descriptions:
-  - upload_workflow : handle metadatas and transcoding after upload
-  
+    $ celery worker -A tasks --loglevel=error
+      
 # TODO
   - Transcode and serve FLAC as MP3 CBR (HTML5 doesn't support FLAC)
   - Transcode only for waveform OGG to MP3 CBR (audiowaveform doesn't support OGG)
