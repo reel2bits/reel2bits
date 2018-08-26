@@ -29,7 +29,9 @@ from activitypub.backend import Reel2BitsBackend
 
 from celery import Celery
 
-__VERSION__ = "0.0.1"
+from version import VERSION
+
+__VERSION__ = VERSION
 
 try:
     from raven.contrib.flask import Sentry
@@ -162,9 +164,9 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
             flash(gettext("Config not found"), "error")
 
         cfg = {
-            "REEL2BITS_VERSION_VER": __VERSION__,
+            "REEL2BITS_VERSION_VER": VERSION,
             "REEL2BITS_VERSION_GIT": git_version,
-            "REEL2BITS_VERSION": "{0} ({1})".format(__VERSION__, git_version),
+            "REEL2BITS_VERSION": "{0} ({1})".format(VERSION, git_version),
             "app_name": _config.app_name,
             "app_description": _config.app_description,
         }
