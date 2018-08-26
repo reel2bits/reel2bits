@@ -23,7 +23,7 @@ from activitypub.vars import HEADERS, Box
 
 
 @celery.task(bind=True, max_retries=3)
-def upload_workflow(sound_id):
+def upload_workflow(self, sound_id):
     print("UPLOAD WORKFLOW started")
 
     sound = Sound.query.get(sound_id)
@@ -55,7 +55,7 @@ def upload_workflow(sound_id):
 
 
 @celery.task(bind=True, max_retries=3)
-def process_new_activity(activity: ap.BaseActivity) -> None:
+def process_new_activity(self, activity: ap.BaseActivity) -> None:
     try:
         current_app.logger.info(f"activity={activity!r}")
 
@@ -156,7 +156,7 @@ def process_new_activity(activity: ap.BaseActivity) -> None:
 
 
 @celery.task(bind=True, max_retries=3)
-def finish_inbox_processing(activity: ap.BaseActivity) -> None:
+def finish_inbox_processing(self, activity: ap.BaseActivity) -> None:
     try:
         backend = ap.get_backend()
 
@@ -202,7 +202,7 @@ def finish_inbox_processing(activity: ap.BaseActivity) -> None:
 
 
 @celery.task(bind=True, max_retries=3)
-def finish_post_to_outbox(iri: str) -> None:
+def finish_post_to_outbox(self, iri: str) -> None:
     try:
         activity = ap.fetch_remote_activity(iri)
         backend = ap.get_backend()
@@ -247,7 +247,7 @@ def finish_post_to_outbox(iri: str) -> None:
 
 
 @celery.task(bind=True, max_retries=3)
-def post_to_remote_inbox(payload: str, to: str) -> None:
+def post_to_remote_inbox(self, payload: str, to: str) -> None:
     current_app.logger.debug(f"post_to_remote_inbox {payload}")
 
     ap_actor = json.loads(payload)["actor"]
@@ -292,7 +292,7 @@ def post_to_remote_inbox(payload: str, to: str) -> None:
 
 
 @celery.task(bind=True, max_retries=3)
-def forward_activity(iri: str) -> None:
+def forward_activity(self, iri: str) -> None:
     try:
         activity = ap.fetch_remote_activity(iri)
         backend = ap.get_backend()
@@ -309,7 +309,7 @@ def forward_activity(iri: str) -> None:
 
 
 # We received an activity, now we have to process it in two steps
-def post_to_inbox(activity: ap.BaseActivity) -> None:
+def post_to_inbox(self, activity: ap.BaseActivity) -> None:
     # actor = activity.get_actor()
     backend = ap.get_backend()
 

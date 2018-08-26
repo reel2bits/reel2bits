@@ -119,9 +119,9 @@ def upload():
             db.session.commit()
 
             # push the job in queue
-            from workers import upload_workflow
+            from tasks import upload_workflow
 
-            upload_workflow.send(rec.id)
+            upload_workflow.delay(rec.id)
 
             # log
             add_user_log(rec.id, user.id, "sounds", "info", "Uploaded {0} -- {1}".format(rec.id, rec.title))
