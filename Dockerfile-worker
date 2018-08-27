@@ -35,4 +35,4 @@ EXPOSE 5000
 
 ENTRYPOINT ["/entrypoint.sh"]
 
-CMD ["dramatiq", "workers.py", "-q", "upload_workflow"]
+CMD ["celery", "worker", "-A", "tasks.celery", "--loglevel=error"]

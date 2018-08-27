@@ -71,7 +71,7 @@ TODO
 # Workers
   Run the workers using:
   
-    $ celery worker -A tasks --loglevel=error
+    $ celery worker -A tasks.celery --loglevel=error
       
 # TODO
   - Better handle transcoding and waveform generation for FLAC and OGG (audiowaveform should use the transcoded mp3 file)
