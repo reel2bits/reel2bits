@@ -74,10 +74,11 @@ TODO
     $ celery worker -A tasks --loglevel=error
       
 # TODO
-  - Transcode and serve FLAC as MP3 CBR (HTML5 doesn't support FLAC)
-  - Transcode only for waveform OGG to MP3 CBR (audiowaveform doesn't support OGG)
-  - ActivityPub support is near zero; Only incoming following is handled, and it doesn't works with most of the other AP softwares....
-
+  - Better handle transcoding and waveform generation for FLAC and OGG (audiowaveform should use the transcoded mp3 file)
+  - ActivityPub support is near zero
+  - Tests and create_app() better refactoring
+  - Design needs improvements
+ 
 # Licensing
  - MIT License
  
