@@ -1,0 +1,37 @@
+* GLOBAL
+
+** Workers for crons
+*** Some ideas about sanity checking transcodings broken, or not done totaly etc.
+
+** Tags for tracks
+** Search
+
+** Some basic statistics of files
+*** Played from player, downloads (transcode, orig)
+
+* Album: switch song duration stay empty lot of times
+
+***Low priority:
+** SQL optimization
+** translations check
+
+~~~~~~~~~ ACTIVITYPUB ~~~~~~~~
+-> profile UPDATE not handled yet (littleboxes don't handle UPDATE)
+-> no webfinger in DEV env because no handling in littleboxes
+--> Issues opened for both
+
+~~~~~~~~~ VARIOUS ~~~~~~~~~~~~
+Only show to public processed songs
+
+Slugs : BEFORE, and UNIQUE; Some things weird on that side IIRC
+Emails notifications (register, password changed, track ready)
+Album selector in new upload -> Add first element empty "No album"
+Permit "hiding" download links ? (mostly useless because player needs one at some point...)
+
+Celery things to add in web interface:
+  - log user
+    - jobs failed
+    - retry
+  - admin interface
+    - jobs failed
+    - retry
