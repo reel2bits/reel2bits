@@ -23,6 +23,10 @@
 ~~~~~~~~~ VARIOUS ~~~~~~~~~~~~
 Only show to public processed songs
 
+Check for sentry in:
+ - waitress (web)
+ - celery (workers)
+
 Slugs : BEFORE, and UNIQUE; Some things weird on that side IIRC
 Emails notifications (register, password changed, track ready)
 Album selector in new upload -> Add first element empty "No album"
