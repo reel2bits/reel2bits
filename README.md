@@ -52,7 +52,7 @@ Or if you have disabled registration, use the ``` flask createuser ``` command t
     source venv/bin/activate
     >> get back to install part
     
-    pip install gunicorn
+    pip install waitress
     
 Copy systemd services files ```docs/reel2bits-*.service``` to ```/etc/systemd/system/``` and adapt them to your setup.
 
