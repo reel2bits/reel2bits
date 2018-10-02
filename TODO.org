@@ -25,6 +25,9 @@
 Only show to public processed songs
 Also do not show player until processing is done, and waveform done
 
+X-Accel-Redirect have not been implemented again
+    not sure it would be useful ?
+
 If waveform error, do not publicize the song and show banner error for uploader
 
 Check for sentry in:

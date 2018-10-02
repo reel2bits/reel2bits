@@ -7,6 +7,8 @@ server {
         access_log /var/log/nginx/reel2bits.access.log;
         error_log /var/log/nginx/reel2bits.error.log error;
 
+        client_max_body_size 1G;
+
         location / {
             try_files $request_uri @proxy;
         }
@@ -19,9 +21,14 @@ server {
             proxy_pass http://127.0.0.1:8000;
         }
 
-        location /_protected/media {
-            internal;
-            # Same path as UPLOADS_DEFAULT_DEST in config.py, but with a final /
-            alias /home/reel2bits/uploads/;
+        location /uploads/sounds {
+                # Same path as UPLOADS_DEFAULT_DEST in config.py but with /sounds
+                alias /home/reel2bits/uploads/sounds;
         }
+
+        location /uploads/waveforms {
+                # Same path as UPLOADS_DEFAULT_DEST in config.py but with /waveforms
+                alias /home/reel2bits/uploads/waveforms;
+        }
+
 }
