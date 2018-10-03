@@ -9,3 +9,4 @@ exclude = '''
   | \__pycache__
 )/
 '''
+skip-numeric-underscore-normalization = true
