@@ -12,7 +12,7 @@ from flask_security import Security
 from flask_security.utils import encrypt_password
 from flask_security import signals as FlaskSecuritySignals
 from flask_security import confirmable as FSConfirmable
-from flask_uploads import configure_uploads, UploadSet, AUDIO
+from flask_uploads import configure_uploads, UploadSet, AUDIO, patch_request_class
 
 from forms import ExtendedRegisterForm
 from models import db, Config, user_datastore, Role, create_actor
@@ -180,6 +180,7 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
 
     sounds = UploadSet("sounds", AUDIO)
     configure_uploads(app, sounds)
+    patch_request_class(app, 500 * 1024 * 1024)  # 500m limit
 
     if register_blueprints:
         from controllers.main import bp_main
