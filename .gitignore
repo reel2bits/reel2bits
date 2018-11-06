@@ -12,3 +12,4 @@
 /configtest.py
 /errors_app.log
 .coverage
+/.ropeproject
