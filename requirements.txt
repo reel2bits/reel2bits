@@ -1,6 +1,6 @@
 Flask_Babelex==0.9.3
 psycopg2-binary==2.7.5
-texttable==1.4.0
+texttable==1.5.0
 Unidecode==1.0.22
 pydub==0.23.0
 mutagen==1.41.1
@@ -9,13 +9,13 @@ python-magic==0.4.15
 flask==1.0.2
 python-slugify==1.2.6
 wtforms==2.2.1
-sqlalchemy==1.2.12
+sqlalchemy==1.2.13
 pydub==0.23.0
 bcrypt==3.1.4
 celery==4.2.1
 flask_bootstrap==3.3.7.1
 flask_mail==0.9.1
-flask_migrate==2.2.1
+flask_migrate==2.3.0
 git+https://github.com/mattupstate/flask-security#egg=Flask-Security
 flask_uploads==0.2.1
 wtforms_alchemy==0.16.7
