@@ -36,7 +36,7 @@ class ModelForm(BaseModelForm):
 
 
 class ExtendedRegisterForm(RegisterForm):
-    name = StringField("Username", [DataRequired(), Regexp(regex="^\w+$"), Length(max=150)])
+    name = StringField("Username", [DataRequired(), Regexp(regex=r"^\w+$"), Length(max=150)])
 
     def validate_name(form, field):
         if len(field.data) <= 0:

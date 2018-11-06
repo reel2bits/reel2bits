@@ -39,7 +39,7 @@ try:
 
     print(" * Sentry support loaded")
     HAS_SENTRY = True
-except ImportError as e:
+except ImportError:
     print(" * No Sentry support")
     HAS_SENTRY = False
 

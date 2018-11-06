@@ -159,7 +159,7 @@ def process_new_activity(self, iri: str) -> None:
 
     except (ActivityGoneError, ActivityNotFoundError):
         current_app.logger.exception(f"failed to process new activity" f" {iri}")
-    except Exception as err:
+    except Exception as err:  # noqa: F841
         current_app.logger.exception(f"failed to process new activity" f" {iri}")
 
 
@@ -206,7 +206,7 @@ def finish_inbox_processing(self, iri: str) -> None:
                 backend.undo_new_follower(actor, obj)
     except (ActivityGoneError, ActivityNotFoundError, NotAnActivityError):
         current_app.logger.exception(f"no retry")
-    except Exception as err:
+    except Exception as err:  # noqa: F841
         current_app.logger.exception(f"failed to cache attachments for" f" {iri}")
 
 
@@ -251,7 +251,7 @@ def finish_post_to_outbox(self, iri: str) -> None:
             post_to_remote_inbox.delay(payload, recp)
     except (ActivityGoneError, ActivityNotFoundError):
         current_app.logger.exception(f"no retry")
-    except Exception as err:
+    except Exception as err:  # noqa: F841
         current_app.logger.exception(f"failed to post " f"to remote inbox for {iri}")
 
 
@@ -313,7 +313,7 @@ def forward_activity(self, iri: str) -> None:
             payload = json.dumps(activity)
             post_to_remote_inbox.delay(payload, recp)
 
-    except Exception as err:
+    except Exception as err:  # noqa: F841
         current_app.logger.exception(f"failed to cache attachments for {iri}")
 
 
