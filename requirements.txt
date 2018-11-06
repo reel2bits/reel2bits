@@ -15,7 +15,7 @@ bcrypt==3.1.4
 celery==4.2.1
 flask_bootstrap==3.3.7.1
 flask_mail==0.9.1
-flask_migrate==2.2.1
+flask_migrate==2.3.0
 git+https://github.com/mattupstate/flask-security#egg=Flask-Security
 flask_uploads==0.2.1
 wtforms_alchemy==0.16.7
