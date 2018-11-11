@@ -80,16 +80,16 @@
         </div></div>
     </div>
     <div class="col-lg-3">
-        <table class="table table-condensed table-hoverable">
+        <table class="table table-sm table-hoverable">
                 <tr>
                     <td>
                     </td>
                     {% if current_user.is_authenticated and album.user_id == current_user.id  %}
-                        <td class="si_btn_edit"><a class="btn btn-success btn-xs" href="{{ url_for('bp_albums.edit', username=album.user.name, setslug=album.slug) }}">{{ gettext("edit") }}</a></td>
+                        <td class="si_btn_edit"><a class="btn btn-success btn-sm" href="{{ url_for('bp_albums.edit', username=album.user.name, setslug=album.slug) }}">{{ gettext("edit") }}</a></td>
                         <td class="si_btn_delete">
-                        <a role="button" tabindex="0" class="btn btn-danger btn-xs" data-trigger="focus"
+                        <a role="button" tabindex="0" class="btn btn-danger btn-sm" data-trigger="focus"
                            data-container="body" data-toggle="popover" data-placement="top" data-html="true"
-                           data-content="<a class='btn btn-success btn-xs delete_log_link' href='{{ url_for('bp_albums.delete', username=album.user.name, setslug=album.slug) }}'>{{ gettext("yes really") }}</a>">{{ gettext("delete") }}</a>
+                           data-content="<a class='btn btn-success btn-sm delete_log_link' href='{{ url_for('bp_albums.delete', username=album.user.name, setslug=album.slug) }}'>{{ gettext("yes really") }}</a>">{{ gettext("delete") }}</a>
                         </td>
                     {% endif %}
                 </tr>
@@ -99,7 +99,7 @@
 
     <div class="row">
         <div class="col-lg-7 col-lg-offset-1">
-            <table class="table table-condensed table-album-sounds">
+            <table class="table table-sm table-album-sounds">
             <thead><tr><th></th><th></th><th></th><th></th></tr></thead>
                 <tbody>
                 {% for sound in album.sounds.order_by('album_order asc') %}
@@ -119,15 +119,15 @@
     <div class="col-lg-7 col-lg-offset-1">
     </div>
         <div class="col-lg-3">
-        <table class="table table-condensed table-hoverable">
+        <table class="table table-sm table-hoverable">
             <tr></tr>
             <tr>
                 {% if current_user.is_authenticated and album.user_id == current_user.id  %}
-                    <td class="si_btn_edit"><a class="btn btn-success btn-xs" href="{{ url_for('bp_albums.edit', username=album.user.name, setslug=album.slug) }}">{{ gettext('edit') }}</a></td>
+                    <td class="si_btn_edit"><a class="btn btn-success btn-sm" href="{{ url_for('bp_albums.edit', username=album.user.name, setslug=album.slug) }}">{{ gettext('edit') }}</a></td>
                     <td class="si_btn_delete">
-                    <a role="button" tabindex="0" class="btn btn-danger btn-xs" data-trigger="focus"
+                    <a role="button" tabindex="0" class="btn btn-danger btn-sm" data-trigger="focus"
                        data-container="body" data-toggle="popover" data-placement="top" data-html="true"
-                       data-content="<a class='btn btn-success btn-xs delete_log_link' href='{{ url_for('bp_albums.delete', username=album.user.name, setslug=album.slug) }}'>{{ gettext("yes really") }}</a>">{{ gettext("delete") }}</a>
+                       data-content="<a class='btn btn-success btn-sm delete_log_link' href='{{ url_for('bp_albums.delete', username=album.user.name, setslug=album.slug) }}'>{{ gettext("yes really") }}</a>">{{ gettext("delete") }}</a>
                     </td>
                 {% endif %}
             </tr>

@@ -7,16 +7,16 @@
     </div>
     <div class="col-lg-offset-5 col-xs-3" style="margin-top: 1.6em">
         {{ gettext("Show only:") }}
-        <a href="{{ url_for('bp_admin.logs') }}" class="btn btn-xs btn-default">{{ gettext("all") }}</a>
-        <a href="{{ url_for('bp_admin.logs', level='info') }}" class="btn btn-xs btn-info">{{ gettext("info") }}</a>
-        <a href="{{ url_for('bp_admin.logs', level='warning') }}" class="btn btn-xs btn-warning">{{ gettext("warning") }}</a>
-        <a href="{{ url_for('bp_admin.logs', level='error') }}" class="btn btn-xs btn-danger">{{ gettext("error") }}</a>
+        <a href="{{ url_for('bp_admin.logs') }}" class="btn btn-sm btn-secondary">{{ gettext("all") }}</a>
+        <a href="{{ url_for('bp_admin.logs', level='info') }}" class="btn btn-sm btn-info">{{ gettext("info") }}</a>
+        <a href="{{ url_for('bp_admin.logs', level='warning') }}" class="btn btn-sm btn-warning">{{ gettext("warning") }}</a>
+        <a href="{{ url_for('bp_admin.logs', level='error') }}" class="btn btn-sm btn-danger">{{ gettext("error") }}</a>
     </div>
 </div>
 
 <div class="row">
     <div class="col-lg-12">
-        <table class="table table-condensed table-stripped table-bordered">
+        <table class="table table-sm table-stripped table-bordered">
             <tr>
                 <th>{{ gettext("Date") }}</th>
                 <th>{{ gettext("Category") }}</th>
@@ -35,9 +35,9 @@
                     </td>
                     <td>{{ log.message | replace('\r\n', '<br>') }}</td>
                     <td class="log-actions">
-                        <a role="button" tabindex="0" class="btn btn-danger btn-xs" data-trigger="focus"
+                        <a role="button" tabindex="0" class="btn btn-danger btn-sm" data-trigger="focus"
                            data-container="body" data-toggle="popover" data-placement="left" data-html="true"
-                           data-content="<a class='btn btn-success btn-xs delete_log_link' data-id='{{ log.id }}' data-href='{{ url_for('bp_admin.logs_delete', log_id=log.id) }}'>{{ gettext("yes really") }}</a>">{{ gettext("delete") }}</a>
+                           data-content="<a class='btn btn-success btn-sm delete_log_link' data-id='{{ log.id }}' data-href='{{ url_for('bp_admin.logs_delete', log_id=log.id) }}'>{{ gettext("yes really") }}</a>">{{ gettext("delete") }}</a>
                     </td>
                 </tr>
             {% endfor %}

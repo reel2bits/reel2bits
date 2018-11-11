@@ -25,7 +25,7 @@
         </div>
         <div class="col-lg-2">
             {% if current_user.is_authenticated and user == current_user %}
-            <a class="btn btn-primary btn-xs" href="{{ url_for('bp_users.edit') }}">{{ gettext("Edit profile") }}</a>
+            <a class="btn btn-primary btn-sm" href="{{ url_for('bp_users.edit') }}">{{ gettext("Edit profile") }}</a>
             {% endif %}
         </div>
     </div>
