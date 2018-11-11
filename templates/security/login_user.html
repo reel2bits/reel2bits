@@ -1,28 +1,16 @@
 {% extends "layout.jinja2" %}
-{% import "bootstrap/wtf.html" as wtf %}
+{% import 'bootstrap/form.html' as bf4 %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-4 col-md-offset-4">
-        <div class="login-panel panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">{{ gettext('Please Sign In') }}</h3>
-            </div>
-            <div class="panel-body">
-                <form action="{{ url_for_security('login') }}" method="POST" name="login_user_form" role="form" class="form">
-                    {{ login_user_form.hidden_tag() }}
-                    {{ wtf.form_errors(login_user_form, hiddens="only") }}
-
-                    {{ wtf.form_field(login_user_form.email) }}
-                    {{ wtf.form_field(login_user_form.password) }}
-
-                    {{ wtf.form_field(login_user_form.remember) }}
-
-                    {{ wtf.form_field(login_user_form.submit, button_map={'submit': 'success'}) }}
-                    <a href="{{ url_for('security.forgot_password') }}" role="button" class="btn btn-info">{{ gettext("forgot password :(") }}</a>
-                </form>
-            </div>
+    <div class="row justify-content-center">
+        <div class="col-8">
+            <h3>{{ gettext("Please Sign In") }}</h3>
         </div>
     </div>
-</div>
+
+    <div class="row justify-content-center">
+        <div class="col-8">
+            {{ bf4.render_form(login_user_form, action=url_for_security('login'), render_kw={'name': "login_user_form"}, horizontal_columns=('lg', 3, 5), form_type='horizontal', button_map={'submit': 'success'}) }}
+        </div>
+    </div>
 {% endblock %}
