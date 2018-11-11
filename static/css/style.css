@@ -3,11 +3,8 @@
  */
 
 body {
-    padding-top: 70px;
-    padding-bottom: 20px;
-    clear: both;
-
     font-family: "PingFang SC", "Helvetica Neue", "Microsoft YaHei", Arial, Helvetica, sans-serif !important;
+    padding-top: 120px;
 }
 
 footer {

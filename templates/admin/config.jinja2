@@ -1,33 +1,16 @@
 {% extends "layout.jinja2" %}
-{% import "bootstrap/wtf.html" as wtf %}
+{% import 'bootstrap/form.html' as bf4 %}
 
 {% block content %}
-<div class="row">
-    <div class="row">
-        <div class="col-lg-12">
+    <div class="row justify-content-center">
+        <div class="col-8">
             <h3>{{ gettext("Edit application config") }}</h3>
         </div>
     </div>
 
-    <form action="{{ url_for('bp_admin.config') }}" method="POST" class="form-horizontal" name="gtfo-lastpass-search">
-        {{ form.hidden_tag() }}
-        {{ wtf.form_errors(form, hiddens=True) }}
-
-        <div class="row">
-            <div class="col-lg-6">
-                {{ wtf.form_field(form.app_name, 'horizontal', horizontal_columns=('lg', 4, 8)) }}
-            </div>
+    <div class="row justify-content-center">
+        <div class="col-8">
+            {{ bf4.render_form(form, action=url_for('bp_admin.config'), horizontal_columns=('lg', 3, 7), form_type='horizontal', button_map={'submit': 'success'}, enctype="multipart/form-data") }}
         </div>
-        <div class="row">
-            <div class="col-lg-6">
-                {{ wtf.form_field(form.app_description, 'horizontal', horizontal_columns=('lg', 4, 8)) }}
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-lg-6">
-                {{ wtf.form_field(form.submit, button_map={'submit': 'success'}) }}
-            </div>
-        </div>
-    </form>
-</div>
+    </div>
 {% endblock %}

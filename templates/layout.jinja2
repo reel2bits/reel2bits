@@ -1,113 +1,117 @@
-{% import "bootstrap/utils.html" as butils %}
+{% import "bootstrap/flash.html" as bf %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <link rel="icon" href="{{AppSubURL}}/favicon.ico">
-
     <title>
-    {% block title %}{% if pcfg and pcfg['title'] %}
-        {{ pcfg['title'] }} - {{ g.cfg['app_name'] }}
-    {% else %}
-        {{  g.cfg['app_name'] }}
-    {% endif %}{% endblock %}
+        {% block title %}{% if pcfg and pcfg['title'] %}
+            {{ pcfg['title'] }} - {{ g.cfg['app_name'] }}
+        {% else %}
+            {{ g.cfg['app_name'] }}
+        {% endif %}{% endblock %}
     </title>
+
 
     <!-- Bootstrap core CSS -->
     <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
-
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <link href="{{ url_for('static', filename='css/ie10-viewport-bug-workaround.css') }}" rel="stylesheet">
-
-    <link href="{{ url_for('static', filename='css/fork-awesome.min.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/datatables.min.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/fork-awesome.min.css') }}" rel="stylesheet">
 
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
+    <!-- Custom styles for this template -->
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
 
     {% block styles %}{% endblock %}
 
     {% block opengraph %}
-        <meta content="{{ g.cfg['app_name'] }}" property="og:site_name" />
+        <meta content="{{ g.cfg['app_name'] }}" property="og:site_name"/>
         <meta property="og:title" content="{{ g.cfg['app_name'] }} - Upload and share sound tracks">
         <meta property="og:description" content="{{ g.cfg['app_description'] }}">
     {% endblock %}
+
 </head>
 
 <body>
 
-<nav class="navbar navbar-default navbar-fixed-top">
-    <div class="container">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                <span class="sr-only">{{ gettext('Toggle navigation') }}</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="{{ url_for('bp_main.home') }}">{{ g.cfg['app_name'] }}</a>
-        </div>
-        <div id="navbar" class="navbar-collapse collapse">
-            <ul class="nav navbar-nav">
-                {% if current_user.is_authenticated %}
-                    <li><a href="{{ url_for('bp_sound.upload') }}">{{ gettext('Upload') }}</a></li>
-                    <li><a href="{{ url_for('bp_albums.new', username=current_user.name) }}">{{ gettext('New album') }}</a></li>
-                    <li><a href="{{ url_for('bp_users.profile', name=current_user.name) }}">{{ gettext('My Profile') }}</a></li>
-                {% endif %}
-            </ul>
-            <ul class="nav navbar-nav navbar-right">
-                {% if request.endpoint %}
+<nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-primary">
+    <a class="navbar-brand" href="{{ url_for('bp_main.home') }}">{{ g.cfg['app_name'] }}</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
+            aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
 
-                    <form action="{{ url_for('bp_search.users') }}" class="navbar-form navbar-left" role="search" method="get">
-                      <div class="input-group">
+    <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+        <ul class="navbar-nav mr-auto">
+            {% if current_user.is_authenticated %}
+                <li class="nav-item"><a class="nav-link"
+                                        href="{{ url_for('bp_sound.upload') }}"><i class="fa fa-cloud-upload" aria-hidden="true"></i> {{ gettext('Upload') }}</a></li>
+                <li class="nav-item"><a class="nav-link"
+                                        href="{{ url_for('bp_albums.new', username=current_user.name) }}"><i class="fa fa-folder-open" aria-hidden="true"></i> {{ gettext('New album') }}</a>
+                </li>
+                <li class="nav-item"><a class="nav-link"
+                                        href="{{ url_for('bp_users.profile', name=current_user.name) }}"><i class="fa fa-user-circle" aria-hidden="true"></i> {{ gettext('My Profile') }}</a>
+                </li>
+            {% endif %}
+        </ul>
+
+        <ul class="navbar-nav ml-auto">
+            {% if request.endpoint %}
+                <form action="{{ url_for('bp_search.users') }}" class="navbar-form navbar-left" role="search"
+                      method="get">
+                    <div class="input-group">
                         <input name="who" type="text" class="search-input form-control" placeholder="Search user">
-                      </div>
-                    </form>
+                    </div>
+                </form>
 
-                    <li class="{% if request.endpoint.startswith('bp_main.about') %}active{% endif %}"><a href="{{ url_for('bp_main.about') }}">{{ gettext('About') }}</a></li>
-                    {% if current_user.is_authenticated %}
-                        <li class="dropdown">
-                          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ gettext('Logged as %(username)s', username=current_user.name) }} <span class="caret"></span></a>
-                          <ul class="dropdown-menu">
-                              <li class="dropdown-header">{{ gettext('User') }}</li>
-                              <li><a href="{{ url_for('bp_users.profile', name=current_user.name) }}">{{ gettext('Profile') }}</a></li>
-                              <li><a href="{{ url_for('bp_users.logs') }}">{{ gettext('Logs') }}</a></li>
-                              {% if is_admin() %}
-                                  <li role="separator" class="divider"></li>
-                                  <li class="dropdown-header">{{ gettext('Admin') }}</li>
-                                  <li><a href="{{ url_for('bp_admin.config') }}">{{ gettext('App config') }}</a></li>
-                                  <li><a href="{{ url_for('bp_admin.logs') }}">{{ gettext('App logs') }}</a></li>
-                              {% endif %}
-                              <li role="separator" class="divider"></li>
-                              <li><a href="{{ url_for_security('change_password') }}">{{ gettext('Change password') }}</a></li>
-                              <li><a href="{{ url_for_security('logout') }}">{{ gettext('Logout') }}</a></li>
-                            </ul>
+                <li class="nav-item {% if request.endpoint.startswith('bp_main.about') %}active{% endif %}"><a
+                        class="nav-link" href="{{ url_for('bp_main.about') }}">{{ gettext('About') }}</a></li>
+                {% if current_user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                           aria-expanded="false">Logged as {{ current_user.name }}</a>
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown_user">
+                            <h6 class="dropdown-header"><i class="fa fa-user" aria-hidden="true"></i> {{ gettext("User") }}</h6>
+                            <a class="dropdown-item"
+                               href="{{ url_for('bp_users.profile', name=current_user.name) }}">{{ gettext('Profile') }}</a>
+                            <a class="dropdown-item" href="{{ url_for('bp_users.logs') }}">{{ gettext('Logs') }}</a>
+                            {% if is_admin() %}
+                                <div class="dropdown-divider"></div>
+                                <h6 class="dropdown-header"><i class="fa fa-cogs" aria-hidden="true"></i> {{ gettext('Admin') }}</h6>
+                                <a class="dropdown-item"
+                                   href="{{ url_for('bp_admin.config') }}">{{ gettext('App config') }}</a>
+                                <a class="dropdown-item"
+                                   href="{{ url_for('bp_admin.logs') }}">{{ gettext('App logs') }}</a>
+                            {% endif %}
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item"
+                               href="{{ url_for_security('change_password') }}">{{ gettext('Change password') }}</a>
+                            <a class="dropdown-item" href="{{ url_for_security('logout') }}">{{ gettext('Logout') }}</a>
+                        </div>
+                    </li>
+                {% else %}
+                    {% if security.registerable %}
+                        <li class="nav-item {% if request.endpoint.startswith('security.register') %}active{% endif %}">
+                            <a class="nav-link" href="{{ url_for_security('register') }}">{{ gettext('Register') }}</a>
                         </li>
-                    {% else %}
-                        {% if security.registerable %}
-                            <li class="{% if request.endpoint.startswith('security.register') %}active{% endif %}"><a href="{{ url_for_security('register') }}">{{ gettext('Register') }}</a></li>
-                        {% endif %}
-                        <li class="{% if request.endpoint.startswith('security.login') %}active{% endif %}"><a href="{{ url_for_security('login') }}">{{ gettext('Login') }}</a></li>
                     {% endif %}
+                    <li class="nav-item {% if request.endpoint.startswith('security.login') %}active{% endif %}"><a
+                            class="nav-link" href="{{ url_for_security('login') }}">{{ gettext('Login') }}</a></li>
+
                 {% endif %}
-            </ul>
-        </div><!--/.nav-collapse -->
+            {% endif %}
+        </ul>
     </div>
 </nav>
 
-<div class="container">
-    <div class="row">
-        <div class="col-lg-6 col-lg-offset-3">{{ butils.flashed_messages(container=False) }}</div>
+<main role="main" class="container">
+    <div class="row justify-content-center">
+        <div class="col-6">{{ bf.flashed_messages(container=False) }}</div>
     </div>
 
     {% block content %}{% endblock %}
@@ -115,30 +119,31 @@
     <footer>
         <div>
             <div class="left">
-                &copy; 2017-2018 reel2bits - {{ gettext("version: %(version)s", version=g.cfg['REEL2BITS_VERSION']) }}{% if current_user.is_authenticated %} - {{ gettext('Logged as %(username)s', username=current_user.name) }}{% endif %}
+                &copy; 2017-2018 reel2bits - {{ gettext("version: %(version)s", version=g.cfg['REEL2BITS_VERSION']) }}
+                    {% if current_user.is_authenticated %} -
+                        {{ gettext('Logged as %(username)s', username=current_user.name) }}{% endif %}
             </div>
             <div class="right">
-                <a target="_blank" href="https://dev.sigpipe.me/dashie/reel2bits">{{ gettext("Sources") }}</a>
+                <a target="_blank" href="https://github.com/rhaamo/reel2bits">{{ gettext("Sources") }}</a>
                 -
                 <a href="#">{{ gettext('Back to top') }}</a>
             </div>
         </div>
     </footer>
-</div> <!-- /container -->
+
+</main><!-- /.container -->
 
 
 <!-- Bootstrap core JavaScript
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->
 <script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
-<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-<script src="{{ url_for('static', filename='js/ie10-viewport-bug-workaround.js') }}"></script>
 <script src="{{ url_for('static', filename='js/jquery.bootstrap-growl.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/global.js') }}"></script>
 <script src="{{ url_for('static', filename='js/datatables.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/wavesurfer.min.js') }}"></script>
 {% block scripts %}{% endblock %}
-
 </body>
 </html>

@@ -1,32 +1,32 @@
 {% extends "layout.jinja2" %}
 
 {% block content %}
-<div class="row">
-    <div class="col-xs-4">
+<div class="row justify-content-between">
+    <div class="col-4">
         <h3>{{ gettext("Application logs (latest 100)") }}</h3>
     </div>
-    <div class="col-lg-offset-5 col-xs-3" style="margin-top: 1.6em">
-        {{ gettext("Show only:") }}
-        <a href="{{ url_for('bp_admin.logs') }}" class="btn btn-xs btn-default">{{ gettext("all") }}</a>
-        <a href="{{ url_for('bp_admin.logs', level='info') }}" class="btn btn-xs btn-info">{{ gettext("info") }}</a>
-        <a href="{{ url_for('bp_admin.logs', level='warning') }}" class="btn btn-xs btn-warning">{{ gettext("warning") }}</a>
-        <a href="{{ url_for('bp_admin.logs', level='error') }}" class="btn btn-xs btn-danger">{{ gettext("error") }}</a>
+    <div class="col-4 text-right">
+        Show only:
+        <a href="{{ url_for('bp_admin.logs') }}" class="btn btn-sm btn-secondary">all</a>
+        <a href="{{ url_for('bp_admin.logs', level='info') }}" class="btn btn-sm btn-info">info</a>
+        <a href="{{ url_for('bp_admin.logs', level='warning') }}" class="btn btn-sm btn-warning">warning</a>
+        <a href="{{ url_for('bp_admin.logs', level='error') }}" class="btn btn-sm btn-danger">error</a>
     </div>
 </div>
 
 <div class="row">
     <div class="col-lg-12">
-        <table class="table table-condensed table-stripped table-bordered">
+        <table class="table table-sm table-stripped table-bordered">
             <tr>
                 <th>{{ gettext("Date") }}</th>
                 <th>{{ gettext("Category") }}</th>
-                <th width="100px">{{ gettext("Level") }}</th>
+                <th>{{ gettext("Level") }}</th>
                 <th>{{ gettext("User") }}</th>
                 <th>{{ gettext("Message") }}</th>
-                <th width="100px">{{ gettext("Actions") }}</th>
+                <th>{{ gettext("Actions") }}</th>
             </tr>
             {% for log in logs %}
-                <tr data-log-id="{{ log.id }}">
+                <tr>
                     <td width="13%">{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
                     <td>{{ log.category }}</td>
                     <td>{{ log.level }}</td>
@@ -34,41 +34,11 @@
                         {{ log.user_id }}
                     </td>
                     <td>{{ log.message | replace('\r\n', '<br>') }}</td>
-                    <td class="log-actions">
-                        <a role="button" tabindex="0" class="btn btn-danger btn-xs" data-trigger="focus"
-                           data-container="body" data-toggle="popover" data-placement="left" data-html="true"
-                           data-content="<a class='btn btn-success btn-xs delete_log_link' data-id='{{ log.id }}' data-href='{{ url_for('bp_admin.logs_delete', log_id=log.id) }}'>{{ gettext("yes really") }}</a>">{{ gettext("delete") }}</a>
-                    </td>
+                    <td></td>
                 </tr>
             {% endfor %}
         </table>
 
     </div>
 </div>
-{% endblock %}
-
-{% block scripts %}
-<script>
-    $(function () {
-        $('[data-toggle="popover"]').popover().on('shown.bs.popover', function (eventShown) {
-            $("a.delete_log_link").click(function() {
-                console.log("Deleting log " + this.dataset.id + " on " + this.dataset.href);
-
-                $.getJSON(this.dataset.href, function() {
-                   console.log("success");
-                }).done(function(data) {
-                    console.log("Got status: " + data.status + " for ID " + data.id);
-                    if (data.status === "deleted") {
-                        $('[data-log-id="' + data.id + '"]').remove();
-                    } else {
-                        show_alert("danger", "{{ gettext("Log deletion") }}", "{{ gettext("An error occured") }}");
-                    }
-                }).fail(function(data) {
-                    console.log("fail" + data);
-                });
-
-            });
-        });
-    });
-</script>
 {% endblock %}

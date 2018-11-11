@@ -17,7 +17,7 @@ setup(
         "SQLAlchemy-Searchable",
         "SQLAlchemy-Utils",
         "SQLAlchemy-Continuum",
-        "Flask-Bootstrap",
+        "Bootstrap-Flask",
         "Flask-DebugToolbar",
         "Flask-Login",
         "Flask-Mail",

@@ -15,6 +15,7 @@
 ** SQL optimization
 ** translations check
 ** Make a waveform display for tracks list (not track view or album view) better than the ugly one with grey background
+** Flash message don't have "dismissive" ?
 
 ~~~~~~~~~ ACTIVITYPUB ~~~~~~~~
 -> profile UPDATE not handled yet (littleboxes don't handle UPDATE)

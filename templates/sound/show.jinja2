@@ -35,7 +35,7 @@
             <h3>{% if not sound.private %}<i class="fa fa-music" aria-hidden="true"></i>{% else %}<i class="fa fa-lock" aria-hidden="true"></i>{% endif %} {{ sound.title|truncate(40) }}</h3>
         </div>
 
-        <div class="col-lg-3">
+        <div class="col-lg-3 offset-1">
             <h3><i class="fa fa-calendar" aria-hidden="true"></i> {{ gettext("%(value)s ago", value=duration_elapsed_human(sound.elapsed())) }}</h3>
         </div>
     </div>
@@ -78,28 +78,28 @@
             </p>
         </div></div>
     </div>
-    <div class="col-lg-3">
-        <table class="table table-condensed table-hoverable">
+    <div class="col-lg-3 offset-1">
+        <table class="table table-sm table-hoverable">
                 <tr>
                     {% if current_user.is_authenticated and sound.user_id == current_user.id  %}
-                        <td class="si_btn_edit"><a class="btn btn-success btn-xs" href="{{ url_for('bp_sound.edit', username=sound.user.name, soundslug=sound.slug) }}">{{ gettext('edit') }}</a></td>
+                        <td class="si_btn_edit"><a class="btn btn-success btn-sm" href="{{ url_for('bp_sound.edit', username=sound.user.name, soundslug=sound.slug) }}">{{ gettext('edit') }}</a></td>
                         <td class="si_btn_delete">
-                        <a role="button" tabindex="0" class="btn btn-danger btn-xs" data-trigger="focus"
+                        <a role="button" tabindex="0" class="btn btn-danger btn-sm" data-trigger="focus"
                            data-container="body" data-toggle="popover" data-placement="top" data-html="true"
-                           data-content="<a class='btn btn-success btn-xs delete_log_link' href='{{ url_for('bp_sound.delete', username=sound.user.name, soundslug=sound.slug) }}'>{{ gettext("yes really") }}</a>">{{ gettext("delete") }}</a>
+                           data-content="<a class='btn btn-success btn-sm delete_log_link' href='{{ url_for('bp_sound.delete', username=sound.user.name, soundslug=sound.slug) }}'>{{ gettext("yes really") }}</a>">{{ gettext("delete") }}</a>
                         </td>
                     {% endif %}
                 </tr>
 
                 <tr>
                     <td>
-                        <a class="btn btn-info btn-xs" href="{{ url_for('get_uploads_stuff', thing='sounds', stuff=sound.path_sound(orig=True)) }}">
+                        <a class="btn btn-info btn-sm" href="{{ url_for('get_uploads_stuff', thing='sounds', stuff=sound.path_sound(orig=True)) }}">
                             <i class="fa fa-download" aria-hidden="true"></i> {{ gettext("download orig") }}
                         </a>
                     </td>
                     {% if sound.transcode_needed and sound.processing_done() %}
                     <td>
-                        <a class="btn btn-info btn-xs" href="{{ url_for('get_uploads_stuff', thing='sounds', stuff=sound.path_sound(orig=False)) }}">
+                        <a class="btn btn-info btn-sm" href="{{ url_for('get_uploads_stuff', thing='sounds', stuff=sound.path_sound(orig=False)) }}">
                             <i class="fa fa-download" aria-hidden="true"></i> {{ gettext("download mp3") }}
                         </a>
                     </td>
