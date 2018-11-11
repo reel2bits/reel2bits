@@ -2,7 +2,7 @@ from flask_security import RegisterForm, current_user
 from flask_uploads import UploadSet, AUDIO
 from flask_wtf import FlaskForm as Form
 from flask_wtf.file import FileField, FileAllowed, FileRequired
-from wtforms import PasswordField, SubmitField, SelectField, BooleanField, TextAreaField
+from wtforms import SubmitField, SelectField, BooleanField, TextAreaField
 from wtforms import widgets
 from wtforms.fields.core import StringField
 from wtforms.validators import DataRequired, ValidationError, Length, Regexp
@@ -47,14 +47,9 @@ class ExtendedRegisterForm(RegisterForm):
             raise ValidationError(gettext("Username already taken"))
 
 
-class UserProfileForm(ModelForm):
-    class Meta:
-        model = User
-
-    password = PasswordField(gettext("Password"), [Length(max=255)])
+class UserProfileForm(Form):
     name = StringField(gettext("Name"), [Length(max=255)])
     display_name = StringField(gettext("Display name"), [Length(max=30)])
-    email = StringField(gettext("Email"), [Length(max=255)])
     timezone = SelectField(coerce=str, label=gettext("Timezone"), default="UTC")
     locale = SelectField(gettext("Locale"), default="en", choices=[["en", "English"], ["fr", "French"]])
     submit = SubmitField(gettext("Update profile"))
