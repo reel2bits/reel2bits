@@ -27,7 +27,7 @@
             <h3>{% if not album.private %}<i class="fa fa-music" aria-hidden="true"></i>{% else %}<i class="fa fa-lock" aria-hidden="true"></i>{% endif %} {{ album.title|truncate(40) }}</h3>
         </div>
 
-        <div class="col-lg-3">
+        <div class="col-lg-3 offset-1">
             <h3><i class="fa fa-calendar" aria-hidden="true"></i> {{ gettext("%(value)s ago", value=duration_elapsed_human(album.elapsed())) }}</h3>
         </div>
     </div>
@@ -79,7 +79,7 @@
             </p>
         </div></div>
     </div>
-    <div class="col-lg-3">
+    <div class="col-lg-3 offset-1">
         <table class="table table-sm table-hoverable">
                 <tr>
                     <td>
