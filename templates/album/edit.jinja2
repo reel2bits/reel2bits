@@ -1,27 +1,16 @@
 {% extends "layout.jinja2" %}
-{% import "bootstrap/wtf.html" as wtf %}
+{% import 'bootstrap/form.html' as bf4 %}
 
 {% block content %}
-    <div class="row">
-        <div class="col-lg-6">
+    <div class="row justify-content-center">
+        <div class="col-8">
             <h3>{{ gettext("Edit album %(title)s", title=album.title) }}</h3>
         </div>
     </div>
-<div class="row">
-    <div class="col-lg-6">
-        <form action="{{ url_for('bp_albums.edit', username=album.user.name, setslug=album.slug) }}" method="POST" class="form-horizontal" enctype="multipart/form-data">
-            {{ form.hidden_tag() }}
-            {{ wtf.form_errors(form, hiddens=True) }}
-            {{ wtf.form_field(form.title, 'horizontal', placeholder=gettext("What's the title ?")) }}
-            {{ wtf.form_field(form.description, 'horizontal', placeholder=gettext("Add a nice description ?")) }}
-            {{ wtf.form_field(form.private, 'horizontal') }}
-            {{ wtf.form_field(form.submit, button_map={'submit': 'success'}) }}
-            <a class="btn btn-warning" href="{{ url_for('bp_albums.show', username=album.user.name, setslug=album.slug) }}">{{ gettext("Cancel edit") }}</a>
-        </form>
-    </div>
 
-    <div class="col-lg-6">
+    <div class="row justify-content-center">
+        <div class="col-8">
+            {{ bf4.render_form(form, action=url_for('bp_albums.edit', username=album.user.name, setslug=album.slug), horizontal_columns=('lg', 3, 7), form_type='horizontal', button_map={'submit': 'success'}) }}
+        </div>
     </div>
-
-</div>
 {% endblock %}
