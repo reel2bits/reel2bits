@@ -29,12 +29,13 @@
                             </div>
                             {% if current_user.is_authenticated %}
                                 <div class="card-footer">
-                                    Following:
                                     {% if account['follow'] %}
+                                        following
                                         <a href="{{ url_for("bp_users.unfollow", user=account['url']) }}">
                                             <i class="fa fa-user-times" aria-hidden="true"></i>
                                         </a>
                                     {% else %}
+                                        not following
                                         <a href="{{ url_for("bp_users.follow", user=account['url']) }}">
                                             <i class="fa fa-user-plus" aria-hidden="true"></i>
                                         </a>
@@ -46,17 +47,18 @@
                         <div class="card text-center">
                             <div class="card-header">{{ account['username'] or account['name'] }}</div>
                             <div class="card-body">
-                                <h6 class="card-title"><a href="{{ account['url'] }}">{{ f.target.name }}</a></h6>
+                                <h6 class="card-title"><a href="{{ account['url'] }}">{{ account['name'] }}</a></h6>
                                 <p class="card-text">{{ account['summary'] or "" }}</p>
                             </div>
                             {% if current_user.is_authenticated %}
                                 <div class="card-footer">
-                                    Following:
                                     {% if account['follow'] %}
+                                        following
                                         <a href="{{ url_for("bp_users.unfollow", user=account['url']) }}">
                                             <i class="fa fa-user-times" aria-hidden="true"></i>
                                         </a>
                                     {% else %}
+                                        not following
                                         <a href="{{ url_for("bp_users.follow", user=account['url']) }}">
                                             <i class="fa fa-user-plus" aria-hidden="true"></i>
                                         </a>
