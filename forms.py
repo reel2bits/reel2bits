@@ -48,7 +48,6 @@ class ExtendedRegisterForm(RegisterForm):
 
 
 class UserProfileForm(Form):
-    name = StringField(gettext("Name"), [Length(max=255)])
     display_name = StringField(gettext("Display name"), [Length(max=30)])
     timezone = SelectField(coerce=str, label=gettext("Timezone"), default="UTC")
     locale = SelectField(gettext("Locale"), default="en", choices=[["en", "English"], ["fr", "French"]])
