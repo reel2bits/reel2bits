@@ -111,7 +111,7 @@
 
 <main role="main" class="container">
     <div class="row justify-content-center">
-        <div class="col-6">{{ bf.flashed_messages(container=False) }}</div>
+        <div class="col-6">{{ bf.flashed_messages(container=False, dismissible=True) }}</div>
     </div>
 
     {% block content %}{% endblock %}
