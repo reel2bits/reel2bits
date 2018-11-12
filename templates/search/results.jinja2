@@ -31,9 +31,13 @@
                                 <div class="card-footer">
                                     Following:
                                     {% if account['follow'] %}
-                                        <i class="fa fa-user-times" aria-hidden="true"></i>
+                                        <a href="{{ url_for("bp_users.unfollow", user=account['url']) }}">
+                                            <i class="fa fa-user-times" aria-hidden="true"></i>
+                                        </a>
                                     {% else %}
-                                        <i class="fa fa-user-plus" aria-hidden="true"></i>
+                                        <a href="{{ url_for("bp_users.follow", user=account['url']) }}">
+                                            <i class="fa fa-user-plus" aria-hidden="true"></i>
+                                        </a>
                                     {% endif %}
                                 </div>
                             {% endif %}
@@ -49,9 +53,13 @@
                                 <div class="card-footer">
                                     Following:
                                     {% if account['follow'] %}
-                                        <i class="fa fa-user-times" aria-hidden="true"></i>
+                                        <a href="{{ url_for("bp_users.unfollow", user=account['url']) }}">
+                                            <i class="fa fa-user-times" aria-hidden="true"></i>
+                                        </a>
                                     {% else %}
-                                        <i class="fa fa-user-plus" aria-hidden="true"></i>
+                                        <a href="{{ url_for("bp_users.follow", user=account['url']) }}">
+                                            <i class="fa fa-user-plus" aria-hidden="true"></i>
+                                        </a>
                                     {% endif %}
                                 </div>
                             {% endif %}
