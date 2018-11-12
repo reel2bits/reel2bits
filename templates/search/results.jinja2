@@ -9,14 +9,19 @@
 
     <div class="row">
         <div class="col-lg-10">
+            {% for sound in results['sounds'] %}
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-10">
+        {% for account in results['accounts'] %}
             <div class="row_user">
-                {{ gettext("Remote user:") }} <a href="{{ user['url'] }}">{{ user['name'] }}@{{ user['instance'] }}</a> -
-                {% if user.follow %}
-                    <a href="{{ url_for("bp_users.unfollow", user=user['url']) }}">{{ gettext('unfollow') }}</a>
-                {% else %}
-                    <a href="{{ url_for("bp_users.follow", user=user['url']) }}">{{ gettext('follow') }}</a>
-                {% endif %}
+                username: {{ account['username'] }}, name: {{ account['name'] }}, instance: {{ account['instance'] }}<br/>
+                url: {{ account['url'] }}, remote: {{ account['remote'] }}, follow: {{ account['follow'] }}
             </div>
+        {% endfor %}
         </div>
     </div>
 
