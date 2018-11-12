@@ -10,13 +10,21 @@
     <div class="row">
         <div class="col-lg-10">
             {% for f in followers %}
-            <div class="row_user">
-                {% if f.domain %}
-                remote: {{ f.id }}, <a href="{{ f.url }}">{{ f.name }}</a>@{{ f.domain }}
+                {% if not f.actor.is_local() %}
+                    <div class="card" style="width: 18rem;">
+                      <div class="card-body">
+                        <h6 class="card-title"><a href="{{ f.actor.url }}">{{ f.actor.name }}@{{ f.actor.domain }}</a></h6>
+                        <p class="card-text">{{ f.actor.summary or "" }}</p>
+                      </div>
+                    </div>
                 {% else %}
-                local: {{ f.id }}, {{ f.name }}
+                    <div class="card" style="width: 18rem;">
+                      <div class="card-body">
+                        <h6 class="card-title"><a href="{{ f.target.url }}">{{ f.target.name }}</a></h6>
+                        <p class="card-text">{{ f.target.summary or "" }}</p>
+                      </div>
+                    </div>
                 {% endif %}
-            </div>
             {% endfor %}
         </div>
     </div>
