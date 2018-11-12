@@ -12,7 +12,7 @@ import re
 
 bp_search = Blueprint("bp_search", __name__)
 
-RE_ACCOUNT = re.compile("^(?P<user>[\w]+)@(?P<instance>[\w.]+)$")
+RE_ACCOUNT = re.compile(r"^(?P<user>[\w]+)@(?P<instance>[\w.]+)$")
 
 
 @bp_search.route("/search", methods=["GET"])
