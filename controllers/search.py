@@ -74,7 +74,10 @@ def search():
     if len(users) > 0:
         for user in users:
             if current_user.is_authenticated:
-                follows = user[1].actor_id == current_user.actor[0].id
+                if user[1]:
+                    follows = user[1].actor_id == current_user.actor[0].id
+                else:
+                    follows = False
             else:
                 follows = None
 
@@ -82,6 +85,7 @@ def search():
                 {
                     "username": user[0].name,
                     "name": user[0].preferred_username,
+                    "summary": user[0].summary,
                     "instance": user[0].domain,
                     "url": user[0].url,
                     "remote": not user[0].is_local(),

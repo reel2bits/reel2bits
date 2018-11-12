@@ -16,12 +16,49 @@
 
     <div class="row">
         <div class="col-lg-10">
-        {% for account in results['accounts'] %}
-            <div class="row_user">
-                username: {{ account['username'] }}, name: {{ account['name'] }}, instance: {{ account['instance'] }}<br/>
-                url: {{ account['url'] }}, remote: {{ account['remote'] }}, follow: {{ account['follow'] }}
+            <div class="card-columns">
+                {% for account in results['accounts'] %}
+                    {% if account['remote'] %}
+                        <div class="card text-center">
+                            <div class="card-header">{{ account['username'] or account['name'] }}</div>
+                            <div class="card-body">
+                                <h6 class="card-title"><a
+                                        href="{{ account['url'] }}">{{ account['name'] }}@{{ account['instance'] }}</a>
+                                </h6>
+                                <p class="card-text">{{ account['summary'] or "" }}</p>
+                            </div>
+                            {% if current_user.is_authenticated %}
+                                <div class="card-footer">
+                                    Following:
+                                    {% if account['follow'] %}
+                                        <i class="fa fa-user-times" aria-hidden="true"></i>
+                                    {% else %}
+                                        <i class="fa fa-user-plus" aria-hidden="true"></i>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        <div class="card text-center">
+                            <div class="card-header">{{ account['username'] or account['name'] }}</div>
+                            <div class="card-body">
+                                <h6 class="card-title"><a href="{{ account['url'] }}">{{ f.target.name }}</a></h6>
+                                <p class="card-text">{{ account['summary'] or "" }}</p>
+                            </div>
+                            {% if current_user.is_authenticated %}
+                                <div class="card-footer">
+                                    Following:
+                                    {% if account['follow'] %}
+                                        <i class="fa fa-user-times" aria-hidden="true"></i>
+                                    {% else %}
+                                        <i class="fa fa-user-plus" aria-hidden="true"></i>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
             </div>
-        {% endfor %}
         </div>
     </div>
 
