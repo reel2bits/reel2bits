@@ -9,23 +9,25 @@
 
     <div class="row">
         <div class="col-lg-10">
-            {% for f in followings %}
-                {% if not f.target.is_local() %}
-                    <div class="card" style="width: 18rem;">
-                      <div class="card-body">
-                        <h6 class="card-title"><a href="{{ f.target.url }}">{{ f.target.name }}@{{ f.target.domain }}</a></h6>
-                        <p class="card-text">{{ f.target.summary or "" }}</p>
-                      </div>
-                    </div>
-                {% else %}
-                    <div class="card" style="width: 18rem;">
-                      <div class="card-body">
-                        <h6 class="card-title"><a href="{{ f.target.url }}">{{ f.target.name }}</a></h6>
-                        <p class="card-text">{{ f.target.summary or "" }}</p>
-                      </div>
-                    </div>
-                {% endif %}
-            {% endfor %}
+            <div class="card-columns">
+                {% for f in followings %}
+                    {% if not f.target.is_local() %}
+                        <div class="card" style="width: 18rem;">
+                          <div class="card-body">
+                            <h6 class="card-title"><a href="{{ f.target.url }}">{{ f.target.name }}@{{ f.target.domain }}</a></h6>
+                            <p class="card-text">{{ f.target.summary or "" }}</p>
+                          </div>
+                        </div>
+                    {% else %}
+                        <div class="card" style="width: 18rem;">
+                          <div class="card-body">
+                            <h6 class="card-title"><a href="{{ f.target.url }}">{{ f.target.name }}</a></h6>
+                            <p class="card-text">{{ f.target.summary or "" }}</p>
+                          </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
         </div>
     </div>
 
