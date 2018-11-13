@@ -7,6 +7,7 @@ from little_boxes.urlutils import InvalidURLError
 from little_boxes import activitypub as ap
 from urllib.parse import urlparse
 from flask_security import current_user
+from sqlalchemy import or_
 
 import re
 
@@ -39,6 +40,7 @@ def search():
                 db.session.query(Actor, Follower)
                 .outerjoin(Follower, Actor.id == Follower.target_id)
                 .filter(Actor.url == s)
+                .filter(Follower.actor_id == current_user.actor[0].id)  # Remove the duplicates follows
                 .all()
             )
         else:
@@ -52,6 +54,7 @@ def search():
                 db.session.query(Actor, Follower)
                 .outerjoin(Follower, Actor.id == Follower.target_id)
                 .filter(Actor.preferred_username == user, Actor.domain == instance)
+                .filter(Follower.actor_id == current_user.actor[0].id)  # Remove the duplicates follows
                 .all()
             )
         else:
@@ -59,16 +62,18 @@ def search():
     else:
         results["mode"] = "username"
         # Match actor username in database
-        # TODO: OR(name.contains) instead of just preffered_username
         if current_user.is_authenticated:
             users = (
                 db.session.query(Actor, Follower)
-                .outerjoin(Follower, Actor.id == Follower.target_id)
-                .filter(Actor.preferred_username.contains(s))
+                .join(Follower, Actor.id == Follower.target_id)
+                .filter(or_(Actor.preferred_username.contains(s), Actor.name.contains(s)))
+                .filter(Follower.actor_id == current_user.actor[0].id)  # Remove the duplicates follows
                 .all()
             )
         else:
-            users = db.session.query(Actor).filter(Actor.preferred_username.contains(s)).all()
+            users = (
+                db.session.query(Actor).filter(or_(Actor.preferred_username.contains(s), Actor.name.contains(s))).all()
+            )
 
     # Handle the results
     if len(users) > 0:
@@ -81,17 +86,31 @@ def search():
             else:
                 follows = None
 
-            accounts.append(
-                {
-                    "username": user[0].name,
-                    "name": user[0].preferred_username,
-                    "summary": user[0].summary,
-                    "instance": user[0].domain,
-                    "url": user[0].url,
-                    "remote": not user[0].is_local(),
-                    "follow": follows,
-                }
-            )
+            if type(user) is Actor:
+                # Unauthenticated results
+                accounts.append(
+                    {
+                        "username": user.name,
+                        "name": user.preferred_username,
+                        "summary": user.summary,
+                        "instance": user.domain,
+                        "url": user.url,
+                        "remote": not user.is_local(),
+                        "follow": follows,
+                    }
+                )
+            else:
+                accounts.append(
+                    {
+                        "username": user[0].name,
+                        "name": user[0].preferred_username,
+                        "summary": user[0].summary,
+                        "instance": user[0].domain,
+                        "url": user[0].url,
+                        "remote": not user[0].is_local(),
+                        "follow": follows,
+                    }
+                )
 
     if len(accounts) <= 0:
         # Do a webfinger
@@ -103,7 +122,7 @@ def search():
             iri = backend.fetch_iri(remote_actor_url)
             if iri:
                 current_app.logger.debug(f"got remote actor URL {remote_actor_url}")
-                # fixme wrong lol
+                # Fixme handle unauthenticated users plus duplicates follows
                 follow_rel = (
                     db.session.query(Actor.id, Follower.id)
                     .outerjoin(Follower, Actor.id == Follower.target_id)
