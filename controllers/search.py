@@ -1,75 +1,158 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app
+from flask import Blueprint, render_template, request, current_app
 from flask_babelex import gettext
 
-from models import db, User, Follower, Actor
+from models import db, Follower, Actor
 from little_boxes.webfinger import get_actor_url
 from little_boxes.urlutils import InvalidURLError
 from little_boxes import activitypub as ap
 from urllib.parse import urlparse
 from flask_security import current_user
+from sqlalchemy import or_, and_, not_
 
-bp_search = Blueprint("bp_search", __name__, url_prefix="/search")
+import re
+
+bp_search = Blueprint("bp_search", __name__)
+
+RE_ACCOUNT = re.compile(r"^(?P<user>[\w]+)@(?P<instance>[\w.]+)$")
 
 
-@bp_search.route("/users", methods=["GET"])
-def users():
-    who = request.args.get("who")
+@bp_search.route("/search", methods=["GET"])
+def search():
+    s = request.args.get("what")
     pcfg = {"title": gettext("Search user")}
 
-    # No follow status for unauthenticated user search
-    if not current_user.is_authenticated:
-        local_users = User.query.filter(User.name.contains(who)).all()
+    results = {"accounts": [], "sounds": [], "mode": None, "from": None}
 
-        if len(local_users) > 0:
-            return render_template("search/local_users_unauth.jinja2", pcfg=pcfg, who=who, users=local_users)
+    if current_user.is_authenticated:
+        results["from"] = current_user.name
+
+    # Search for sounds
+    # TODO: Implement FTS to get sounds search
+
+    # Search for accounts
+    accounts = []
+    is_user_at_account = RE_ACCOUNT.match(s)
+
+    if s.startswith("https://"):
+        results["mode"] = "uri"
+        if current_user.is_authenticated:
+            users = (
+                db.session.query(Actor, Follower)
+                .outerjoin(
+                    Follower, and_(Actor.id == Follower.target_id, Follower.actor_id == current_user.actor[0].id)
+                )
+                .filter(Actor.url == s)
+                .filter(not_(Actor.id == current_user.actor[0].id))
+                .all()
+            )
+        else:
+            users = db.session.query(Actor).filter(Actor.url == s).all()
+    elif is_user_at_account:
+        results["mode"] = "acct"
+        user = is_user_at_account.group("user")
+        instance = is_user_at_account.group("instance")
+        if current_user.is_authenticated:
+            users = (
+                db.session.query(Actor, Follower)
+                .outerjoin(
+                    Follower, and_(Actor.id == Follower.target_id, Follower.actor_id == current_user.actor[0].id)
+                )
+                .filter(Actor.preferred_username == user, Actor.domain == instance)
+                .filter(not_(Actor.id == current_user.actor[0].id))
+                .all()
+            )
+        else:
+            users = db.session.query(Actor).filter(Actor.preferred_username == user, Actor.domain == instance).all()
     else:
-        # (user, actor, follower) tuple
-        local_users = (
-            db.session.query(User, Actor, Follower)
-            .join(Actor, User.id == Actor.user_id)
-            .outerjoin(Follower, Actor.id == Follower.target_id)
-            .filter(User.name.contains(who))
-            .all()
-        )
+        results["mode"] = "username"
+        # Match actor username in database
+        if current_user.is_authenticated:
+            users = (
+                db.session.query(Actor, Follower)
+                .outerjoin(
+                    Follower, and_(Actor.id == Follower.target_id, Follower.actor_id == current_user.actor[0].id)
+                )
+                .filter(or_(Actor.preferred_username.contains(s), Actor.name.contains(s)))
+                .filter(not_(Actor.id == current_user.actor[0].id))
+                .all()
+            )
+        else:
+            users = (
+                db.session.query(Actor).filter(or_(Actor.preferred_username.contains(s), Actor.name.contains(s))).all()
+            )
 
-        if len(local_users) > 0:
-            return render_template("search/local_users_auth.jinja2", pcfg=pcfg, who=who, users=local_users)
+    # Handle the results
+    if len(users) > 0:
+        for user in users:
+            if current_user.is_authenticated:
+                if user[1]:
+                    follows = user[1].actor_id == current_user.actor[0].id
+                else:
+                    follows = False
+            else:
+                follows = None
 
-        if not local_users:
-            current_app.logger.debug(f"searching for {who}")
-            try:
-                remote_actor_url = get_actor_url(who, debug=current_app.debug)
-            except (InvalidURLError, ValueError):
-                current_app.logger.exception(f"Invalid webfinger URL: {who}")
-                remote_actor_url = None
+            if type(user) is Actor:
+                # Unauthenticated results
+                accounts.append(
+                    {
+                        "username": user.name,
+                        "name": user.preferred_username,
+                        "summary": user.summary,
+                        "instance": user.domain,
+                        "url": user.url,
+                        "remote": not user.is_local(),
+                        "follow": follows,
+                    }
+                )
+            else:
+                accounts.append(
+                    {
+                        "username": user[0].name,
+                        "name": user[0].preferred_username,
+                        "summary": user[0].summary,
+                        "instance": user[0].domain,
+                        "url": user[0].url,
+                        "remote": not user[0].is_local(),
+                        "follow": follows,
+                    }
+                )
 
-            if not remote_actor_url:
-                flash(gettext("User not found"), "error")
-                return redirect(url_for("bp_main.home"))
-
+    if len(accounts) <= 0:
+        # Do a webfinger
+        current_app.logger.debug(f"webfinger for {s}")
+        try:
+            remote_actor_url = get_actor_url(s, debug=current_app.debug)
             # We need to get the remote Actor
             backend = ap.get_backend()
             iri = backend.fetch_iri(remote_actor_url)
-            if not iri:
-                flash(gettext("User not found"), "error")
-                return redirect(url_for("bp_main.home"))
+            if iri:
+                current_app.logger.debug(f"got remote actor URL {remote_actor_url}")
+                # Fixme handle unauthenticated users plus duplicates follows
+                follow_rel = (
+                    db.session.query(Actor.id, Follower.id)
+                    .outerjoin(Follower, Actor.id == Follower.target_id)
+                    .filter(Actor.url == remote_actor_url)
+                    .first()
+                )
+                follow_status = follow_rel[1] is not None
 
-            current_app.logger.debug(f"got remote actor URL {remote_actor_url}")
+                domain = urlparse(iri["url"])
+                user = {
+                    "username": iri["name"],
+                    "name": iri["preferredUsername"],
+                    "instance": domain.netloc,
+                    "url": iri["url"],
+                    "remote": True,
+                    "follow": follow_status,
+                }
+                accounts.append(user)
+                results["mode"] = "webfinger"
+                # Use iri to populate results["accounts"]
+        except (InvalidURLError, ValueError):
+            current_app.logger.exception(f"Invalid webfinger URL: {s}")
 
-            follow_rel = (
-                db.session.query(Actor.id, Follower.id)
-                .outerjoin(Follower, Actor.id == Follower.target_id)
-                .filter(Actor.url == remote_actor_url)
-                .first()
-            )
-            follow_status = follow_rel[1] is not None
+    # Finally fill the results dict
+    results["accounts"] = accounts
 
-            domain = urlparse(iri["url"])
-            user = {
-                "name": iri["preferredUsername"],
-                "instance": domain.netloc,
-                "url": iri["url"],
-                "follow": follow_status,
-            }
-
-            return render_template("search/remote_user.jinja2", pcfg=pcfg, who=who, user=user)
+    return render_template("search/results.jinja2", pcfg=pcfg, who=s, results=results)

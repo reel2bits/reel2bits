@@ -1,5 +1,5 @@
 from flask import Blueprint, current_app, request, jsonify, Response
-from models import db, User
+from models import db, User, Actor
 
 bp_wellknown = Blueprint("bp_wellknown", __name__, url_prefix="/.well-known")
 
@@ -10,24 +10,29 @@ def webfinger():
     if not resource:
         return Response("", status=400, content_type="application/jrd+json; charset=utf-8")
 
-    id_list = resource.split(":")
-    if len(id_list) < 2:
-        return Response("", status=400, content_type="application/jrd+json; charset=utf-8")
+    if resource.startswith("https://"):
+        actor = db.session.query(Actor).filter_by(url=resource).first()
+        user = actor.user
+        domain = actor.domain
+    else:
+        id_list = resource.split(":")
+        if len(id_list) < 2:
+            return Response("", status=400, content_type="application/jrd+json; charset=utf-8")
 
-    try:
-        user_id, domain = id_list[1].split("@")
-    except ValueError:
-        return Response("", status=400, content_type="application/jrd+json; charset=utf-8")
+        try:
+            user_id, domain = id_list[1].split("@")
+        except ValueError:
+            return Response("", status=400, content_type="application/jrd+json; charset=utf-8")
 
-    if len(id_list) == 3:
-        domain += f":{id_list[2]}"
+        if len(id_list) == 3:
+            domain += f":{id_list[2]}"
 
-    if not (domain == current_app.config["AP_DOMAIN"]):
-        return Response("", status=404, content_type="application/jrd+json; charset=utf-8")
+        if not (domain == current_app.config["AP_DOMAIN"]):
+            return Response("", status=404, content_type="application/jrd+json; charset=utf-8")
 
-    user = db.session.query(User).filter_by(name_insensitive=user_id).first()
-    if not user:
-        return Response("", status=404, content_type="application/jrd+json; charset=utf-8")
+        user = db.session.query(User).filter_by(name_insensitive=user_id).first()
+        if not user:
+            return Response("", status=404, content_type="application/jrd+json; charset=utf-8")
 
     method = "https"
 

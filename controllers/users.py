@@ -1,4 +1,5 @@
 import pytz
+import requests
 from flask import Blueprint, render_template, request, redirect, url_for, flash, Response, json, jsonify, current_app
 from flask_babelex import gettext
 from flask_security import login_required, current_user
@@ -142,7 +143,11 @@ def follow():
 
     actor_me = current_user.actor[0]
 
-    local_user = User.query.filter(User.name == user).first()
+    if user.startswith("https://"):
+        actor = Actor.query.filter(Actor.url == user).first()
+        local_user = actor.user
+    else:
+        local_user = User.query.filter(User.name == user).first()
 
     if local_user:
         # Process local follow
@@ -157,6 +162,9 @@ def follow():
         except InvalidURLError:
             current_app.logger.exception(f"Invalid webfinger URL: {user}")
             remote_actor_url = None
+        # except requests.exceptions.HTTPError:
+        #    current_app.logger.exception(f"Invali webfinger URL: {user}")
+        #    remote_actor_url = None
 
         if not remote_actor_url:
             flash(gettext("User not found"), "error")
@@ -197,7 +205,11 @@ def unfollow():
 
     actor_me = current_user.actor[0]
 
-    local_user = User.query.filter(User.name == user).first()
+    if user.startswith("https://"):
+        actor = Actor.query.filter(Actor.url == user).first()
+        local_user = actor.user
+    else:
+        local_user = User.query.filter(User.name == user).first()
 
     if local_user:
         # Process local unfollow
@@ -211,6 +223,9 @@ def unfollow():
             remote_actor_url = get_actor_url(user, debug=current_app.debug)
         except InvalidURLError:
             current_app.logger.exception(f"Invalid webfinger URL: {user}")
+            remote_actor_url = None
+        except requests.exceptions.HTTPError:
+            current_app.logger.exception(f"Invali webfinger URL: {user}")
             remote_actor_url = None
 
         if not remote_actor_url:

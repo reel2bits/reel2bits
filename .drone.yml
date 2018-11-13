@@ -60,6 +60,8 @@ pipeline:
     secrets:
         - DOCKER_USERNAME
         - DOCKER_PASSWORD
+    when:
+      branch: master
 
   publish-worker:
     image: plugins/docker
@@ -69,6 +71,8 @@ pipeline:
     secrets:
         - DOCKER_USERNAME
         - DOCKER_PASSWORD
+    when:
+      branch: master
 
   notify:
     image: plugins/slack

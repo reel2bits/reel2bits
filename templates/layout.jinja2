@@ -62,10 +62,10 @@
 
         <ul class="navbar-nav ml-auto">
             {% if request.endpoint %}
-                <form action="{{ url_for('bp_search.users') }}" class="navbar-form navbar-left" role="search"
+                <form action="{{ url_for('bp_search.search') }}" class="navbar-form navbar-left" role="search"
                       method="get">
                     <div class="input-group">
-                        <input name="who" type="text" class="search-input form-control" placeholder="Search user">
+                        <input name="what" type="text" class="search-input form-control" placeholder="Search...">
                     </div>
                 </form>
 
