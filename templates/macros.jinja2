@@ -7,7 +7,7 @@
             {% else %}
                 <h6 class="card-title"><a href="{{ url }}">{{ name }}</a></h6>
             {% endif %}
-            <p class="card-text">{{ summary or "" }}</p>
+            <p class="card-text">{{ summary|safe or "" }}</p>
         </div>
         {% if current_user.is_authenticated %}
             {% if follow != None %}

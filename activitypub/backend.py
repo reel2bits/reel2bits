@@ -1,7 +1,7 @@
 from little_boxes import activitypub as ap
 from flask import current_app
 import requests
-from models import db, Activity, create_remote_actor, Actor
+from models import db, Activity, create_remote_actor, Actor, update_remote_actor
 from urllib.parse import urlparse
 from .vars import Box
 from version import VERSION
@@ -209,3 +209,17 @@ class Reel2BitsBackend(ap.Backend):
     def fetch_iri(self, iri: str) -> ap.ObjectType:
         current_app.logger.debug(f"asked to fetch {iri}")
         return self._fetch_iri(iri)
+
+    def inbox_update(self, as_actor: ap.Person, update: ap.Update) -> None:
+        obj = update.get_object()
+        current_app.logger.debug(f"inbox_update {obj.ACTIVITY_TYPE} {obj!r} as {as_actor!r}")
+
+        db_actor = Actor.query.filter(Actor.url == as_actor.id).first()
+        if not db_actor:
+            current_app.logger.error(f"cannot find actor {as_actor!r}")
+            return
+
+        if obj.ACTIVITY_TYPE == ap.ActivityType.PERSON:
+            update_remote_actor(db_actor.id, obj)
+        else:
+            raise NotImplementedError

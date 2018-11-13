@@ -542,6 +542,7 @@ def create_remote_actor(activity_actor: ap.BaseActivity):
     domain = urlparse(activity_actor.url)
     actor.domain = domain.netloc
     actor.type = "Person"
+    # FIXME: test for .name, it won't exist if not set (at least for mastodon)
     actor.name = activity_actor.preferredUsername  # mastodon don't have .name
     actor.manually_approves_followers = False
     actor.url = activity_actor.id  # FIXME: or .id ??? [cf backend.py:52-53]
@@ -549,5 +550,30 @@ def create_remote_actor(activity_actor: ap.BaseActivity):
     actor.inbox_url = activity_actor.inbox
     actor.outbox_url = activity_actor.outbot
     actor.public_key = activity_actor.get_key().pubkey_pem
+    actor.summary = activity_actor.summary
 
     return actor
+
+
+def update_remote_actor(actor_id: int, activity_actor: ap.BaseActivity) -> None:
+    """
+    :param actor_id: an Actor db ID
+    :param activity_actor: a Little Boxes Actor object
+    :return: nothing
+    """
+    actor = Actor.query.filter(Actor.id == actor_id).first()
+    current_app.logger.debug(f"asked to update Actor {actor_id}: {activity_actor!r}")
+
+    actor.preferred_username = activity_actor.preferredUsername
+    domain = urlparse(activity_actor.url)
+    actor.domain = domain.netloc
+    actor.name = activity_actor.name
+    actor.manually_approves_followers = False
+    actor.url = activity_actor.id  # FIXME: or .id ??? [cf backend.py:52-53]
+    actor.shared_inbox_url = activity_actor._data.get("endpoints", {}).get("sharedInbox")
+    actor.inbox_url = activity_actor.inbox
+    actor.outbox_url = activity_actor.outbot
+    actor.public_key = activity_actor.get_key().pubkey_pem
+    actor.summary = activity_actor.summary
+
+    db.session.commit()
