@@ -5,7 +5,7 @@
         <div class="col-lg-10"><h3>{{ gettext("Searching for: <i>%(who)s</i>", who=who) }}</h3></div>
     </div>
 
-    <br/>
+    <h5>Songs</h5>
 
     <div class="row">
         <div class="col-lg-10">
@@ -13,6 +13,8 @@
             {% endfor %}
         </div>
     </div>
+
+    <h5 data-mode="{{ results['mode'] }}">Users</h5>
 
     <div class="row">
         <div class="col-lg-10">
@@ -32,12 +34,12 @@
                                     {% if account['follow'] %}
                                         following
                                         <a href="{{ url_for("bp_users.unfollow", user=account['url']) }}">
-                                            <i class="fa fa-user-times" aria-hidden="true"></i>
+                                            <i class="fa fa-user-times" aria-hidden="true" title="unfollow" ></i>
                                         </a>
                                     {% else %}
                                         not following
                                         <a href="{{ url_for("bp_users.follow", user=account['url']) }}">
-                                            <i class="fa fa-user-plus" aria-hidden="true"></i>
+                                            <i class="fa fa-user-plus" aria-hidden="true" title="follow" ></i>
                                         </a>
                                     {% endif %}
                                 </div>
@@ -55,12 +57,12 @@
                                     {% if account['follow'] %}
                                         following
                                         <a href="{{ url_for("bp_users.unfollow", user=account['url']) }}">
-                                            <i class="fa fa-user-times" aria-hidden="true"></i>
+                                            <i class="fa fa-user-times" aria-hidden="true" title="unfollow" ></i>
                                         </a>
                                     {% else %}
                                         not following
                                         <a href="{{ url_for("bp_users.follow", user=account['url']) }}">
-                                            <i class="fa fa-user-plus" aria-hidden="true"></i>
+                                            <i class="fa fa-user-plus" aria-hidden="true" title="follow" ></i>
                                         </a>
                                     {% endif %}
                                 </div>

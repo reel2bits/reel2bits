@@ -7,7 +7,7 @@ from little_boxes.urlutils import InvalidURLError
 from little_boxes import activitypub as ap
 from urllib.parse import urlparse
 from flask_security import current_user
-from sqlalchemy import or_
+from sqlalchemy import or_, and_, not_
 
 import re
 
@@ -38,9 +38,11 @@ def search():
         if current_user.is_authenticated:
             users = (
                 db.session.query(Actor, Follower)
-                .outerjoin(Follower, Actor.id == Follower.target_id)
+                .outerjoin(
+                    Follower, and_(Actor.id == Follower.target_id, Follower.actor_id == current_user.actor[0].id)
+                )
                 .filter(Actor.url == s)
-                .filter(Follower.actor_id == current_user.actor[0].id)  # Remove the duplicates follows
+                .filter(not_(Actor.id == current_user.actor[0].id))
                 .all()
             )
         else:
@@ -52,9 +54,11 @@ def search():
         if current_user.is_authenticated:
             users = (
                 db.session.query(Actor, Follower)
-                .outerjoin(Follower, Actor.id == Follower.target_id)
+                .outerjoin(
+                    Follower, and_(Actor.id == Follower.target_id, Follower.actor_id == current_user.actor[0].id)
+                )
                 .filter(Actor.preferred_username == user, Actor.domain == instance)
-                .filter(Follower.actor_id == current_user.actor[0].id)  # Remove the duplicates follows
+                .filter(not_(Actor.id == current_user.actor[0].id))
                 .all()
             )
         else:
@@ -65,9 +69,11 @@ def search():
         if current_user.is_authenticated:
             users = (
                 db.session.query(Actor, Follower)
-                .join(Follower, Actor.id == Follower.target_id)
+                .outerjoin(
+                    Follower, and_(Actor.id == Follower.target_id, Follower.actor_id == current_user.actor[0].id)
+                )
                 .filter(or_(Actor.preferred_username.contains(s), Actor.name.contains(s)))
-                .filter(Follower.actor_id == current_user.actor[0].id)  # Remove the duplicates follows
+                .filter(not_(Actor.id == current_user.actor[0].id))
                 .all()
             )
         else:
