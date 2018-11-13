@@ -1,4 +1,5 @@
 {% extends "layout.jinja2" %}
+{% from "macros.jinja2" import user_card %}
 
 {% block content %}
     <div class="row">
@@ -20,55 +21,7 @@
         <div class="col-lg-10">
             <div class="card-columns">
                 {% for account in results['accounts'] %}
-                    {% if account['remote'] %}
-                        <div class="card text-center">
-                            <div class="card-header">{{ account['username'] or account['name'] }}</div>
-                            <div class="card-body">
-                                <h6 class="card-title"><a
-                                        href="{{ account['url'] }}">{{ account['name'] }}@{{ account['instance'] }}</a>
-                                </h6>
-                                <p class="card-text">{{ account['summary'] or "" }}</p>
-                            </div>
-                            {% if current_user.is_authenticated %}
-                                <div class="card-footer">
-                                    {% if account['follow'] %}
-                                        following
-                                        <a href="{{ url_for("bp_users.unfollow", user=account['url']) }}">
-                                            <i class="fa fa-user-times" aria-hidden="true" title="unfollow" ></i>
-                                        </a>
-                                    {% else %}
-                                        not following
-                                        <a href="{{ url_for("bp_users.follow", user=account['url']) }}">
-                                            <i class="fa fa-user-plus" aria-hidden="true" title="follow" ></i>
-                                        </a>
-                                    {% endif %}
-                                </div>
-                            {% endif %}
-                        </div>
-                    {% else %}
-                        <div class="card text-center">
-                            <div class="card-header">{{ account['username'] or account['name'] }}</div>
-                            <div class="card-body">
-                                <h6 class="card-title"><a href="{{ account['url'] }}">{{ account['name'] }}</a></h6>
-                                <p class="card-text">{{ account['summary'] or "" }}</p>
-                            </div>
-                            {% if current_user.is_authenticated %}
-                                <div class="card-footer">
-                                    {% if account['follow'] %}
-                                        following
-                                        <a href="{{ url_for("bp_users.unfollow", user=account['url']) }}">
-                                            <i class="fa fa-user-times" aria-hidden="true" title="unfollow" ></i>
-                                        </a>
-                                    {% else %}
-                                        not following
-                                        <a href="{{ url_for("bp_users.follow", user=account['url']) }}">
-                                            <i class="fa fa-user-plus" aria-hidden="true" title="follow" ></i>
-                                        </a>
-                                    {% endif %}
-                                </div>
-                            {% endif %}
-                        </div>
-                    {% endif %}
+                    {{ user_card(account['username'], account['name'], account['url'], account['instance'], account['summary'], account['follow'], account['remote'], current_user) }}
                 {% endfor %}
             </div>
         </div>

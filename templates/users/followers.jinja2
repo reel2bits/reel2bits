@@ -1,8 +1,10 @@
 {% extends "layout.jinja2" %}
+{% from "macros.jinja2" import user_card %}
 
 {% block content %}
     <div class="row">
-        <div class="col-lg-10"><h3>{{ gettext("Followers of") }} <a href="{{ url_for("bp_users.profile", name=user.name) }}">{{ user.username() }}</a></h3></div>
+        <div class="col-lg-10"><h3>{{ gettext("Followers of") }} <a
+                href="{{ url_for("bp_users.profile", name=user.name) }}">{{ user.username() }}</a></h3></div>
     </div>
 
     <br/>
@@ -11,20 +13,10 @@
         <div class="col-lg-10">
             <div class="card-columns">
                 {% for f in followers %}
-                    {% if not f.actor.is_local() %}
-                        <div class="card" style="width: 18rem;">
-                          <div class="card-body">
-                            <h6 class="card-title"><a href="{{ f.actor.url }}">{{ f.actor.name }}@{{ f.actor.domain }}</a></h6>
-                            <p class="card-text">{{ f.actor.summary or "" }}</p>
-                          </div>
-                        </div>
+                    {% if current_user.is_authenticated and current_user == user %}
+                        {{ user_card(f.actor.username, f.actor.name, f.actor.url, f.actor.domain, f.actor.summary, f.target_id == user.actor[0].id, not f.actor.is_local(), current_user) }}
                     {% else %}
-                        <div class="card" style="width: 18rem;">
-                          <div class="card-body">
-                            <h6 class="card-title"><a href="{{ f.target.url }}">{{ f.target.name }}</a></h6>
-                            <p class="card-text">{{ f.target.summary or "" }}</p>
-                          </div>
-                        </div>
+                        {{ user_card(f.actor.username, f.actor.name, f.actor.url, f.actor.domain, f.actor.summary, None, not f.actor.is_local(), current_user) }}
                     {% endif %}
                 {% endfor %}
             </div>

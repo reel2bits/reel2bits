@@ -83,9 +83,9 @@ def followers(name):
         flash(gettext("User not found"), "error")
         return redirect(url_for("bp_main.home"))
 
-    return render_template(
-        "users/followers.jinja2", pcfg=pcfg, user=user, actor=user.actor[0], followers=user.actor[0].followers
-    )
+    followers = user.actor[0].followers
+
+    return render_template("users/followers.jinja2", pcfg=pcfg, user=user, actor=user.actor[0], followers=followers)
 
 
 @bp_ap.route("/user/<string:name>/followers", methods=["GET", "POST"])
