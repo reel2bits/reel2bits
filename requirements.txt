@@ -6,7 +6,7 @@ pydub==0.23.0
 mutagen==1.41.1
 python-magic==0.4.15
 flask==1.0.2
-python-slugify==1.2.6
+python-slugify==2.0.0
 wtforms==2.2.1
 sqlalchemy==1.2.15
 pydub==0.23.0
