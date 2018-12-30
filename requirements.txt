@@ -3,7 +3,7 @@ psycopg2-binary==2.7.6.1
 texttable==1.5.0
 Unidecode==1.0.23
 pydub==0.23.0
-mutagen==1.41.1
+mutagen==1.42.0
 python-magic==0.4.15
 flask==1.0.2
 python-slugify==1.2.6
