@@ -28,10 +28,6 @@ Also do not show player until processing is done, and waveform done
 X-Accel-Redirect have not been implemented again
     not sure it would be useful ?
 
-Limit upload size to 500M
-
-If waveform error, do not publicize the song and show banner error for uploader
-
 Check for sentry in:
  - waitress (web)
  - celery (workers)
