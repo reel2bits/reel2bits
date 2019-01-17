@@ -8,7 +8,7 @@ python-magic==0.4.15
 flask==1.0.2
 python-slugify==2.0.1
 wtforms==2.2.1
-sqlalchemy==1.2.15
+sqlalchemy==1.2.16
 pydub==0.23.0
 bcrypt==3.1.6
 celery==4.2.1
