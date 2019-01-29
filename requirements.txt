@@ -18,7 +18,7 @@ flask_uploads==0.2.1
 wtforms_alchemy==0.16.8
 sqlalchemy_searchable==1.0.3
 flask_debugtoolbar==0.10.1
-redis==3.0.1
+redis==3.1.0
 flask-accept==0.0.6
 Bootstrap-Flask==1.0.9
 git+https://github.com/mattupstate/flask-security#egg=Flask-Security
