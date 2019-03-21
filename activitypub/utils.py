@@ -79,9 +79,9 @@ def clean_activity(activity: ObjectType) -> Dict[str, Any]:
     """
     for field in ["bto", "bcc", "source"]:
         if field in activity:
-            del (activity[field])
+            del activity[field]
         if activity["type"] == "Create" and field in activity["object"]:
-            del (activity["object"][field])
+            del activity["object"][field]
     return activity
 
 
