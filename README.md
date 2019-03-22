@@ -83,5 +83,5 @@ TODO
  - MIT License
  
 # Others projects inspired from
-- https://github.com/tsileo/microblog.pub from Little-Boxes
-- https://funkwhale.audio
+ - https://github.com/tsileo/microblog.pub from Little-Boxes
+ - https://funkwhale.audio
