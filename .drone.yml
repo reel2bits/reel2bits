@@ -18,7 +18,7 @@ pipeline:
     commands:
       - apk -U add sox sox-dev taglib taglib-dev libmagic file-dev libffi libffi-dev
       - apk add cmake gcc g++ make pkgconfig git boost-dev gd-dev libmad-dev libsndfile-dev libid3tag-dev wget postgresql-dev
-      - pip install --upgrade pip setuptools
+      - pip install --upgrade --cache-dir=.cache/pip pip setuptools
       - pip install --cache-dir=.cache/pip flake8
       - pip install --cache-dir=.cache/pip black
       - pip install --cache-dir=.cache/pip -r requirements.txt
@@ -34,7 +34,7 @@ pipeline:
     commands:
       - apk -U add sox sox-dev taglib taglib-dev libmagic file-dev libffi libffi-dev postgresql-client
       - apk add cmake gcc g++ make pkgconfig git boost-dev gd-dev libmad-dev libsndfile-dev libid3tag-dev wget postgresql-dev
-      - pip install --upgrade pip setuptools
+      - pip install --upgrade --cache-dir=.cache/pip pip setuptools
       - pip install --cache-dir=.cache/pip flake8
       - pip install --cache-dir=.cache/pip black
       - pip install --cache-dir=.cache/pip -r requirements.txt

@@ -25,7 +25,7 @@ BINPATH=".cache/audiowaveform/${DRONE_ARCH}/audiowaveform"
 if [[ -d .cache ]]; then
     echo "-- build audiowaveform; cache available"
     # We have a cache dir, create struct
-    mkdir -p .cache/audiowaveform/${DRONE_ARCH}
+    mkdir -pv ".cache/audiowaveform/${DRONE_ARCH}"
 
     # Check if a binary exists
     if [[ -x ${BINPATH} ]]; then
