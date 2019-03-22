@@ -31,7 +31,7 @@ if [[ -d .cache ]]; then
     if [[ -x ${BINPATH} ]]; then
         echo "-- build audiowaveform; binary exist"
         # Can we run it ?
-        if ${BINPATH}|grep "AudioWaveform v"; then
+        if ${BINPATH} --help|grep "AudioWaveform v"; then
             echo "-- build audiowaveform; and can run; copying it"
             # can run
             cp -fv ${BINPATH} /usr/local/bin/audiowaveform
