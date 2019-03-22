@@ -1,4 +1,4 @@
-from tests.helpers import login, logout, register
+from helpers import login, logout, register
 
 
 def test_empty_db(client, session):

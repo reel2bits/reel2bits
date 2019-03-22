@@ -13,3 +13,4 @@
 /errors_app.log
 .coverage
 /.ropeproject
+/.mypy_cache

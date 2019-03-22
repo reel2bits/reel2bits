@@ -1,4 +1,4 @@
-from tests.helpers import logout, register, assert_valid_schema
+from helpers import logout, register, assert_valid_schema
 from flask import current_app
 
 
