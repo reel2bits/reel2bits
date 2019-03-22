@@ -38,12 +38,15 @@ if [[ -d .cache ]]; then
         else
             # can't run
             build
+            cp -f /usr/local/bin/audiowaveform ${BINPATH}
         fi
     else
         # Can't run it, build it
         build
+        cp -f /usr/local/bin/audiowaveform ${BINPATH}
     fi
 else
     # No cache, build it
     build
+    cp -f /usr/local/bin/audiowaveform ${BINPATH}
 fi
