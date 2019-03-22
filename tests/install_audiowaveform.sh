@@ -15,8 +15,8 @@ build() {
     cd build
     cmake ..
     make
-    mkdir -p /usr/local/bin
-    cp audiowaveform /usr/local/bin/audiowaveform
+    mkdir -pv /usr/local/bin
+    cp -fv audiowaveform /usr/local/bin/audiowaveform
 }
 
 BINPATH="${PWD}/.cache/audiowaveform/${DRONE_ARCH}/audiowaveform"
@@ -34,19 +34,19 @@ if [[ -d .cache ]]; then
         if ${BINPATH}|grep "AudioWaveform v"; then
             echo "-- build audiowaveform; and can run; copying it"
             # can run
-            cp -f ${BINPATH} /usr/local/bin/audiowaveform
+            cp -fv ${BINPATH} /usr/local/bin/audiowaveform
         else
             # can't run
             build
-            cp -f /usr/local/bin/audiowaveform ${BINPATH}
+            cp -fv /usr/local/bin/audiowaveform ${BINPATH}
         fi
     else
         # Can't run it, build it
         build
-        cp -f /usr/local/bin/audiowaveform ${BINPATH}
+        cp -fv /usr/local/bin/audiowaveform ${BINPATH}
     fi
 else
     # No cache, build it
     build
-    cp -f /usr/local/bin/audiowaveform ${BINPATH}
+    cp -fv /usr/local/bin/audiowaveform ${BINPATH}
 fi
