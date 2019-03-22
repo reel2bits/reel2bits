@@ -19,13 +19,13 @@ build() {
     cp audiowaveform /usr/local/bin/audiowaveform
 }
 
-BINPATH=".cache/audiowaveform/${DRONE_RUNNER_PLATFORM}/audiowaveform"
+BINPATH=".cache/audiowaveform/${DRONE_ARCH}/audiowaveform"
 
 # Cache logic : test if we have an executable already built, and working
 if [[ -d .cache ]]; then
     echo "-- build audiowaveform; cache available"
     # We have a cache dir, create struct
-    mkdir -p .cache/audiowaveform/${DRONE_RUNNER_PLATFORM}
+    mkdir -p .cache/audiowaveform/${DRONE_ARCH}
 
     # Check if a binary exists
     if [[ -x ${BINPATH} ]]; then
