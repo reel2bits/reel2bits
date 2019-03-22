@@ -19,9 +19,9 @@ pipeline:
       - apk -U add sox sox-dev taglib taglib-dev libmagic file-dev libffi libffi-dev
       - apk add cmake gcc g++ make pkgconfig git boost-dev gd-dev libmad-dev libsndfile-dev libid3tag-dev wget postgresql-dev
       - pip install --upgrade pip setuptools
-      - pip install --cache-dir=/cache flake8
-      - pip install --cache-dir=/cache black
-      - pip install --cache-dir=/cache -r requirements.txt
+      - pip install --cache-dir=.cache/pip flake8
+      - pip install --cache-dir=.cache/pip black
+      - pip install --cache-dir=.cache/pip -r requirements.txt
       - python setup.py install
       - ./tests/install_audiowaveform.sh
       - black --check .
@@ -35,9 +35,9 @@ pipeline:
       - apk -U add sox sox-dev taglib taglib-dev libmagic file-dev libffi libffi-dev postgresql-client
       - apk add cmake gcc g++ make pkgconfig git boost-dev gd-dev libmad-dev libsndfile-dev libid3tag-dev wget postgresql-dev
       - pip install --upgrade pip setuptools
-      - pip install --cache-dir=/cache flake8
-      - pip install --cache-dir=/cache black
-      - pip install --cache-dir=/cache -r requirements.txt
+      - pip install --cache-dir=.cache/pip flake8
+      - pip install --cache-dir=.cache/pip black
+      - pip install --cache-dir=.cache/pip -r requirements.txt
       - python setup.py install
       - psql -U postgres -h database -w -c 'CREATE DATABASE reel2bits'
       - psql -U postgres -h database -w -c 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";' reel2bits
