@@ -19,7 +19,7 @@ build() {
     cp audiowaveform /usr/local/bin/audiowaveform
 }
 
-BINPATH=".cache/audiowaveform/${DRONE_ARCH}/audiowaveform"
+BINPATH="${PWD}/.cache/audiowaveform/${DRONE_ARCH}/audiowaveform"
 
 # Cache logic : test if we have an executable already built, and working
 if [[ -d .cache ]]; then
