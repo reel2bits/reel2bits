@@ -66,7 +66,7 @@ def test_user_slugs(client, session):
     role = Role.query.filter(Role.name == "user").first()
     ids = []
     for count in range(50):
-        suffix = ''.join(random.choices(string.ascii_letters + string.digits, k=20))
+        suffix = "".join(random.choices(string.ascii_letters + string.digits, k=20))
         username = f"test_slug_{count}_{suffix}"
         u = user_datastore.create_user(
             name=username, email=f"test_slug_{count}@localhost", password=hash_password(f"slug_{count}"), roles=[role]
