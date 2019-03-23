@@ -2,7 +2,7 @@ from __future__ import print_function
 
 from models import Sound, User
 from flask_mail import Message
-from flask import render_template
+from flask import render_template, url_for
 from app import mail, create_app, make_celery
 from transcoding_utils import work_transcode, work_metadatas
 from little_boxes import activitypub as ap
@@ -54,6 +54,27 @@ def upload_workflow(self, sound_id):
     msg.body = render_template("email/song_processed.txt", sound=sound)
     msg.html = render_template("email/song_processed.html", sound=sound)
     mail.send(msg)
+
+    # Federate
+    actor = sound.user.actor[0]
+    cc = [actor.followers_url]
+    #to = [follower.actor.url for follower in actor.followers]
+    if not sound.private:
+        # Federate only if sound is public
+        href = url_for('get_uploads_stuff', thing='sounds', stuff=sound.path_sound())
+
+        raw_audio = dict(
+            attributedTo=actor.url,
+            cc=list(set(cc)),
+            to=[ap.AS_PUBLIC],
+            inReplyTo=None,
+            name=sound.title,
+            url={"type": "Link", "href": href, "mediaType": "audio/mp3"}
+        )
+
+        audio = ap.Audio(**raw_audio)
+        create = audio.build_create()
+        post_to_outbox(create)
 
     print("UPLOAD WORKFLOW finished")
 
