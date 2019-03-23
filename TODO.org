@@ -17,9 +17,7 @@
 ** Make a waveform display for tracks list (not track view or album view) better than the ugly one with grey background
 
 ~~~~~~~~~ ACTIVITYPUB ~~~~~~~~
--> profile UPDATE not handled yet (littleboxes don't handle UPDATE)
--> no webfinger in DEV env because no handling in littleboxes
---> Issues opened for both
+-> profile UPDATE not handled yet (littleboxes don't handle UPDATE) upstream
 
 ~~~~~~~~~ VARIOUS ~~~~~~~~~~~~
 Only show to public processed songs
@@ -35,7 +33,6 @@ Check for sentry in:
 Slugs : BEFORE, and UNIQUE; Some things weird on that side IIRC
 Emails notifications (register, password changed, track ready)
 Album selector in new upload -> Add first element empty "No album"
-Permit "hiding" download links ? (mostly useless because player needs one at some point...)
 
 Celery things to add in web interface:
   - log user
