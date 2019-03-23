@@ -489,6 +489,8 @@ class Actor(db.Model):
             "name": self.name,
             "inbox": self.inbox_url,
             "outbox": self.outbox_url,
+            "followers": self.followers_url,
+            "following": self.following_url,
             "manuallyApprovesFollowers": self.manually_approves_followers,
             "publicKey": {"id": self.private_key_id(), "owner": self.url, "publicKeyPem": self.public_key},
             "endpoints": {"sharedInbox": self.shared_inbox_url},
