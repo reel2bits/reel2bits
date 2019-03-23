@@ -1,12 +1,17 @@
 import os
 import sys
 import pytest
+import random
+import string
+from flask_security.utils import hash_password
 
 mypath = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, mypath + "/../")
 from app import create_app  # noqa: E402
 from models import db as _db  # noqa: E402
+from models import Role, User  # noqa: E402
 from dbseed import make_db_seed  # noqa: E402
+from models import user_datastore  # noqa: E402
 
 
 @pytest.yield_fixture(scope="session")
@@ -54,3 +59,22 @@ def session(db):
     transaction.rollback()
     connection.close()
     session.remove()
+
+
+def test_user_slugs(client, session):
+    """Mass test user slugs"""
+    role = Role.query.filter(Role.name == "user").first()
+    ids = []
+    for count in range(50):
+        suffix = ''.join(random.choices(string.ascii_letters + string.digits, k=20))
+        username = f"test_slug_{count}_{suffix}"
+        u = user_datastore.create_user(
+            name=username, email=f"test_slug_{count}@localhost", password=hash_password(f"slug_{count}"), roles=[role]
+        )
+        session.commit()
+        assert u.id >= 0
+        ids.append(u.id)
+    # Check
+    for i in ids:
+        user = User.query.filter(User.id == i).first()
+        assert user.slug != ""
