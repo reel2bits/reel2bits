@@ -230,7 +230,7 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
             resp = Response("")
             resp.headers["Content-Disposition"] = f"attachment; filename={stuff}"
             resp.headers["X-Accel-Redirect"] = f"/_protected/media/{thing}/{stuff}"
-            resp.headers['Content-Type'] = ''  # empty it so Nginx will guess it correctly
+            resp.headers["Content-Type"] = ""  # empty it so Nginx will guess it correctly
             return resp
 
     @app.errorhandler(404)
