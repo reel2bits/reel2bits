@@ -25,6 +25,9 @@ Check for sentry in:
  - celery (workers)
 
 Slugs : BEFORE, and UNIQUE; Some things weird on that side IIRC
+ - my user slug disapeared or wtf idk
+ - add tests for that
+
 Emails notifications (register, password changed, track ready)
 
 Celery things to add in web interface:
