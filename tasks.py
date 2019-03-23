@@ -58,10 +58,10 @@ def upload_workflow(self, sound_id):
     # Federate
     actor = sound.user.actor[0]
     cc = [actor.followers_url]
-    #to = [follower.actor.url for follower in actor.followers]
+    # to = [follower.actor.url for follower in actor.followers]
     if not sound.private:
         # Federate only if sound is public
-        href = url_for('get_uploads_stuff', thing='sounds', stuff=sound.path_sound())
+        href = url_for("get_uploads_stuff", thing="sounds", stuff=sound.path_sound())
 
         raw_audio = dict(
             attributedTo=actor.url,
@@ -69,7 +69,7 @@ def upload_workflow(self, sound_id):
             to=[ap.AS_PUBLIC],
             inReplyTo=None,
             name=sound.title,
-            url={"type": "Link", "href": href, "mediaType": "audio/mp3"}
+            url={"type": "Link", "href": href, "mediaType": "audio/mp3"},
         )
 
         audio = ap.Audio(**raw_audio)

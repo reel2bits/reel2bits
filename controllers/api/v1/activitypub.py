@@ -70,7 +70,9 @@ def followings(name):
 
     followings_list = user.actor[0].followings
 
-    return render_template("users/followings.jinja2", pcfg=pcfg, user=user, actor=user.actor[0], followings=followings_list)
+    return render_template(
+        "users/followings.jinja2", pcfg=pcfg, user=user, actor=user.actor[0], followings=followings_list
+    )
 
 
 @bp_ap.route("/user/<string:name>/followings", methods=["GET", "POST"])
@@ -107,7 +109,9 @@ def followers(name):
 
     followers_list = user.actor[0].followers
 
-    return render_template("users/followers.jinja2", pcfg=pcfg, user=user, actor=user.actor[0], followers=followers_list)
+    return render_template(
+        "users/followers.jinja2", pcfg=pcfg, user=user, actor=user.actor[0], followers=followers_list
+    )
 
 
 @bp_ap.route("/user/<string:name>/followers", methods=["GET", "POST"])

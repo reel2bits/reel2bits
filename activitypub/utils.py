@@ -52,9 +52,7 @@ def add_extra_collection(item: Dict[str, Any]) -> Dict[str, Any]:
 
     item["object"]["likes"] = embed_collection(item.get("meta", {}).get("count_like", 0), f'{item["id"]}/likes')
 
-    item["object"]["shares"] = embed_collection(
-        item.get("meta", {}).get("count_boost", 0), f'{item["id"]}/shares'
-    )
+    item["object"]["shares"] = embed_collection(item.get("meta", {}).get("count_boost", 0), f'{item["id"]}/shares')
 
     return item
 
