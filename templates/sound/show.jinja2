@@ -48,6 +48,7 @@
     {% endif %}
 
 <div class="row">
+{% if sound.is_ready() %}
     <div class="col-lg-7 col-lg-offset-1">
         <div class="row"><div class="col-lg-12">
             <div id="waveform"></div>
@@ -77,6 +78,10 @@
             </p>
         </div></div>
     </div>
+{%  else %}
+    <div class="col-lg-7 col-lg-offset-1"></div>
+{% endif %}
+
     <div class="col-lg-3 offset-1">
         <table class="table table-sm table-hoverable">
                 <tr>
@@ -152,6 +157,7 @@
 
 {% block scripts %}
     <script>
+    {% if sound.is_ready() %}
     opts = {
         backend: 'MediaElement',
         container: '#waveform',
@@ -193,9 +199,11 @@
         var duration_time = wavesurfer.getDuration();
         $('#player-time-tot').html(secondsTimeSpanToMS(duration_time));
     });
+    {% endif %}
 
     $(function () {
         $('[data-toggle="popover"]').popover();
     });
     </script>
 {% endblock %}
+

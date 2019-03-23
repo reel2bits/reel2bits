@@ -20,8 +20,6 @@
 -> profile UPDATE not handled yet (littleboxes don't handle UPDATE) upstream
 
 ~~~~~~~~~ VARIOUS ~~~~~~~~~~~~
-Also do not show player until processing is done, and waveform done
-
 Check for sentry in:
  - waitress (web)
  - celery (workers)
