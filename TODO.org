@@ -20,11 +20,7 @@
 -> profile UPDATE not handled yet (littleboxes don't handle UPDATE) upstream
 
 ~~~~~~~~~ VARIOUS ~~~~~~~~~~~~
-Only show to public processed songs
 Also do not show player until processing is done, and waveform done
-
-X-Accel-Redirect have not been implemented again
-    not sure it would be useful ?
 
 Check for sentry in:
  - waitress (web)
@@ -32,7 +28,6 @@ Check for sentry in:
 
 Slugs : BEFORE, and UNIQUE; Some things weird on that side IIRC
 Emails notifications (register, password changed, track ready)
-Album selector in new upload -> Add first element empty "No album"
 
 Celery things to add in web interface:
   - log user

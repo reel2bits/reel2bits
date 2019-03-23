@@ -21,12 +21,12 @@ server {
             proxy_pass http://127.0.0.1:8000;
         }
 
-        location /uploads/sounds {
+        location /_protected/media/sounds {
                 # Same path as UPLOADS_DEFAULT_DEST in config.py but with /sounds
                 alias /home/reel2bits/uploads/sounds;
         }
 
-        location /uploads/waveforms {
+        location /_protected/media/waveforms {
                 # Same path as UPLOADS_DEFAULT_DEST in config.py but with /waveforms
                 alias /home/reel2bits/uploads/waveforms;
         }

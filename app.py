@@ -221,7 +221,7 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
 
     @app.route("/uploads/<string:thing>/<path:stuff>", methods=["GET"])
     def get_uploads_stuff(thing, stuff):
-        if app.debug:
+        if app.testing:
             directory = safe_join(app.config["UPLOADS_DEFAULT_DEST"], thing)
             app.logger.debug(f"serving {stuff} from {directory}")
             return send_from_directory(directory, stuff, as_attachment=True)
@@ -229,7 +229,7 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
             app.logger.debug(f"X-Accel-Redirect serving {stuff}")
             resp = Response("")
             resp.headers["Content-Disposition"] = f"attachment; filename={stuff}"
-            resp.headers["X-Accel-Redirect"] = f"/_protected/media/tracks/{thing}/{stuff}"
+            resp.headers["X-Accel-Redirect"] = f"/_protected/media/{thing}/{stuff}"
             return resp
 
     @app.errorhandler(404)
