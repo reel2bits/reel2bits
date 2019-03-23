@@ -68,9 +68,31 @@ def followings(name):
         flash(gettext("User not found"), "error")
         return redirect(url_for("bp_main.home"))
 
-    followings = user.actor[0].followings
+    followings_list = user.actor[0].followings
 
-    return render_template("users/followings.jinja2", pcfg=pcfg, user=user, actor=user.actor[0], followings=followings)
+    return render_template("users/followings.jinja2", pcfg=pcfg, user=user, actor=user.actor[0], followings=followings_list)
+
+
+@bp_ap.route("/user/<string:name>/followings", methods=["GET", "POST"])
+@followings.support("application/json", "application/activity+json")
+def user_followings(name):
+    be = activitypub.get_backend()
+    if not be:
+        abort(500)
+    # data = request.get_json(force=True)
+    # if not data:
+    #     abort(500)
+    current_app.logger.debug(f"req_headers={request.headers}")
+    # current_app.logger.debug(f"raw_data={data}")
+
+    user = User.query.filter(User.name == name).first()
+    if not user:
+        abort(404)
+
+    actor = user.actor[0]
+    followings_list = actor.followings
+
+    return jsonify(**build_ordered_collection(followings_list, actor.url, request.args.get("page")))
 
 
 @bp_ap.route("/user/<string:name>/followers", methods=["GET"])
@@ -83,9 +105,9 @@ def followers(name):
         flash(gettext("User not found"), "error")
         return redirect(url_for("bp_main.home"))
 
-    followers = user.actor[0].followers
+    followers_list = user.actor[0].followers
 
-    return render_template("users/followers.jinja2", pcfg=pcfg, user=user, actor=user.actor[0], followers=followers)
+    return render_template("users/followers.jinja2", pcfg=pcfg, user=user, actor=user.actor[0], followers=followers_list)
 
 
 @bp_ap.route("/user/<string:name>/followers", methods=["GET", "POST"])
@@ -105,9 +127,9 @@ def user_followers(name):
         abort(404)
 
     actor = user.actor[0]
-    followers = actor.followers
+    followers_list = actor.followers
 
-    return jsonify(**build_ordered_collection(followers, actor.url, request.args.get("page")))
+    return jsonify(**build_ordered_collection(followers_list, actor.url, request.args.get("page")))
 
 
 @bp_ap.route("/inbox", methods=["GET", "POST"])

@@ -105,7 +105,7 @@ def build_ordered_collection(items, actor_id, page, limit=50):
             "type": ap.ActivityType.ORDERED_COLLECTION.value,
             "first": {
                 "id": f"{actor_id}/followers?page=0",
-                "orderedItems": [item.url for item in items],
+                "orderedItems": [item.actor.url for item in items],
                 "partOf": f"{actor_id}/followers",
                 "totalItems": total_items,
                 "type": ap.ActivityType.ORDERED_COLLECTION_PAGE.value,
