@@ -278,6 +278,9 @@ def finish_post_to_outbox(self, iri: str) -> None:
 
 @celery.task(bind=True, max_retries=3)
 def post_to_remote_inbox(self, payload: str, to: str) -> None:
+    if not current_app.config["AP_ENABLED"]:
+        return  # not federating if not enabled
+
     current_app.logger.debug(f"post_to_remote_inbox {payload}")
 
     ap_actor = json.loads(payload)["actor"]
@@ -323,6 +326,9 @@ def post_to_remote_inbox(self, payload: str, to: str) -> None:
 
 @celery.task(bind=True, max_retries=3)
 def forward_activity(self, iri: str) -> None:
+    if not current_app.config["AP_ENABLED"]:
+        return  # not federating if not enabled
+
     try:
         activity = ap.fetch_remote_activity(iri)
         backend = ap.get_backend()
