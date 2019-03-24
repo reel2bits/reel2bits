@@ -55,26 +55,28 @@ def upload_workflow(self, sound_id):
     msg.html = render_template("email/song_processed.html", sound=sound)
     mail.send(msg)
 
-    # Federate
-    actor = sound.user.actor[0]
-    cc = [actor.followers_url]
-    # to = [follower.actor.url for follower in actor.followers]
+    # Federate if public
     if not sound.private:
-        # Federate only if sound is public
-        href = url_for("get_uploads_stuff", thing="sounds", stuff=sound.path_sound())
+        print("UPLOAD WORKFLOW federating sound")
+        actor = sound.user.actor[0]
+        cc = [actor.followers_url]
+        # to = [follower.actor.url for follower in actor.followers]
+        if not sound.private:
+            # Federate only if sound is public
+            href = url_for("get_uploads_stuff", thing="sounds", stuff=sound.path_sound())
 
-        raw_audio = dict(
-            attributedTo=actor.url,
-            cc=list(set(cc)),
-            to=[ap.AS_PUBLIC],
-            inReplyTo=None,
-            name=sound.title,
-            url={"type": "Link", "href": href, "mediaType": "audio/mp3"},
-        )
+            raw_audio = dict(
+                attributedTo=actor.url,
+                cc=list(set(cc)),
+                to=[ap.AS_PUBLIC],
+                inReplyTo=None,
+                name=sound.title,
+                url={"type": "Link", "href": href, "mediaType": "audio/mp3"},
+            )
 
-        audio = ap.Audio(**raw_audio)
-        create = audio.build_create()
-        post_to_outbox(create)
+            audio = ap.Audio(**raw_audio)
+            create = audio.build_create()
+            post_to_outbox(create)
 
     print("UPLOAD WORKFLOW finished")
 
