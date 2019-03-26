@@ -200,8 +200,28 @@ def outbox_item(item_id):
     if not item:
         abort(404)
 
-    # check if deleted, if yes, return 410 tombstone gone
+    # TODO check if deleted, if yes, return 410 tombstone gone
 
     current_app.logger.debug(f"item payload=={item.payload}")
 
     return jsonify(**activity_from_doc(item.payload))
+
+
+@bp_ap.route("/outbox/<string:item_id>/activity", methods=["GET", "POST"])
+def outbox_item_activity(item_id):
+    be = activitypub.get_backend()
+    if not be:
+        abort(500)
+
+    item = Activity.query.filter(Activity.box == Box.OUTBOX.value, Activity.url == be.activity_url(item_id)).first()
+    if not item:
+        abort(404)
+
+    obj = activity_from_doc(item.payload)
+
+    # TODO check if deleted, if yes, return 410 tombstone gone
+
+    if obj["type"] != activitypub.ActivityType.CREATE.value:
+        abort(404)
+
+    return jsonify(**obj["object"])
