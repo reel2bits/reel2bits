@@ -71,6 +71,8 @@ def upload_workflow(self, sound_id):
                 to=[ap.AS_PUBLIC],
                 inReplyTo=None,
                 name=sound.title,
+                content=sound.description,
+                mediaType="text/plain",
                 url={"type": "Link", "href": href, "mediaType": "audio/mp3"},
             )
 
