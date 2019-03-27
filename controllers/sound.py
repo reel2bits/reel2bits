@@ -186,6 +186,7 @@ def delete(username, soundslug):
         return redirect(url_for("bp_users.profile", name=username))
 
     # Federate Delete
+    # TODO: Test
     from tasks import post_to_outbox
     activity = sound.activity
     delete_activity = ap.Delete(actor=sound.user.actor[0], object=ap.Tombstone(id=activity.id).to_dict(embed=True))

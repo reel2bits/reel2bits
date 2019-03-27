@@ -1,6 +1,6 @@
 from __future__ import print_function
 
-from models import Sound, User
+from models import db, Sound, User
 from flask_mail import Message
 from flask import render_template, url_for
 from app import mail, create_app, make_celery
@@ -78,7 +78,9 @@ def upload_workflow(self, sound_id):
 
             audio = ap.Audio(**raw_audio)
             create = audio.build_create()
-            post_to_outbox(create)
+            # Post to outbox and save Activity id into Sound relation
+            sound.activity_id = post_to_outbox(create)
+            db.session.commit()
 
     print("UPLOAD WORKFLOW finished")
 
