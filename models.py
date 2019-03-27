@@ -512,6 +512,9 @@ class Activity(db.Model):
     delivered = db.Column(db.Boolean, default=None, nullable=True)
     delivered_date = db.Column(db.DateTime(timezone=False), nullable=True)
     local = db.Column(db.Boolean, default=True)
+    meta_deleted = db.Column(db.Boolean, default=False)
+    meta_undo = db.Column(db.Boolean, default=False)
+    meta_pinned = db.Column(db.Boolean, default=False)
 
 
 def create_actor(user):

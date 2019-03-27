@@ -200,7 +200,11 @@ def outbox_item(item_id):
     if not item:
         abort(404)
 
-    # TODO check if deleted, if yes, return 410 tombstone gone
+    if item.meta_deleted:
+        obj = activitypub.parse_activity(item.payload)
+        resp = jsonify(**obj.get_tombstone().to_dict())
+        resp.status_code = 410
+        return resp
 
     current_app.logger.debug(f"item payload=={item.payload}")
 
@@ -219,7 +223,11 @@ def outbox_item_activity(item_id):
 
     obj = activity_from_doc(item.payload)
 
-    # TODO check if deleted, if yes, return 410 tombstone gone
+    if item.meta_deleted:
+        obj = activitypub.parse_activity(item.payload)
+        resp = jsonify(**obj.get_object().get_tombstone().to_dict())
+        resp.status_code = 410
+        return resp
 
     if obj["type"] != activitypub.ActivityType.CREATE.value:
         abort(404)
