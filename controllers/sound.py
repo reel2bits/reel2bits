@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from flask_babelex import gettext
 from flask_security import login_required, current_user
 from flask_uploads import UploadSet, AUDIO
+from little_boxes import activitypub as ap
 
 from forms import SoundUploadForm, SoundEditForm
 from models import db, User, Sound
@@ -183,6 +184,12 @@ def delete(username, soundslug):
     if sound.user.id != current_user.id:
         flash(gettext("Forbidden"), "error")
         return redirect(url_for("bp_users.profile", name=username))
+
+    # Federate Delete
+    from tasks import post_to_outbox
+    activity = sound.activity
+    delete_activity = ap.Delete(actor=sound.user.actor[0], object=ap.Tombstone(id=activity.id).to_dict(embed=True))
+    post_to_outbox(delete_activity)
 
     db.session.delete(sound)
     db.session.commit()
