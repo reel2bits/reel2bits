@@ -7,6 +7,7 @@ from little_boxes import activitypub as ap
 from forms import SoundUploadForm, SoundEditForm
 from models import db, User, Sound
 from utils import get_hashed_filename, InvalidUsage, add_user_log
+from tasks import send_update_sound
 
 bp_sound = Blueprint("bp_sound", __name__)
 
@@ -168,6 +169,8 @@ def edit(username, soundslug):
         db.session.commit()
         # log
         add_user_log(sound.id, sound.user.id, "sounds", "info", "Edited {0} -- {1}".format(sound.id, sound.title))
+        # trigger a sound update
+        send_update_sound(sound)
         return redirect(url_for("bp_sound.show", username=username, soundslug=sound.slug))
 
     return render_template("sound/edit.jinja2", pcfg=pcfg, form=form, sound=sound)

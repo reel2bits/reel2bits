@@ -393,3 +393,16 @@ def send_update_profile(user: User) -> None:
     current_app.logger.debug(f"recipients: {raw_update['to']}")
     update = ap.Update(**raw_update)
     post_to_outbox(update)
+
+
+def send_update_sound(sound: Sound) -> None:
+    # FIXME: not sure at all about that
+    # Should not even work
+    actor = sound.user.actor[0]
+    activity = sound.activity
+    raw_update = dict(
+        to=[follower.actor.url for follower in actor.followers], actor=actor.to_dict(), object=activity.to_dict()
+    )
+    current_app.logger.debug(f"recipients: {raw_update['to']}")
+    update = ap.Update(**raw_update)
+    post_to_outbox(update)
