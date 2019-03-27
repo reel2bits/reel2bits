@@ -158,9 +158,13 @@ def edit(username, soundslug):
         if sound.private and not form.private.data:
             # Switched to public
             federate_new = True
-        # TODO: Can't switch back to private a public sound
+            sound.private = form.private.data
+
+        if not sound.private and form.private.data:
+            # Can't switch back to private
+            sound.private = False
+
         sound.title = form.title.data
-        sound.private = form.private.data
         sound.description = form.description.data
         sound.licence = form.licence.data
         if form.album.data:
@@ -187,6 +191,9 @@ def edit(username, soundslug):
             send_update_sound(sound)
 
         return redirect(url_for("bp_sound.show", username=username, soundslug=sound.slug))
+
+    if not sound.private:
+        del form.private
 
     return render_template("sound/edit.jinja2", pcfg=pcfg, form=form, sound=sound)
 

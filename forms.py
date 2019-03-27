@@ -118,7 +118,9 @@ class SoundEditForm(Form):
 
     def validate_private(form, field):
         if field.data is True and form.album.data.private is False:
-            raise ValidationError(lazy_gettext("Cannot put private sound in public album"))
+            raise ValidationError(gettext("Cannot put private sound in public album"))
+        if field.data is True and form.sound.data.private is False:
+            raise ValidationError(gettext("Published sound cannot be privatized again"))
 
     submit = SubmitField(lazy_gettext("Edit sound"))
 
