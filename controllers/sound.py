@@ -152,7 +152,13 @@ def edit(username, soundslug):
 
     form = SoundEditForm(request.form, obj=sound)
 
+    federate_new = False
+
     if form.validate_on_submit():
+        if sound.private and not form.private.data:
+            # Switched to public
+            federate_new = True
+        # TODO: Can't switch back to private a public sound
         sound.title = form.title.data
         sound.private = form.private.data
         sound.description = form.description.data
@@ -169,9 +175,16 @@ def edit(username, soundslug):
         # log
         add_user_log(sound.id, sound.user.id, "sounds", "info", "Edited {0} -- {1}".format(sound.id, sound.title))
 
-        # trigger a sound update
-        from tasks import send_update_sound
-        send_update_sound(sound)
+        if federate_new:
+            # Switched from private to public: initial federation
+            from tasks import federate_new_sound
+
+            federate_new_sound(sound)
+        else:
+            # it's an update
+            from tasks import send_update_sound
+
+            send_update_sound(sound)
 
         return redirect(url_for("bp_sound.show", username=username, soundslug=sound.slug))
 

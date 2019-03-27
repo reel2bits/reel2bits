@@ -27,6 +27,31 @@ app = create_app(register_blueprints=False)
 celery = make_celery(app)
 
 
+def federate_new_sound(sound: Sound) -> int:
+    actor = sound.user.actor[0]
+    cc = [actor.followers_url]
+    href = url_for("get_uploads_stuff", thing="sounds", stuff=sound.path_sound())
+
+    raw_audio = dict(
+        attributedTo=actor.url,
+        cc=list(set(cc)),
+        to=[ap.AS_PUBLIC],
+        inReplyTo=None,
+        name=sound.title,
+        content=sound.description,
+        mediaType="text/plain",
+        url={"type": "Link", "href": href, "mediaType": "audio/mp3"},
+    )
+
+    audio = ap.Audio(**raw_audio)
+    create = audio.build_create()
+    # Post to outbox and save Activity id into Sound relation
+    activity_id = post_to_outbox(create)
+    activity = Activity.query.filter(Activity.box == Box.OUTBOX.value, Activity.url == activity_id).first()
+    # TODO FIXME: not sure about all that ID crap
+    return activity.id
+
+
 @celery.task(bind=True, max_retries=3)
 def upload_workflow(self, sound_id):
     print("UPLOAD WORKFLOW started")
@@ -58,28 +83,9 @@ def upload_workflow(self, sound_id):
     # Federate if public
     if not sound.private:
         print("UPLOAD WORKFLOW federating sound")
-        actor = sound.user.actor[0]
-        cc = [actor.followers_url]
-        # to = [follower.actor.url for follower in actor.followers]
         if not sound.private:
             # Federate only if sound is public
-            href = url_for("get_uploads_stuff", thing="sounds", stuff=sound.path_sound())
-
-            raw_audio = dict(
-                attributedTo=actor.url,
-                cc=list(set(cc)),
-                to=[ap.AS_PUBLIC],
-                inReplyTo=None,
-                name=sound.title,
-                content=sound.description,
-                mediaType="text/plain",
-                url={"type": "Link", "href": href, "mediaType": "audio/mp3"},
-            )
-
-            audio = ap.Audio(**raw_audio)
-            create = audio.build_create()
-            # Post to outbox and save Activity id into Sound relation
-            sound.activity_id = post_to_outbox(create)
+            sound.activity_id = federate_new_sound(sound)
             db.session.commit()
 
     print("UPLOAD WORKFLOW finished")
