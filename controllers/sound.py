@@ -110,6 +110,7 @@ def upload():
                 rec.title = filename_orig
             else:
                 rec.title = form.title.data
+            rec.description = form.description.data
             rec.private = form.private.data
 
             if "flac" in request.files["sound"].mimetype or "ogg" in request.files["sound"].mimetype:

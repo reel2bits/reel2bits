@@ -1,6 +1,6 @@
 {
     "type": "Create",
-    "id": "https://reel2bits.dev.lan.sigpipe.me/outbox/2c359b39986781d6",
+    "id": "https://reel2bits.dev.lan.sigpipe.me/outbox/10b2ab815fe82475",
     "actor": "https://reel2bits.dev.lan.sigpipe.me/user/dashie",
     "object": {
         "type": "Audio",
@@ -12,15 +12,16 @@
             "https://www.w3.org/ns/activitystreams#Public"
         ],
         "name": "zithar test",
+        "content": "description blah blah",
         "mediaType": "text/plain",
         "url": {
             "type": "Link",
-            "href": "http://reel2bits.dev.lan.sigpipe.me/uploads/sounds/dashie/80fa91d2de7d970ed14370a228e38dee13d778655d1f92543defbb3bfd84f671.mp3",
+            "href": "http://reel2bits.dev.lan.sigpipe.me/uploads/sounds/dashie/db9833277fc5eced72b919485066d5e1fcd622e1ebc67c6af417e7f882777b29.mp3",
             "mediaType": "audio/mp3"
         },
         "sensitive": false,
-        "published": "2019-03-28T11:49:11Z",
-        "id": "https://reel2bits.dev.lan.sigpipe.me/outbox/2c359b39986781d6/activity"
+        "published": "2019-03-28T11:55:34Z",
+        "id": "https://reel2bits.dev.lan.sigpipe.me/outbox/10b2ab815fe82475/activity"
     },
     "@context": [
         "https://www.w3.org/ns/activitystreams",
@@ -38,5 +39,5 @@
     "cc": [
         "https://reel2bits.dev.lan.sigpipe.me/user/dashie/followers"
     ],
-    "published": "2019-03-28T11:49:11Z"
+    "published": "2019-03-28T11:55:34Z"
 }
