@@ -180,7 +180,20 @@ def create_png_waveform(fn_audio, fn_png):
         return None
 
     pngwf = "{0}.png".format(fn_png)
-    cmd = [binary, "-i", fn_audio, "--width", "384", "--height", "64", "--no-axis-labels", "-o", pngwf]
+    cmd = [
+        binary,
+        "-i",
+        fn_audio,
+        "--width",
+        "384",
+        "--height",
+        "64",
+        "--no-axis-labels",
+        "--background-color",
+        "FFFFFF00",
+        "-o",
+        pngwf,
+    ]
 
     try:
         process = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
