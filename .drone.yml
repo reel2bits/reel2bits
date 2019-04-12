@@ -1,93 +1,135 @@
+---
+kind: pipeline
+name: default
+
+platform:
+  os: linux
+  arch: amd64
+
 clone:
-  git:
-    image: plugins/git:1
-    depth: 50
-    tags: true
+  depth: 50
 
-pipeline:
-  restore-cache:
-      image: drillster/drone-volume-cache
-      restore: true
-      mount:
-          - .cache
-      volumes:
-          - /tmp/cache:/cache
+steps:
+- name: restore-cache
+  pull: default
+  image: drillster/drone-volume-cache
+  settings:
+    mount:
+    - .cache
+    restore: true
+  volumes:
+  - name: 2f746d702f6361636865
+    path: /cache
 
-  build:
-    image: python:3-alpine
-    commands:
-      - apk -U add sox sox-dev taglib taglib-dev libmagic file-dev libffi libffi-dev
-      - apk add cmake gcc g++ make pkgconfig git boost-dev gd-dev libmad-dev libsndfile-dev libid3tag-dev wget postgresql-dev
-      - pip install --upgrade --cache-dir=.cache/pip pip setuptools
-      - pip install --cache-dir=.cache/pip flake8
-      - pip install --cache-dir=.cache/pip black
-      - pip install --cache-dir=.cache/pip -r requirements.txt
-      - python setup.py install
-      - ./tests/install_audiowaveform.sh
-      - black --check .
-      - flake8 .
-      - cp tests/config_test.py config.py
-      - python setup.py test
+- name: build
+  pull: default
+  image: python:3-alpine
+  commands:
+  - apk -U add sox sox-dev taglib taglib-dev libmagic file-dev libffi libffi-dev
+  - apk add cmake gcc g++ make pkgconfig git boost-dev gd-dev libmad-dev libsndfile-dev libid3tag-dev wget postgresql-dev
+  - pip install --upgrade --cache-dir=.cache/pip pip setuptools
+  - pip install --cache-dir=.cache/pip flake8
+  - pip install --cache-dir=.cache/pip black
+  - pip install --cache-dir=.cache/pip -r requirements.txt
+  - python setup.py install
+  - ./tests/install_audiowaveform.sh
+  - black --check .
+  - flake8 .
+  - cp tests/config_test.py config.py
+  - python setup.py test
 
-  migrations:
-    image: python:3-alpine
-    commands:
-      - apk -U add sox sox-dev taglib taglib-dev libmagic file-dev libffi libffi-dev postgresql-client
-      - apk add cmake gcc g++ make pkgconfig git boost-dev gd-dev libmad-dev libsndfile-dev libid3tag-dev wget postgresql-dev
-      - pip install --upgrade --cache-dir=.cache/pip pip setuptools
-      - pip install --cache-dir=.cache/pip flake8
-      - pip install --cache-dir=.cache/pip black
-      - pip install --cache-dir=.cache/pip -r requirements.txt
-      - python setup.py install
-      - psql -U postgres -h database -w -c 'CREATE DATABASE reel2bits'
-      - psql -U postgres -h database -w -c 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";' reel2bits
-      - cp config.py.sample config.py
-      - flask db upgrade
+- name: migrations
+  pull: default
+  image: python:3-alpine
+  commands:
+  - apk -U add sox sox-dev taglib taglib-dev libmagic file-dev libffi libffi-dev postgresql-client
+  - apk add cmake gcc g++ make pkgconfig git boost-dev gd-dev libmad-dev libsndfile-dev libid3tag-dev wget postgresql-dev
+  - pip install --upgrade --cache-dir=.cache/pip pip setuptools
+  - pip install --cache-dir=.cache/pip flake8
+  - pip install --cache-dir=.cache/pip black
+  - pip install --cache-dir=.cache/pip -r requirements.txt
+  - python setup.py install
+  - "psql -U postgres -h database -w -c 'CREATE DATABASE reel2bits'"
+  - "psql -U postgres -h database -w -c 'CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";' reel2bits"
+  - cp config.py.sample config.py
+  - flask db upgrade
 
-  rebuild-cache:
-      image: drillster/drone-volume-cache
-      rebuild: true
-      mount:
-          - .cache
-      volumes:
-          - /tmp/cache:/cache
+- name: rebuild-cache
+  pull: default
+  image: drillster/drone-volume-cache
+  settings:
+    mount:
+    - .cache
+    rebuild: true
+  volumes:
+  - name: 2f746d702f6361636865
+    path: /cache
 
-  publish-web:
-    image: plugins/docker
-    repo: dashie/reel2bits-web
+- name: publish-web
+  pull: default
+  image: plugins/docker
+  settings:
     dockerfile: Dockerfile-web
-    tags: [ latest ]
-    secrets:
-        - DOCKER_USERNAME
-        - DOCKER_PASSWORD
-    when:
-      branch: master
+    repo: dashie/reel2bits-web
+    tags:
+    - latest
+  environment:
+    DOCKER_PASSWORD:
+      from_secret: DOCKER_PASSWORD
+    DOCKER_USERNAME:
+      from_secret: DOCKER_USERNAME
+  when:
+    branch:
+    - master
 
-  publish-worker:
-    image: plugins/docker
-    repo: dashie/reel2bits-worker
+- name: publish-worker
+  pull: default
+  image: plugins/docker
+  settings:
     dockerfile: Dockerfile-worker
-    tags: [ latest ]
-    secrets:
-        - DOCKER_USERNAME
-        - DOCKER_PASSWORD
-    when:
-      branch: master
+    repo: dashie/reel2bits-worker
+    tags:
+    - latest
+  environment:
+    DOCKER_PASSWORD:
+      from_secret: DOCKER_PASSWORD
+    DOCKER_USERNAME:
+      from_secret: DOCKER_USERNAME
+  when:
+    branch:
+    - master
 
-  notify:
-    image: plugins/slack
+- name: notify
+  pull: default
+  image: plugins/slack
+  settings:
     channel: gitea
-    secrets:
-      - SLACK_WEBHOOK
-    when:
-      event: [ push, tag, pull_request ]
-      status: [ changed, failure, success ]
+  environment:
+    SLACK_WEBHOOK:
+      from_secret: SLACK_WEBHOOK
+  when:
+    event:
+    - push
+    - tag
+    - pull_request
+    status:
+    - changed
+    - failure
+    - success
 
 services:
-  database:
-    image: postgres
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_DB=reel2bits_test
-  redis:
-    image: redis
+- name: database
+  pull: default
+  image: postgres
+  environment:
+    POSTGRES_DB: reel2bits_test
+    POSTGRES_USER: postgres
+
+- name: redis
+  pull: default
+  image: redis
+
+volumes:
+- name: 2f746d702f6361636865
+  host:
+    path: /tmp/cache
