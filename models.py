@@ -91,7 +91,7 @@ class User(db.Model, UserMixin):
     @staticmethod
     def generate_slug(target, value, oldvalue, initiator):
         if value and (not target.slug or value != oldvalue):
-            target.slug = target.name
+            target.slug = value
 
     @hybrid_property
     def name_insensitive(self):

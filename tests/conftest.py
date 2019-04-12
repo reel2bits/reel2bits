@@ -78,3 +78,5 @@ def test_user_slugs(client, session):
     for i in ids:
         user = User.query.filter(User.id == i).first()
         assert user.slug != ""
+        assert user.slug is not None
+        assert len(user.slug) >= 15
