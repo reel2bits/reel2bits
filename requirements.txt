@@ -1,5 +1,5 @@
 Flask_Babelex==0.9.3
-psycopg2-binary==2.8
+psycopg2-binary==2.8.1
 texttable==1.6.1
 Unidecode==1.0.23
 pydub==0.23.1
