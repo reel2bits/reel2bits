@@ -9,7 +9,7 @@ import magic
 import mutagen
 
 from models import db, SoundInfo, Sound
-from utils import get_waveform, create_png_waveform, duration_song_human, add_user_log
+from utils import get_waveform, create_png_waveform, duration_song_human, add_user_log, generate_audio_dat_file
 from pydub import AudioSegment
 from os.path import splitext
 from flask import current_app
@@ -203,8 +203,11 @@ def work_metadatas(sound_id, force=False):
         else:
             fname_t = fname
 
+        print("- GENERATING AUDIO DAT FILE")
+        dat_file_name = generate_audio_dat_file(fname_t)
+
         print("- WORKING WAVEFORM on {0}, {1}".format(sound.id, sound.filename))
-        waveform_infos = get_waveform_infos(fname_t)
+        waveform_infos = get_waveform_infos(dat_file_name)
         print("- Our file got waveform infos: {0}".format(waveform_infos))
         _infos.waveform = waveform_infos
         if not waveform_infos:
@@ -223,7 +226,11 @@ def work_metadatas(sound_id, force=False):
             if not os.path.isdir(fdir_wf):
                 os.makedirs(fdir_wf)
 
-            create_png_waveform(fname_t, fname_wf)
+            create_png_waveform(dat_file_name, fname_wf)
+
+        # Delete the temporary dat file
+        os.unlink(dat_file_name)
+
         _infos.done_waveform = True
 
     db.session.add(_infos)

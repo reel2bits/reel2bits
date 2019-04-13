@@ -15,8 +15,6 @@
 ** SQL optimization
 ** translations check
 
-Generate a temp .dat file to generate .png and json to avoid dual processing of audio file
-
 ~~~~~~~~~ ACTIVITYPUB ~~~~~~~~
 -> profile UPDATE not handled yet (littleboxes don't handle UPDATE) upstream
 
