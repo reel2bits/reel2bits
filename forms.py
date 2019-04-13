@@ -36,7 +36,7 @@ class ModelForm(BaseModelForm):
 
 
 class ExtendedRegisterForm(RegisterForm):
-    name = StringField("Username", [DataRequired(), Regexp(regex=r"^\w+$"), Length(max=150)])
+    name = StringField(gettext("Username"), [DataRequired(), Regexp(regex=r"^\w+$"), Length(max=150)])
 
     def validate_name(form, field):
         if len(field.data) <= 0:
@@ -50,7 +50,7 @@ class ExtendedRegisterForm(RegisterForm):
 class UserProfileForm(Form):
     display_name = StringField(gettext("Display name"), [Length(max=30)])
     timezone = SelectField(coerce=str, label=gettext("Timezone"), default="UTC")
-    locale = SelectField(gettext("Locale"), default="en", choices=[["en", "English"], ["fr", "French"]])
+    locale = SelectField(gettext("Locale"), default="en", choices=[["en", "English"], ["fr", "French"], ["pl", "Polish"]])
     submit = SubmitField(gettext("Update profile"))
 
 

@@ -33,6 +33,8 @@ from version import VERSION
 
 __VERSION__ = VERSION
 
+AVAILABLE_LOCALES = ['fr', 'fr_FR', 'en', 'en_US', 'pl']
+
 try:
     from raven.contrib.flask import Sentry
     import raven
@@ -108,6 +110,7 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
     security = Security(  # noqa: F841
         app, user_datastore, register_form=ExtendedRegisterForm, confirm_register_form=ExtendedRegisterForm
     )
+    security.login_manager.localize_callback = gettext
 
     @FlaskSecuritySignals.password_reset.connect_via(app)
     @FlaskSecuritySignals.password_changed.connect_via(app)
@@ -149,7 +152,7 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
         # otherwise try to guess the language from the user accept
         # header the browser transmits.  We support fr/en in this
         # example.  The best match wins.
-        return request.accept_languages.best_match(["fr", "en"])
+        return request.accept_languages.best_match(AVAILABLE_LOCALES)
 
     @babel.timezoneselector
     def get_timezone():
