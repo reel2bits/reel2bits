@@ -111,7 +111,6 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
     security = Security(  # noqa: F841
         app, user_datastore, register_form=ExtendedRegisterForm, confirm_register_form=ExtendedRegisterForm
     )
-    security.login_manager.localize_callback = lazy_gettext
 
     @FlaskSecuritySignals.password_reset.connect_via(app)
     @FlaskSecuritySignals.password_changed.connect_via(app)
