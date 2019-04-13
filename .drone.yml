@@ -80,7 +80,10 @@ steps:
       from_secret: DOCKER_USERNAME
   when:
     branch:
-    - master
+      - master
+    event:
+      - push
+      - tag
 
 - name: publish-worker
   pull: default
@@ -97,7 +100,10 @@ steps:
       from_secret: DOCKER_USERNAME
   when:
     branch:
-    - master
+      - master
+    event:
+      - push
+      - tag
 
 - name: notify
   pull: default
