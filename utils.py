@@ -211,9 +211,9 @@ def create_png_waveform(fn_audio, fn_png):
         add_log("AUDIOWAVEFORM_PNG", "ERROR", "Filename {0} or binary {1} invalid".format(fn_audio, binary))
         return None
 
-    fname, _ = splitext(fn_audio)
+    fname, _ = splitext(fn_png)
 
-    pngwf = "{0}.png".format(fn_png)
+    pngwf = "{0}.png".format(fname)
 
     cmd = [
         binary,
