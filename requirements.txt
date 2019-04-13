@@ -22,4 +22,4 @@ redis==3.2.1
 flask-accept==0.0.6
 Bootstrap-Flask==1.0.10
 git+https://github.com/mattupstate/flask-security#egg=Flask-Security
-git+https://github.com/rhaamo/little-boxes@reel2bits#egg=little-boxes
+git+https://github.com/tsileo/little-boxes@master#egg=little-boxes
