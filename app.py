@@ -98,6 +98,7 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
     mail.init_app(app)
     migrate = Migrate(app, db)  # noqa: F841
     babel = Babel(app)  # noqa: F841
+    app.babel = babel
     toolbar = DebugToolbarExtension(app)  # noqa: F841
 
     db.init_app(app)
@@ -110,7 +111,6 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
     security = Security(  # noqa: F841
         app, user_datastore, register_form=ExtendedRegisterForm, confirm_register_form=ExtendedRegisterForm
     )
-    security.login_manager.localize_callback = gettext
 
     @FlaskSecuritySignals.password_reset.connect_via(app)
     @FlaskSecuritySignals.password_changed.connect_via(app)
@@ -152,6 +152,7 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
         # otherwise try to guess the language from the user accept
         # header the browser transmits.  We support fr/en in this
         # example.  The best match wins.
+        print(f"Best locale choosed: {request.accept_languages.best_match(AVAILABLE_LOCALES)}")
         return request.accept_languages.best_match(AVAILABLE_LOCALES)
 
     @babel.timezoneselector
