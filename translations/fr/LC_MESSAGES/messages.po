@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-04-13 08:52+0200\n"
-"PO-Revision-Date: 2019-04-13 08:59+0200\n"
+"POT-Creation-Date: 2019-04-13 12:37+0200\n"
+"PO-Revision-Date: 2019-04-13 12:38+0200\n"
 "Last-Translator: \n"
 "Language: fr\n"
 "Language-Team: fr <LL@li.org>\n"
@@ -19,29 +19,33 @@ msgstr ""
 "Generated-By: Babel 2.6.0\n"
 "X-Generator: Poedit 2.0.6\n"
 
-#: app.py:164 controllers/admin.py:48
+#: app.py:169 controllers/admin.py:48
 msgid "Config not found"
 msgstr "Configuration non trouvée"
 
-#: app.py:239 app.py:249 app.py:258 app.py:266
+#: app.py:244 app.py:254 app.py:263 app.py:271
 msgid "Whoops, something failed."
 msgstr "Whoops, quelque-chose à échoué."
 
-#: app.py:241
+#: app.py:246
 msgid "Page not found"
 msgstr "Page non trouvée"
 
-#: app.py:251
+#: app.py:256
 msgid "Access forbidden"
 msgstr "Accès refusé"
 
-#: app.py:258
+#: app.py:263
 msgid "Gone"
 msgstr "Disparu"
 
-#: app.py:268
+#: app.py:273
 msgid "Something is broken"
 msgstr "Quelque-chose est cassé"
+
+#: forms.py:39
+msgid "Username"
+msgstr "Nom d'utilisateur"
 
 #: forms.py:43
 msgid "Username required"
@@ -273,6 +277,10 @@ msgstr "page d'accueil"
 #: templates/layout.jinja2:58
 msgid "My Profile"
 msgstr "Mon profil"
+
+#: templates/layout.jinja2:68
+msgid "Search..."
+msgstr "Chercher..."
 
 #: templates/layout.jinja2:73
 msgid "About"

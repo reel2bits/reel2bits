@@ -7,7 +7,7 @@ from wtforms import widgets
 from wtforms.fields.core import StringField
 from wtforms.validators import DataRequired, ValidationError, Length, Regexp
 from wtforms_alchemy import model_form_factory
-from flask_babelex import gettext
+from flask_babelex import lazy_gettext
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 
 from models import db, User, Album, licences
@@ -36,29 +36,29 @@ class ModelForm(BaseModelForm):
 
 
 class ExtendedRegisterForm(RegisterForm):
-    name = StringField(gettext("Username"), [DataRequired(), Regexp(regex=r"^\w+$"), Length(max=150)])
+    name = StringField(lazy_gettext("Username"), [DataRequired(), Regexp(regex=r"^\w+$"), Length(max=150)])
 
     def validate_name(form, field):
         if len(field.data) <= 0:
-            raise ValidationError(gettext("Username required"))
+            raise ValidationError(lazy_gettext("Username required"))
 
         u = db.session.query(User).filter_by(name_insensitive=field.data).first()
         if u:
-            raise ValidationError(gettext("Username already taken"))
+            raise ValidationError(lazy_gettext("Username already taken"))
 
 
 class UserProfileForm(Form):
-    display_name = StringField(gettext("Display name"), [Length(max=30)])
-    timezone = SelectField(coerce=str, label=gettext("Timezone"), default="UTC")
-    locale = SelectField(gettext("Locale"), default="en", choices=[["en", "English"], ["fr", "French"], ["pl", "Polish"]])
-    submit = SubmitField(gettext("Update profile"))
+    display_name = StringField(lazy_gettext("Display name"), [Length(max=30)])
+    timezone = SelectField(coerce=str, label=lazy_gettext("Timezone"), default="UTC")
+    locale = SelectField(lazy_gettext("Locale"), default="en", choices=[["en", "English"], ["fr", "French"], ["pl", "Polish"]])
+    submit = SubmitField(lazy_gettext("Update profile"))
 
 
 class ConfigForm(Form):
-    app_name = StringField(gettext("Instance Name"), [DataRequired(), Length(max=255)])
-    app_description = TextAreaField(gettext("Instance description"))
+    app_name = StringField(lazy_gettext("Instance Name"), [DataRequired(), Length(max=255)])
+    app_description = TextAreaField(lazy_gettext("Instance description"))
 
-    submit = SubmitField(gettext("Update config"))
+    submit = SubmitField(lazy_gettext("Update config"))
 
 
 def get_albums():
@@ -70,48 +70,48 @@ def get_licences():
 
 
 class SoundUploadForm(Form):
-    title = StringField(gettext("Title"), [Length(max=255)])
-    sound = FileField(gettext("File"), [FileRequired(), FileAllowed(AUDIO)])
+    title = StringField(lazy_gettext("Title"), [Length(max=255)])
+    sound = FileField(lazy_gettext("File"), [FileRequired(), FileAllowed(AUDIO)])
     album = QuerySelectField(
         query_factory=get_albums,
         allow_blank=True,
-        label=gettext("Album"),
-        blank_text=gettext("No album"),
+        label=lazy_gettext("Album"),
+        blank_text=lazy_gettext("No album"),
         get_label="title",
     )
-    licence = SelectField(choices=get_licences(), coerce=int, label=gettext("Licence"))
-    private = BooleanField(gettext("Private"), default=False)
+    licence = SelectField(choices=get_licences(), coerce=int, label=lazy_gettext("Licence"))
+    private = BooleanField(lazy_gettext("Private"), default=False)
 
     def validate_private(form, field):
         if field.data is True and form.album.data.private is False:
-            raise ValidationError(gettext("Cannot put private sound in public album"))
+            raise ValidationError(lazy_gettext("Cannot put private sound in public album"))
 
-    submit = SubmitField(gettext("Upload"))
+    submit = SubmitField(lazy_gettext("Upload"))
 
 
 class SoundEditForm(Form):
-    title = StringField(gettext("Title"), [Length(max=255)])
-    description = TextAreaField(gettext("Description"))
+    title = StringField(lazy_gettext("Title"), [Length(max=255)])
+    description = TextAreaField(lazy_gettext("Description"))
     album = QuerySelectField(
         query_factory=get_albums,
         allow_blank=True,
-        label=gettext("Album"),
-        blank_text=gettext("No album"),
+        label=lazy_gettext("Album"),
+        blank_text=lazy_gettext("No album"),
         get_label="title",
     )
-    licence = SelectField(choices=get_licences(), coerce=int, label=gettext("Licence"))
-    private = BooleanField(gettext("Private"), default=False)
+    licence = SelectField(choices=get_licences(), coerce=int, label=lazy_gettext("Licence"))
+    private = BooleanField(lazy_gettext("Private"), default=False)
 
     def validate_private(form, field):
         if field.data is True and form.album.data.private is False:
-            raise ValidationError(gettext("Cannot put private sound in public album"))
+            raise ValidationError(lazy_gettext("Cannot put private sound in public album"))
 
-    submit = SubmitField(gettext("Edit sound"))
+    submit = SubmitField(lazy_gettext("Edit sound"))
 
 
 class AlbumForm(Form):
-    title = StringField(gettext("Title"), [Length(max=255), DataRequired()])
-    description = TextAreaField(gettext("Description"))
-    private = BooleanField(gettext("Private"), default=False)
+    title = StringField(lazy_gettext("Title"), [Length(max=255), DataRequired()])
+    description = TextAreaField(lazy_gettext("Description"))
+    private = BooleanField(lazy_gettext("Private"), default=False)
 
-    submit = SubmitField(gettext("Save"))
+    submit = SubmitField(lazy_gettext("Save"))

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-04-13 08:52+0200\n"
+"POT-Creation-Date: 2019-04-13 12:37+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,28 +17,32 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.6.0\n"
 
-#: app.py:164 controllers/admin.py:48
+#: app.py:169 controllers/admin.py:48
 msgid "Config not found"
 msgstr ""
 
-#: app.py:239 app.py:249 app.py:258 app.py:266
+#: app.py:244 app.py:254 app.py:263 app.py:271
 msgid "Whoops, something failed."
 msgstr ""
 
-#: app.py:241
+#: app.py:246
 msgid "Page not found"
 msgstr ""
 
-#: app.py:251
+#: app.py:256
 msgid "Access forbidden"
 msgstr ""
 
-#: app.py:258
+#: app.py:263
 msgid "Gone"
 msgstr ""
 
-#: app.py:268
+#: app.py:273
 msgid "Something is broken"
+msgstr ""
+
+#: forms.py:39
+msgid "Username"
 msgstr ""
 
 #: forms.py:43
@@ -270,6 +274,10 @@ msgstr ""
 
 #: templates/layout.jinja2:58
 msgid "My Profile"
+msgstr ""
+
+#: templates/layout.jinja2:68
+msgid "Search..."
 msgstr ""
 
 #: templates/layout.jinja2:73

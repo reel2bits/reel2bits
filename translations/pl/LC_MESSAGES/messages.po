@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-04-13 08:52+0200\n"
+"POT-Creation-Date: 2019-04-13 12:37+0200\n"
 "PO-Revision-Date: 2018-08-12 15:52+0200\n"
 "Last-Translator: Marcin Mikołajczak <me@m4sk.in>\n"
 "Language: pl\n"
@@ -19,29 +19,33 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.6.0\n"
 
-#: app.py:164 controllers/admin.py:48
+#: app.py:169 controllers/admin.py:48
 msgid "Config not found"
 msgstr "Nie odnaleziono konfiguracji"
 
-#: app.py:239 app.py:249 app.py:258 app.py:266
+#: app.py:244 app.py:254 app.py:263 app.py:271
 msgid "Whoops, something failed."
 msgstr "Ups, coś poszło nie tak."
 
-#: app.py:241
+#: app.py:246
 msgid "Page not found"
 msgstr "Nie znaleziono strony"
 
-#: app.py:251
+#: app.py:256
 msgid "Access forbidden"
 msgstr "Dostęp wzbroniony"
 
-#: app.py:258
+#: app.py:263
 msgid "Gone"
 msgstr ""
 
-#: app.py:268
+#: app.py:273
 msgid "Something is broken"
 msgstr "Coś się zepsuło"
+
+#: forms.py:39
+msgid "Username"
+msgstr ""
 
 #: forms.py:43
 msgid "Username required"
@@ -273,6 +277,10 @@ msgstr ""
 #: templates/layout.jinja2:58
 msgid "My Profile"
 msgstr "Mój profil"
+
+#: templates/layout.jinja2:68
+msgid "Search..."
+msgstr ""
 
 #: templates/layout.jinja2:73
 msgid "About"
