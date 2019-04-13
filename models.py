@@ -232,7 +232,8 @@ class Sound(db.Model):
         return el.total_seconds()
 
     def path_waveform(self):
-        return os.path.join(self.user.slug, "{0}.png".format(self.filename))
+        fname, _ = os.path.splitext(self.filename)
+        return os.path.join(self.user.slug, "{0}.png".format(fname))
 
     def path_sound(self, orig=False):
         if self.transcode_needed and self.transcode_state == self.TRANSCODE_DONE and not orig:

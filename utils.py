@@ -119,13 +119,45 @@ def duration_song_human(seconds):
         return "%.2f sec" % seconds + "s" * (seconds != 1)
 
 
+def generate_audio_dat_file(filename):
+    binary = current_app.config["AUDIOWAVEFORM_BIN"]
+    if not os.path.exists(binary) or not os.path.exists(filename):
+        add_log("AUDIOWAVEFORM", "ERROR", "Filename {0} or binary {1} invalid".format(filename, binary))
+        return None
+
+    fname, _ = splitext(filename)
+
+    audio_dat = "{0}.dat".format(fname)
+
+    cmd = [binary, "-i", filename, "-o", audio_dat, "-b", "8"]
+
+    try:
+        process = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        if not process:
+            add_log("AUDIOWAVEFORM_DAT", "ERROR", "Subprocess returned None")
+            return None
+    except subprocess.CalledProcessError as e:
+        add_log("AUDIOWAVEFORM_DAT", "ERROR", "Process error: {0}".format(e))
+        return None
+
+    print("- Command ran with: {0}".format(process.args))
+
+    if process.stderr.startswith(b"Can't generate"):
+        add_log("AUDIOWAVEFORM_DAT", "ERROR", "Process error: {0}".format(process.stderr))
+        return None
+
+    return audio_dat
+
+
 def get_waveform(filename):
     binary = current_app.config["AUDIOWAVEFORM_BIN"]
     if not os.path.exists(binary) or not os.path.exists(filename):
         add_log("AUDIOWAVEFORM", "ERROR", "Filename {0} or binary {1} invalid".format(filename, binary))
         return None
 
-    tmpjson = "{0}.json".format(filename)
+    fname, _ = splitext(filename)
+
+    tmpjson = "{0}.json".format(fname)
 
     cmd = [binary, "-i", filename, "--pixels-per-second", "10", "-b", "8", "-o", tmpjson]
 
@@ -179,7 +211,10 @@ def create_png_waveform(fn_audio, fn_png):
         add_log("AUDIOWAVEFORM_PNG", "ERROR", "Filename {0} or binary {1} invalid".format(fn_audio, binary))
         return None
 
-    pngwf = "{0}.png".format(fn_png)
+    fname, _ = splitext(fn_png)
+
+    pngwf = "{0}.png".format(fname)
+
     cmd = [
         binary,
         "-i",
