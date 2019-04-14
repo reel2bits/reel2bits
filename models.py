@@ -487,7 +487,7 @@ class Actor(db.Model):
 
     def to_dict(self):
         return {
-            "@context": ["https://www.w3.org/ns/activitystreams", "https://w3id.org/security/v1"],
+            "@context": ap.DEFAULT_CTX,
             "id": self.url,
             "type": self.type.code,
             "preferredUsername": self.preferred_username,
