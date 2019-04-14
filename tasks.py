@@ -58,8 +58,7 @@ def federate_delete_sound(sound: Sound) -> None:
     # Create delete
     delete = ap.Delete(actor=actor, object=ap.Tombstone(id=sound.activity.id).to_dict(embed=True))
     # Federate
-    delete_id = post_to_outbox(delete)
-    delete_activity = Activity.query.filter(Activity.box == Box.OUTBOX.value, Activity.url == delete_id).first()
+    post_to_outbox(delete)
 
 
 @celery.task(bind=True, max_retries=3)

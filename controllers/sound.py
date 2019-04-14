@@ -2,7 +2,6 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from flask_babelex import gettext
 from flask_security import login_required, current_user
 from flask_uploads import UploadSet, AUDIO
-from little_boxes import activitypub as ap
 
 from forms import SoundUploadForm, SoundEditForm
 from models import db, User, Sound
@@ -213,6 +212,7 @@ def delete(username, soundslug):
 
     # Federate Delete
     from tasks import federate_delete_sound
+
     federate_delete_sound(sound)
 
     db.session.delete(sound)
