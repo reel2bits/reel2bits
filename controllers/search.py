@@ -135,7 +135,10 @@ def search():
                     .filter(Actor.url == remote_actor_url)
                     .first()
                 )
-                follow_status = follow_rel[1] is not None
+                if follow_rel:
+                    follow_status = follow_rel[1] is not None
+                else:
+                    follow_status = False
 
                 domain = urlparse(iri["url"])
                 user = {
@@ -144,6 +147,7 @@ def search():
                     "instance": domain.netloc,
                     "url": iri["url"],
                     "remote": True,
+                    "summary": iri["summary"],
                     "follow": follow_status,
                 }
                 accounts.append(user)

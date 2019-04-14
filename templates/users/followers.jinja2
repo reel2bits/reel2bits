@@ -14,7 +14,7 @@
             <div class="card-columns">
                 {% for f in followers %}
                     {% if current_user.is_authenticated and current_user == user %}
-                        {{ user_card(f.actor.username, f.actor.name, f.actor.url, f.actor.domain, f.actor.summary, f.target_id == user.actor[0].id, not f.actor.is_local(), current_user) }}
+                        {{ user_card(f.actor.username, f.actor.name, f.actor.url, f.actor.domain, f.actor.summary, f.follow_back(), not f.actor.is_local(), current_user) }}
                     {% else %}
                         {{ user_card(f.actor.username, f.actor.name, f.actor.url, f.actor.domain, f.actor.summary, None, not f.actor.is_local(), current_user) }}
                     {% endif %}

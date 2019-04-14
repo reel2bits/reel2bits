@@ -197,6 +197,9 @@ class Reel2BitsBackend(ap.Backend):
     def _fetch_iri(self, iri: str) -> ap.ObjectType:
         base_url = current_app.config["BASE_URL"]
 
+        if not iri:
+            return None
+
         # Check if owned
         if iri.startswith(base_url):
             actor = Actor.query.filter(Actor.url == iri).first()

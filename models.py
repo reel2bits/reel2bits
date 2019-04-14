@@ -408,6 +408,10 @@ class Follower(db.Model):
     def __repr__(self):
         return f"<Follower(id='{self.id}', actor_id='{self.actor_id}', target_id='{self.target_id}')>"
 
+    def follow_back(self):
+        f = db.session.query(Follower.id).filter(Follower.actor_id == self.target_id, Follower.target_id == self.actor_id).first()
+        return f
+
 
 class Actor(db.Model):
     __tablename__ = "actor"
@@ -550,7 +554,8 @@ def create_remote_actor(activity_actor: ap.BaseActivity):
     :return: an Actor object
     """
     actor = Actor()
-
+    print(activity_actor)
+    aaa
     actor.preferred_username = activity_actor.preferredUsername
     domain = urlparse(activity_actor.url)
     actor.domain = domain.netloc
