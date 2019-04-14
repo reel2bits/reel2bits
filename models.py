@@ -409,7 +409,11 @@ class Follower(db.Model):
         return f"<Follower(id='{self.id}', actor_id='{self.actor_id}', target_id='{self.target_id}')>"
 
     def follow_back(self):
-        f = db.session.query(Follower.id).filter(Follower.actor_id == self.target_id, Follower.target_id == self.actor_id).first()
+        f = (
+            db.session.query(Follower.id)
+            .filter(Follower.actor_id == self.target_id, Follower.target_id == self.actor_id)
+            .first()
+        )
         return f
 
 
