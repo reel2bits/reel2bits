@@ -145,7 +145,10 @@ def follow():
 
     if user.startswith("https://"):
         actor = Actor.query.filter(Actor.url == user).first()
-        local_user = actor.user
+        if actor:
+            local_user = actor.user
+        else:
+            local_user = None
     else:
         local_user = User.query.filter(User.name == user).first()
 

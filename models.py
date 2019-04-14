@@ -555,7 +555,6 @@ def create_remote_actor(activity_actor: ap.BaseActivity):
     """
     actor = Actor()
     print(activity_actor)
-    aaa
     actor.preferred_username = activity_actor.preferredUsername
     domain = urlparse(activity_actor.url)
     actor.domain = domain.netloc
@@ -566,9 +565,11 @@ def create_remote_actor(activity_actor: ap.BaseActivity):
     actor.url = activity_actor.id  # FIXME: or .id ??? [cf backend.py:52-53]
     actor.shared_inbox_url = activity_actor._data.get("endpoints", {}).get("sharedInbox")
     actor.inbox_url = activity_actor.inbox
-    actor.outbox_url = activity_actor.outbot
+    actor.outbox_url = activity_actor.outbox
     actor.public_key = activity_actor.get_key().pubkey_pem
     actor.summary = activity_actor.summary
+    actor.followers_url = activity_actor.followers
+    actor.following_url = activity_actor.following
 
     return actor
 
@@ -590,8 +591,10 @@ def update_remote_actor(actor_id: int, activity_actor: ap.BaseActivity) -> None:
     actor.url = activity_actor.id  # FIXME: or .id ??? [cf backend.py:52-53]
     actor.shared_inbox_url = activity_actor._data.get("endpoints", {}).get("sharedInbox")
     actor.inbox_url = activity_actor.inbox
-    actor.outbox_url = activity_actor.outbot
+    actor.outbox_url = activity_actor.outbox
     actor.public_key = activity_actor.get_key().pubkey_pem
     actor.summary = activity_actor.summary
+    actor.followers_url = activity_actor.followers
+    actor.following_url = activity_actor.following
 
     db.session.commit()
