@@ -52,6 +52,16 @@ def federate_new_sound(sound: Sound) -> int:
     return activity.id
 
 
+def federate_delete_sound(sound: Sound) -> None:
+    actor = sound.user.actor[0]
+    # Get activity
+    # Create delete
+    delete = ap.Delete(actor=actor, object=ap.Tombstone(id=sound.activity.id).to_dict(embed=True))
+    # Federate
+    delete_id = post_to_outbox(delete)
+    delete_activity = Activity.query.filter(Activity.box == Box.OUTBOX.value, Activity.url == delete_id).first()
+
+
 @celery.task(bind=True, max_retries=3)
 def upload_workflow(self, sound_id):
     print("UPLOAD WORKFLOW started")
@@ -405,9 +415,8 @@ def send_update_sound(sound: Sound) -> None:
     # FIXME: not sure at all about that
     # Should not even work
     actor = sound.user.actor[0]
-    activity = sound.activity
     raw_update = dict(
-        to=[follower.actor.url for follower in actor.followers], actor=actor.to_dict(), object=activity.to_dict()
+        to=[follower.actor.url for follower in actor.followers], actor=actor.to_dict(), object=sound.activity.to_dict()
     )
     current_app.logger.debug(f"recipients: {raw_update['to']}")
     update = ap.Update(**raw_update)

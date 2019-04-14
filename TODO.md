@@ -42,4 +42,7 @@
 
 # ACTIVITYPUB
 
-PR in progress.
+- deleted sound : test / fix handle correctly, tombstone thing
+- followers list, "None" instead of blank for bio
+- followers list, "following [no]" link to unfollow instead of follow
+
