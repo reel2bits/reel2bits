@@ -258,7 +258,7 @@ def finish_post_to_outbox(self, iri: str) -> None:
         activity = ap.fetch_remote_activity(iri)
         backend = ap.get_backend()
 
-        current_app.logger.info(f"activity={activity!r}")
+        current_app.logger.info(f"finish_post_to_outbox {activity}")
 
         recipients = activity.recipients()
 
@@ -384,6 +384,8 @@ def post_to_inbox(activity: ap.BaseActivity) -> None:
 
 
 def post_to_outbox(activity: ap.BaseActivity) -> str:
+    current_app.logger.debug(f"post_to_outbox {activity}")
+
     if activity.has_type(ap.CREATE_TYPES):
         activity = activity.build_create()
 
