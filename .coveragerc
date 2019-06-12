@@ -1,2 +1,7 @@
 [run]
-omit = tests/*
+omit = 
+    tests/*
+    .eggs/*
+    config.py
+    configtest.py
+    **/*__init__.py
