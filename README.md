@@ -72,13 +72,7 @@ TODO
   Run the workers using:
   
     $ celery worker -A tasks.celery --loglevel=error
-      
-# TODO
-  - Better handle transcoding and waveform generation for FLAC and OGG (audiowaveform should use the transcoded mp3 file)
-  - ActivityPub support is near zero
-  - Tests and create_app() better refactoring
-  - Design needs improvements
- 
+       
 # Licensing
  - MIT License
  
