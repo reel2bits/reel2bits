@@ -3,7 +3,7 @@ import logging
 import os
 import subprocess
 from logging.handlers import RotatingFileHandler
-from flask_babelex import gettext, Babel, lazy_gettext
+from flask_babelex import gettext, Babel
 from flask import Flask, render_template, g, send_from_directory, jsonify, safe_join, request, flash, Response
 from flask_bootstrap import Bootstrap
 from flask_mail import Mail
@@ -33,7 +33,7 @@ from version import VERSION
 
 __VERSION__ = VERSION
 
-AVAILABLE_LOCALES = ['fr', 'fr_FR', 'en', 'en_US', 'pl']
+AVAILABLE_LOCALES = ["fr", "fr_FR", "en", "en_US", "pl"]
 
 try:
     from raven.contrib.flask import Sentry

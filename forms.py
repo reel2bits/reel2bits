@@ -46,11 +46,20 @@ class ExtendedRegisterForm(RegisterForm):
         if u:
             raise ValidationError(lazy_gettext("Username already taken"))
 
+    __order = ("csrf_token", "name", "email", "password", "password_confirm", "submit")
+
+    def __iter__(self):
+        fields = list(super(ExtendedRegisterForm, self).__iter__())
+        get_field = lambda field_id: next((fld for fld in fields if fld.id == field_id))  # noqa: E731
+        return (get_field(field_id) for field_id in self.__order)
+
 
 class UserProfileForm(Form):
     display_name = StringField(lazy_gettext("Display name"), [Length(max=30)])
     timezone = SelectField(coerce=str, label=lazy_gettext("Timezone"), default="UTC")
-    locale = SelectField(lazy_gettext("Locale"), default="en", choices=[["en", "English"], ["fr", "French"], ["pl", "Polish"]])
+    locale = SelectField(
+        lazy_gettext("Locale"), default="en", choices=[["en", "English"], ["fr", "French"], ["pl", "Polish"]]
+    )
     submit = SubmitField(lazy_gettext("Update profile"))
 
 
