@@ -1,7 +1,7 @@
 Flask_Babelex==0.9.3
 psycopg2-binary==2.8.2
 texttable==1.6.1
-Unidecode==1.0.23
+Unidecode==1.1.0
 pydub==0.23.1
 mutagen==1.42.0
 python-magic==0.4.15
