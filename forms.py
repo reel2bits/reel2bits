@@ -9,6 +9,7 @@ from wtforms.validators import DataRequired, ValidationError, Length, Regexp
 from wtforms_alchemy import model_form_factory
 from flask_babelex import lazy_gettext
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
+from wtforms.csrf.core import CSRFTokenField
 
 from models import db, User, Album, licences
 
@@ -46,10 +47,14 @@ class ExtendedRegisterForm(RegisterForm):
         if u:
             raise ValidationError(lazy_gettext("Username already taken"))
 
-    __order = ("csrf_token", "name", "email", "password", "password_confirm", "submit")
+    __order = ("name", "email", "password", "password_confirm", "submit")
 
     def __iter__(self):
         fields = list(super(ExtendedRegisterForm, self).__iter__())
+        csrf = any(a.__class__ == CSRFTokenField for a in fields)
+        if csrf:
+            self.__order += ("csrf_token",)
+
         get_field = lambda field_id: next((fld for fld in fields if fld.id == field_id))  # noqa: E731
         return (get_field(field_id) for field_id in self.__order)
 
