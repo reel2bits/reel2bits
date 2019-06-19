@@ -25,7 +25,6 @@
 
 # Low priority:
 - SQL optimization
-- translations update (PR blocked because of library weirdness)
 
 
 - Check for sentry in:
