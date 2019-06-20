@@ -10,7 +10,6 @@ TEMP_DOWNLOAD_FOLDER = "/home/reel2bits/tmp"
 AUDIOWAVEFORM_BIN = "/usr/local/bin/audiowaveform"
 
 # If using sentry, set a DSN
-SENTRY_USER_ATTRS = ['name', 'email']
 SENTRY_DSN = ""
 
 # Redis configuration for broker, used for async background tasks

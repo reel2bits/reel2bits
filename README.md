@@ -54,6 +54,10 @@ Or if you have disabled registration, use the ``` flask createuser ``` command t
     
     pip install waitress
     
+    # If you want SENTRY support (also add related things in config)
+    pip install sentry-sdk[flask]
+    
+    
 Copy systemd services files ```docs/reel2bits-*.service``` to ```/etc/systemd/system/``` and adapt them to your setup.
 
     systemctl enable reel2bits-web reel2bits-worker
