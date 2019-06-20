@@ -1,12 +1,12 @@
 <h1 align="center">
-  Reel2Bits
+  reel2bits
 </h1>
 
 <p align="center">
   <a href="https://drone.sigpipe.me/dashie/reel2bits"><img src="https://drone.sigpipe.me/api/badges/dashie/reel2bits/status.svg" alt="Build Status"/></a>
   <a href="https://dev.sigpipe.me/dashie/reel2bits/src/branch/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-green.svg"/></a>
   <img src="https://img.shields.io/badge/python-%3E%3D3.6-blue.svg"/>
-  [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
+  <a href="https://github.com/ambv/black"><img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="Code Style: black" /></a>
 </p>
 
 <p align="center">
