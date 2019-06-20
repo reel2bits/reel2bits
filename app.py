@@ -36,16 +36,24 @@ __VERSION__ = VERSION
 AVAILABLE_LOCALES = ["fr", "fr_FR", "en", "en_US", "pl"]
 
 try:
-    from raven.contrib.flask import Sentry
-    import raven
+    import sentry_sdk
+    from sentry_sdk.integrations.flask import FlaskIntegration as SentryFlaskIntegration
+    from sentry_sdk.integrations.celery import CeleryIntegration as SentryCeleryIntegration
 
-    print(" * Sentry support loaded")
+    print(" * Sentry Flask/Celery support have been loaded")
     HAS_SENTRY = True
 except ImportError:
-    print(" * No Sentry support")
+    print(" * No Sentry Flask/Celery support available")
     HAS_SENTRY = False
 
 mail = Mail()
+
+GIT_VERSION = ""
+gitpath = os.path.join(os.getcwd(), ".git")
+if os.path.isdir(gitpath):
+    GIT_VERSION = subprocess.check_output(["git", "rev-parse", "--short", "HEAD"])
+    if GIT_VERSION:
+        GIT_VERSION = GIT_VERSION.strip().decode("UTF-8")
 
 
 def make_celery(remoulade):
@@ -78,9 +86,12 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
     app.jinja_env.globals.update(duration_song_human=duration_song_human)
 
     if HAS_SENTRY:
-        app.config["SENTRY_RELEASE"] = raven.fetch_git_sha(os.path.dirname(__file__))
-        sentry = Sentry(app, dsn=app.config["SENTRY_DSN"])  # noqa: F841
-        print(" * Sentry support activated")
+        sentry_sdk.init(
+            app.config["SENTRY_DSN"],
+            integrations=[SentryFlaskIntegration(), SentryCeleryIntegration()],
+            release=f"{VERSION} ({GIT_VERSION})",
+        )
+        print(" * Sentry Flask/Celery support activated")
         print(" * Sentry DSN: %s" % app.config["SENTRY_DSN"])
 
     if app.config["DEBUG"] is True:
@@ -136,13 +147,6 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
         db.session.add(actor)
         db.session.commit()
 
-    git_version = ""
-    gitpath = os.path.join(os.getcwd(), ".git")
-    if os.path.isdir(gitpath):
-        git_version = subprocess.check_output(["git", "rev-parse", "--short", "HEAD"])
-        if git_version:
-            git_version = git_version.strip().decode("UTF-8")
-
     @babel.localeselector
     def get_locale():
         # if a user is logged in, use the locale from the user settings
@@ -169,8 +173,8 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
 
         cfg = {
             "REEL2BITS_VERSION_VER": VERSION,
-            "REEL2BITS_VERSION_GIT": git_version,
-            "REEL2BITS_VERSION": "{0} ({1})".format(VERSION, git_version),
+            "REEL2BITS_VERSION_GIT": GIT_VERSION,
+            "REEL2BITS_VERSION": "{0} ({1})".format(VERSION, GIT_VERSION),
             "app_name": _config.app_name,
             "app_description": _config.app_description,
         }

@@ -47,7 +47,6 @@ TEMP_DOWNLOAD_FOLDER = "/home/dashie/dev/reel2bits/tmp"
 AUDIOWAVEFORM_BIN = "/usr/local/bin/audiowaveform"
 
 # Sentry
-SENTRY_USER_ATTRS = ["name", "email"]
 SENTRY_DSN = ""
 
 # Bcrypt algorithm hashing rounds (reduced for testing purposes only!)
