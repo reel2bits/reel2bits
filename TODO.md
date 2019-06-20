@@ -49,4 +49,5 @@
   - this is due being to user.actor[0].followers returns the real followers as .actor (.target == xxx)
   - and user.actor[0].followings returns the real followings as .target (.actor == xxx)
   - and that build_ordered_collection(list, actor, page) only use .actor because that's how it should work
-  
+  - for now there is a switch_side=True/False ugly fix
+ 

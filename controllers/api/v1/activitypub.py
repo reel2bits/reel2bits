@@ -94,7 +94,7 @@ def user_followings(name):
     actor = user.actor[0]
     followings_list = actor.followings
 
-    return jsonify(**build_ordered_collection(followings_list, actor.url, request.args.get("page")))
+    return jsonify(**build_ordered_collection(followings_list, actor.url, request.args.get("page"), switch_side=True))
 
 
 @bp_ap.route("/user/<string:name>/followers", methods=["GET"])

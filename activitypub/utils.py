@@ -87,7 +87,7 @@ def clean_activity(activity: ObjectType) -> Dict[str, Any]:
     return activity
 
 
-def build_ordered_collection(items, actor_id, page, limit=50):
+def build_ordered_collection(items, actor_id, page, limit=50, switch_side=False):
     total_items = len(items)
 
     if total_items <= 0:
@@ -107,7 +107,7 @@ def build_ordered_collection(items, actor_id, page, limit=50):
             "type": ap.ActivityType.ORDERED_COLLECTION.value,
             "first": {
                 "id": f"{actor_id}/followers?page=0",
-                "orderedItems": [item.actor.url for item in items],
+                "orderedItems": [(item.target.url if switch_side else item.actor.url) for item in items],
                 "partOf": f"{actor_id}/followers",
                 "totalItems": total_items,
                 "type": ap.ActivityType.ORDERED_COLLECTION_PAGE.value,
