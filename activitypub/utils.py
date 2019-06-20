@@ -15,6 +15,10 @@ def ap_url(klass, username):
         return f"https://{current_app.config['AP_DOMAIN']}" f"/user/{username}/inbox"
     elif klass == "outbox":
         return f"https://{current_app.config['AP_DOMAIN']}" f"/user/{username}/outbox"
+    elif klass == "followings":
+        return f"https://{current_app.config['AP_DOMAIN']}" f"/user/{username}/followings"
+    elif klass == "followers":
+        return f"https://{current_app.config['AP_DOMAIN']}" f"/user/{username}/followers"
     else:
         return None
 

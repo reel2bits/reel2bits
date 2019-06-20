@@ -548,6 +548,8 @@ def create_actor(user):
     actor.outbox_url = ap_url("outbox", user.name)
     actor.private_key = key.privkey_pem
     actor.public_key = key.pubkey_pem
+    actor.followers_url = ap_url("followers", user.name)
+    actor.following_url = ap_url("followings", user.name)
 
     return actor
 

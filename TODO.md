@@ -42,5 +42,6 @@
 # ACTIVITYPUB
 
 - deleted sound : test / fix handle correctly, tombstone thing
-- followers list, "following [no]" link to unfollow instead of follow
+
+- Accessing a deleted object/activity should return a Tombstone
 
