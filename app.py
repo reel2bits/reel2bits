@@ -55,6 +55,7 @@ if os.path.isdir(gitpath):
     if GIT_VERSION:
         GIT_VERSION = GIT_VERSION.strip().decode("UTF-8")
 
+
 def make_celery(remoulade):
     celery = Celery(remoulade.import_name, broker=remoulade.config["CELERY_BROKER_URL"])
     celery.conf.update(remoulade.config)
@@ -88,7 +89,7 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
         sentry_sdk.init(
             app.config["SENTRY_DSN"],
             integrations=[SentryFlaskIntegration(), SentryCeleryIntegration()],
-            release=f"{VERSION} ({GIT_VERSION})"
+            release=f"{VERSION} ({GIT_VERSION})",
         )
         print(" * Sentry Flask/Celery support activated")
         print(" * Sentry DSN: %s" % app.config["SENTRY_DSN"])
