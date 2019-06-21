@@ -225,7 +225,10 @@ def outbox_item_activity(item_id):
 
     if item.meta_deleted:
         obj = activitypub.parse_activity(item.payload)
-        resp = jsonify(**obj.get_object().get_tombstone().to_dict())
+        # FIXME not sure about that /activity
+        tomb = obj.get_tombstone().to_dict()
+        tomb["id"] = tomb["id"] + "/activity"
+        resp = jsonify(tomb)
         resp.status_code = 410
         return resp
 
