@@ -3,6 +3,7 @@ import os
 
 from flask import current_app
 from flask_security import SQLAlchemyUserDatastore, UserMixin, RoleMixin
+from flask_security.utils import verify_password
 from flask_sqlalchemy import SQLAlchemy
 from slugify import slugify
 from sqlalchemy import UniqueConstraint
@@ -14,12 +15,19 @@ from sqlalchemy_searchable import make_searchable
 from sqlalchemy_utils.types.choice import ChoiceType
 from sqlalchemy_utils.types.url import URLType
 from sqlalchemy_utils.types.json import JSONType
+from sqlalchemy.types import ARRAY
 from little_boxes.key import Key as LittleBoxesKey
 from activitypub.utils import ap_url
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy import text as sa_text
 from little_boxes import activitypub as ap
 from urllib.parse import urlparse
+from authlib.flask.oauth2.sqla import (
+    OAuth2ClientMixin,
+    OAuth2AuthorizationCodeMixin,
+    OAuth2TokenMixin,
+)
+import time
 
 db = SQLAlchemy()
 make_searchable(db.metadata)
@@ -112,6 +120,13 @@ class User(db.Model, UserMixin):
         else:
             return self.name
 
+    def get_user_id(self):
+        return self.id
+
+    def check_password(self, password):
+        return verify_password(password, self.password)
+
+
 
 event.listen(User.name, "set", User.generate_slug, retval=False)
 
@@ -124,6 +139,37 @@ class Apitoken(db.Model):
 
 
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
+
+
+class OAuth2Client(db.Model, OAuth2ClientMixin):
+    __tablename__ = 'oauth2_client'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(
+        db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'))
+    user = db.relationship('User')
+
+
+class OAuth2AuthorizationCode(db.Model, OAuth2AuthorizationCodeMixin):
+    __tablename__ = 'oauth2_code'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(
+        db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'))
+    user = db.relationship('User')
+
+
+class OAuth2Token(db.Model, OAuth2TokenMixin):
+    __tablename__ = 'oauth2_token'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(
+        db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'))
+    user = db.relationship('User')
+
+    def is_refresh_token_expired(self):
+        expires_at = self.issued_at + self.expires_in * 2
+        return expires_at < time.time()
 
 
 # #### Logging ####
