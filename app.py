@@ -13,9 +13,10 @@ from flask_security.utils import encrypt_password
 from flask_security import signals as FlaskSecuritySignals
 from flask_security import confirmable as FSConfirmable
 from flask_uploads import configure_uploads, UploadSet, AUDIO, patch_request_class
+from oauth import config_oauth
 
 from forms import ExtendedRegisterForm
-from models import db, Config, user_datastore, Role, create_actor
+from models import db, Config, user_datastore, Role, create_actor, OAuth2Client, OAuth2Token
 from utils import InvalidUsage, is_admin, duration_elapsed_human, duration_song_human, add_user_log
 
 import texttable
@@ -117,6 +118,9 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
     # ActivityPub backend
     back = Reel2BitsBackend()
     ap.use_backend(back)
+
+    # Oauth
+    config_oauth(app)
 
     # Setup Flask-Security
     security = Security(  # noqa: F841
@@ -225,6 +229,10 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
         from controllers.api.v1.activitypub import bp_ap
 
         app.register_blueprint(bp_ap)
+
+        from controllers.api.v1.auth import bp_api_v1_auth
+
+        app.register_blueprint(bp_api_v1_auth)
 
     @app.route("/uploads/<string:thing>/<path:stuff>", methods=["GET"])
     def get_uploads_stuff(thing, stuff):
