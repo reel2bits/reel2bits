@@ -183,6 +183,7 @@ def edit(username, soundslug):
             # Switched from private to public: initial federation
 
             from tasks import federate_new_sound
+
             sound.activity_id = federate_new_sound(sound)
             db.session.commit()
 

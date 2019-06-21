@@ -188,7 +188,9 @@ class Reel2BitsBackend(ap.Backend):
     def outbox_delete(self, as_actor: ap.Person, activity: ap.BaseActivity) -> None:
         current_app.logger.debug(f"outbox_delete {activity!r} as {as_actor!r}")
         # Fetch linked activity and mark it deleted
-        orig_activity = Activity.query.filter(Activity.url == activity.get_object().id, Activity.type == "Create").first()
+        orig_activity = Activity.query.filter(
+            Activity.url == activity.get_object().id, Activity.type == "Create"
+        ).first()
         orig_activity.meta_deleted = True
         db.session.commit()
 

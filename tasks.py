@@ -422,9 +422,7 @@ def send_update_sound(sound: Sound) -> None:
     object["name"] = sound.title
     object["content"] = sound.description
 
-    raw_update = dict(
-        to=[follower.actor.url for follower in actor.followers], actor=actor.to_dict(), object=object
-    )
+    raw_update = dict(to=[follower.actor.url for follower in actor.followers], actor=actor.to_dict(), object=object)
     current_app.logger.debug(f"recipients: {raw_update['to']}")
     update = ap.Update(**raw_update)
     post_to_outbox(update)
