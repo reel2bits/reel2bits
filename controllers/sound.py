@@ -181,9 +181,11 @@ def edit(username, soundslug):
 
         if federate_new:
             # Switched from private to public: initial federation
-            from tasks import federate_new_sound
 
-            federate_new_sound(sound)
+            from tasks import federate_new_sound
+            sound.activity_id = federate_new_sound(sound)
+            db.session.commit()
+
         else:
             # it's an update
             from tasks import send_update_sound
@@ -191,6 +193,8 @@ def edit(username, soundslug):
             send_update_sound(sound)
 
         return redirect(url_for("bp_sound.show", username=username, soundslug=sound.slug))
+    else:
+        form.private.data = sound.private
 
     if not sound.private:
         del form.private
