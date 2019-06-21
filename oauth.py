@@ -22,7 +22,7 @@ class AuthorizationCodeGrant(grants.AuthorizationCodeGrant):
             client_id=client.client_id,
             redirect_uri=request.redirect_uri,
             scope=request.scope,
-            user_id=user.id,
+            user_id=user.get_user_id(),
         )
         db.session.add(item)
         db.session.commit()
@@ -49,9 +49,13 @@ class AuthorizationCodeGrant(grants.AuthorizationCodeGrant):
 
 
 class PasswordGrant(grants.ResourceOwnerPasswordCredentialsGrant):
+    TOKEN_ENDPOINT_AUTH_METHODS = [
+        'client_secret_basic', 'client_secret_post'
+    ]
+
     def authenticate_user(self, username, password):
         current_app.logger.debug("password grant auth user")
-        user = User.query.filter_by(username=username).first()
+        user = User.query.filter_by(name=username).first()
         if user.check_password(password):
             return user
 
