@@ -416,8 +416,14 @@ def send_update_sound(sound: Sound) -> None:
     # FIXME: not sure at all about that
     # Should not even work
     actor = sound.user.actor[0]
+
+    # Fetch object and update fields
+    object = sound.activity.payload["object"]
+    object["name"] = sound.title
+    object["content"] = sound.description
+
     raw_update = dict(
-        to=[follower.actor.url for follower in actor.followers], actor=actor.to_dict(), object=sound.activity.to_dict()
+        to=[follower.actor.url for follower in actor.followers], actor=actor.to_dict(), object=object
     )
     current_app.logger.debug(f"recipients: {raw_update['to']}")
     update = ap.Update(**raw_update)

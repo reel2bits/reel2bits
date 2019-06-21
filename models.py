@@ -222,6 +222,7 @@ class Sound(db.Model):
     album_id = db.Column(db.Integer(), db.ForeignKey("album.id"), nullable=True)
     sound_infos = db.relationship("SoundInfo", backref="sound_info", lazy="dynamic", cascade="delete")
     activity_id = db.Column(db.Integer(), db.ForeignKey("activity.id"), nullable=True)
+    activity = db.relationship("Activity")
 
     timeline = db.relationship("Timeline", uselist=False, back_populates="sound")
 
