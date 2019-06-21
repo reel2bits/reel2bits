@@ -37,6 +37,9 @@ def create_client():
         client.client_secret = ''
     else:
         client.client_secret = gen_salt(48)
+    # this needs to be hardcoded for whatever reason
+    client.response_type = 'code'
+    client.grant_type = 'authorization_code\r\npassword'
 
     db.session.add(client)
     db.session.commit()
