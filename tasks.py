@@ -58,7 +58,9 @@ def federate_delete_sound(sound: Sound) -> None:
     # Create delete
     # Somehow we needs to add /activity here
     # FIXME do that better
-    delete = ap.Delete(actor=actor, object=ap.Tombstone(id=sound.activity.payload['id'] + '/activity').to_dict(embed=True))
+    delete = ap.Delete(
+        actor=actor, object=ap.Tombstone(id=sound.activity.payload["id"] + "/activity").to_dict(embed=True)
+    )
     # Federate
     post_to_outbox(delete)
 
