@@ -1,0 +1,43 @@
+{
+    "type": "Create",
+    "id": "https://reel2bits.dev.lan.sigpipe.me/outbox/10b2ab815fe82475",
+    "actor": "https://reel2bits.dev.lan.sigpipe.me/user/dashie",
+    "object": {
+        "type": "Audio",
+        "attributedTo": "https://reel2bits.dev.lan.sigpipe.me/user/dashie",
+        "cc": [
+            "https://reel2bits.dev.lan.sigpipe.me/user/dashie/followers"
+        ],
+        "to": [
+            "https://www.w3.org/ns/activitystreams#Public"
+        ],
+        "name": "zithar test",
+        "content": "description blah blah",
+        "mediaType": "text/plain",
+        "url": {
+            "type": "Link",
+            "href": "http://reel2bits.dev.lan.sigpipe.me/uploads/sounds/dashie/db9833277fc5eced72b919485066d5e1fcd622e1ebc67c6af417e7f882777b29.mp3",
+            "mediaType": "audio/mp3"
+        },
+        "sensitive": false,
+        "published": "2019-03-28T11:55:34Z",
+        "id": "https://reel2bits.dev.lan.sigpipe.me/outbox/10b2ab815fe82475/activity"
+    },
+    "@context": [
+        "https://www.w3.org/ns/activitystreams",
+        "https://w3id.org/security/v1",
+        {
+            "Hashtag": "as:Hashtag",
+            "sensitive": "as:sensitive",
+            "toot": "http://joinmastodon.org/ns#",
+            "featured": "toot:featured"
+        }
+    ],
+    "to": [
+        "https://www.w3.org/ns/activitystreams#Public"
+    ],
+    "cc": [
+        "https://reel2bits.dev.lan.sigpipe.me/user/dashie/followers"
+    ],
+    "published": "2019-03-28T11:55:34Z"
+}

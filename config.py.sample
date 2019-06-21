@@ -21,6 +21,11 @@ CELERY_RESULT_BACKEND = "redis://127.0.0.1:6379/0"
 AP_DOMAIN = "localhost"
 SERVER_NAME = AP_DOMAIN
 BASE_URL = "https://" + AP_DOMAIN
+# Should we enable federation
+AP_ENABLED = False
+# Federation notes:
+# ActivityPub support isn't finished and things like update or delete might not work at all
+# Activate federation at your own risks
 
 SQLALCHEMY_DATABASE_URI = \
     'postgresql+psycopg2://postgres@database/reel2bits'

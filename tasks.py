@@ -1,8 +1,8 @@
 from __future__ import print_function
 
-from models import Sound, User
+from models import db, Sound, User
 from flask_mail import Message
-from flask import render_template
+from flask import render_template, url_for
 from app import mail, create_app, make_celery
 from transcoding_utils import work_transcode, work_metadatas
 from little_boxes import activitypub as ap
@@ -25,6 +25,44 @@ from controllers.sound import bp_sound
 # Make some gloubiboulga about Flask app context
 app = create_app(register_blueprints=False)
 celery = make_celery(app)
+
+
+def federate_new_sound(sound: Sound) -> int:
+    actor = sound.user.actor[0]
+    cc = [actor.followers_url]
+    href = url_for("get_uploads_stuff", thing="sounds", stuff=sound.path_sound())
+
+    raw_audio = dict(
+        attributedTo=actor.url,
+        cc=list(set(cc)),
+        to=[ap.AS_PUBLIC],
+        inReplyTo=None,
+        name=sound.title,
+        content=sound.description,
+        mediaType="text/plain",
+        url={"type": "Link", "href": href, "mediaType": "audio/mp3"},
+    )
+
+    audio = ap.Audio(**raw_audio)
+    create = audio.build_create()
+    # Post to outbox and save Activity id into Sound relation
+    activity_id = post_to_outbox(create)
+    activity = Activity.query.filter(Activity.box == Box.OUTBOX.value, Activity.url == activity_id).first()
+    # TODO FIXME: not sure about all that ID crap
+    return activity.id
+
+
+def federate_delete_sound(sound: Sound) -> None:
+    actor = sound.user.actor[0].to_dict()
+    # Get activity
+    # Create delete
+    # Somehow we needs to add /activity here
+    # FIXME do that better
+    delete = ap.Delete(
+        actor=actor, object=ap.Tombstone(id=sound.activity.payload["id"] + "/activity").to_dict(embed=True)
+    )
+    # Federate
+    post_to_outbox(delete)
 
 
 @celery.task(bind=True, max_retries=3)
@@ -54,6 +92,14 @@ def upload_workflow(self, sound_id):
     msg.body = render_template("email/song_processed.txt", sound=sound)
     msg.html = render_template("email/song_processed.html", sound=sound)
     mail.send(msg)
+
+    # Federate if public
+    if not sound.private:
+        print("UPLOAD WORKFLOW federating sound")
+        if not sound.private:
+            # Federate only if sound is public
+            sound.activity_id = federate_new_sound(sound)
+            db.session.commit()
 
     print("UPLOAD WORKFLOW finished")
 
@@ -216,7 +262,7 @@ def finish_post_to_outbox(self, iri: str) -> None:
         activity = ap.fetch_remote_activity(iri)
         backend = ap.get_backend()
 
-        current_app.logger.info(f"activity={activity!r}")
+        current_app.logger.info(f"finish_post_to_outbox {activity}")
 
         recipients = activity.recipients()
 
@@ -257,6 +303,9 @@ def finish_post_to_outbox(self, iri: str) -> None:
 
 @celery.task(bind=True, max_retries=3)
 def post_to_remote_inbox(self, payload: str, to: str) -> None:
+    if not current_app.config["AP_ENABLED"]:
+        return  # not federating if not enabled
+
     current_app.logger.debug(f"post_to_remote_inbox {payload}")
 
     ap_actor = json.loads(payload)["actor"]
@@ -302,6 +351,9 @@ def post_to_remote_inbox(self, payload: str, to: str) -> None:
 
 @celery.task(bind=True, max_retries=3)
 def forward_activity(self, iri: str) -> None:
+    if not current_app.config["AP_ENABLED"]:
+        return  # not federating if not enabled
+
     try:
         activity = ap.fetch_remote_activity(iri)
         backend = ap.get_backend()
@@ -336,6 +388,8 @@ def post_to_inbox(activity: ap.BaseActivity) -> None:
 
 
 def post_to_outbox(activity: ap.BaseActivity) -> str:
+    current_app.logger.debug(f"post_to_outbox {activity}")
+
     if activity.has_type(ap.CREATE_TYPES):
         activity = activity.build_create()
 
@@ -357,6 +411,22 @@ def send_update_profile(user: User) -> None:
     raw_update = dict(
         to=[follower.actor.url for follower in actor.followers], actor=actor.to_dict(), object=actor.to_dict()
     )
+    current_app.logger.debug(f"recipients: {raw_update['to']}")
+    update = ap.Update(**raw_update)
+    post_to_outbox(update)
+
+
+def send_update_sound(sound: Sound) -> None:
+    # FIXME: not sure at all about that
+    # Should not even work
+    actor = sound.user.actor[0]
+
+    # Fetch object and update fields
+    object = sound.activity.payload["object"]
+    object["name"] = sound.title
+    object["content"] = sound.description
+
+    raw_update = dict(to=[follower.actor.url for follower in actor.followers], actor=actor.to_dict(), object=object)
     current_app.logger.debug(f"recipients: {raw_update['to']}")
     update = ap.Update(**raw_update)
     post_to_outbox(update)

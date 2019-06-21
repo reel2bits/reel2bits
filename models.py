@@ -221,6 +221,8 @@ class Sound(db.Model):
     user_id = db.Column(db.Integer(), db.ForeignKey("user.id"), nullable=False)
     album_id = db.Column(db.Integer(), db.ForeignKey("album.id"), nullable=True)
     sound_infos = db.relationship("SoundInfo", backref="sound_info", lazy="dynamic", cascade="delete")
+    activity_id = db.Column(db.Integer(), db.ForeignKey("activity.id"), nullable=True)
+    activity = db.relationship("Activity")
 
     timeline = db.relationship("Timeline", uselist=False, back_populates="sound")
 
@@ -407,6 +409,14 @@ class Follower(db.Model):
     def __repr__(self):
         return f"<Follower(id='{self.id}', actor_id='{self.actor_id}', target_id='{self.target_id}')>"
 
+    def follow_back(self):
+        f = (
+            db.session.query(Follower.id)
+            .filter(Follower.actor_id == self.target_id, Follower.target_id == self.actor_id)
+            .first()
+        )
+        return f
+
 
 class Actor(db.Model):
     __tablename__ = "actor"
@@ -482,13 +492,15 @@ class Actor(db.Model):
 
     def to_dict(self):
         return {
-            "@context": ["https://www.w3.org/ns/activitystreams", "https://w3id.org/security/v1"],
+            "@context": ap.DEFAULT_CTX,
             "id": self.url,
             "type": self.type.code,
             "preferredUsername": self.preferred_username,
             "name": self.name,
             "inbox": self.inbox_url,
             "outbox": self.outbox_url,
+            "followers": self.followers_url,
+            "following": self.following_url,
             "manuallyApprovesFollowers": self.manually_approves_followers,
             "publicKey": {"id": self.private_key_id(), "owner": self.url, "publicKeyPem": self.public_key},
             "endpoints": {"sharedInbox": self.shared_inbox_url},
@@ -510,6 +522,9 @@ class Activity(db.Model):
     delivered = db.Column(db.Boolean, default=None, nullable=True)
     delivered_date = db.Column(db.DateTime(timezone=False), nullable=True)
     local = db.Column(db.Boolean, default=True)
+    meta_deleted = db.Column(db.Boolean, default=False)
+    meta_undo = db.Column(db.Boolean, default=False)
+    meta_pinned = db.Column(db.Boolean, default=False)
 
 
 def create_actor(user):
@@ -534,6 +549,8 @@ def create_actor(user):
     actor.outbox_url = ap_url("outbox", user.name)
     actor.private_key = key.privkey_pem
     actor.public_key = key.pubkey_pem
+    actor.followers_url = ap_url("followers", user.name)
+    actor.following_url = ap_url("followings", user.name)
 
     return actor
 
@@ -544,7 +561,7 @@ def create_remote_actor(activity_actor: ap.BaseActivity):
     :return: an Actor object
     """
     actor = Actor()
-
+    print(activity_actor)
     actor.preferred_username = activity_actor.preferredUsername
     domain = urlparse(activity_actor.url)
     actor.domain = domain.netloc
@@ -555,9 +572,11 @@ def create_remote_actor(activity_actor: ap.BaseActivity):
     actor.url = activity_actor.id  # FIXME: or .id ??? [cf backend.py:52-53]
     actor.shared_inbox_url = activity_actor._data.get("endpoints", {}).get("sharedInbox")
     actor.inbox_url = activity_actor.inbox
-    actor.outbox_url = activity_actor.outbot
+    actor.outbox_url = activity_actor.outbox
     actor.public_key = activity_actor.get_key().pubkey_pem
     actor.summary = activity_actor.summary
+    actor.followers_url = activity_actor.followers
+    actor.following_url = activity_actor.following
 
     return actor
 
@@ -579,8 +598,10 @@ def update_remote_actor(actor_id: int, activity_actor: ap.BaseActivity) -> None:
     actor.url = activity_actor.id  # FIXME: or .id ??? [cf backend.py:52-53]
     actor.shared_inbox_url = activity_actor._data.get("endpoints", {}).get("sharedInbox")
     actor.inbox_url = activity_actor.inbox
-    actor.outbox_url = activity_actor.outbot
+    actor.outbox_url = activity_actor.outbox
     actor.public_key = activity_actor.get_key().pubkey_pem
     actor.summary = activity_actor.summary
+    actor.followers_url = activity_actor.followers
+    actor.following_url = activity_actor.following
 
     db.session.commit()

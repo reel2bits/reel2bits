@@ -156,7 +156,6 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
         # otherwise try to guess the language from the user accept
         # header the browser transmits.  We support fr/en in this
         # example.  The best match wins.
-        print(f"Best locale choosed: {request.accept_languages.best_match(AVAILABLE_LOCALES)}")
         return request.accept_languages.best_match(AVAILABLE_LOCALES)
 
     @babel.timezoneselector

@@ -179,11 +179,37 @@ class Reel2BitsBackend(ap.Backend):
 
         db.session.commit()
 
+    def outbox_create(self, as_actor: ap.Person, create: ap.Create) -> None:
+        self._handle_replies(as_actor, create)
+
     def outbox_update(self, as_actor: ap.Person, activity: ap.BaseActivity):
         current_app.logger.debug(f"outbox_update {activity!r} as {as_actor!r}")
 
+    def outbox_delete(self, as_actor: ap.Person, activity: ap.BaseActivity) -> None:
+        current_app.logger.debug(f"outbox_delete {activity!r} as {as_actor!r}")
+        # Fetch linked activity and mark it deleted
+        # Somehow we needs to remove /activity here
+        # FIXME do that better
+        activity_uri = activity.get_object_id().rstrip("/activity")
+        current_app.logger.debug(f"id: {activity_uri}")
+        orig_activity = Activity.query.filter(Activity.url == activity_uri, Activity.type == "Create").first()
+        orig_activity.meta_deleted = True
+        db.session.commit()
+
+    def _handle_replies(self, as_actor: ap.Person, create: ap.Create) -> None:
+        """Do magic about replies, we don't handle that for now"""
+        in_reply_to = create.get_object().inReplyTo
+        if not in_reply_to:
+            return
+
+        current_app.logger.error("!!! unhandled case: _handle_replies(in_reply_to=!None) !!!")
+        return
+
     def _fetch_iri(self, iri: str) -> ap.ObjectType:
         base_url = current_app.config["BASE_URL"]
+
+        if not iri:
+            return None
 
         # Check if owned
         if iri.startswith(base_url):

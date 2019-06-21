@@ -145,7 +145,10 @@ def follow():
 
     if user.startswith("https://"):
         actor = Actor.query.filter(Actor.url == user).first()
-        local_user = actor.user
+        if actor:
+            local_user = actor.user
+        else:
+            local_user = None
     else:
         local_user = User.query.filter(User.name == user).first()
 
@@ -189,7 +192,7 @@ def follow():
 
         if not rel:
             # 3. Initiate a Follow request from actor_me to actor_target
-            follow = ap.Follow(actor=actor_me.to_dict(), object=actor_target.to_dict())
+            follow = ap.Follow(actor=actor_me.url, object=actor_target.url)
             post_to_outbox(follow)
             flash(gettext("Follow request have been transmitted"), "success")
         else:

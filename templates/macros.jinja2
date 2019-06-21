@@ -7,24 +7,24 @@
             {% else %}
                 <h6 class="card-title"><a href="{{ url }}">{{ name }}</a></h6>
             {% endif %}
-            <p class="card-text">{{ summary|safe or "" }}</p>
+            {% if summary %}
+                <p class="card-text">{{ summary|safe or "" }}</p>
+            {% endif %}
         </div>
         {% if current_user.is_authenticated %}
-            {% if follow != None %}
-                <div class="card-footer">
-                    {% if follow %}
-                        following
-                        <a href="{{ url_for("bp_users.unfollow", user=url) }}">
-                            <i class="fa fa-user-times" aria-hidden="true" title="unfollow" ></i>
-                        </a>
-                    {% else %}
-                        not following
-                        <a href="{{ url_for("bp_users.follow", user=url) }}">
-                            <i class="fa fa-user-plus" aria-hidden="true" title="follow" ></i>
-                        </a>
-                    {% endif %}
-                </div>
-            {% endif %}
+            <div class="card-footer">
+                {% if follow %}
+                    following
+                    <a href="{{ url_for("bp_users.unfollow", user=url) }}">
+                        <i class="fa fa-user-times" aria-hidden="true" title="unfollow" ></i>
+                    </a>
+                {% else %}
+                    not following
+                    <a href="{{ url_for("bp_users.follow", user=url) }}">
+                        <i class="fa fa-user-plus" aria-hidden="true" title="follow" ></i>
+                    </a>
+                {% endif %}
+            </div>
         {% endif %}
     </div>
 {%- endmacro %}

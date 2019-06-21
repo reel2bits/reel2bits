@@ -109,6 +109,7 @@ def upload():
                 rec.title = filename_orig
             else:
                 rec.title = form.title.data
+            rec.description = form.description.data
             rec.private = form.private.data
 
             if "flac" in request.files["sound"].mimetype or "ogg" in request.files["sound"].mimetype:
@@ -151,9 +152,19 @@ def edit(username, soundslug):
 
     form = SoundEditForm(request.form, obj=sound)
 
+    federate_new = False
+
     if form.validate_on_submit():
+        if sound.private and not form.private.data:
+            # Switched to public
+            federate_new = True
+            sound.private = form.private.data
+
+        if not sound.private and form.private.data:
+            # Can't switch back to private
+            sound.private = False
+
         sound.title = form.title.data
-        sound.private = form.private.data
         sound.description = form.description.data
         sound.licence = form.licence.data
         if form.album.data:
@@ -167,7 +178,27 @@ def edit(username, soundslug):
         db.session.commit()
         # log
         add_user_log(sound.id, sound.user.id, "sounds", "info", "Edited {0} -- {1}".format(sound.id, sound.title))
+
+        if federate_new:
+            # Switched from private to public: initial federation
+
+            from tasks import federate_new_sound
+
+            sound.activity_id = federate_new_sound(sound)
+            db.session.commit()
+
+        else:
+            # it's an update
+            from tasks import send_update_sound
+
+            send_update_sound(sound)
+
         return redirect(url_for("bp_sound.show", username=username, soundslug=sound.slug))
+    else:
+        form.private.data = sound.private
+
+    if not sound.private:
+        del form.private
 
     return render_template("sound/edit.jinja2", pcfg=pcfg, form=form, sound=sound)
 
@@ -183,6 +214,11 @@ def delete(username, soundslug):
     if sound.user.id != current_user.id:
         flash(gettext("Forbidden"), "error")
         return redirect(url_for("bp_users.profile", name=username))
+
+    # Federate Delete
+    from tasks import federate_delete_sound
+
+    federate_delete_sound(sound)
 
     db.session.delete(sound)
     db.session.commit()

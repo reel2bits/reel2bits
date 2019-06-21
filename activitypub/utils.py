@@ -15,6 +15,10 @@ def ap_url(klass, username):
         return f"https://{current_app.config['AP_DOMAIN']}" f"/user/{username}/inbox"
     elif klass == "outbox":
         return f"https://{current_app.config['AP_DOMAIN']}" f"/user/{username}/outbox"
+    elif klass == "followings":
+        return f"https://{current_app.config['AP_DOMAIN']}" f"/user/{username}/followings"
+    elif klass == "followers":
+        return f"https://{current_app.config['AP_DOMAIN']}" f"/user/{username}/followers"
     else:
         return None
 
@@ -47,14 +51,12 @@ def add_extra_collection(item: Dict[str, Any]) -> Dict[str, Any]:
         return item
 
     item["object"]["replies"] = embed_collection(
-        item.get("meta", {}).get("count_direct_reply", 0), f'{item["remote_id"]}/replies'
+        item.get("meta", {}).get("count_direct_reply", 0), f'{item["id"]}/replies'
     )
 
-    item["object"]["likes"] = embed_collection(item.get("meta", {}).get("count_like", 0), f'{item["remote_id"]}/likes')
+    item["object"]["likes"] = embed_collection(item.get("meta", {}).get("count_like", 0), f'{item["id"]}/likes')
 
-    item["object"]["shares"] = embed_collection(
-        item.get("meta", {}).get("count_boost", 0), f'{item["remote_id"]}/shares'
-    )
+    item["object"]["shares"] = embed_collection(item.get("meta", {}).get("count_boost", 0), f'{item["id"]}/shares')
 
     return item
 
@@ -85,7 +87,7 @@ def clean_activity(activity: ObjectType) -> Dict[str, Any]:
     return activity
 
 
-def build_ordered_collection(items, actor_id, page, limit=50):
+def build_ordered_collection(items, actor_id, page, limit=50, switch_side=False):
     total_items = len(items)
 
     if total_items <= 0:
@@ -105,7 +107,7 @@ def build_ordered_collection(items, actor_id, page, limit=50):
             "type": ap.ActivityType.ORDERED_COLLECTION.value,
             "first": {
                 "id": f"{actor_id}/followers?page=0",
-                "orderedItems": [item.url for item in items],
+                "orderedItems": [(item.target.url if switch_side else item.actor.url) for item in items],
                 "partOf": f"{actor_id}/followers",
                 "totalItems": total_items,
                 "type": ap.ActivityType.ORDERED_COLLECTION_PAGE.value,

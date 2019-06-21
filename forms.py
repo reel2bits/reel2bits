@@ -85,6 +85,7 @@ def get_licences():
 
 class SoundUploadForm(Form):
     title = StringField(lazy_gettext("Title"), [Length(max=255)])
+    description = TextAreaField(lazy_gettext("Description"))
     sound = FileField(lazy_gettext("File"), [FileRequired(), FileAllowed(AUDIO)])
     album = QuerySelectField(
         query_factory=get_albums,
@@ -97,8 +98,9 @@ class SoundUploadForm(Form):
     private = BooleanField(lazy_gettext("Private"), default=False)
 
     def validate_private(form, field):
-        if field.data is True and form.album.data.private is False:
-            raise ValidationError(lazy_gettext("Cannot put private sound in public album"))
+        if form.album.data:
+            if field.data is True and form.album.data.private is False:
+                raise ValidationError(lazy_gettext("Cannot put private sound in public album"))
 
     submit = SubmitField(lazy_gettext("Upload"))
 
@@ -117,8 +119,11 @@ class SoundEditForm(Form):
     private = BooleanField(lazy_gettext("Private"), default=False)
 
     def validate_private(form, field):
-        if field.data is True and form.album.data.private is False:
-            raise ValidationError(lazy_gettext("Cannot put private sound in public album"))
+        if form.album.data:
+            if field.data is True and form.album.data.private is False:
+                raise ValidationError(lazy_gettext("Cannot put private sound in public album"))
+        if field.data is True and form.private.data is False:
+            raise ValidationError(lazy_gettext("Published sound cannot be privatized again"))
 
     submit = SubmitField(lazy_gettext("Edit sound"))
 
