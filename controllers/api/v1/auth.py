@@ -56,6 +56,7 @@ def create_client():
     return response
 
 
+# This endpoint is used by the grants: authorization_code and implicit
 @bp_api_v1_auth.route("/oauth/authorize", methods=["GET", "POST"])
 def oauth_authorize():
     # input: client_id, client_secret, redirect_uri, scope
