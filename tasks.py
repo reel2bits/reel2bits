@@ -53,10 +53,10 @@ def federate_new_sound(sound: Sound) -> int:
 
 
 def federate_delete_sound(sound: Sound) -> None:
-    actor = sound.user.actor[0]
+    actor = sound.user.actor[0].to_dict()
     # Get activity
     # Create delete
-    delete = ap.Delete(actor=actor, object=ap.Tombstone(id=sound.activity.id).to_dict(embed=True))
+    delete = ap.Delete(actor=actor, object=ap.Tombstone(id=sound.activity.url).to_dict(embed=True))
     # Federate
     post_to_outbox(delete)
 

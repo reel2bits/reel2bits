@@ -185,6 +185,13 @@ class Reel2BitsBackend(ap.Backend):
     def outbox_update(self, as_actor: ap.Person, activity: ap.BaseActivity):
         current_app.logger.debug(f"outbox_update {activity!r} as {as_actor!r}")
 
+    def outbox_delete(self, as_actor: ap.Person, activity: ap.BaseActivity) -> None:
+        current_app.logger.debug(f"outbox_delete {activity!r} as {as_actor!r}")
+        # Fetch linked activity and mark it deleted
+        orig_activity = Activity.query.filter(Activity.url == activity.get_object().id, Activity.type == "Create").first()
+        orig_activity.meta_deleted = True
+        db.session.commit()
+
     def _handle_replies(self, as_actor: ap.Person, create: ap.Create) -> None:
         """Do magic about replies, we don't handle that for now"""
         in_reply_to = create.get_object().inReplyTo
