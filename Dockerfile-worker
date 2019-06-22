@@ -3,7 +3,7 @@ FROM python:3.6-alpine
 
 LABEL maintainer="Dashie <dashie@sigpipe.me>"
 
-LABEL org.label-schema.license=MIT \
+LABEL org.label-schema.license=AGPL3 \
     org.label-schema.name=reel2bits-web \
     org.label-schema.vcs-url=https://dev.sigpipe.me/dashie/reel2bits \
     org.label-schema.build-date=$DRONE_BUILD_STARTED \
