@@ -24,7 +24,7 @@ ActivityPub federation is still a work in progress, everything else works.
  - try https://github.com/chriskuehl/python3.6-debian-stretch if you use debian stable
 
 ## Installation
-    Install a BDD (mysql is supported, SQLite maybe, PostgreSQL should be)
+    Install PostgreSQL first for the database. MySQL or SQLITE3 are unsupported as we use PostgreSQL specific extensions.
     Makes sure that encoding is/will be in UNICODE/UTF-8
     git clone http://dev.sigpipe.me/dashie/reel2bits
     cd reel2bits
