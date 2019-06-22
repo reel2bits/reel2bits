@@ -1,8 +1,12 @@
 <template>
   <div id="app">
     <div id="nav">
+      <h1>{{ sitename }}</h1>
+      <hr>
       <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link>
+      <a href="#" v-if="currentUser" @click.prevent="logout">Logout</a>
+      <span> | <router-link to="/login">Login</router-link></span>
     </div>
     <router-view/>
   </div>
@@ -27,3 +31,19 @@
   }
 }
 </style>
+
+<script>
+export default {
+  name: 'app',
+  computed: {
+    currentUser () { return this.$store.state.users.currentUser },
+    sitename () { return this.$store.state.instance.name }
+  },
+  methods: {
+    logout () {
+      this.$router.replace('/')
+      this.$store.dispatch('logout')
+    }
+  }
+}
+</script>
