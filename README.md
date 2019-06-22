@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://drone.sigpipe.me/dashie/reel2bits"><img src="https://drone.sigpipe.me/api/badges/dashie/reel2bits/status.svg" alt="Build Status"/></a>
-  <a href="https://dev.sigpipe.me/dashie/reel2bits/src/branch/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-green.svg"/></a>
+  <a href="https://dev.sigpipe.me/dashie/reel2bits/src/branch/master/LICENSE"><img src="https://img.shields.io/badge/license-AGPL3-green.svg"/></a>
   <img src="https://img.shields.io/badge/python-%3E%3D3.6-blue.svg"/>
   <a href="https://github.com/ambv/black"><img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="Code Style: black" /></a>
 </p>
@@ -92,7 +92,7 @@ TODO
     $ celery worker -A tasks.celery --loglevel=error
        
 ## Licensing
- - MIT License
+ - AGPL v3
  
 ## Others projects inspired from
  - https://github.com/tsileo/microblog.pub from Little-Boxes

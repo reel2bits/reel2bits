@@ -252,8 +252,8 @@ msgstr ""
 
 #: templates/about.jinja2:19
 #, python-format
-msgid "reel2bits is developped by %(dashie)s and is available under MIT license."
-msgstr "reel2bits est développé par %(dashie)s et est disponible sous licence MIT."
+msgid "reel2bits is developped by %(dashie)s and is available under AGPL3 license."
+msgstr "reel2bits est développé par %(dashie)s et est disponible sous licence AGPL3."
 
 #: templates/about.jinja2:21
 #, python-format
