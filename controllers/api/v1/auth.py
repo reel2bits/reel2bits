@@ -79,7 +79,7 @@ def oauth_authorize():
         return authorization.create_authorization_response(grant_user=grant_user)
 
 
-@bp_api_v1_auth.route("/oauth/token", methods=["POST"])
+@bp_api_v1_auth.route("/oauth/token", methods=["OPTIONS", "POST"])
 def oauth_token():
     return authorization.create_token_response()
 
