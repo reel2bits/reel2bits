@@ -16,7 +16,7 @@ export const getOrCreateApp = ({ clientId, clientSecret, instance, commit }) => 
   form.append('redirect_uris', REDIRECT_URI)
   form.append('scopes', 'read write follow push')
 
-  axios.post(url, form)
+  return axios.post(url, form)
     .then((data) => data.data)
     .then((app) => ({ clientId: app.client_id, clientSecret: app.client_secret }))
     .then((app) => commit('setClientData', app) || app)
