@@ -40,7 +40,7 @@ export default {
     )
   },
   methods: {
-    ...mapActions({ login: 'authFlowlogin' }),
+    ...mapActions({ login: 'authFlow/login' }),
     submitPassword: function () {
       const { clientId } = this.oauth
       const data = {

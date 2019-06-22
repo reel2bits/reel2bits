@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
-import Login from './components/login/login.vue'
+import LoginForm from './components/login_form/login_form.vue'
 
 Vue.use(Router)
 
@@ -24,8 +24,8 @@ export default new Router({
     },
     {
       path: '/login',
-      name: 'login',
-      component: Login
+      name: 'login_form',
+      component: LoginForm
     }
   ]
 })
