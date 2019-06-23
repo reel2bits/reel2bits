@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 
 import interfaceModule from './modules/interface.js'
 import instanceModule from './modules/instance.js'
+import usersModule from './modules/users.js'
 import oauthModule from './modules/oauth.js'
 
 import createPersistedState from './lib/persisted_state.js'
@@ -27,6 +28,7 @@ const persistedStateOptions = {
     modules: {
       interface: interfaceModule,
       instance: instanceModule,
+      users: usersModule,
       oauth: oauthModule
     },
     plugins: [persistedState]
