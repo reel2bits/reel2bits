@@ -51,6 +51,7 @@ const setSettings = async ({ store }) => {
     // store.dispatch('setInstanceOption', { name: 'instanceUrl', value: 'http://localhost:5000' })
     store.dispatch('setInstanceOption', { name: 'instanceUrl', value: 'https://reel2bits.dev.lan.sigpipe.me' })
   } else {
+    // FIXME
     throw new Error('IMPLEMENT ME')
   }
 
