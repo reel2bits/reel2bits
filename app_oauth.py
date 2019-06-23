@@ -43,7 +43,7 @@ class AuthorizationCodeGrant(grants.AuthorizationCodeGrant):
         db.session.commit()
 
     def authenticate_user(self, authorization_code):
-        current_app.logger.debug("auth user")
+        print("auth user")
 
         return User.query.get(authorization_code.user_id)
 
@@ -69,6 +69,12 @@ class RefreshTokenGrant(grants.RefreshTokenGrant):
         return User.query.get(credential.user_id)
 
 
+class ClientCredentialsGrant(grants.ClientCredentialsGrant):
+    TOKEN_ENDPOINT_AUTH_METHODS = [
+        'client_secret_basic', 'client_secret_post'
+    ]
+
+
 query_client = create_query_client_func(db.session, OAuth2Client)
 save_token = create_save_token_func(db.session, OAuth2Token)
 authorization = AuthorizationServer(
@@ -79,11 +85,12 @@ require_oauth = ResourceProtector()
 
 
 def config_oauth(app):
+    print(" * OAuth init")
     authorization.init_app(app)
 
     # support all grants
     authorization.register_grant(grants.ImplicitGrant)
-    authorization.register_grant(grants.ClientCredentialsGrant)
+    authorization.register_grant(ClientCredentialsGrant)
     authorization.register_grant(AuthorizationCodeGrant)
     authorization.register_grant(PasswordGrant)
     authorization.register_grant(RefreshTokenGrant)
