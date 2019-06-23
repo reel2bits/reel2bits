@@ -11,11 +11,13 @@
     "axios": "^0.19.0",
     "core-js": "^2.6.5",
     "localforage": "^1.7.3",
+    "lodash": "^4.17.11",
     "lodash.merge": "^4.6.1",
     "object-path": "^0.11.4",
     "vue": "^2.6.10",
     "vue-axios": "^2.1.4",
     "vue-router": "^3.0.3",
+    "vuelidate": "^0.7.4",
     "vuex": "^3.0.1"
   },
   "devDependencies": {

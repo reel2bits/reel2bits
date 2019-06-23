@@ -56,8 +56,22 @@ const getTokenWithCredentials = ({ clientId, clientSecret, instance, username, p
   return axios.post(url, form).then((data) => data.data)
 }
 
+const getToken = ({ clientId, clientSecret, instance, code }) => {
+  const url = `${instance}/oauth/token`
+  const form = new window.FormData()
+
+  form.append('client_id', clientId)
+  form.append('client_secret', clientSecret)
+  form.append('grant_type', 'authorization_code')
+  form.append('code', code)
+  form.append('redirect_uri', `${window.location.origin}/oauth-callback`)
+
+  return axios.post(url, form).then((data) => data.data)
+}
+
 const oauth = {
   login,
+  getToken,
   getTokenWithCredentials,
   getOrCreateApp
 }

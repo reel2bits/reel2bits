@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapGetters } from 'vuex'
+import { mapState } from 'vuex'
 import oauthApi from '../../backend/oauth/oauth.js'
 
 export default {
@@ -34,13 +34,9 @@ export default {
       instance: state => state.instance,
       loggingIn: state => state.users.loggingIn,
       oauth: state => state.oauth
-    }),
-    ...mapGetters(
-      'authFlow', ['requiredPassword', 'requiredToken']
-    )
+    })
   },
   methods: {
-    ...mapActions({ login: 'authFlow/login' }),
     submitPassword: function () {
       const { clientId } = this.oauth
       const data = {
@@ -49,6 +45,11 @@ export default {
         instance: this.instance.instanceUrl,
         commit: this.$store.commit
       }
+
+      // Get or create App
+      // Then authorize to get code
+      // And finally get the bearer from token
+
       oauthApi.getOrCreateApp(data).then((app) => {
         oauthApi.getTokenWithCredentials(
           {
@@ -64,7 +65,7 @@ export default {
             return
           }
           this.login(result).then(() => {
-            this.$router.push({ name: 'profile' })
+            this.$router.push({ name: 'profil' })
           })
         })
       })
