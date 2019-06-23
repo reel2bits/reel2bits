@@ -77,7 +77,6 @@ export const getClientToken = ({ clientId, clientSecret, instance }) => {
   form.append('client_id', clientId)
   form.append('client_secret', clientSecret)
   form.append('grant_type', 'client_credentials')
-  form.append('token_endpoint_auth_method', 'client_secret_post')
   form.append('redirect_uri', `${window.location.origin}/oauth-callback`)
 
   return axios.post(url, form).then((data) => data.data)

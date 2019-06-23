@@ -4,7 +4,9 @@ import oauth from '../../backend/oauth/oauth.js'
 const oac = {
   props: ['code'],
   mounted () {
+    console.log('/oauth-callback got called')
     if (this.code) {
+      console.log('with a code ! ' + this.code)
       const { clientId, clientSecret } = this.$store.state.oauth
 
       oauth.getToken({
