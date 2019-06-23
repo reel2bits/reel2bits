@@ -16,7 +16,7 @@ const authHeaders = (accessToken) => {
   }
 }
 
-const headers = (accessToken) => {
+const headers = (accessToken=null) => {
   return {
     Accept: 'application/json',
     'Content-Type': 'application/json',
@@ -30,7 +30,7 @@ const headers = (accessToken) => {
  * Optionals:
  *  bio, homepage, location, token
  */
-const register = ({ params }) => {
+const register = (params) => {
   const { nickname, ...rest } = params
 
   const body = JSON.stringify({
@@ -42,7 +42,7 @@ const register = ({ params }) => {
 
   return apiClient.post(MASTODON_REGISTRATION_URL,
     body,
-    { headers: headers(null) })
+    { headers: headers() })
     .then((response) => [response.ok, response])
     .then(([ok, response]) => {
       if (ok) {
