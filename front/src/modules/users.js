@@ -78,7 +78,7 @@ const users = {
       store.commit('signUpPending')
 
       try {
-        let data = await apiService.register(store, userInfo)
+        let data = await apiService.register(userInfo)
         store.commit('signUpSuccess')
         store.commit('setToken', data.access_token)
         // store.dispatch('loginUser', data.access_token)
