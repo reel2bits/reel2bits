@@ -1,0 +1,22 @@
+- register app if client_id / client_secret not found in localstorage
+- then call /oauth/token with
+client_id
+client_secret
+grant_type=client_credentials
+redirect_uri=/oauth-callback
+- then get
+token_type=Bearer
+scope=read write follow
+refresh_token=AAA
+expires_in=600
+created_at=asadadasdsa
+access_token=BBB
+- on login send
+client_id
+client_secret
+grant_type=password
+- then on login/register send a header
+Authorization: Bearer ACCESS_TOKEN=BBB
+- then get the new access_token
+- then check /api/v1/accounts/verify_credentials with header
+Authorization: Bearer new access token
