@@ -48,7 +48,7 @@ const register = (params) => {
     agreement: true,
     ...rest
   })
-
+  
   return apiClient.post(MASTODON_REGISTRATION_URL,
     body,
     { headers: headers() })
