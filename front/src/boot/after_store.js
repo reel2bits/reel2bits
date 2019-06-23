@@ -1,3 +1,5 @@
+// Snippets from https://git.pleroma.social/pleroma/pleroma-fe/blob/develop/src/boot/after_store.js
+
 import Vue from 'vue'
 import router from '../router'
 import App from '../App.vue'
@@ -51,15 +53,30 @@ const setSettings = async ({ store }) => {
     throw new Error('IMPLEMENT ME')
   }
 
-  store.commit('authFlow/setInitialStrategy', 'password')
-
   getAppSecret({ store })
+}
+
+const getTOS = async ({ store }) => {
+  try {
+    // TODO: axios
+    const res = await window.fetch('/static/terms-of-service.html')
+    if (res.ok) {
+      const html = await res.text()
+      store.dispatch('setInstanceOption', { name: 'tos', value: html })
+    } else {
+      throw (res)
+    }
+  } catch (e) {
+    console.warn("Can't load TOS")
+    console.warn(e)
+  }
 }
 
 const afterStoreSetup = ({ store }) => {
   Promise.all([
     checkOAuthToken({ store }),
     setSettings({ store }),
+    getTOS({ store }),
     getNodeInfo({ store })
   ])
 
