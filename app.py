@@ -13,7 +13,7 @@ from flask_security.utils import encrypt_password
 from flask_security import signals as FlaskSecuritySignals
 from flask_security import confirmable as FSConfirmable
 from flask_uploads import configure_uploads, UploadSet, AUDIO, patch_request_class
-from oauth import config_oauth
+from app_oauth import config_oauth
 from flask_cors import CORS
 
 from forms import ExtendedRegisterForm
@@ -96,9 +96,10 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
         print(" * Sentry Flask/Celery support activated")
         print(" * Sentry DSN: %s" % app.config["SENTRY_DSN"])
 
+
     if app.config["DEBUG"] is True:
         app.jinja_env.auto_reload = True
-        app.logger.setLevel(logging.DEBUG)
+        logging.basicConfig(level=logging.DEBUG)
 
     # Logging
     if not app.debug:
@@ -108,8 +109,10 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
         file_handler.setFormatter(formatter)
         app.logger.addHandler(file_handler)
         
-    logging.getLogger('flask_cors').level = logging.DEBUG
     CORS(app, origins=["*"])
+
+    if app.config["DEBUG"] is True:
+        logging.getLogger('flask_cors.extension').level = logging.DEBUG
 
     mail.init_app(app)
     migrate = Migrate(app, db)  # noqa: F841
