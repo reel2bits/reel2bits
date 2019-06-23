@@ -1,5 +1,4 @@
 import axios from 'axios'
-import oauth from '../../modules/oauth.js'
 
 // const MASTODON_LOGIN_URL = '/api/v1/accounts/verify_credentials'
 const MASTODON_REGISTRATION_URL = '/api/v1/accounts'
