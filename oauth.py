@@ -49,6 +49,9 @@ class AuthorizationCodeGrant(grants.AuthorizationCodeGrant):
 
 
 class PasswordGrant(grants.ResourceOwnerPasswordCredentialsGrant):
+    TOKEN_ENDPOINT_AUTH_METHODS = [
+        'client_secret_basic', 'client_secret_post'
+    ]
     def authenticate_user(self, username, password):
         current_app.logger.debug("password grant auth user")
         user = User.query.filter_by(name=username).first()

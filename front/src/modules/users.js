@@ -1,5 +1,4 @@
 import { each, merge } from 'lodash'
-import { set } from 'vue'
 import apiService from '../services/api/api.service.js'
 import { humanizeErrors } from './errors'
 
@@ -14,9 +13,9 @@ export const mergeOrAdd = (arr, obj, item) => {
   } else {
     // This is a new item, prepare it
     arr.push(item)
-    set(obj, item.id, item)
+    this.$set(obj, item.id, item)
     if (item.screen_name && !item.screen_name.includes('@')) {
-      set(obj, item.screen_name.toLowerCase(), item)
+      this.$set(obj, item.screen_name.toLowerCase(), item)
     }
     return { item, new: true }
   }
@@ -79,7 +78,7 @@ const users = {
       store.commit('signUpPending')
 
       try {
-        let data = await apiService.register(userInfo)
+        let data = await apiService.register(store, userInfo)
         store.commit('signUpSuccess')
         store.commit('setToken', data.access_token)
         // store.dispatch('loginUser', data.access_token)
