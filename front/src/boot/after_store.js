@@ -5,6 +5,7 @@ import router from '../router'
 import App from '../App.vue'
 import axios from 'axios'
 import apiService from '../services/api/api.service.js'
+import { getOrCreateApp, getClientToken } from '../backend/oauth/oauth.js'
 
 const getNodeInfo = async ({ store }) => {
   await axios.get(`${store.state.instance.instanceUrl}/nodeinfo/2.0`)
@@ -36,12 +37,20 @@ const checkOAuthToken = async ({ store }) => {
       } catch (e) {
         console.log(e)
       }
+    } else {
+      console.log('no user token present in cache')
     }
   })
 }
 
 const getAppSecret = async ({ store }) => {
-
+  const { state, commit } = store
+  const { oauth, instance } = state
+  return getOrCreateApp({ ...oauth, instance: instance.instanceUrl, commit })
+    .then((app) => getClientToken({ ...app, instance: instance.instanceUrl }))
+    .then((token) => {
+      commit('setAppToken', token.access_token)
+    })
 }
 
 const setSettings = async ({ store }) => {
