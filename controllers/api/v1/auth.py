@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify, abort
 from models import db, OAuth2Client, User
 from werkzeug.security import gen_salt
-from oauth import authorization
+from app_oauth import authorization
 
 bp_api_v1_auth = Blueprint("bp_api_v1_auth", __name__)
 
@@ -79,7 +79,7 @@ def oauth_authorize():
         return authorization.create_authorization_response(grant_user=grant_user)
 
 
-@bp_api_v1_auth.route("/oauth/token", methods=["OPTIONS", "POST"])
+@bp_api_v1_auth.route("/oauth/token", methods=["POST"])
 def oauth_token():
     return authorization.create_token_response()
 

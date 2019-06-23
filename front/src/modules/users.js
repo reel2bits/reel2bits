@@ -68,10 +68,10 @@ const users = {
   actions: {
     loginUser (store, accessToken) {
       return new Promise((resolve, reject) => {
-        const commit = store.commit
-        commit('beginLogin')
+        store.commit('beginLogin')
         // do things
-        commit('endLogin')
+        console.warn('loginUser dispatch not implemented')
+        store.commit('endLogin')
       })
     },
     async signUp (store, userInfo) {

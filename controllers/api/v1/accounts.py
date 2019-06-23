@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify, abort
 from models import db, User, user_datastore, Role, create_actor, OAuth2Token
 from flask_security.utils import encrypt_password
 from flask_security import confirmable as FSConfirmable
-from oauth import authorization
+from app_oauth import authorization
 import datetime
 
 bp_api_v1_accounts = Blueprint("bp_api_v1_accounts", __name__)

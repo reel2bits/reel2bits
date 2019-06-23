@@ -64,6 +64,20 @@ const getToken = ({ clientId, clientSecret, instance, code }) => {
   form.append('client_secret', clientSecret)
   form.append('grant_type', 'authorization_code')
   form.append('code', code)
+  form.append('token_endpoint_auth_method', 'client_secret_post')
+  form.append('redirect_uri', `${window.location.origin}/oauth-callback`)
+
+  return axios.post(url, form).then((data) => data.data)
+}
+
+export const getClientToken = ({ clientId, clientSecret, instance }) => {
+  const url = `${instance}/oauth/token`
+  const form = new window.FormData()
+
+  form.append('client_id', clientId)
+  form.append('client_secret', clientSecret)
+  form.append('grant_type', 'client_credentials')
+  form.append('token_endpoint_auth_method', 'client_secret_post')
   form.append('redirect_uri', `${window.location.origin}/oauth-callback`)
 
   return axios.post(url, form).then((data) => data.data)
