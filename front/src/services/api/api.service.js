@@ -1,4 +1,5 @@
 import axios from 'axios'
+import oauth from '../../modules/oauth.js'
 
 // const MASTODON_LOGIN_URL = '/api/v1/accounts/verify_credentials'
 const MASTODON_REGISTRATION_URL = '/api/v1/accounts'
@@ -39,7 +40,7 @@ const setBaseUrl = (baseUrl) => {
  * Optionals:
  *  bio, homepage, location, token
  */
-const register = (params) => {
+const register = (params, store) => {
   const { nickname, ...rest } = params
 
   const body = JSON.stringify({
@@ -48,10 +49,11 @@ const register = (params) => {
     agreement: true,
     ...rest
   })
-  
+
+  // FIXME: Error: response.data.then is not a function
   return apiClient.post(MASTODON_REGISTRATION_URL,
     body,
-    { headers: headers() })
+    { headers: headers(store.getters.getToken()) })
     .then((response) => [response.ok, response])
     .then(([ok, response]) => {
       if (ok) {
