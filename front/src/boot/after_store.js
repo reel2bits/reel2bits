@@ -4,6 +4,7 @@ import Vue from 'vue'
 import router from '../router'
 import App from '../App.vue'
 import axios from 'axios'
+import apiService from '../services/api/api.service.js'
 
 const getNodeInfo = async ({ store }) => {
   await axios.get(`${store.state.instance.instanceUrl}/nodeinfo/2.0`)
@@ -52,6 +53,8 @@ const setSettings = async ({ store }) => {
   } else {
     throw new Error('IMPLEMENT ME')
   }
+
+  apiService.setBaseUrl(store.state.instance.instanceUrl)
 
   getAppSecret({ store })
 }

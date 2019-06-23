@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 // const MASTODON_LOGIN_URL = '/api/v1/accounts/verify_credentials'
-const MASTODON_REGISTRATION_URL = (baseUrl) => `${baseUrl}/api/v1/accounts`
+const MASTODON_REGISTRATION_URL = '/api/v1/accounts'
 // const MASTODON_USER_URL = '/api/v1/accounts'
 
 const apiClient = axios.create({
@@ -24,13 +24,22 @@ const headers = (accessToken = null) => {
   }
 }
 
+/* Dirty thing used in after_store.js:setSettings to set the baseURL of the
+ * apiClient after initialization
+ * It can probably done better...
+ * FIXME
+ */
+const setBaseUrl = (baseUrl) => {
+  apiClient.defaults.baseURL = baseUrl
+}
+
 /*
  * Parameters needed:
  *  nickname, email, fullname, password, password_confirm
  * Optionals:
  *  bio, homepage, location, token
  */
-const register = (store, params) => {
+const register = (params) => {
   const { nickname, ...rest } = params
 
   const body = JSON.stringify({
@@ -40,7 +49,7 @@ const register = (store, params) => {
     ...rest
   })
 
-  return apiClient.post(MASTODON_REGISTRATION_URL(store.state.instance.instanceUrl),
+  return apiClient.post(MASTODON_REGISTRATION_URL,
     body,
     { headers: headers() })
     .then((response) => [response.ok, response])
@@ -57,7 +66,8 @@ const apiService = {
   apiClient,
   headers,
   authHeaders,
-  register
+  register,
+  setBaseUrl
 }
 
 export default apiService
