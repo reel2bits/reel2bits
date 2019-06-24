@@ -1,5 +1,5 @@
-from flask import Blueprint, request, jsonify, abort
-from models import db, User, user_datastore, Role, create_actor, OAuth2Token
+from flask import Blueprint, request, jsonify, abort, current_app
+from models import db, User, user_datastore, Role, create_actor, OAuth2Token, OAuth2Client
 from flask_security.utils import encrypt_password
 from flask_security import confirmable as FSConfirmable
 from app_oauth import authorization
@@ -19,6 +19,19 @@ def accounts():
     :return: JSON
     """
     errors = {}
+
+    # Get the bearer token
+    bearer = None
+    if 'Authorization' in request.headers:
+        b = request.headers.get('Authorization')
+        b.strip().split(" ")
+        if len(b) == 2:
+            bearer = b[1]
+        else:
+            errors["bearer"] = ["API Bearer Authorization format issue"]
+    else:
+        current_app.logging.info("/api/v1/accounts: no Authorization bearer given")
+
     if not request.json:
         abort(400)
 
@@ -79,12 +92,21 @@ def accounts():
     if FSConfirmable.requires_confirmation(u):
         FSConfirmable.send_confirmation_instructions(u)
 
-    token = authorization.generate_token("reel2bits_frontend", "password", user=u, scope="read write follow push",
+    # get the matching item from the given bearer
+    bearer_item = OAuth2Token.query.filter(OAuth2Token.access_token == bearer).first()
+    if not bearer_item:
+        abort(400)
+    client_item = OAuth2Client.query.filter(OAuth2Client.client_id == bearer_item.client_id).first()
+    if not client_item:
+        abort(400)
+
+    # https://github.com/lepture/authlib/blob/master/authlib/oauth2/rfc6749/grants/base.py#L51
+    token = authorization.generate_token(client_item.client_id, "client_credentials", user=u, scope=client_item.scope,
                                          expires_in=None)
 
     tok = OAuth2Token()
     tok.user_id = u.id
-    tok.client_id = f'autogen_registration_${datetime.datetime.utcnow()}'  # FIXME
+    tok.client_id = client_item.client_id
     # the frontend should request an app every time it doesn't have one in local storage
     # and this app should allow delivering a somewhat non usuable Token
     # token which gets sent to this endpoint and gets used to get back the right client_id
