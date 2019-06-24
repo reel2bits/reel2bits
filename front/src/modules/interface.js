@@ -1,4 +1,4 @@
-import { set, delete as del } from 'vue'
+import vue from 'vue'
 
 const defaultState = {
   settings: {
@@ -15,11 +15,11 @@ const interfaceMod = {
         if (state.noticeClearTimeout) {
           clearTimeout(state.noticeClearTimeout)
         }
-        set(state.settings, 'currentSaveStateNotice', { error: false, data: success })
-        set(state.settings, 'noticeClearTimeout',
-          setTimeout(() => del(state.settings, 'currentSaveStateNotice'), 2000))
+        vue.set(state.settings, 'currentSaveStateNotice', { error: false, data: success })
+        vue.set(state.settings, 'noticeClearTimeout',
+          setTimeout(() => vue.delete(state.settings, 'currentSaveStateNotice'), 2000))
       } else {
-        set(state.settings, 'currentSaveStateNotice', { error: true, errorData: error })
+        vue.set(state.settings, 'currentSaveStateNotice', { error: true, errorData: error })
       }
     }
   },

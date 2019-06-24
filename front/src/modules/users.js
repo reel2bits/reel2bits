@@ -1,7 +1,7 @@
 import { each, merge } from 'lodash'
 import apiService from '../services/api/api.service.js'
 import { humanizeErrors } from './errors'
-import { set } from 'vue'
+import vue from 'vue'
 
 // Function from https://git.pleroma.social/pleroma/pleroma-fe/blob/develop/src/modules/users.js
 export const mergeOrAdd = (arr, obj, item) => {
@@ -14,9 +14,9 @@ export const mergeOrAdd = (arr, obj, item) => {
   } else {
     // This is a new item, prepare it
     arr.push(item)
-    set(obj, item.id, item)
+    vue.set(obj, item.id, item)
     if (item.screen_name && !item.screen_name.includes('@')) {
-      set(obj, item.screen_name.toLowerCase(), item)
+      vue.set(obj, item.screen_name.toLowerCase(), item)
     }
     return { item, new: true }
   }
