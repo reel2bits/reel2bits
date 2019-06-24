@@ -7,7 +7,7 @@ import OAuthCallback from './components/oauth_callback/oauth_callback.vue'
 
 Vue.use(Router)
 
-export default new Router({
+const router = new Router({
   mode: 'history',
   base: process.env.BASE_URL,
   routes: [
@@ -27,7 +27,8 @@ export default new Router({
     {
       name: 'profile',
       path: '/profile',
-      component: () => import(/* webpackChunkName: "profile" */ './views/Profile.vue')
+      component: () => import(/* webpackChunkName: "profile" */ './views/Profile.vue'),
+      meta: { requiresAuth: true }
     },
     {
       path: '/login',
@@ -47,3 +48,5 @@ export default new Router({
     }
   ]
 })
+
+export default router
