@@ -65,7 +65,7 @@ export default {
             return
           }
           this.login(result).then(() => {
-            this.$router.push({ name: 'profil' })
+            this.$router.push({ name: 'profile' })
           })
         })
       })

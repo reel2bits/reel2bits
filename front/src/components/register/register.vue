@@ -144,7 +144,7 @@ export default {
       if (!this.$v.$invalid) {
         try {
           await this.signUp(this.user)
-          this.$router.push({ name: 'profil' })
+          this.$router.push({ name: 'profile' })
         } catch (error) {
           console.warn('Registration failed: ' + error)
         }
