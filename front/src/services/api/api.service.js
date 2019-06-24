@@ -61,7 +61,7 @@ const register = (params, store) => {
 }
 
 // TODO: here too ideally we would need to do something like parseUser() on response.data to get a nicer structure
-const verifyCredentials = (user) => {
+const verifyCredentials = (user, store) => {
   return apiClient.post(MASTODON_LOGIN_URL, null, { headers: headers(store.getters.getToken()) })
     .then(response => {
       return response.data
