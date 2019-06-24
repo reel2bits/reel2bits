@@ -6,3 +6,4 @@ omit =
     configtest.py
     **/*__init__.py
     venv/*
+    front/*

@@ -2,8 +2,8 @@ from flask import Blueprint, request, jsonify, abort, current_app
 from models import db, User, user_datastore, Role, create_actor, OAuth2Token, OAuth2Client
 from flask_security.utils import encrypt_password
 from flask_security import confirmable as FSConfirmable
-from app_oauth import authorization
-import datetime
+from app_oauth import authorization, require_oauth
+from authlib.flask.oauth2 import current_token
 
 bp_api_v1_accounts = Blueprint("bp_api_v1_accounts", __name__)
 
@@ -22,8 +22,8 @@ def accounts():
 
     # Get the bearer token
     bearer = None
-    if 'Authorization' in request.headers:
-        b = request.headers.get('Authorization')
+    if "Authorization" in request.headers:
+        b = request.headers.get("Authorization")
         b.strip().split(" ")
         if len(b) == 2:
             bearer = b[1]
@@ -35,56 +35,56 @@ def accounts():
     if not request.json:
         abort(400)
 
-    if 'nickname' not in request.json:
+    if "nickname" not in request.json:
         errors["nickname"] = ["nickname is missing"]
-    if 'email' not in request.json:
+    if "email" not in request.json:
         errors["email"] = ["email is missing"]
-    if 'fullname' not in request.json:
-        errors['fullname'] = ['fullname is missing']
-    if 'password' not in request.json:
-        errors['password'] = ['password is missing']
-    if 'confirm' not in request.json:
-        errors['confirm'] = ['password confirm is missing']
-    if 'agreement' not in request.json:
-        errors['agreement'] = ['agreement is missing']
+    if "fullname" not in request.json:
+        errors["fullname"] = ["fullname is missing"]
+    if "password" not in request.json:
+        errors["password"] = ["password is missing"]
+    if "confirm" not in request.json:
+        errors["confirm"] = ["password confirm is missing"]
+    if "agreement" not in request.json:
+        errors["agreement"] = ["agreement is missing"]
 
     if len(errors) > 0:
         return jsonify({"error": errors}), 400
 
-    if request.json['password'] != request.json['confirm']:
+    if request.json["password"] != request.json["confirm"]:
         return jsonify({"error": {"confirm": ["passwords doesn't match"]}}), 400
 
-    if 'agreement' not in request.json:
+    if "agreement" not in request.json:
         return jsonify({"error": {"agreement": ["you need to accept the terms and conditions"]}}), 400
 
     # Check if user already exists by username
-    user = User.query.filter(User.name == request.json['username']).first()
+    user = User.query.filter(User.name == request.json["username"]).first()
     if user:
         return jsonify({"error": {"ap_id": ["has already been taken"]}}), 400
 
     # Check if user already exists by email
-    user = User.query.filter(User.email == request.json['email']).first()
+    user = User.query.filter(User.email == request.json["email"]).first()
     if user:
         return jsonify({"error": {"email": ["has already been taken"]}}), 400
 
     # Proceed to register the user
     role = Role.query.filter(Role.name == "user").first()
     if not role:
-        return jsonify({'error': 'server error'}), 500
+        return jsonify({"error": "server error"}), 500
 
     u = user_datastore.create_user(
-        name=request.json['username'],
-        email=request.json['email'],
-        display_name=request.json['fullname'],
-        password=encrypt_password(request.json['password']),
-        roles=[role]
+        name=request.json["username"],
+        email=request.json["email"],
+        display_name=request.json["fullname"],
+        password=encrypt_password(request.json["password"]),
+        roles=[role],
     )
 
     actor = create_actor(u)
     actor.user = u
     actor.user_id = u.id
-    if 'bio' in request.json:
-        actor.summary = request.json['bio']
+    if "bio" in request.json:
+        actor.summary = request.json["bio"]
 
     db.session.add(actor)
     db.session.commit()
@@ -101,8 +101,9 @@ def accounts():
         abort(400)
 
     # https://github.com/lepture/authlib/blob/master/authlib/oauth2/rfc6749/grants/base.py#L51
-    token = authorization.generate_token(client_item.client_id, "client_credentials", user=u, scope=client_item.scope,
-                                         expires_in=None)
+    token = authorization.generate_token(
+        client_item.client_id, "client_credentials", user=u, scope=client_item.scope, expires_in=None
+    )
 
     tok = OAuth2Token()
     tok.user_id = u.id
@@ -111,16 +112,53 @@ def accounts():
     # and this app should allow delivering a somewhat non usuable Token
     # token which gets sent to this endpoint and gets used to get back the right client_id
     # to associate in the database...
-    tok.token_type = token['token_type']
-    tok.access_token = token['access_token']
+    tok.token_type = token["token_type"]
+    tok.access_token = token["access_token"]
     tok.refresh_token = None
-    tok.scope = token['scope']
+    tok.scope = token["scope"]
     tok.revoked = False
-    tok.expires_in = token['expires_in']
+    tok.expires_in = token["expires_in"]
     db.session.add(tok)
     db.session.commit()
 
-    return jsonify({
-        **token,
-        'created_at': tok.issued_at
-    }), 200
+    return jsonify({**token, "created_at": tok.issued_at}), 200
+
+
+@bp_api_v1_accounts.route("/api/v1/accounts/verify_credentials", methods=["POST"])
+@require_oauth("read")
+def accounts_verify_credentials():
+    """
+    Eats nothing
+    :return: Account object with extra source attribute
+    """
+    user = current_token.user
+    return jsonify(
+        account={
+            "id": user.id,
+            "username": user.name,
+            "acct": user.name,
+            "display_name": user.display_name,
+            "locked": False,
+            "created_at": user.created_at,
+            "followers_count": user.followers.count,
+            "following_count": user.followings.count,
+            "statuses_count": user.sounds.count,
+            "note": user.actor[0].summary,
+            "url": user.actor[0].url,
+            "avatar": "",
+            "avatar_static": "",
+            "header": "",
+            "header_static": "",
+            "emojis": [],
+            "moved": None,
+            "fields": [],
+            "bot": False,
+        },
+        source={
+            "privacy": "unlisted",
+            "sensitive": False,
+            "language": user.locale,
+            "note": user.actor[0].summary,
+            "fields": [],
+        },
+    )
