@@ -13,11 +13,11 @@ def create_client():
     :return:
     """
     err = False
-    if not 'client_name' in request.form:
+    if "client_name" not in request.form:
         err = True
-    elif not 'redirect_uris' in request.form:
+    elif "redirect_uris" not in request.form:
         err = True
-    elif not 'scopes' in request.form:
+    elif "scopes" not in request.form:
         err = True
 
     if err:
@@ -28,19 +28,19 @@ def create_client():
         return response
 
     client = OAuth2Client()
-    client.client_name = request.form.get('client_name')
-    client.client_uri = request.form.get('website', None)
-    client.redirect_uri = request.form.get('redirect_uris')
-    client.scope = request.form.get('scopes')
+    client.client_name = request.form.get("client_name")
+    client.client_uri = request.form.get("website", None)
+    client.redirect_uri = request.form.get("redirect_uris")
+    client.scope = request.form.get("scopes")
     client.client_id = gen_salt(24)
-    if client.token_endpoint_auth_method == 'none':
-        client.client_secret = ''
+    if client.token_endpoint_auth_method == "none":
+        client.client_secret = ""
     else:
         client.client_secret = gen_salt(48)
     # this needs to be hardcoded for whatever reason
-    client.response_type = 'code'
-    client.grant_type = 'authorization_code\r\nclient_credentials\r\npassword'
-    client.token_endpoint_auth_method = 'client_secret_post'
+    client.response_type = "code"
+    client.grant_type = "authorization_code\r\nclient_credentials\r\npassword"
+    client.token_endpoint_auth_method = "client_secret_post"
 
     db.session.add(client)
     db.session.commit()
@@ -52,7 +52,7 @@ def create_client():
         "name": client.client_name,
         "redirect_uri": client.redirect_uri,
         "website": client.client_uri,
-        "vapid_key": None  # FIXME to implement this
+        "vapid_key": None,  # FIXME to implement this
     }
     response = jsonify(resp)
     response.mimetype = "application/json; charset=utf-8"
@@ -65,15 +65,15 @@ def create_client():
 def oauth_authorize():
     # input: client_id, client_secret, redirect_uri, scope
     # should authorize the user, and then return auth code if urn:ietf:wg:oauth:2.0:oob or redirect
-    if request.method == 'GET':
+    if request.method == "GET":
         abort(404)
     else:
         grant_user = None
 
-        if 'username' and 'password' in request.form:
-            username = request.form.get('username')
+        if "username" and "password" in request.form:
+            username = request.form.get("username")
             user = User.query.filter_by(name=username).first()
-            if user and user.check_password(request.form.get('password')):
+            if user and user.check_password(request.form.get("password")):
                 grant_user = user
 
         return authorization.create_authorization_response(grant_user=grant_user)
@@ -87,4 +87,4 @@ def oauth_token():
 @bp_api_v1_auth.route("/oauth/revoke", methods=["POST"])
 def oauth_revoke():
     # input: client_id, client_secret
-    return authorization.create_endpoint_response('revocation')
+    return authorization.create_endpoint_response("revocation")
