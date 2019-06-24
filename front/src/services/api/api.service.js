@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { parseUser } from '../entity_normalizer/entity_normalizer.service.js'
 
 const MASTODON_LOGIN_URL = '/api/v1/accounts/verify_credentials'
 const MASTODON_REGISTRATION_URL = '/api/v1/accounts'
@@ -60,11 +61,10 @@ const register = (params, store) => {
     })
 }
 
-// TODO: here too ideally we would need to do something like parseUser() on response.data to get a nicer structure
 const verifyCredentials = (user, store) => {
   return apiClient.post(MASTODON_LOGIN_URL, null, { headers: headers(store.getters.getToken()) })
     .then(response => {
-      return response.data
+      return parseUser(response.data)
     })
     .catch(response => {
       return { error: response }
