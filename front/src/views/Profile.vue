@@ -1,6 +1,6 @@
 <template>
   <div class="about">
-    <h1>Profil page of {{currentUser.screen_name}}</h1>
+    <h1>Profile page of {{currentUser.screen_name}}</h1>
   </div>
 </template>
 

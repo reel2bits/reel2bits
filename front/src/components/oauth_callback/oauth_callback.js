@@ -17,7 +17,7 @@ const oac = {
       }).then((result) => {
         this.$store.commit('setToken', result.access_token)
         this.$store.dispatch('loginUser', result.access_token)
-        this.$router.push({ name: 'profil' })
+        this.$router.push({ name: 'profile' })
       })
     }
   }
