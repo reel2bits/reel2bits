@@ -81,7 +81,7 @@ const users = {
         let data = await apiService.register(userInfo, store)
         store.commit('signUpSuccess')
         store.commit('setToken', data.access_token)
-        // store.dispatch('loginUser', data.access_token)
+        store.dispatch('loginUser', data.access_token)
       } catch (e) {
         let errors = e.message
         // replace ap_id with username

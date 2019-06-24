@@ -49,17 +49,14 @@ const register = (params, store) => {
     ...rest
   })
 
-  // FIXME: Error: response.data.then is not a function
   return apiClient.post(MASTODON_REGISTRATION_URL,
     body,
     { headers: headers(store.getters.getToken()) })
-    .then((response) => [response.ok, response])
-    .then(([ok, response]) => {
-      if (ok) {
-        return response.data
-      } else {
-        return response.data.then((error) => { throw new Error(error) })
-      }
+    .then(response => {
+      return response.data
+    })
+    .catch(error => {
+      throw new Error(error)
     })
 }
 
