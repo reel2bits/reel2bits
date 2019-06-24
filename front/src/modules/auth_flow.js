@@ -57,7 +57,7 @@ const mutations = {
   requireToken (state) {
     state.strategy = TOKEN_STRATEGY
   },
-  requireMFA (state, {app, settings}) {
+  requireMFA (state, { app, settings }) {
     state.settings = settings
     state.app = app
     state.strategy = TOTP_STRATEGY // default strategy of MFA
@@ -75,9 +75,9 @@ const mutations = {
 
 // actions
 const actions = {
-  async login ({state, dispatch, commit}, {access_token}) {
-    commit('setToken', access_token, { root: true })
-    await dispatch('loginUser', access_token, { root: true })
+  async login ({ state, dispatch, commit }, { accessToken }) {
+    commit('setToken', accessToken, { root: true })
+    await dispatch('loginUser', accessToken, { root: true })
     resetState(state)
   }
 }
