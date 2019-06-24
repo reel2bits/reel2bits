@@ -24,7 +24,7 @@ def accounts():
     bearer = None
     if "Authorization" in request.headers:
         b = request.headers.get("Authorization")
-        b.strip().split(" ")
+        b = b.strip().split(" ")
         if len(b) == 2:
             bearer = b[1]
         else:
