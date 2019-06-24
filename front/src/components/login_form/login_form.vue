@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 import oauthApi from '../../backend/oauth/oauth.js'
 
 export default {
@@ -37,6 +37,7 @@ export default {
     })
   },
   methods: {
+    ...mapActions({ login: 'authFlow/login' }),
     submitPassword: function () {
       const { clientId } = this.oauth
       const data = {
