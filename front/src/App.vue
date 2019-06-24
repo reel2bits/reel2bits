@@ -7,7 +7,7 @@
       <router-link to="/about">About</router-link>
       <span v-if="currentUser"> | <a href="#" @click.prevent="logout">Logout</a></span>
       <span v-else>
-        <router-link to="/login">Login</router-link>
+        | <router-link to="/login">Login</router-link>
         |
         <router-link v-if="!currentUser" to="/register">Register</router-link>
       </span>
