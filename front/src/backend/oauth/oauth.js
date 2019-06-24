@@ -43,6 +43,7 @@ const login = ({ instance, clientId }) => {
   window.location.href = `${instance}/oauth/authorize?${dataString}`
 }
 
+// Used on : login
 const getTokenWithCredentials = ({ clientId, clientSecret, instance, username, password }) => {
   const url = `${instance}/oauth/token`
   const form = new window.FormData()
@@ -50,6 +51,7 @@ const getTokenWithCredentials = ({ clientId, clientSecret, instance, username, p
   form.append('client_id', clientId)
   form.append('client_secret', clientSecret)
   form.append('grant_type', 'password')
+  form.append('scope', 'read write follow push')
   form.append('username', username)
   form.append('password', password)
 

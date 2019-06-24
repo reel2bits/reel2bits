@@ -7,7 +7,7 @@
 <script>
 export default {
   computed: {
-    currentUser () { return this.$store.state.users.currentUser },
+    currentUser () { return this.$store.state.users.currentUser }
   }
 }
 </script>
