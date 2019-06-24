@@ -69,9 +69,33 @@ const users = {
     loginUser (store, accessToken) {
       return new Promise((resolve, reject) => {
         store.commit('beginLogin')
-        // do things
-        console.warn('loginUser dispatch not implemented')
-        store.commit('endLogin')
+        apiService.verifyCredentials(accessToken)
+          .then((data) => {
+            if (!data.error) {
+              const user = data
+              user.credentials = accessToken
+              store.commit('setCurrentUser', user)
+              store.commit('addNewUsers', [user])
+
+              // TODO: getNotificationPermission()
+            } else {
+              const response = data.error
+              // Authentication failed
+              store.commit('endLogin')
+              if (response.status === 401) {
+                reject('Wrong username or password')
+              } else {
+                reject('An error occured, please try again')
+              }
+            }
+            store.commit('endLogin')
+            resolve()
+          })
+          .catch((error) => {
+            console.log(error)
+            store.commit('endLogin')
+            reject('Failed to connect to server, try again')
+          })
       })
     },
     async signUp (store, userInfo) {
