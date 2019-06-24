@@ -75,9 +75,10 @@ const mutations = {
 
 // actions
 const actions = {
-  async login ({ state, dispatch, commit }, { accessToken }) {
-    commit('setToken', accessToken, { root: true })
-    await dispatch('loginUser', accessToken, { root: true })
+  // eslint-disable-next-line camelcase
+  async login ({ state, dispatch, commit }, { access_token }) {
+    commit('setToken', access_token, { root: true })
+    await dispatch('loginUser', access_token, { root: true })
     resetState(state)
   }
 }
