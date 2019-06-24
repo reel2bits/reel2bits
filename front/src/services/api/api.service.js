@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-// const MASTODON_LOGIN_URL = '/api/v1/accounts/verify_credentials'
+const MASTODON_LOGIN_URL = '/api/v1/accounts/verify_credentials'
 const MASTODON_REGISTRATION_URL = '/api/v1/accounts'
 // const MASTODON_USER_URL = '/api/v1/accounts'
 
@@ -60,7 +60,19 @@ const register = (params, store) => {
     })
 }
 
+// TODO: here too ideally we would need to do something like parseUser() on response.data to get a nicer structure
+const verifyCredentials = (user) => {
+  return apiClient.post(MASTODON_LOGIN_URL, null, { headers: headers(store.getters.getToken()) })
+    .then(response => {
+      return response.data
+    })
+    .catch(response => {
+      return { error: response }
+    })
+}
+
 const apiService = {
+  verifyCredentials,
   apiClient,
   headers,
   authHeaders,
