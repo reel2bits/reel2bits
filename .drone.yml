@@ -38,6 +38,22 @@ steps:
   - cp tests/config_test.py config.py
   - python setup.py test
 
+- name: front-linting
+  pull: default
+  image: node:10
+  commands:
+      - cd front
+      - npm install
+      - npm lint
+
+- name: front-building
+  pull: default
+  image: node:10
+  commands:
+      - cd front
+      - npm install
+      - npm build
+
 - name: migrations
   pull: default
   image: python:3-alpine
