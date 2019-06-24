@@ -75,6 +75,8 @@ const users = {
             if (!data.error) {
               const user = data
               user.credentials = accessToken
+              user.blockIds = []
+              user.muteIds = []
               store.commit('setCurrentUser', user)
               store.commit('addNewUsers', [user])
 
