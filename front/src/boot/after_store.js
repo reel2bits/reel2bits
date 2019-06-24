@@ -65,8 +65,6 @@ const setSettings = async ({ store }) => {
   }
 
   apiService.setBaseUrl(store.state.instance.instanceUrl)
-
-  getAppSecret({ store })
 }
 
 const getTOS = async ({ store }) => {
@@ -87,10 +85,11 @@ const getTOS = async ({ store }) => {
 
 const afterStoreSetup = ({ store }) => {
   Promise.all([
-    checkOAuthToken({ store }),
-    setSettings({ store }),
-    getTOS({ store }),
-    getNodeInfo({ store })
+    setSettings({ store }), // set the right baseURL/instanceUrl
+    checkOAuthToken({ store }), // check token and try to log user if found
+    getAppSecret({ store }), // try to get or create app and token thingy
+    getTOS({ store }), // get the terms of service
+    getNodeInfo({ store }) // fetch nodeinfo and feed infos in store
   ])
 
   return new Vue({
