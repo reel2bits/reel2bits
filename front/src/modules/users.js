@@ -86,9 +86,9 @@ const users = {
               // Authentication failed
               store.commit('endLogin')
               if (response.status === 401) {
-                reject('Wrong username or password')
+                reject(Error('Wrong username or password'))
               } else {
-                reject('An error occured, please try again')
+                reject(Error('An error occured, please try again'))
               }
             }
             store.commit('endLogin')
@@ -97,7 +97,7 @@ const users = {
           .catch((error) => {
             console.log(error)
             store.commit('endLogin')
-            reject('Failed to connect to server, try again')
+            reject(Error('Failed to connect to server, try again'))
           })
       })
     },
