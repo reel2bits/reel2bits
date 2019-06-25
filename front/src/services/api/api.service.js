@@ -1,9 +1,10 @@
 import axios from 'axios'
 import { parseUser } from '../entity_normalizer/entity_normalizer.service.js'
+import { StatusCodeError } from '../errors/errors'
 
 const MASTODON_LOGIN_URL = '/api/v1/accounts/verify_credentials'
 const MASTODON_REGISTRATION_URL = '/api/v1/accounts'
-// const MASTODON_USER_URL = '/api/v1/accounts'
+const MASTODON_USER_URL = '/api/v1/accounts'
 
 const apiClient = axios.create({
   // baseURL: this.$store.state.instance.instanceUrl
@@ -32,6 +33,28 @@ const headers = (accessToken = null) => {
  */
 const setBaseUrl = (baseUrl) => {
   apiClient.defaults.baseURL = baseUrl
+}
+
+const promisedRequest = ({ method = 'get', url, payload, credentials }) => {
+  const body = payload ? JSON.stringify(payload) : null
+  const hdrs = headers(credentials)
+  if (method === 'get') {
+    return apiClient.get(url, { headers: hdrs })
+      .then(response => {
+        return response.data
+      })
+      .catch(response => {
+        return new StatusCodeError(response.status, response.data, { url, hdrs }, response)
+      })
+  } else if (method === 'post') {
+    return apiClient.post(url, body, { headers: hdrs })
+      .then(response => {
+        return response.data
+      })
+      .catch(response => {
+        return new StatusCodeError(response.status, response.data, { url, hdrs }, response)
+      })
+  }
 }
 
 /*
@@ -71,13 +94,20 @@ const verifyCredentials = (user, store) => {
     })
 }
 
+const fetchUser = ({ id, credentials }) => {
+  let url = `${MASTODON_USER_URL}/${id}`
+  return promisedRequest({ url, credentials })
+    .then((data) => parseUser(data))
+}
+
 const apiService = {
   verifyCredentials,
   apiClient,
   headers,
   authHeaders,
   register,
-  setBaseUrl
+  setBaseUrl,
+  fetchUser
 }
 
 export default apiService

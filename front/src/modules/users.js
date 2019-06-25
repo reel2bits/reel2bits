@@ -63,10 +63,29 @@ export const defaultState = {
   signUpErrors: []
 }
 
+export const getters = {
+  findUser: state => query => {
+    const result = state.usersObject[query]
+    // In case it's screen_name, we can try searching case-insensitive
+    if (!result && typeof query === 'string') {
+      return state.usersObject[query.toLowerCase()]
+    }
+    return result
+  }
+}
+
 const users = {
   state: defaultState,
   mutations,
+  getters,
   actions: {
+    fetchUser (store, id) {
+      return apiService.fetchUser({ id })
+        .then((user) => {
+          store.commit('addNewUsers', [user])
+          return user
+        })
+    },
     loginUser (store, accessToken) {
       return new Promise((resolve, reject) => {
         store.commit('beginLogin')
