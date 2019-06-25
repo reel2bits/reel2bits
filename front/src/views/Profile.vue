@@ -8,6 +8,12 @@
 export default {
   computed: {
     currentUser () { return this.$store.state.users.currentUser }
+  },
+  created: function () {
+    let user = !!this.$store.state.users.currentUser
+    if (!user) {
+      this.$router.push({ name: 'home' })
+    }
   }
 }
 </script>
