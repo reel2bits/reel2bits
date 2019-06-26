@@ -3,15 +3,15 @@
 import Vue from 'vue'
 import router from '../router'
 import App from '../App.vue'
-import axios from 'axios'
 import apiService from '../services/api/api.service.js'
 import { getOrCreateApp, getClientToken } from '../backend/oauth/oauth.js'
 
 const getNodeInfo = async ({ store }) => {
-  await axios.get(`${store.state.instance.instanceUrl}/nodeinfo/2.0`)
-    .then(function (res) {
-      const data = res.data
-
+  try {
+    const res = await window.fetch(`${store.state.instance.instanceUrl}/nodeinfo/2.0`)
+    if (res.ok) {
+      const data = await res.json()
+      
       const metadata = data.metadata
       store.dispatch('setInstanceOption', { name: 'registrationOpen', value: metadata.openRegistrations })
       store.dispatch('setInstanceOption', { name: 'name', value: metadata.nodeName })
@@ -22,11 +22,13 @@ const getNodeInfo = async ({ store }) => {
 
       const frontendVersion = 'FIXME'
       store.dispatch('setInstanceOption', { name: 'frontendVersion', value: frontendVersion })
-    })
-    .catch(function (e) {
-      console.warn('Could not load nodeinfo')
-      console.warn(e)
-    })
+    } else {
+      throw (res)
+    }
+  } catch (e) {
+    console.warn('Could not load nodeinfo')
+    console.warn(e)
+  }
 }
 
 const checkOAuthToken = async ({ store }) => {
@@ -69,7 +71,6 @@ const setSettings = async ({ store }) => {
 
 const getTOS = async ({ store }) => {
   try {
-    // TODO: axios
     const res = await window.fetch('/static/terms-of-service.html')
     if (res.ok) {
       const html = await res.text()
