@@ -1,4 +1,3 @@
-import axios from 'axios'
 import { parseUser } from '../entity_normalizer/entity_normalizer.service.js'
 import { StatusCodeError } from '../errors/errors'
 
@@ -6,23 +5,21 @@ const MASTODON_LOGIN_URL = '/api/v1/accounts/verify_credentials'
 const MASTODON_REGISTRATION_URL = '/api/v1/accounts'
 const MASTODON_USER_URL = '/api/v1/accounts'
 
-const apiClient = axios.create({
-  // baseURL: this.$store.state.instance.instanceUrl
-})
+const oldfetch = window.fetch
+
+let fetch = (url, options) => {
+  options = options || {}
+  const baseUrl = ''
+  const fullUrl = baseUrl + url
+  options.credentials = 'same-origin'
+  return oldfetch(fullUrl, options)
+}
 
 const authHeaders = (accessToken) => {
   if (accessToken) {
     return { 'Authorization': `Bearer ${accessToken}` }
   } else {
-    return {}
-  }
-}
-
-const headers = (accessToken = null) => {
-  return {
-    Accept: 'application/json',
-    'Content-Type': 'application/json',
-    ...authHeaders(accessToken)
+    return { }
   }
 }
 
@@ -32,29 +29,37 @@ const headers = (accessToken = null) => {
  * FIXME
  */
 const setBaseUrl = (baseUrl) => {
-  apiClient.defaults.baseURL = baseUrl
+  console.log('NOT IMPLEMENTED')
 }
 
-const promisedRequest = ({ method = 'get', url, payload, credentials }) => {
-  const body = payload ? JSON.stringify(payload) : null
-  const hdrs = headers(credentials)
-  if (method === 'get') {
-    return apiClient.get(url, { headers: hdrs })
-      .then(response => {
-        return response.data
-      })
-      .catch(response => {
-        return new StatusCodeError(response.status, response.data, { url, hdrs }, response)
-      })
-  } else if (method === 'post') {
-    return apiClient.post(url, body, { headers: hdrs })
-      .then(response => {
-        return response.data
-      })
-      .catch(response => {
-        return new StatusCodeError(response.status, response.data, { url, hdrs }, response)
-      })
+const promisedRequest = ({ method, url, payload, credentials, headers = {} }) => {
+  const options = {
+    method,
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      ...headers
+    }
   }
+  if (payload) {
+    options.body = JSON.stringify(payload)
+  }
+  if (credentials) {
+    options.headers = {
+      ...options.headers,
+      ...authHeaders(credentials)
+    }
+  }
+  return fetch(url, options)
+    .then((response) => {
+      return new Promise((resolve, reject) => response.json()
+        .then((json) => {
+          if (!response.ok) {
+            return reject(new StatusCodeError(response.status, json, { url, options }, response))
+          }
+          return resolve(json)
+        }))
+    })
 }
 
 /*
@@ -63,48 +68,56 @@ const promisedRequest = ({ method = 'get', url, payload, credentials }) => {
  * Optionals:
  *  bio, homepage, location, token
  */
-const register = (params, store) => {
+const register = ({ params, store }) => {
   const { nickname, ...rest } = params
-
-  const body = JSON.stringify({
-    nickname,
-    locale: 'en_US',
-    agreement: true,
-    ...rest
+  return fetch(MASTODON_REGISTRATION_URL, {
+    method: 'POST',
+    headers: {
+      ...authHeaders(store.getters.getToken()),
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      nickname,
+      locale: 'en_US',
+      agreement: true,
+      ...rest
+    })
   })
-
-  return apiClient.post(MASTODON_REGISTRATION_URL,
-    body,
-    { headers: headers(store.getters.getToken()) })
-    .then(response => {
-      return response.data
-    })
-    .catch(error => {
-      throw new Error(error)
+    .then((response) => [response.ok, response])
+    .then(([ok, response]) => {
+      if (ok) {
+        return response.json()
+      } else {
+        return response.json().then((error) => { throw new Error(error) })
+      }
     })
 }
 
-const verifyCredentials = (user, store) => {
-  return apiClient.post(MASTODON_LOGIN_URL, null, { headers: headers(store.getters.getToken()) })
-    .then(response => {
-      return parseUser(response.data)
+const verifyCredentials = (user) => {
+  return fetch(MASTODON_LOGIN_URL, {
+    headers: authHeaders(user)
+  })
+    .then((response) => {
+      if (response.ok) {
+        return response.json()
+      } else {
+        return {
+          error: response
+        }
+      }
     })
-    .catch(response => {
-      return { error: response }
-    })
+    .then((data) => data.error ? data : parseUser(data))
 }
 
-const fetchUser = ({ id, credentials }) => {
+const fetchUser = ({ id, store }) => {
   let url = `${MASTODON_USER_URL}/${id}`
+  let credentials = store.getters.getToken()
   return promisedRequest({ url, credentials })
     .then((data) => parseUser(data))
 }
 
 const apiService = {
   verifyCredentials,
-  apiClient,
-  headers,
-  authHeaders,
   register,
   setBaseUrl,
   fetchUser

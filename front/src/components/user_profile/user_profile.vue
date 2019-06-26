@@ -36,17 +36,21 @@ export default {
   },
   methods: {
     load (userNameOrId) {
+      console.debug('loading profile for ' + userNameOrId)
       const user = this.$store.getters.findUser(userNameOrId)
       if (user) {
         this.userId = user.id
-        this.fetchTimelines()
+        console.warn('load::user::nothing to do')
+        // TODO fetch timelines etc.
       } else {
         this.$store.dispatch('fetchUser', userNameOrId)
           .then(({ id }) => {
             this.userId = id
-            this.fetchTimelines()
+            // TODO same
+            console.warn('load::!user::fetchUser::id::nothing to do')
           })
           .catch((reason) => {
+            console.warn('load::!user::fetchUser::!id')
             const errorMessage = get(reason, 'error.error')
             if (errorMessage) {
               this.error = errorMessage
