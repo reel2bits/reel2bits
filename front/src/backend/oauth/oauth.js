@@ -1,5 +1,4 @@
 // Snippets extracted from https://git.pleroma.social/pleroma/pleroma-fe/blob/develop/src/services/new_api/oauth.js
-import axios from 'axios'
 import { reduce } from 'lodash'
 
 const REDIRECT_URI = `${window.location.origin}/oauth-callback`
@@ -19,10 +18,13 @@ export const getOrCreateApp = ({ clientId, clientSecret, instance, commit }) => 
   form.append('redirect_uris', REDIRECT_URI)
   form.append('scopes', 'read write follow push')
 
-  return axios.post(url, form)
-    .then((data) => data.data)
-    .then((app) => ({ clientId: app.client_id, clientSecret: app.client_secret }))
-    .then((app) => commit('setClientData', app) || app)
+  return window.fetch(url, {
+    method: 'POST',
+    body: form
+  })
+  .then((data) => data.json())
+  .then((app) => ({ clientId: app.client_id, clientSecret: app.client_secret }))
+  .then((app) => commit('setClientData', app) || app)
 }
 
 const login = ({ instance, clientId }) => {
@@ -60,7 +62,10 @@ const getTokenWithCredentials = ({ clientId, clientSecret, instance, username, p
   form.append('username', username)
   form.append('password', password)
 
-  return axios.post(url, form).then((data) => data.data)
+  return window.fetch(url, {
+    method: 'POST',
+    body: form
+  }).then((data) => data.json())
 }
 
 const getToken = ({ clientId, clientSecret, instance, code }) => {
@@ -76,7 +81,10 @@ const getToken = ({ clientId, clientSecret, instance, code }) => {
   form.append('scope', 'read write follow push')
   form.append('redirect_uri', `${window.location.origin}/oauth-callback`)
 
-  return axios.post(url, form).then((data) => data.data)
+  return window.fetch(url, {
+    method: 'POST',
+    body: form
+  }).then((data) => data.json())
 }
 
 export const getClientToken = ({ clientId, clientSecret, instance }) => {
@@ -90,7 +98,10 @@ export const getClientToken = ({ clientId, clientSecret, instance }) => {
   form.append('scope', 'read write follow push')
   form.append('redirect_uri', `${window.location.origin}/oauth-callback`)
 
-  return axios.post(url, form).then((data) => data.data)
+  return window.fetch(url, {
+    method: 'POST',
+    body: form
+  }).then((data) => data.json())
 }
 
 const oauth = {
