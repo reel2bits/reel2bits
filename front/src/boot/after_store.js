@@ -11,7 +11,7 @@ const getNodeInfo = async ({ store }) => {
     const res = await window.fetch(`${store.state.instance.instanceUrl}/nodeinfo/2.0`)
     if (res.ok) {
       const data = await res.json()
-      
+
       const metadata = data.metadata
       store.dispatch('setInstanceOption', { name: 'registrationOpen', value: metadata.openRegistrations })
       store.dispatch('setInstanceOption', { name: 'name', value: metadata.nodeName })

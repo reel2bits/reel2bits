@@ -46,6 +46,7 @@ export default {
         instance: this.instance.instanceUrl,
         commit: this.$store.commit
       }
+      this.error = false
 
       // Get or create App
       // Then authorize to get code
@@ -69,6 +70,10 @@ export default {
             this.$router.push({ name: 'profile' })
           })
         })
+          .catch((error) => {
+            console.error('Unhandled error: ' + error)
+            this.error = 'An error occured, please try again later'
+          })
       })
     },
     clearError () { this.error = false },

@@ -22,9 +22,9 @@ export const getOrCreateApp = ({ clientId, clientSecret, instance, commit }) => 
     method: 'POST',
     body: form
   })
-  .then((data) => data.json())
-  .then((app) => ({ clientId: app.client_id, clientSecret: app.client_secret }))
-  .then((app) => commit('setClientData', app) || app)
+    .then((data) => data.json())
+    .then((app) => ({ clientId: app.client_id, clientSecret: app.client_secret }))
+    .then((app) => commit('setClientData', app) || app)
 }
 
 const login = ({ instance, clientId }) => {
