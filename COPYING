@@ -10,3 +10,9 @@ The following logo assets:
 
 Have been created by Alex Sleepy and are under the same license as the project (AGPL-3) and are made for exclusive usage within this project use.
 
+---
+
+The frontend (front/) contains parts extracted from the Pleroma project
+<https://git.pleroma.social/pleroma/pleroma-fe> Frontend and are also
+under the AGPL-3.
+
