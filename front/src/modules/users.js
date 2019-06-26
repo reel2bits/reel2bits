@@ -65,6 +65,7 @@ export const defaultState = {
 
 export const getters = {
   findUser: state => query => {
+    console.debug('findUser ' + query)
     const result = state.usersObject[query]
     // In case it's screen_name, we can try searching case-insensitive
     if (!result && typeof query === 'string') {
@@ -80,7 +81,8 @@ const users = {
   getters,
   actions: {
     fetchUser (store, id) {
-      return apiService.fetchUser({ id })
+      console.debug('fetchUser ' + id)
+      return apiService.fetchUser({ id, store })
         .then((user) => {
           store.commit('addNewUsers', [user])
           return user
