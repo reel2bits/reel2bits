@@ -124,7 +124,7 @@ def accounts():
     return jsonify({**token, "created_at": tok.issued_at}), 200
 
 
-@bp_api_v1_accounts.route("/api/v1/accounts/verify_credentials", methods=["POST"])
+@bp_api_v1_accounts.route("/api/v1/accounts/verify_credentials", methods=["GET"])
 @require_oauth("read")
 def accounts_verify_credentials():
     """
