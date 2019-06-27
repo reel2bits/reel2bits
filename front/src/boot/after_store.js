@@ -3,7 +3,6 @@
 import Vue from 'vue'
 import router from '../router'
 import App from '../App.vue'
-import apiService from '../services/api/api.service.js'
 import { getOrCreateApp, getClientToken } from '../backend/oauth/oauth.js'
 
 const getNodeInfo = async ({ store }) => {
