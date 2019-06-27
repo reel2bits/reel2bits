@@ -7,9 +7,9 @@ const MASTODON_USER_URL = '/api/v1/accounts'
 
 const oldfetch = window.fetch
 
-let fetch = (url, options) => {
+let fetch = (url, options, store) => {
   options = options || {}
-  const baseUrl = ''
+  const baseUrl = store.rootState.instance.instanceUrl
   const fullUrl = baseUrl + url
   options.credentials = 'same-origin'
   return oldfetch(fullUrl, options)
@@ -19,20 +19,11 @@ const authHeaders = (accessToken) => {
   if (accessToken) {
     return { 'Authorization': `Bearer ${accessToken}` }
   } else {
-    return { }
+    return {}
   }
 }
 
-/* Dirty thing used in after_store.js:setSettings to set the baseURL of the
- * apiClient after initialization
- * It can probably done better...
- * FIXME
- */
-const setBaseUrl = (baseUrl) => {
-  console.log('NOT IMPLEMENTED')
-}
-
-const promisedRequest = ({ method, url, payload, credentials, headers = {} }) => {
+const promisedRequest = ({ method, url, payload, credentials, headers = {} }, store) => {
   const options = {
     method,
     headers: {
@@ -50,7 +41,7 @@ const promisedRequest = ({ method, url, payload, credentials, headers = {} }) =>
       ...authHeaders(credentials)
     }
   }
-  return fetch(url, options)
+  return fetch(url, options, store)
     .then((response) => {
       return new Promise((resolve, reject) => response.json()
         .then((json) => {
@@ -82,7 +73,7 @@ const register = ({ params, store }) => {
       agreement: true,
       ...rest
     })
-  })
+  }, store)
     .then((response) => [response.ok, response])
     .then(([ok, response]) => {
       if (ok) {
@@ -93,10 +84,10 @@ const register = ({ params, store }) => {
     })
 }
 
-const verifyCredentials = (user) => {
+const verifyCredentials = (user, store) => {
   return fetch(MASTODON_LOGIN_URL, {
     headers: authHeaders(user)
-  })
+  }, store)
     .then((response) => {
       if (response.ok) {
         return response.json()
@@ -112,14 +103,13 @@ const verifyCredentials = (user) => {
 const fetchUser = ({ id, store }) => {
   let url = `${MASTODON_USER_URL}/${id}`
   let credentials = store.getters.getToken()
-  return promisedRequest({ url, credentials })
+  return promisedRequest({ url, credentials }, store)
     .then((data) => parseUser(data))
 }
 
 const apiService = {
   verifyCredentials,
   register,
-  setBaseUrl,
   fetchUser
 }
 
