@@ -65,8 +65,6 @@ const setSettings = async ({ store }) => {
     // FIXME
     throw new Error('IMPLEMENT ME')
   }
-
-  apiService.setBaseUrl(store.state.instance.instanceUrl)
 }
 
 const getTOS = async ({ store }) => {
