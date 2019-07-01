@@ -38,3 +38,9 @@ const persistedStateOptions = {
 
   afterStoreSetup({ store })
 })()
+
+// These are inlined by webpack's DefinePlugin
+/* eslint-disable */
+window.___reel2bitsfe_mode = process.env
+window.___reel2bitsfe_commit_hash = COMMIT_HASH
+window.___reel2bitsfe_dev_overrides = DEV_OVERRIDES
