@@ -143,6 +143,7 @@ export default {
 
       if (!this.$v.$invalid) {
         try {
+          console.debug('register:registering')
           await this.signUp(this.user)
           this.$router.push({ name: 'profile' })
         } catch (error) {

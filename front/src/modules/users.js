@@ -123,6 +123,7 @@ const users = {
       })
     },
     async signUp (store, userInfo) {
+      console.debug('users:signUp')
       store.commit('signUpPending')
 
       try {
