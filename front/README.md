@@ -1,29 +1,24 @@
-# front
+## Build Setup
 
-## Project setup
-```
-npm install
-```
+``` bash
+# install dependencies
+npm install -g yarn
+yarn
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+# serve with hot reload at localhost:8080
+npm run dev
 
-### Compiles and minifies for production
-```
+# build for production with minification
 npm run build
+
+# run unit tests
+npm run unit
 ```
 
-### Run your tests
-```
-npm run test
-```
+# For Contributors:
 
-### Lints and fixes files
-```
-npm run lint
-```
+You can create file `/config/local.json` see `/config/local.example.json` to enable some convenience dev options:
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+* `target`: makes local dev server redirect to some existing instance's BE instead of local BE, useful for testing things in near-production environment and searching for real-life use-cases.
+
+FE Build process also leaves current commit hash in global variable `___reel2bitsfe_commit_hash` so that you can easily see which reel2bits-fe commit instance is running, also helps pinpointing which commit was used when FE was bundled into BE.
