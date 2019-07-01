@@ -45,7 +45,8 @@
     "eslint-friendly-formatter": "^4.0.1",
     "webpack-hot-middleware": "^2.25.0",
     "eventsource-polyfill": "^0.9.6",
-    "vue-loader": "^14.0.0"
+    "vue-loader": "^14.0.0",
+    "shelljs": "^0.7.4"
   },
   "eslintConfig": {
     "root": true,
