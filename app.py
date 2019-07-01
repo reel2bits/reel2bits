@@ -4,19 +4,7 @@ import os
 import subprocess
 from logging.handlers import RotatingFileHandler
 from flask_babelex import gettext, Babel
-from flask import (
-    Flask,
-    render_template,
-    g,
-    send_from_directory,
-    jsonify,
-    safe_join,
-    request,
-    flash,
-    Response,
-    Blueprint,
-    url_for
-)
+from flask import Flask, render_template, g, send_from_directory, jsonify, safe_join, request, flash, Response, Blueprint
 from flask_bootstrap import Bootstrap
 from flask_mail import Mail
 from flask_migrate import Migrate
@@ -28,7 +16,6 @@ from flask_uploads import configure_uploads, UploadSet, AUDIO, patch_request_cla
 from app_oauth import config_oauth
 from flask_cors import CORS
 from flask_restplus import Api
-from sqlalchemy.orm.exc import NoResultFound
 
 from forms import ExtendedRegisterForm
 from models import db, Config, user_datastore, Role, create_actor
@@ -71,17 +58,6 @@ if os.path.isdir(gitpath):
     if GIT_VERSION:
         GIT_VERSION = GIT_VERSION.strip().decode("UTF-8")
 
-# monkey patch courtesy of
-# https://github.com/noirbizarre/flask-restplus/issues/54
-# so that /swagger.json is served over https
-@property
-def specs_url(self):
-    """Monkey patch for HTTPS"""
-    return url_for(self.endpoint('specs'), _external=True, _scheme='https')
-
-
-Api.specs_url = specs_url
-
 
 def make_celery(remoulade):
     celery = Celery(remoulade.import_name, broker=remoulade.config["CELERY_BROKER_URL"])
@@ -112,7 +88,7 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
     app.jinja_env.globals.update(duration_elapsed_human=duration_elapsed_human)
     app.jinja_env.globals.update(duration_song_human=duration_song_human)
 
-    if HAS_SENTRY and app.config["SENTRY_DSN"]:
+    if HAS_SENTRY:
         sentry_sdk.init(
             app.config["SENTRY_DSN"],
             integrations=[SentryFlaskIntegration(), SentryCeleryIntegration()],
@@ -144,8 +120,8 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
     app.babel = babel
     toolbar = DebugToolbarExtension(app)  # noqa: F841
 
-    bp_apidocs = Blueprint("api", __name__, url_prefix="/api")
-    api = Api(bp_apidocs, endpoint="api")  # noqa: F841
+    bp_apidocs = Blueprint('api', __name__, url_prefix='/api')
+    api = Api(bp_apidocs, endpoint='api')  # noqa: F841
 
     db.init_app(app)
 
@@ -223,21 +199,13 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
         response.status_code = error.status_code
         return response
 
-    @api.errorhandler
-    def default_error_handler(error):
-        """Default error handler"""
-        return {"error": error.specific}, getattr(error, "code", 500)
-
-    @api.errorhandler(NoResultFound)
-    def handle_no_result_exception(error):
-        """Return a custom not found error message and 404 status code"""
-        return {"error": error.specific}, 404
-
     sounds = UploadSet("sounds", AUDIO)
     configure_uploads(app, sounds)
     patch_request_class(app, 500 * 1024 * 1024)  # 500m limit
 
     if register_blueprints:
+        app.register_blueprint(bp_apidocs)
+
         from controllers.main import bp_main
 
         app.register_blueprint(bp_main)
@@ -278,10 +246,9 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
 
         app.register_blueprint(bp_api_v1_auth)
 
-        from apis.apiv1 import blueprint as api_v1
+        from controllers.api.v1.accounts import bp_api_v1_accounts
 
-        app.register_blueprint(api_v1)
-        app.register_blueprint(bp_apidocs)
+        app.register_blueprint(bp_api_v1_accounts)
 
     @app.route("/uploads/<string:thing>/<path:stuff>", methods=["GET"])
     def get_uploads_stuff(thing, stuff):
