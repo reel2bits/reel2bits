@@ -23,6 +23,5 @@ Bootstrap-Flask==1.1.0
 PyQRCode==1.2.1
 Authlib>=0.11
 flask-cors>=3.0.8
-flask-restplus>=0.12.1
 git+https://github.com/jwag956/flask-security#egg=Flask-Security-too
 git+https://github.com/rhaamo/little-boxes@reel2bits#egg=little-boxes
