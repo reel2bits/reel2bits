@@ -3,9 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "dev": "node build/dev-server.js",
+    "build": "node build/build.js",
+    "lint": "eslint --ext .js,.vue src",
+    "lint-fix": "eslint --fix --ext .js,.vue src"
+  },
+  "engines": {
+    "node": ">= 4.0.0",
+    "npm": ">= 3.0.0"
   },
   "dependencies": {
     "axios": "^0.19.0",
@@ -14,6 +19,7 @@
     "lodash": "^4.17.11",
     "lodash.merge": "^4.6.1",
     "object-path": "^0.11.4",
+    "opn": "^6.0.0",
     "vue": "^2.6.10",
     "vue-axios": "^2.1.4",
     "vue-router": "^3.0.3",
@@ -27,10 +33,19 @@
     "@vue/eslint-config-standard": "^4.0.0",
     "babel-eslint": "^10.0.1",
     "eslint": "^5.16.0",
+    "eslint-loader": "^2.1.0",
+    "eslint-plugin-import": "^2.13.0",
+    "eslint-plugin-node": "^7.0.0",
+    "eslint-plugin-promise": "^4.0.0",
+    "eslint-plugin-standard": "^4.0.0",
     "eslint-plugin-vue": "^5.0.0",
     "sass": "^1.18.0",
-    "sass-loader": "^7.1.0",
-    "vue-template-compiler": "^2.6.10"
+    "sass-loader": "git://github.com/webpack-contrib/sass-loader",
+    "vue-template-compiler": "^2.6.10",
+    "eslint-friendly-formatter": "^4.0.1",
+    "webpack-hot-middleware": "^2.25.0",
+    "eventsource-polyfill": "^0.9.6",
+    "vue-loader": "^14.0.0"
   },
   "eslintConfig": {
     "root": true,
