@@ -19,7 +19,7 @@ const getNodeInfo = async ({ store }) => {
       const software = data.software
       store.dispatch('setInstanceOption', { name: 'backendVersion', value: software.version })
 
-      const frontendVersion = 'FIXME'
+      const frontendVersion = window.___reel2bitsfe_commit_hash
       store.dispatch('setInstanceOption', { name: 'frontendVersion', value: frontendVersion })
     } else {
       throw (res)
@@ -54,18 +54,6 @@ const getAppSecret = async ({ store }) => {
     })
 }
 
-const setSettings = async ({ store }) => {
-  const env = process.env.NODE_ENV
-  if (env === 'development') {
-    console.warn('OVERRIDING API CONFIG')
-    // store.dispatch('setInstanceOption', { name: 'instanceUrl', value: 'http://localhost:5000' })
-    store.dispatch('setInstanceOption', { name: 'instanceUrl', value: 'https://reel2bits.dev.lan.sigpipe.me' })
-  } else {
-    // FIXME
-    throw new Error('IMPLEMENT ME')
-  }
-}
-
 const getTOS = async ({ store }) => {
   try {
     const res = await window.fetch('/static/terms-of-service.html')
@@ -83,7 +71,6 @@ const getTOS = async ({ store }) => {
 
 const afterStoreSetup = ({ store }) => {
   Promise.all([
-    setSettings({ store }), // set the right baseURL/instanceUrl
     checkOAuthToken({ store }), // check token and try to log user if found
     getAppSecret({ store }), // try to get or create app and token thingy
     getTOS({ store }), // get the terms of service

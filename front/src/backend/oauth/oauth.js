@@ -14,7 +14,7 @@ export const getOrCreateApp = ({ clientId, clientSecret, instance, commit }) => 
   const url = `${instance}/api/v1/apps`
   const form = new window.FormData()
 
-  form.append('client_name', `reel2bit_front_${(new Date()).toISOString()}`)
+  form.append('client_name', `reel2bit_front_${window.___reel2bitsfe_commit_hash}_${(new Date()).toISOString()}`)
   form.append('redirect_uris', REDIRECT_URI)
   form.append('scopes', 'read write follow push')
 

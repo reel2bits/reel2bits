@@ -59,7 +59,7 @@ const promisedRequest = ({ method, url, payload, credentials, headers = {} }, st
  * Optionals:
  *  bio, homepage, location, token
  */
-const register = ( userInfo, store ) => {
+const register = (userInfo, store) => {
   console.debug('api.service::register', userInfo)
   const { nickname, ...rest } = userInfo
   return fetch(MASTODON_REGISTRATION_URL, {
