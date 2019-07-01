@@ -5,9 +5,10 @@
       <h3>Description</h3>
       {{ instanceDescription }}
     </div>
+    <div v-html="instanceTos"></div>
     <div>
-      <h3>Terms of service</h3>
-      {{ instanceTos }}
+      <h3>Versions and sources</h3>
+      Frontend version: {{ frontVersion }}<br />
     </div>
   </div>
 </template>
@@ -20,7 +21,8 @@ export default {
     ...mapState({
       instanceName: state => state.instance.name,
       instanceDescription: state => state.instance.description,
-      instanceTos: state => state.instance.tos
+      instanceTos: state => state.instance.tos,
+      frontVersion () { return window.___reel2bitsfe_commit_hash }
     })
   }
 }

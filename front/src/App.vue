@@ -11,7 +11,6 @@
         |
         <router-link v-if="!currentUser" to="/register">Register</router-link>
       </span>
-      | front v: {{ frontVersion }}
     </div>
     <router-view/>
   </div>
@@ -41,8 +40,7 @@ export default {
   name: 'app',
   computed: {
     currentUser () { return this.$store.state.users.currentUser },
-    sitename () { return this.$store.state.instance.name },
-    frontVersion () { return window.___reel2bitsfe_commit_hash }
+    sitename () { return this.$store.state.instance.name }
   },
   methods: {
     logout () {
