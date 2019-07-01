@@ -15,7 +15,7 @@ from flask_security import confirmable as FSConfirmable
 from flask_uploads import configure_uploads, UploadSet, AUDIO, patch_request_class
 from app_oauth import config_oauth
 from flask_cors import CORS
-from flask_restplus import Api
+from flask_restplus import Api, RootException, NoResultFound
 
 from forms import ExtendedRegisterForm
 from models import db, Config, user_datastore, Role, create_actor
@@ -198,6 +198,21 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
         response = jsonify(error.to_dict())
         response.status_code = error.status_code
         return response
+
+    @api.errorhandler
+    def default_error_handler(error):
+        '''Default error handler'''
+        return {'error': error.specific}, getattr(error, 'code', 500)
+
+    @api.errorhandler(RootException)
+    def handle_root_exception(error):
+        '''Return a custom message and 400 status code'''
+        return {'error': error.specific}, 400
+
+    @api.errorhandler(NoResultFound)
+    def handle_no_result_exception(error):
+        '''Return a custom not found error message and 404 status code'''
+        return {'error': error.specific}, 404
 
     sounds = UploadSet("sounds", AUDIO)
     configure_uploads(app, sounds)
