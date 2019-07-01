@@ -15,7 +15,6 @@ from flask_security import confirmable as FSConfirmable
 from flask_uploads import configure_uploads, UploadSet, AUDIO, patch_request_class
 from app_oauth import config_oauth
 from flask_cors import CORS
-from flask_restplus import Api
 
 from forms import ExtendedRegisterForm
 from models import db, Config, user_datastore, Role, create_actor
@@ -120,9 +119,6 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
     app.babel = babel
     toolbar = DebugToolbarExtension(app)  # noqa: F841
 
-    bp_apidocs = Blueprint('api', __name__, url_prefix='/api')
-    api = Api(bp_apidocs, endpoint='api')  # noqa: F841
-
     db.init_app(app)
 
     # ActivityPub backend
@@ -204,8 +200,6 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
     patch_request_class(app, 500 * 1024 * 1024)  # 500m limit
 
     if register_blueprints:
-        app.register_blueprint(bp_apidocs)
-
         from controllers.main import bp_main
 
         app.register_blueprint(bp_main)
