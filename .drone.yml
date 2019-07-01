@@ -43,7 +43,7 @@ steps:
   image: node:10
   commands:
       - cd front
-      - npm install
+      - yarn
       - npm run lint
       - npm run build
 
