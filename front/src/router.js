@@ -5,6 +5,7 @@ import LoginForm from './components/login_form/login_form.vue'
 import Register from './components/register/register.vue'
 import OAuthCallback from './components/oauth_callback/oauth_callback.vue'
 import UserProfile from './components/user_profile/user_profile.vue'
+import TracksUpload from './views/tracks/Upload.vue'
 
 Vue.use(Router)
 
@@ -20,9 +21,6 @@ const router = new Router({
     {
       path: '/about',
       name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
       component: () => import(/* webpackChunkName: "about" */ './views/About.vue')
     },
     {
@@ -56,6 +54,13 @@ const router = new Router({
       name: 'user-profile',
       path: '/(users/)?:name',
       component: UserProfile
+    },
+    // Tracks
+    {
+      name: 'tracks-upload',
+      path: '/tracks/upload',
+      component: TracksUpload,
+      meta: { requiresAuth: true }
     }
   ]
 })
