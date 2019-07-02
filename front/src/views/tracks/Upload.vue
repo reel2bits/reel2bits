@@ -1,7 +1,7 @@
 <template>
     <div>
       <h4>Upload a new track</h4>
-      <form v-on:submit.prevent='upload(track)' class='upload-track-form'>
+      <form v-on:submit.prevent='upload(track)' class='upload-track-form' enctype='multipart/form-data'>
         <div class='container'>
           <div class='text-fields'>
             <div class='form-group' :class="{ 'form-group--error': $v.track.title.$error }">
@@ -23,7 +23,7 @@
 
             <div class='form-group'>
               <label class='form--label' for='file'>file</label>
-              <input type='file' name='file' required="" :disabled="isPending" @change='processFile($event)' class='form-control-file' id='file'>
+              <input :accept='acceptedMimeTypes' type='file' name='file' required="" :disabled="isPending" @change='uploadFile($event)' class='form-control-file' id='file'>
             </div>
             <div class="form-error" v-if="$v.track.file.$dirty">
               <ul>
@@ -32,6 +32,11 @@
                 </li>
               </ul>
             </div>
+            <div class="form-error" v-if="trackUploadError">
+              Error: {{ trackUploadError }}
+            </div>
+
+            <!-- TODO: album -->
 
             <div class='form-group'>
               <label class='form--label' for='licence'>licence</label>
@@ -69,9 +74,9 @@
 
 <script>
 import { validationMixin } from 'vuelidate'
-import { required } from 'vuelidate/lib/validators'
+import { required, maxLength } from 'vuelidate/lib/validators'
 import { mapState } from 'vuex'
-
+import fileSizeFormatService from '../../services/file_size_format/file_size_format.js'
 export default {
   state: {
     uploadPending: false,
@@ -79,6 +84,7 @@ export default {
   },
   mixins: [validationMixin],
   data: () => ({
+    trackUploadError: '',
     track: {
       title: '',
       description: '',
@@ -91,7 +97,7 @@ export default {
   }),
   validations: {
     track: {
-      title: { },
+      title: { maxLength: maxLength(250) },
       description: { },
       file: { required },
       album: { required },
@@ -114,6 +120,14 @@ export default {
     descriptionPlaceholder () {
       return 'Optional, what is this track about ?'
     },
+    acceptedMimeTypes () {
+      const mp3 = ['audio/mpeg3', 'audio/x-mpeg-3']
+      const ogg = ['audio/ogg', 'audio/x-ogg']
+      const flac = ['audio/x-flac']
+      const wav = ['audio/wav', 'audio/x-wav']
+      const mimes = [].concat(mp3, ogg, flac, wav)
+      return mimes.join(',')
+    },
     ...mapState({
       signedIn: (state) => !!state.users.currentUser,
       isPending: (state) => state.uploadPending,
@@ -123,6 +137,17 @@ export default {
   methods: {
     async upload () {
       console.warn('IMPLEMENT ME')
+    },
+    uploadFile (event) {
+      const file = event.target.files[0]
+      if (!file) { return }
+      if (file.size > this.$store.state.instance['track_size_limit']) {
+        const filesize = fileSizeFormatService.fileSizeFormat(file.size)
+        const allowedSize = fileSizeFormatService.filrSizeFormat(this.$store.state.instance['track_size_limt'])
+        this.trackUploadError = 'Error: file too big,' + filesize.num + filesize.unit + '/' + allowedSize.num + allowedSize.unit
+        return
+      }
+      this.file = file
     }
   }
 }
