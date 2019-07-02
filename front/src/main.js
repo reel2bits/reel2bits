@@ -33,7 +33,8 @@ const persistedStateOptions = {
       oauth: oauthModule,
       authFlow: authFlowModule
     },
-    plugins: [persistedState]
+    plugins: [persistedState],
+    strict: false
   })
 
   afterStoreSetup({ store })

@@ -103,7 +103,9 @@ export default {
     }
   },
   created () {
+    console.log('upload view created() called')
     if (!this.signedIn) {
+      console.debug('not logged in, redirecting')
       this.$router.push({ name: 'home' })
     }
   },
