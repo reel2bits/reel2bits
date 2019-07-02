@@ -15,6 +15,7 @@ const getNodeInfo = async ({ store }) => {
       store.dispatch('setInstanceOption', { name: 'registrationOpen', value: metadata.openRegistrations })
       store.dispatch('setInstanceOption', { name: 'name', value: metadata.nodeName })
       store.dispatch('setInstanceOption', { name: 'description', value: metadata.nodeDescription })
+      store.dispatch('setInstanceOption', { name: 'track_size_limit', value: 1 }) // FIXME TODO implement in backend
 
       const software = data.software
       store.dispatch('setInstanceOption', { name: 'backendVersion', value: software.version })
