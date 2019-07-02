@@ -141,10 +141,10 @@ export default {
     uploadFile (event) {
       const file = event.target.files[0]
       if (!file) { return }
-      if (file.size > this.$store.state.instance['track_size_limit']) {
+      if (file.size > this.$store.state.instance.track_size_limit) {
         const filesize = fileSizeFormatService.fileSizeFormat(file.size)
-        const allowedSize = fileSizeFormatService.filrSizeFormat(this.$store.state.instance['track_size_limt'])
-        this.trackUploadError = 'Error: file too big,' + filesize.num + filesize.unit + '/' + allowedSize.num + allowedSize.unit
+        const allowedSize = fileSizeFormatService.fileSizeFormat(this.$store.state.instance.track_size_limit)
+        this.trackUploadError = 'file too big: ' + filesize.num + filesize.unit + '/' + allowedSize.num + allowedSize.unit
         return
       }
       this.file = file
