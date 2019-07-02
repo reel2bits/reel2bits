@@ -41,6 +41,7 @@ const checkOAuthToken = async ({ store }) => {
     } else {
       console.log('no user token present in cache')
     }
+    resolve()
   })
 }
 
@@ -69,8 +70,8 @@ const getTOS = async ({ store }) => {
   }
 }
 
-const afterStoreSetup = ({ store }) => {
-  Promise.all([
+const afterStoreSetup = async ({ store }) => {
+  await Promise.all([
     checkOAuthToken({ store }), // check token and try to log user if found
     getAppSecret({ store }), // try to get or create app and token thingy
     getTOS({ store }), // get the terms of service
