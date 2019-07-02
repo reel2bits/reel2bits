@@ -90,7 +90,7 @@
 
 <script>
 import { validationMixin } from 'vuelidate'
-import { required, sameAs } from 'vuelidate/lib/validators'
+import { required, sameAs, maxLength } from 'vuelidate/lib/validators'
 import { mapActions, mapState } from 'vuex'
 
 export default {
@@ -106,12 +106,13 @@ export default {
   }),
   validations: {
     user: {
-      email: { required },
-      username: { required },
-      fullname: { required },
-      password: { required },
+      email: { required, maxLength: maxLength(250) },
+      username: { required, maxLength: maxLength(250) },
+      fullname: { required, maxLength: maxLength(250) },
+      password: { required, maxLength: maxLength(250) },
       confirm: {
         required,
+        maxLength: maxLength(250),
         sameAsPassword: sameAs('password')
       }
     }
