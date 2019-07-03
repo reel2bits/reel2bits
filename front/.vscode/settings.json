@@ -1,0 +1,24 @@
+{
+    "eslint.run": "onType",
+    "eslint.autoFixOnSave": true,
+    "eslint.validate": [
+        { "language": "vue", "autoFix": true },
+        { "language": "html", "autoFix": true },
+        { "language": "javascript", "autoFix": true }
+    ],
+    "vetur.format.defaultFormatter.js": "none",
+    "vetur.format.defaultFormatter.html": "none",
+    "vetur.format.defaultFormatterOptions": {
+        "js-beautify-html": {
+            "wrap_attributes": "auto"
+        },
+        "prettyhtml": {
+            "printWidth": 100,
+            "singleQuote": false,
+            "wrapAttributes": false,
+            "sortAttributes": false
+        }
+    },
+    "javascript.format.insertSpaceBeforeFunctionParenthesis": true,
+    "editor.tabSize": 2
+}
