@@ -119,7 +119,15 @@ const trackUpload = (trackInfo, store) => {
     body: form,
     method: 'POST',
     headers: authHeaders(store.getters.getToken())
-  }).then((data) => data.json())
+  })
+    .then((response) => [response.ok, response])
+    .then(([ok, response]) => {
+      if (ok) {
+        return response.json()
+      } else {
+        return response.json().then((error) => { throw new Error(error.error) })
+      }
+    })
 }
 
 const fetchUser = ({ id, store }) => {

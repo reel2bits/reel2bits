@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from app_oauth import require_oauth
 from authlib.flask.oauth2 import current_token
 from forms import SoundUploadForm
+import json
 
 bp_api_tracks = Blueprint("bp_api_tracks", __name__)
 
@@ -33,4 +34,4 @@ def upload():
     print(form.errors)
 
     print("FORM INVALID")
-    return jsonify({'error': str(form.errors)}), 400
+    return jsonify({'error': json.dumps(form.errors)}), 400

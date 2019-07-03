@@ -37,12 +37,14 @@ const tracks = {
 
         store.commit('uploadSuccess')
       } catch (e) {
-        let errors = e.message
+        let errors = JSON.parse(e.message)
+
         if (typeof errors === 'object') {
           errors = humanizeErrors(errors)
         }
 
         store.commit('uploadFailure', errors)
+
         throw Error(errors)
       }
     }
