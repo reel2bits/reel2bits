@@ -30,18 +30,18 @@ const tracks = {
   actions: {
     async uploadTrack (store, trackInfo) {
       store.commit('uploadPending')
-      console.log(1, store)
+
       try {
         let data = await apiService.trackUpload(trackInfo, store)
         console.log(data)
-        console.log(2, store)
+
         store.commit('uploadSuccess')
       } catch (e) {
         let errors = e.message
         if (typeof errors === 'object') {
           errors = humanizeErrors(errors)
         }
-        console.log(3, store)
+
         store.commit('uploadFailure', errors)
         throw Error(errors)
       }
