@@ -244,6 +244,9 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
 
         app.register_blueprint(bp_api_v1_accounts)
 
+        from controllers.api.tracks import bp_api_tracks
+        app.register_blueprint(bp_api_tracks)
+
     @app.route("/uploads/<string:thing>/<path:stuff>", methods=["GET"])
     def get_uploads_stuff(thing, stuff):
         if app.testing:
