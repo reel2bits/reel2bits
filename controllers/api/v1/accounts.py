@@ -49,23 +49,23 @@ def accounts():
         errors["agreement"] = ["agreement is missing"]
 
     if len(errors) > 0:
-        return jsonify({"error": errors}), 400
+        return jsonify({"error": str(errors)}), 400
 
     if request.json["password"] != request.json["confirm"]:
-        return jsonify({"error": {"confirm": ["passwords doesn't match"]}}), 400
+        return jsonify({"error": str({"confirm": ["passwords doesn't match"]})}), 400
 
     if "agreement" not in request.json:
-        return jsonify({"error": {"agreement": ["you need to accept the terms and conditions"]}}), 400
+        return jsonify({"error": str({"agreement": ["you need to accept the terms and conditions"]})}), 400
 
     # Check if user already exists by username
     user = User.query.filter(User.name == request.json["username"]).first()
     if user:
-        return jsonify({"error": {"ap_id": ["has already been taken"]}}), 400
+        return jsonify({"error": str({"ap_id": ["has already been taken"]})}), 400
 
     # Check if user already exists by email
     user = User.query.filter(User.email == request.json["email"]).first()
     if user:
-        return jsonify({"error": {"email": ["has already been taken"]}}), 400
+        return jsonify({"error": str({"email": ["has already been taken"]})}), 400
 
     # Proceed to register the user
     role = Role.query.filter(Role.name == "user").first()
