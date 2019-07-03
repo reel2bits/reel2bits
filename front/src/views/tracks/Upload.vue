@@ -49,7 +49,7 @@
               :accept="acceptedMimeTypes"
               type="file"
               name="file"
-              required=""
+              required
               :disabled="isPending"
               class="form-control-file"
               @change="uploadFile($event)"
@@ -72,7 +72,26 @@
             Error: {{ trackUploadError }}
           </div>
 
-          <!-- TODO: album -->
+          <div class="form-group">
+            <label
+              class="form--label"
+              for="album"
+            >album</label>
+            <select
+              id="album"
+              v-model="track.album"
+              class="form-control"
+              name="album"
+            >
+              <option
+                v-for="album in albumsList"
+                :key="album.value"
+                :value="album.value"
+              >
+                {{ album.text }}
+              </option>
+            </select>
+          </div>
 
           <div class="form-group">
             <label
@@ -151,7 +170,7 @@ export default {
       title: '',
       description: '',
       file: '',
-      album: null,
+      album: '__None',
       licence: 0,
       private: ''
     }
@@ -159,11 +178,11 @@ export default {
   validations: {
     track: {
       title: { maxLength: maxLength(250) },
-      description: { },
+      description: {},
       file: { required },
-      // album: { required },
+      album: { required },
       licence: { required },
-      private: { }
+      private: {}
     }
   },
   computed: {
@@ -192,10 +211,13 @@ export default {
         { value: 99, text: 'Other, see description' }
       ]
     },
+    albumsList () {
+      return [{ value: '__None', text: 'No album' }]
+    },
     ...mapState({
-      signedIn: (state) => !!state.users.currentUser,
-      isPending: (state) => state.tracks.uploadPending,
-      serverValidationErrors: (state) => state.tracks.uploadErrors
+      signedIn: state => !!state.users.currentUser,
+      isPending: state => state.tracks.uploadPending,
+      serverValidationErrors: state => state.tracks.uploadErrors
     })
   },
   created () {
@@ -225,11 +247,21 @@ export default {
     uploadFile (event) {
       // TODO check if in case of file to big, the upload isn't submitted
       const file = event.target.files[0]
-      if (!file) { return }
+      if (!file) {
+        return
+      }
       if (file.size > this.$store.state.instance.track_size_limit) {
         const filesize = fileSizeFormatService.fileSizeFormat(file.size)
-        const allowedSize = fileSizeFormatService.fileSizeFormat(this.$store.state.instance.track_size_limit)
-        this.trackUploadError = 'file too big: ' + filesize.num + filesize.unit + '/' + allowedSize.num + allowedSize.unit
+        const allowedSize = fileSizeFormatService.fileSizeFormat(
+          this.$store.state.instance.track_size_limit
+        )
+        this.trackUploadError =
+          'file too big: ' +
+          filesize.num +
+          filesize.unit +
+          '/' +
+          allowedSize.num +
+          allowedSize.unit
         return
       }
       this.track.file = file

@@ -29,9 +29,6 @@ def upload():
     form = SoundUploadForm()
 
     if form.validate_on_submit():
-        print("FORM VALID")
+        return jsonify('I have no idea what to do'), 500
 
-    print(form.errors)
-
-    print("FORM INVALID")
     return jsonify({'error': json.dumps(form.errors)}), 400
