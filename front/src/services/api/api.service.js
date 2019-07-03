@@ -85,7 +85,7 @@ const register = (userInfo, store) => {
       if (ok) {
         return response.json()
       } else {
-        return response.json().then((error) => { throw new Error(error) })
+        return response.json().then((error) => { throw new Error(error.error) })
       }
     })
 }
