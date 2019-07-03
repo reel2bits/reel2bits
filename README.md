@@ -80,6 +80,33 @@ Copy systemd services files ```docs/reel2bits-*.service``` to ```/etc/systemd/sy
     
 Use ```docs/reel2bits.nginx``` as vhost template for ```X-Accel-Redirect``` part.
 
+## Development notes
+
+Run the backend with:
+
+```bash
+export AUTHLIB_INSECURE_TRANSPORT=1
+export FLASK_ENV=development
+flask run
+```
+
+Setup the frontend with `front/config/local.json`:
+
+```json
+{
+  "target": "http://127.0.0.1:5000/"
+}
+```
+
+And run it with:
+
+```bash
+cd front
+npm run dev
+```
+
+Then you can access the frontend on http://localhost:8081 and backend requests will be proxified properly.
+
 ## Docker
 
 TODO
