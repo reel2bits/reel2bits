@@ -101,6 +101,10 @@ const verifyCredentials = (user, store) => {
     .then((data) => data.error ? data : parseUser(data))
 }
 
+const trackUpload = (trackInfo, store) => {
+  console.error('PLS IMPLEMENT ME')
+}
+
 const fetchUser = ({ id, store }) => {
   let url = `${MASTODON_USER_URL}/${id}`
   let credentials = store.getters.getToken()
@@ -111,7 +115,8 @@ const fetchUser = ({ id, store }) => {
 const apiService = {
   verifyCredentials,
   register,
-  fetchUser
+  fetchUser,
+  trackUpload
 }
 
 export default apiService
