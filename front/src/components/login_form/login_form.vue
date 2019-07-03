@@ -1,19 +1,41 @@
 <template>
   <div>
-    <form class="login" @submit.prevent="submitPassword">
+    <form
+      class="login"
+      @submit.prevent="submitPassword"
+    >
       <h1>Sign in</h1>
       <label>username</label>
-      <input required v-model="user.username" type="text" placeholder="Username">
+      <input
+        v-model="user.username"
+        required
+        type="text"
+        placeholder="Username"
+      >
       <label>password</label>
-      <input required v-model="user.password" type="password" placeholder="Password" ref='passwordInput'>
+      <input
+        ref="passwordInput"
+        v-model="user.password"
+        required
+        type="password"
+        placeholder="Password"
+      >
       <hr>
-      <button type="submit">login</button>
+      <button type="submit">
+        login
+      </button>
     </form>
 
-    <div v-if="error" class='form-group'>
-      <div class='alert error'>
-        {{error}}
-        <i class="button-icon icon-cancel" @click="clearError"></i>
+    <div
+      v-if="error"
+      class="form-group"
+    >
+      <div class="alert error">
+        {{ error }}
+        <i
+          class="button-icon icon-cancel"
+          @click="clearError"
+        />
       </div>
     </div>
   </div>

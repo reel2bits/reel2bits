@@ -3,18 +3,28 @@
     <div id="nav">
       <h1>{{ sitename }}</h1>
       <hr>
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
+      <router-link to="/">
+        Home
+      </router-link> |
+      <router-link to="/about">
+        About
+      </router-link>
       <span v-if="currentUser">
-         | <router-link to="/tracks/upload">Upload track</router-link>
-         | <a href="#" @click.prevent="logout">Logout</a></span>
+        | <router-link to="/tracks/upload">Upload track</router-link>
+        | <a
+          href="#"
+          @click.prevent="logout"
+        >Logout</a></span>
       <span v-else>
         | <router-link to="/login">Login</router-link>
         |
-        <router-link v-if="!currentUser" to="/register">Register</router-link>
+        <router-link
+          v-if="!currentUser"
+          to="/register"
+        >Register</router-link>
       </span>
     </div>
-    <router-view/>
+    <router-view />
   </div>
 </template>
 
@@ -39,7 +49,7 @@
 
 <script>
 export default {
-  name: 'app',
+  name: 'App',
   computed: {
     currentUser () { return this.$store.state.users.currentUser },
     sitename () { return this.$store.state.instance.name }

@@ -1,61 +1,140 @@
 <template>
-    <div>
-      <h4>Upload a new track</h4>
-      <form v-on:submit.prevent='upload(track)' class='upload-track-form' enctype='multipart/form-data'>
-        <div class='container'>
-          <div class='text-fields'>
-            <div class='form-group' :class="{ 'form-group--error': $v.track.title.$error }">
-              <label class='form--label' for='track-upload-title'>title</label>
-              <input :disabled="isPending" v-model.trim='$v.track.title.$model' class='form-control' id='track-upload-title' placeholder="title">
-            </div>
-
-            <div class='form-group'>
-              <label class='form--label' for='description'>description</label>
-              <textarea :disabled="isPending" v-model='track.description' class='form-control' id='description' :placeholder="descriptionPlaceholder"></textarea>
-            </div>
-
-            <div class='form-group'>
-              <label class='form--label' for='file'>file</label>
-              <input :accept='acceptedMimeTypes' type='file' name='file' required="" :disabled="isPending" @change='uploadFile($event)' class='form-control-file' id='file'>
-            </div>
-            <div class="form-error" v-if="$v.track.file.$dirty">
-              <ul>
-                <li v-if="!$v.track.file.required">
-                  <span>file required</span>
-                </li>
-              </ul>
-            </div>
-            <div class="form-error" v-if="trackUploadError">
-              Error: {{ trackUploadError }}
-            </div>
-
-            <!-- TODO: album -->
-
-            <div class='form-group'>
-              <label class='form--label' for='licence'>licence</label>
-              <select v-model='track.licence' class="form-control" id="licence" name="licence">
-                <option v-for='lic in licenceChoices' v-bind:value='lic.value' v-bind:key='lic.value'>{{ lic.text }}</option>
-              </select>
-            </div>
-
-            <div class='form-group'>
-              <label class='form--label' for='private'>private</label>
-              <input type='checkbox' name='private' value='y' :disabled="isPending" v-model='track.private' class='form-control' id='private'>
-            </div>
-
-            <div class='form-group'>
-              <button :disabled="isPending" type='submit' class='btn btn-default'>upload</button>
-            </div>
+  <div>
+    <h4>Upload a new track</h4>
+    <form
+      class="upload-track-form"
+      enctype="multipart/form-data"
+      @submit.prevent="upload(track)"
+    >
+      <div class="container">
+        <div class="text-fields">
+          <div
+            class="form-group"
+            :class="{ 'form-group--error': $v.track.title.$error }"
+          >
+            <label
+              class="form--label"
+              for="track-upload-title"
+            >title</label>
+            <input
+              id="track-upload-title"
+              v-model.trim="$v.track.title.$model"
+              :disabled="isPending"
+              class="form-control"
+              placeholder="title"
+            >
           </div>
 
-        </div>
-        <div v-if="serverValidationErrors" class='form-group'>
-          <div class='alert error'>
-            <span v-for="error in serverValidationErrors" :key="error">{{error}}</span>
+          <div class="form-group">
+            <label
+              class="form--label"
+              for="description"
+            >description</label>
+            <textarea
+              id="description"
+              v-model="track.description"
+              :disabled="isPending"
+              class="form-control"
+              :placeholder="descriptionPlaceholder"
+            />
+          </div>
+
+          <div class="form-group">
+            <label
+              class="form--label"
+              for="file"
+            >file</label>
+            <input
+              id="file"
+              :accept="acceptedMimeTypes"
+              type="file"
+              name="file"
+              required=""
+              :disabled="isPending"
+              class="form-control-file"
+              @change="uploadFile($event)"
+            >
+          </div>
+          <div
+            v-if="$v.track.file.$dirty"
+            class="form-error"
+          >
+            <ul>
+              <li v-if="!$v.track.file.required">
+                <span>file required</span>
+              </li>
+            </ul>
+          </div>
+          <div
+            v-if="trackUploadError"
+            class="form-error"
+          >
+            Error: {{ trackUploadError }}
+          </div>
+
+          <!-- TODO: album -->
+
+          <div class="form-group">
+            <label
+              class="form--label"
+              for="licence"
+            >licence</label>
+            <select
+              id="licence"
+              v-model="track.licence"
+              class="form-control"
+              name="licence"
+            >
+              <option
+                v-for="lic in licenceChoices"
+                :key="lic.value"
+                :value="lic.value"
+              >
+                {{ lic.text }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label
+              class="form--label"
+              for="private"
+            >private</label>
+            <input
+              id="private"
+              v-model="track.private"
+              type="checkbox"
+              name="private"
+              value="y"
+              :disabled="isPending"
+              class="form-control"
+            >
+          </div>
+
+          <div class="form-group">
+            <button
+              :disabled="isPending"
+              type="submit"
+              class="btn btn-default"
+            >
+              upload
+            </button>
           </div>
         </div>
-      </form>
-    </div>
+      </div>
+      <div
+        v-if="serverValidationErrors"
+        class="form-group"
+      >
+        <div class="alert error">
+          <span
+            v-for="error in serverValidationErrors"
+            :key="error"
+          >{{ error }}</span>
+        </div>
+      </div>
+    </form>
+  </div>
 </template>
 
 <script>
@@ -88,13 +167,6 @@ export default {
       private: { }
     }
   },
-  created () {
-    console.log('upload view created() called')
-    if (!this.signedIn) {
-      console.debug('not logged in, redirecting')
-      this.$router.push({ name: 'home' })
-    }
-  },
   computed: {
     descriptionPlaceholder () {
       return 'Optional, what is this track about ?'
@@ -125,6 +197,13 @@ export default {
       isPending: (state) => state.tracks.uploadPending,
       serverValidationErrors: (state) => state.tracks.uploadErrors
     })
+  },
+  created () {
+    console.log('upload view created() called')
+    if (!this.signedIn) {
+      console.debug('not logged in, redirecting')
+      this.$router.push({ name: 'home' })
+    }
   },
   methods: {
     async upload () {
