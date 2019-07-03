@@ -1,0 +1,36 @@
+from flask import Blueprint, request, jsonify
+from app_oauth import require_oauth
+from authlib.flask.oauth2 import current_token
+from forms import SoundUploadForm
+
+bp_api_tracks = Blueprint("bp_api_tracks", __name__)
+
+
+@bp_api_tracks.route("/api/tracks/upload", methods=["POST"])
+@require_oauth("write")
+def upload():
+    """
+    Upload a track
+    :return: JSON
+    """
+    errors = {}
+
+    user = current_token.user
+    if not user:
+        return jsonify({'error': 'Unauthorized'}), 403
+
+    if 'file' not in request.files:
+        errors['file'] = "No file present"
+
+    if len(errors) > 0:
+        return jsonify({"error": errors}), 400
+
+    form = SoundUploadForm()
+
+    if form.validate_on_submit():
+        print("FORM VALID")
+
+    print(form.errors)
+
+    print("FORM INVALID")
+    return jsonify({'error': str(form.errors)}), 400

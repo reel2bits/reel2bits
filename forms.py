@@ -1,4 +1,5 @@
 from flask_security import RegisterForm, current_user
+from authlib.flask.oauth2 import current_token
 from flask_uploads import UploadSet, AUDIO
 from flask_wtf import FlaskForm as Form
 from flask_wtf.file import FileField, FileAllowed, FileRequired
@@ -76,7 +77,7 @@ class ConfigForm(Form):
 
 
 def get_albums():
-    return Album.query.filter(Album.user_id == current_user.id).all()
+    return Album.query.filter(Album.user_id == current_token.user.id).all()
 
 
 def get_licences():
