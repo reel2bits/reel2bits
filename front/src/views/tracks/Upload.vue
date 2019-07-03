@@ -123,7 +123,7 @@
         </div>
       </div>
       <div
-        v-if="serverValidationErrors"
+        v-if="serverValidationErrors.length"
         class="form-group"
       >
         <div class="alert error">
