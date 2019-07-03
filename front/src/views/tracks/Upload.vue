@@ -171,11 +171,12 @@ export default {
       return 'Optional, what is this track about ?'
     },
     acceptedMimeTypes () {
+      const exts = ['.mp3', '.ogg', '.oga', '.flac', '.wav']
       const mp3 = ['audio/mpeg3', 'audio/x-mpeg-3']
       const ogg = ['audio/ogg', 'audio/x-ogg']
       const flac = ['audio/x-flac']
       const wav = ['audio/wav', 'audio/x-wav']
-      const mimes = [].concat(mp3, ogg, flac, wav)
+      const mimes = [].concat(exts, mp3, ogg, flac, wav)
       return mimes.join(',')
     },
     licenceChoices () {
