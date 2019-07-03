@@ -46,7 +46,8 @@
     "webpack-hot-middleware": "^2.25.0",
     "eventsource-polyfill": "^0.9.6",
     "vue-loader": "^14.0.0",
-    "shelljs": "^0.7.4"
+    "shelljs": "^0.7.4",
+    "babel-eslint": "^7.0.0"
   },
   "eslintConfig": {
     "root": true,
