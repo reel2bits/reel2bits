@@ -8,13 +8,6 @@
               <label class='form--label' for='track-upload-title'>title</label>
               <input :disabled="isPending" v-model.trim='$v.track.title.$model' class='form-control' id='track-upload-title' placeholder="title">
             </div>
-            <div class="form-error" v-if="$v.track.title.$dirty">
-              <ul>
-                <li v-if="!$v.track.title.required">
-                  <span>title required</span>
-                </li>
-              </ul>
-            </div>
 
             <div class='form-group'>
               <label class='form--label' for='description'>description</label>
@@ -40,15 +33,8 @@
 
             <div class='form-group'>
               <label class='form--label' for='licence'>licence</label>
-              <select class="form-control" id="licence" name="licence">
-                <option value="0">Not Specified</option>
-                <option value="1">CC Attribution</option>
-                <option value="2">CC Attribution Share Alike</option>
-                <option value="3">CC Attribution No Derivatives</option>
-                <option value="4">CC Attribution Non Commercial</option>
-                <option value="5">CC Attribution Non Commercial - Share Alike</option>
-                <option value="6">CC Attribution Non Commercial - No Derivatives</option>
-                <option value="7">Public Domain Dedication</option>
+              <select v-model='track.licence' class="form-control" id="licence" name="licence">
+                <option v-for='lic in licenceChoices' v-bind:value='lic.value' v-bind:key='lic.value'>{{ lic.text }}</option>
               </select>
             </div>
 
@@ -75,13 +61,11 @@
 <script>
 import { validationMixin } from 'vuelidate'
 import { required, maxLength } from 'vuelidate/lib/validators'
-import { mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 import fileSizeFormatService from '../../services/file_size_format/file_size_format.js'
+
 export default {
-  state: {
-    uploadPending: false,
-    uploadErrors: []
-  },
+  ...mapActions(['trackUpload']),
   mixins: [validationMixin],
   data: () => ({
     trackUploadError: '',
@@ -89,10 +73,9 @@ export default {
       title: '',
       description: '',
       file: '',
-      album: '',
-      licence: '',
-      private: '',
-      confirm: ''
+      // album: '',
+      licence: 0,
+      private: ''
     }
   }),
   validations: {
@@ -100,12 +83,9 @@ export default {
       title: { maxLength: maxLength(250) },
       description: { },
       file: { required },
-      album: { required },
+      // album: { required },
       licence: { required },
-      private: { },
-      confirm: {
-        required
-      }
+      private: { }
     }
   },
   created () {
@@ -116,7 +96,6 @@ export default {
     }
   },
   computed: {
-    token () { return this.$route.params.token },
     descriptionPlaceholder () {
       return 'Optional, what is this track about ?'
     },
@@ -128,17 +107,43 @@ export default {
       const mimes = [].concat(mp3, ogg, flac, wav)
       return mimes.join(',')
     },
+    licenceChoices () {
+      return [
+        { value: 0, text: 'Not Specified' },
+        { value: 1, text: 'CC Attribution' },
+        { value: 2, text: 'CC Attribution Share Alike' },
+        { value: 3, text: 'CC Attribution No Derivatives' },
+        { value: 4, text: 'CC Attribution Non Commercial' },
+        { value: 5, text: 'CC Attribution Non Commercial - Share Alike' },
+        { value: 6, text: 'CC Attribution Non Commercial - No Derivatives' },
+        { value: 7, text: 'Public Domain Dedication' },
+        { value: 99, text: 'Other, see description' }
+      ]
+    },
     ...mapState({
       signedIn: (state) => !!state.users.currentUser,
-      isPending: (state) => state.uploadPending,
-      serverValidationErrors: (state) => state.uploadErrors
+      isPending: (state) => state.tracks.uploadPending,
+      serverValidationErrors: (state) => state.tracks.uploadErrors
     })
   },
   methods: {
     async upload () {
-      console.warn('IMPLEMENT ME')
+      this.$v.$touch()
+
+      if (!this.$v.$invalid) {
+        try {
+          console.debug('track upload: uploading')
+          await this.trackUpload(this.track)
+          this.$router.push({ name: 'tracks-show', id: 0 })
+        } catch (error) {
+          console.warn('Upload failed: ' + error)
+        }
+      } else {
+        console.log('form is invalid', this.$v.$invalid)
+      }
     },
     uploadFile (event) {
+      // TODO check if in case of file to big, the upload isn't submitted
       const file = event.target.files[0]
       if (!file) { return }
       if (file.size > this.$store.state.instance.track_size_limit) {
@@ -147,7 +152,8 @@ export default {
         this.trackUploadError = 'file too big: ' + filesize.num + filesize.unit + '/' + allowedSize.num + allowedSize.unit
         return
       }
-      this.file = file
+      this.track.file = file
+      this.$v.track.file.$touch()
     }
   }
 }
