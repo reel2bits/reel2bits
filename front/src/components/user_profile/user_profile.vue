@@ -1,7 +1,11 @@
 <template>
   <div>
-    <div v-if="user">Profile of {{user}}</div>
-    <div v-if="error">{{ error }}</div>
+    <div v-if="user">
+      Profile of {{ user }}
+    </div>
+    <div v-if="error">
+      {{ error }}
+    </div>
   </div>
 </template>
 
@@ -25,6 +29,20 @@ export default {
     isUs () {
       return this.userId && this.$store.state.users.currentUser.id &&
         this.userId === this.$store.state.users.currentUser.id
+    }
+  },
+  watch: {
+    '$route.params.id': function (newVal) {
+      if (newVal) {
+        this.cleanUp()
+        this.load(newVal)
+      }
+    },
+    '$route.params.name': function (newVal) {
+      if (newVal) {
+        this.cleanUp()
+        this.load(newVal)
+      }
     }
   },
   created () {
@@ -62,20 +80,6 @@ export default {
     },
     cleanUp () {
       // do nothing for now
-    }
-  },
-  watch: {
-    '$route.params.id': function (newVal) {
-      if (newVal) {
-        this.cleanUp()
-        this.load(newVal)
-      }
-    },
-    '$route.params.name': function (newVal) {
-      if (newVal) {
-        this.cleanUp()
-        this.load(newVal)
-      }
     }
   }
 }
