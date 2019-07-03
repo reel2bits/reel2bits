@@ -6,6 +6,7 @@ import Register from './components/register/register.vue'
 import OAuthCallback from './components/oauth_callback/oauth_callback.vue'
 import UserProfile from './components/user_profile/user_profile.vue'
 import TracksUpload from './views/tracks/Upload.vue'
+import TracksShow from './views/tracks/Show.vue'
 
 Vue.use(Router)
 
@@ -61,6 +62,11 @@ const router = new Router({
       path: '/tracks/upload',
       component: TracksUpload,
       meta: { requiresAuth: true }
+    },
+    {
+      name: 'tracks-show',
+      path: '/users/:username/track/:trackname',
+      component: TracksShow
     }
   ]
 })

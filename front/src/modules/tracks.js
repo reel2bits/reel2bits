@@ -6,8 +6,9 @@ export const mutations = {
     state.uploadPending = true
     state.uploadErrors = []
   },
-  uploadSuccess (state) {
+  uploadSuccess (state, data) {
     state.uploadPending = false
+    state.uploadId = data.id
   },
   uploadFailure (state, errors) {
     state.uploadPending = false
@@ -17,7 +18,8 @@ export const mutations = {
 
 export const defaultState = {
   uploadPending: false,
-  uploadErrors: []
+  uploadErrors: [],
+  uploadId: null
 }
 
 export const getters = {
@@ -33,9 +35,7 @@ const tracks = {
 
       try {
         let data = await apiService.trackUpload(trackInfo, store)
-        console.log(data)
-
-        store.commit('uploadSuccess')
+        store.commit('uploadSuccess', data)
       } catch (e) {
         let errors = JSON.parse(e.message)
 
