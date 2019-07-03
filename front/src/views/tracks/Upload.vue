@@ -144,7 +144,6 @@ import { mapState, mapActions } from 'vuex'
 import fileSizeFormatService from '../../services/file_size_format/file_size_format.js'
 
 export default {
-  ...mapActions(['trackUpload']),
   mixins: [validationMixin],
   data: () => ({
     trackUploadError: '',
@@ -152,7 +151,7 @@ export default {
       title: '',
       description: '',
       file: '',
-      // album: '',
+      album: null,
       licence: 0,
       private: ''
     }
@@ -206,13 +205,14 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['uploadTrack']),
     async upload () {
       this.$v.$touch()
 
       if (!this.$v.$invalid) {
         try {
           console.debug('track upload: uploading')
-          await this.trackUpload(this.track)
+          await this.uploadTrack(this.track)
           this.$router.push({ name: 'tracks-show', id: 0 })
         } catch (error) {
           console.warn('Upload failed: ' + error)

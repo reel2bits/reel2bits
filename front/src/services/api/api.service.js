@@ -5,11 +5,16 @@ const MASTODON_LOGIN_URL = '/api/v1/accounts/verify_credentials'
 const MASTODON_REGISTRATION_URL = '/api/v1/accounts'
 const MASTODON_USER_URL = '/api/v1/accounts'
 
+const TRACKS_UPLOAD_URL = '/api/tracks/upload'
+// const TRACKS_GET = '/api/tracks/:id' // GET
+// const TRACKS_EDIT = '/api/tracks/:id' // PATCH
+// const TRACKS_DELETE = '/api/tracks/:id' // DELETE
+
 const oldfetch = window.fetch
 
-let fetch = (url, options, store) => {
+let fetch = (url, options) => {
   options = options || {}
-  const baseUrl = store.rootState.instance.instanceUrl
+  const baseUrl = ''
   const fullUrl = baseUrl + url
   options.credentials = 'same-origin'
   return oldfetch(fullUrl, options)
@@ -41,7 +46,7 @@ const promisedRequest = ({ method, url, payload, credentials, headers = {} }, st
       ...authHeaders(credentials)
     }
   }
-  return fetch(url, options, store)
+  return fetch(url, options)
     .then((response) => {
       return new Promise((resolve, reject) => response.json()
         .then((json) => {
@@ -74,7 +79,7 @@ const register = (userInfo, store) => {
       agreement: true,
       ...rest
     })
-  }, store)
+  })
     .then((response) => [response.ok, response])
     .then(([ok, response]) => {
       if (ok) {
@@ -88,7 +93,7 @@ const register = (userInfo, store) => {
 const verifyCredentials = (user, store) => {
   return fetch(MASTODON_LOGIN_URL, {
     headers: authHeaders(user)
-  }, store)
+  })
     .then((response) => {
       if (response.ok) {
         return response.json()
@@ -102,7 +107,19 @@ const verifyCredentials = (user, store) => {
 }
 
 const trackUpload = (trackInfo, store) => {
-  console.error('PLS IMPLEMENT ME')
+  const form = new window.FormData()
+  form.append('title', trackInfo.title)
+  form.append('description', trackInfo.description)
+  form.append('album', trackInfo.album)
+  form.append('licence', trackInfo.licence)
+  form.append('private', trackInfo.private)
+  form.append('file', trackInfo.file)
+
+  return fetch(TRACKS_UPLOAD_URL, {
+    body: form,
+    method: 'POST',
+    headers: authHeaders(store.getters.getToken())
+  }).then((data) => data.json())
 }
 
 const fetchUser = ({ id, store }) => {
