@@ -87,7 +87,7 @@ def get_licences():
 class SoundUploadForm(Form):
     title = StringField(lazy_gettext("Title"), [Length(max=255)])
     description = TextAreaField(lazy_gettext("Description"))
-    sound = FileField(lazy_gettext("File"), [FileRequired(), FileAllowed(AUDIO)])
+    file = FileField(lazy_gettext("File"), [FileRequired(), FileAllowed(AUDIO)])
     album = QuerySelectField(
         query_factory=get_albums,
         allow_blank=True,
