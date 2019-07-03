@@ -132,7 +132,7 @@ const users = {
         store.commit('setToken', data.access_token)
         store.dispatch('loginUser', data.access_token)
       } catch (e) {
-        let errors = e.message
+        let errors = JSON.parse(e.message)
         // replace ap_id with username
         if (typeof errors === 'object') {
           if (errors.ap_id) {
