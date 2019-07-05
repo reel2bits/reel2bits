@@ -1,24 +1,14 @@
 <template>
   <div>
-    <form
-      class="login"
-      @submit.prevent="submitPassword"
-    >
+    <form class="login" @submit.prevent="submitPassword">
       <h1>Sign in</h1>
       <label>username</label>
-      <input
-        v-model="user.username"
-        required
-        type="text"
-        placeholder="Username"
+      <input v-model="user.username" required type="text"
+             placeholder="Username"
       >
       <label>password</label>
-      <input
-        ref="passwordInput"
-        v-model="user.password"
-        required
-        type="password"
-        placeholder="Password"
+      <input ref="passwordInput" v-model="user.password" required
+             type="password" placeholder="Password"
       >
       <hr>
       <button type="submit">
@@ -26,16 +16,10 @@
       </button>
     </form>
 
-    <div
-      v-if="error"
-      class="form-group"
-    >
+    <div v-if="error" class="form-group">
       <div class="alert error">
         {{ error }}
-        <i
-          class="button-icon icon-cancel"
-          @click="clearError"
-        />
+        <i class="button-icon icon-cancel" @click="clearError" />
       </div>
     </div>
   </div>
@@ -74,31 +58,33 @@ export default {
       // Then authorize to get code
       // And finally get the bearer from token
 
-      oauthApi.getOrCreateApp(data).then((app) => {
-        oauthApi.getTokenWithCredentials(
-          {
+      oauthApi.getOrCreateApp(data).then(app => {
+        oauthApi
+          .getTokenWithCredentials({
             ...app,
             instance: data.instance,
             username: this.user.username,
             password: this.user.password
-          }
-        ).then((result) => {
-          if (result.error) {
-            this.error = result.error
-            this.focusOnPasswordInput()
-            return
-          }
-          this.login(result).then(() => {
-            this.$router.push({ name: 'profile' })
           })
-        })
-          .catch((error) => {
+          .then(result => {
+            if (result.error) {
+              this.error = result.error
+              this.focusOnPasswordInput()
+              return
+            }
+            this.login(result).then(() => {
+              this.$router.push({ name: 'profile' })
+            })
+          })
+          .catch(error => {
             console.error('Unhandled error: ' + error)
             this.error = 'An error occured, please try again later'
           })
       })
     },
-    clearError () { this.error = false },
+    clearError () {
+      this.error = false
+    },
     focusOnPasswordInput () {
       let passwordInput = this.$refs.passwordInput
       passwordInput.focus()

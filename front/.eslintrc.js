@@ -43,6 +43,13 @@ module.exports = {
     'camelcase': 1,
     'no-multiple-empty-lines': 1,
     // don't nag on v-html
-    'vue/no-v-html': 0
+    'vue/no-v-html': 0,
+    'vue/max-attributes-per-line': ['error', {
+      'singleline': 3,
+      'multiline': {
+        'max': 3,
+        "allowFirstLine": true
+      }
+    }]
   }
 }
