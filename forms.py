@@ -1,4 +1,4 @@
-from flask_security import RegisterForm, current_user
+from flask_security import RegisterForm
 from authlib.flask.oauth2 import current_token
 from flask_uploads import UploadSet, AUDIO
 from flask_wtf import FlaskForm as Form
