@@ -3,6 +3,9 @@ import hashlib
 import os
 import subprocess
 from os.path import splitext
+import time
+import random
+import threading
 
 from flask import current_app
 from flask_security import current_user
@@ -257,3 +260,22 @@ def get_hashed_filename(filename):
     fs_fname = fs_fname.hexdigest()
 
     return fs_fname + f_e
+
+
+def gen_flakeid():
+    # (64b ?) timestamp in ns
+    t = str(time.time_ns())
+
+    # (48b) "worker id", rand
+    w = random.getrandbits(48)
+
+    pid = os.getpid()
+    tid = threading.get_ident()
+    ptid = f"{pid}{tid}"
+
+    # (16b) sequence from PID+threadID
+    # might be possible to throw in the
+    # object id of the flask request
+    s = hash(ptid) & 65536
+
+    return(f"{t}{w}{s}")
