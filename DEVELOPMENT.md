@@ -40,3 +40,17 @@ Run the front with: `cd front && npm run dev`
 Then access to the front on: http://localhost:8081
 
 The backend will be automatically proxified.
+
+## Linters
+
+Backend:
+
+```
+flake8 .
+black .
+```
+
+Frontend:
+```
+npm run lint
+```
