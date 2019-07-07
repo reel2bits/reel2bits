@@ -23,10 +23,11 @@ from little_boxes import activitypub as ap
 from urllib.parse import urlparse
 from authlib.flask.oauth2.sqla import OAuth2ClientMixin, OAuth2AuthorizationCodeMixin, OAuth2TokenMixin
 import time
+from utils import gen_flakeid
+import uuid
 
 db = SQLAlchemy()
 make_searchable(db.metadata)
-
 
 # #### Base ####
 
@@ -260,6 +261,8 @@ class Sound(db.Model):
     transcode_state = db.Column(db.Integer(), default=0, nullable=False)
     # 0 nothing / default / waiting, 1 processing, 2 done, 3 error
 
+    flake_id = db.Column(UUID(as_uuid=True), unique=False, nullable=True)
+
     user_id = db.Column(db.Integer(), db.ForeignKey("user.id"), nullable=False)
     album_id = db.Column(db.Integer(), db.ForeignKey("album.id"), nullable=True)
     sound_infos = db.relationship("SoundInfo", backref="sound_info", lazy="dynamic", cascade="delete")
@@ -401,6 +404,13 @@ def make_sound_slug(mapper, connection, target):
 
     slug = slugify(title[:255])
     connection.execute(Sound.__table__.update().where(Sound.__table__.c.id == target.id).values(slug=slug))
+
+
+@event.listens_for(Sound, "after_insert")
+def generate_sound_flakeid(mapper, connection, target):
+    if not target.flake_id:
+        flake_id = uuid.UUID(int=gen_flakeid())
+        connection.execute(Sound.__table__.update().where(Sound.__table__.c.id == target.id).values(flake_id=flake_id))
 
 
 @event.listens_for(Album, "after_update")

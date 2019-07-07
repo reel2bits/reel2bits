@@ -24,10 +24,10 @@ def upload():
 
     user = current_token.user
     if not user:
-        return jsonify({'error': 'Unauthorized'}), 403
+        return jsonify({"error": "Unauthorized"}), 403
 
-    if 'file' not in request.files:
-        errors['file'] = "No file present"
+    if "file" not in request.files:
+        errors["file"] = "No file present"
 
     if len(errors) > 0:
         return jsonify({"error": errors}), 400
@@ -74,6 +74,6 @@ def upload():
         # log
         add_user_log(rec.id, user.id, "sounds", "info", "Uploaded {0} -- {1}".format(rec.id, rec.title))
 
-        return jsonify({'message': gettext("Uploaded ! Processing will now follow."), 'id': rec.slug})
+        return jsonify({"message": gettext("Uploaded ! Processing will now follow."), "id": rec.slug})
 
-    return jsonify({'error': json.dumps(form.errors)}), 400
+    return jsonify({"error": json.dumps(form.errors)}), 400
