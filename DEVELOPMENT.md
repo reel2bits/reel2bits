@@ -31,15 +31,11 @@ Create `front/config/local.json` with:
 
 ```json
 {
-  "target": "http://reel2bits.dev.lan.sigpipe.me/"
+  "target": "http://127.0.0.1:5000/"
 }
 ```
 
-Uses whatever dns you want, but it needs to match the AP_DOMAIN in `config.py`.
-
-Also add that dns into your `/etc/hosts`.
-
-And you need to run it proxified by nginx or whatever else.
+Also comment `SERVER_NAME` and `BASE_URL` in `config.py` when in dev.
 
 Run the front with: `cd front && npm run dev`
 
