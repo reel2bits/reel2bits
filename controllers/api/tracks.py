@@ -5,7 +5,6 @@ from forms import SoundUploadForm
 from models import db, Sound
 import json
 from utils import add_user_log, get_hashed_filename
-from flask_babelex import gettext
 from flask_uploads import UploadSet, AUDIO
 
 bp_api_tracks = Blueprint("bp_api_tracks", __name__)
@@ -74,6 +73,6 @@ def upload():
         # log
         add_user_log(rec.id, user.id, "sounds", "info", "Uploaded {0} -- {1}".format(rec.id, rec.title))
 
-        return jsonify({"message": gettext("Uploaded ! Processing will now follow."), "id": rec.slug})
+        return jsonify({"id": rec.flake_id, "slug": rec.slug})
 
     return jsonify({"error": json.dumps(form.errors)}), 400
