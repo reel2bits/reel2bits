@@ -3,7 +3,7 @@ import { reduce } from 'lodash'
 
 const REDIRECT_URI = `${window.location.origin}/oauth-callback`
 
-export const getOrCreateApp = ({ clientId, clientSecret, instance, commit }) => {
+export const getOrCreateApp = ({ clientId, clientSecret, commit }) => {
   console.debug('getOrCreateApp')
   if (clientId && clientSecret) {
     console.debug('we already have clientId and clientSecret stored')
@@ -11,7 +11,7 @@ export const getOrCreateApp = ({ clientId, clientSecret, instance, commit }) => 
   }
   console.debug('registering a new app')
 
-  const url = `${instance}/api/v1/apps`
+  const url = `/api/v1/apps`
   const form = new window.FormData()
 
   form.append('client_name', `reel2bit_front_${window.___reel2bitsfe_commit_hash}_${(new Date()).toISOString()}`)
@@ -27,7 +27,7 @@ export const getOrCreateApp = ({ clientId, clientSecret, instance, commit }) => 
     .then((app) => commit('setClientData', app) || app)
 }
 
-const login = ({ instance, clientId }) => {
+const login = ({ clientId }) => {
   console.debug('login')
   const data = {
     response_type: 'code',
@@ -46,13 +46,13 @@ const login = ({ instance, clientId }) => {
   }, false)
 
   // Do the redirect
-  window.location.href = `${instance}/oauth/authorize?${dataString}`
+  window.location.href = `/oauth/authorize?${dataString}`
 }
 
 // Used on : login
-const getTokenWithCredentials = ({ clientId, clientSecret, instance, username, password }) => {
+const getTokenWithCredentials = ({ clientId, clientSecret, username, password }) => {
   console.debug('getTokenWithCredentials')
-  const url = `${instance}/oauth/token`
+  const url = `/oauth/token`
   const form = new window.FormData()
 
   form.append('client_id', clientId)
@@ -68,9 +68,9 @@ const getTokenWithCredentials = ({ clientId, clientSecret, instance, username, p
   }).then((data) => data.json())
 }
 
-const getToken = ({ clientId, clientSecret, instance, code }) => {
+const getToken = ({ clientId, clientSecret, code }) => {
   console.debug('getToken')
-  const url = `${instance}/oauth/token`
+  const url = `/oauth/token`
   const form = new window.FormData()
 
   form.append('client_id', clientId)
@@ -87,9 +87,9 @@ const getToken = ({ clientId, clientSecret, instance, code }) => {
   }).then((data) => data.json())
 }
 
-export const getClientToken = ({ clientId, clientSecret, instance }) => {
+export const getClientToken = ({ clientId, clientSecret }) => {
   console.debug('getClientToken')
-  const url = `${instance}/oauth/token`
+  const url = `/oauth/token`
   const form = new window.FormData()
 
   form.append('client_id', clientId)
