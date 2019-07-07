@@ -278,4 +278,4 @@ def gen_flakeid():
     # object id of the flask request
     s = hash(ptid) & 65536
 
-    return(f"{t}{w}{s}")
+    return int(f"{t}{w}{s}")
