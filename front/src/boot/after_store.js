@@ -7,7 +7,7 @@ import { getOrCreateApp, getClientToken } from '../backend/oauth/oauth.js'
 
 const getNodeInfo = async ({ store }) => {
   try {
-    const res = await window.fetch(`${store.state.instance.instanceUrl}/nodeinfo/2.0`)
+    const res = await window.fetch(`/nodeinfo/2.0`)
     if (res.ok) {
       const data = await res.json()
 
@@ -48,9 +48,9 @@ const checkOAuthToken = async ({ store }) => {
 
 const getAppSecret = async ({ store }) => {
   const { state, commit } = store
-  const { oauth, instance } = state
-  return getOrCreateApp({ ...oauth, instance: instance.instanceUrl, commit })
-    .then((app) => getClientToken({ ...app, instance: instance.instanceUrl }))
+  const { oauth } = state
+  return getOrCreateApp({ ...oauth, commit })
+    .then((app) => getClientToken({ ...app }))
     .then((token) => {
       commit('setAppToken', token.access_token)
     })

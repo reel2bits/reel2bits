@@ -49,7 +49,6 @@ export default {
       const data = {
         clientId,
         oauth: this.oauth,
-        instance: this.instance.instanceUrl,
         commit: this.$store.commit
       }
       this.error = false
