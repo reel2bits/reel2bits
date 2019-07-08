@@ -1,4 +1,6 @@
 <h1 align="center">
+  <img src="https://raw.githubusercontent.com/rhaamo/reel2bits/master/assets/logo/Logo@0.5x.png" alt="reel2bits logo">
+  <br />
   reel2bits
 </h1>
 
