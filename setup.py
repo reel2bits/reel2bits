@@ -10,7 +10,7 @@ setup(
     author="Dashie",
     author_email="dashie@sigpipe.me",
     install_requires=[
-        "Flask==1.0.3",
+        "Flask==1.1.1",
         "SQLAlchemy==1.3.5",
         "WTForms==2.2.1",
         "WTForms-Alchemy==0.16.9",
