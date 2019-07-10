@@ -73,6 +73,6 @@ def upload():
         # log
         add_user_log(rec.id, user.id, "sounds", "info", "Uploaded {0} -- {1}".format(rec.id, rec.title))
 
-        return jsonify({"id": rec.flake_id})
+        return jsonify({"id": rec.flake_id, "slug": rec.slug})
 
     return jsonify({"error": json.dumps(form.errors)}), 400
