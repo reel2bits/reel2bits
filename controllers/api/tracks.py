@@ -76,3 +76,8 @@ def upload():
         return jsonify({"id": rec.flake_id, "slug": rec.slug})
 
     return jsonify({"error": json.dumps(form.errors)}), 400
+
+
+@bp_api_tracks.route("/api/tracks/get/<string:username>/<string:soundslug>", methods=["GET"])
+def show(username, soundslug):
+    return jsonify({'error': 'Not implemented'}), 501

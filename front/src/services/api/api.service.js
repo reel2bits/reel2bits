@@ -131,8 +131,8 @@ const trackUpload = (trackInfo, store) => {
     })
 }
 
-const trackFetch = (trackId, store) => {
-  let url = `${TRACKS_FETCH_URL}${trackId}`
+const trackFetch = (user, trackId, store) => {
+  let url = `${TRACKS_FETCH_URL}${user}/${trackId}`
   let credentials = store.getters.getToken()
 
   return fetch(url, { headers: authHeaders(credentials) })

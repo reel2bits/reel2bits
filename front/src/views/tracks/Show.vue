@@ -25,6 +25,9 @@ export default {
     }),
     trackId () {
       return this.$route.params.trackId
+    },
+    userName () {
+      return this.$route.params.username
     }
   },
   created () {
@@ -33,7 +36,7 @@ export default {
   methods: {
     async fetchTrack () {
       try {
-        let data = await apiService.trackFetch(this.trackId, this.$store)
+        let data = await apiService.trackFetch(this.userName, this.trackId, this.$store)
         this.track = data
       } catch (e) {
         this.errors = e.message
