@@ -65,7 +65,7 @@ const router = new Router({
     },
     {
       name: 'tracks-show',
-      path: '/users/:username/track/:trackname',
+      path: '/tracks/:trackid',
       component: TracksShow
     }
   ]
