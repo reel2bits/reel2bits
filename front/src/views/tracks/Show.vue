@@ -4,8 +4,11 @@
     <div v-if="errors">
       {{ errors }}
     </div>
-    <div v-if="track">
+    <div v-if="processingDone">
       Track to show: {{ track }}
+    </div>
+    <div v-else-if="processingDone">
+      Track not yet available.
     </div>
   </div>
 </template>
@@ -17,7 +20,8 @@ import apiService from '../../services/api/api.service.js'
 export default {
   data: () => ({
     track: null,
-    errors: null
+    errors: null,
+    processing_done: null
   }),
   computed: {
     ...mapState({
@@ -28,6 +32,9 @@ export default {
     },
     userName () {
       return this.$route.params.username
+    },
+    processingDone () {
+      return (this.processing_done && this.track)
     }
   },
   created () {
@@ -38,6 +45,7 @@ export default {
       try {
         let data = await apiService.trackFetch(this.userName, this.trackId, this.$store)
         this.track = data
+        this.processing_done = this.track.processing.done
       } catch (e) {
         this.errors = e.message
       }

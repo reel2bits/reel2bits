@@ -12,6 +12,7 @@ try {
 }
 
 const target = settings.target || 'http://localhost:5000/'
+const host = settings.host || 'localhost.dev'
 
 module.exports = {
   build: {
@@ -37,18 +38,21 @@ module.exports = {
     proxyTable: {
       '/api': {
         target,
-        changeOrigin: true,
-        cookieDomainRewrite: 'localhost'
+        changeOrigin: false,
+        cookieDomainRewrite: 'localhost',
+        headers: { host: host }
       },
       '/nodeinfo': {
         target,
-        changeOrigin: true,
-        cookieDomainRewrite: 'localhost'
+        changeOrigin: false,
+        cookieDomainRewrite: 'localhost',
+        headers: { host: host }
       },
       '/oauth': {
         target,
-        changeOrigin: true,
-        cookieDomainRewrite: 'localhost'
+        changeOrigin: false,
+        cookieDomainRewrite: 'localhost',
+        headers: { host: host }
       }
     },
     // CSS Sourcemaps off by default because relative paths are "buggy"
