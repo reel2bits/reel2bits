@@ -9,7 +9,6 @@ export const mutations = {
   uploadSuccess (state, data) {
     state.uploadPending = false
     state.uploadId = data.id
-    state.uploadSlug = data.slug
   },
   uploadFailure (state, errors) {
     state.uploadPending = false
@@ -20,8 +19,7 @@ export const mutations = {
 export const defaultState = {
   uploadPending: false,
   uploadErrors: [],
-  uploadId: null,
-  uploadSlug: null
+  uploadId: null
 }
 
 export const getters = {

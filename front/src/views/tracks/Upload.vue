@@ -163,7 +163,7 @@ export default {
         try {
           console.debug('track upload: uploading')
           await this.uploadTrack(this.track)
-          this.$router.push({ name: 'tracks-show', params: { username: this.$store.state.users.currentUser.screen_name, trackname: this.$store.state.tracks.uploadSlug } })
+          this.$router.push({ name: 'tracks-show', params: { trackid: this.$store.state.tracks.uploadId } })
         } catch (error) {
           console.warn('Upload failed: ' + error)
         }
