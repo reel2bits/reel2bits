@@ -178,7 +178,7 @@ def process_new_activity(self, iri: str) -> None:
                 should_forward = True
 
         elif activity.has_type(ap.ActivityType.LIKE):
-            base_url = current_app.config["BASE_URL"]
+            base_url = current_app.config["AP_DOMAIN"]
             if not activity.get_object_id().startswith(base_url):
                 # We only want to keep a like if it's a like for a local
                 # activity

@@ -118,13 +118,21 @@ export const parseTrack = (data) => {
   output.id = String(data.id)
   output.title = data.title
   output.user = data.user
-  output.description = data.description || ''
-  output.picture_url = data.picture_url || ''
-  output.media_orig = data.media.orig
-  output.media_transcoded = data.media.transcoded
+  output.description = data.description
+  output.picture_url = data.picture_url
+  output.media_orig = data.media_orig
+  output.media_transcoded = data.media_transcoded
   output.waveform = data.waveform
   output.private = data.private
   output.uploaded_on = data.uploaded_on
+  output.uploaded_elapsed = data.uploaded_elapsed
+  output.album_id = data.album_id
+
+  output.processing = {}
+  output.processing.basic = data.processing.basic
+  output.processing.transcode_state = data.processing.transcode_state
+  output.processing.transcode_needed = data.processing.transcode_needed
+  output.processing.done = data.processing.done
 
   output.metadatas = {}
   output.metadatas.licence = data.metadatas.licence
@@ -134,6 +142,8 @@ export const parseTrack = (data) => {
   output.metadatas.format = data.metadatas.format
   output.metadatas.channels = data.metadatas.channels
   output.metadatas.rate = data.metadatas.rate
+  output.metadatas.bitrate = data.metadatas.bitrate
+  output.metadatas.bitrate_mode = data.metadatas.bitrate_mode
 
   return output
 }
