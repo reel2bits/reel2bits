@@ -12,7 +12,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import apiService from '../services/api/api.service.js'
+import apiService from '../../services/api/api.service.js'
 
 export default {
   data: () => ({
