@@ -2,7 +2,7 @@
   <div>
     <h4>Show track</h4>
     <div v-if="errors">
-      Errors: {{ errors }}
+      {{ errors }}
     </div>
     <div v-if="track">
       Track to show: {{ track }}
@@ -31,12 +31,12 @@ export default {
     this.fetchTrack()
   },
   methods: {
-    fetchTrack () {
+    async fetchTrack () {
       try {
-        let data = apiService.trackFetch(this.trackId(), this.$store)
+        let data = await apiService.trackFetch(this.trackId, this.$store)
         this.track = data
       } catch (e) {
-        this.errors = JSON.parse(e.message)
+        this.errors = e.message
       }
     }
   }

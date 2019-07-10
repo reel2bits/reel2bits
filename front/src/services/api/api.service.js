@@ -1,4 +1,4 @@
-import { parseUser } from '../entity_normalizer/entity_normalizer.service.js'
+import { parseUser, parseTrack } from '../entity_normalizer/entity_normalizer.service.js'
 import { StatusCodeError } from '../errors/errors'
 
 const MASTODON_LOGIN_URL = '/api/v1/accounts/verify_credentials'
@@ -134,8 +134,16 @@ const trackUpload = (trackInfo, store) => {
 const trackFetch = (trackId, store) => {
   let url = `${TRACKS_FETCH_URL}${trackId}`
   let credentials = store.getters.getToken()
-  return promisedRequest({ url, credentials }, store)
+
+  return fetch(url, { headers: authHeaders(credentials) })
+    .then((data) => {
+      if (data.ok) {
+        return data
+      }
+      throw new Error('Error fetching track', data)
+    })
     .then((data) => data.json())
+    .then((data) => parseTrack(data))
 }
 
 const fetchUser = ({ id, store }) => {
