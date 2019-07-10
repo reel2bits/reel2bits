@@ -6,7 +6,8 @@ const MASTODON_REGISTRATION_URL = '/api/v1/accounts'
 const MASTODON_USER_URL = '/api/v1/accounts'
 
 const TRACKS_UPLOAD_URL = '/api/tracks/upload'
-// const TRACKS_GET = '/api/tracks/:id' // GET
+const TRACKS_FETCH_URL = '/api/tracks/get/'
+
 // const TRACKS_EDIT = '/api/tracks/:id' // PATCH
 // const TRACKS_DELETE = '/api/tracks/:id' // DELETE
 
@@ -130,6 +131,13 @@ const trackUpload = (trackInfo, store) => {
     })
 }
 
+const trackFetch = (trackId, store) => {
+  let url = `${TRACKS_FETCH_URL}${trackId}`
+  let credentials = store.getters.getToken()
+  return promisedRequest({ url, credentials }, store)
+    .then((data) => data.json())
+}
+
 const fetchUser = ({ id, store }) => {
   let url = `${MASTODON_USER_URL}/${id}`
   let credentials = store.getters.getToken()
@@ -141,7 +149,8 @@ const apiService = {
   verifyCredentials,
   register,
   fetchUser,
-  trackUpload
+  trackUpload,
+  trackFetch
 }
 
 export default apiService
