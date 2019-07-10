@@ -111,3 +111,29 @@ export const parseUser = (data) => {
 
   return output
 }
+
+export const parseTrack = (data) => {
+  const output = {}
+
+  output.id = String(data.id)
+  output.title = data.title
+  output.user = data.user
+  output.description = data.description || ''
+  output.picture_url = data.picture_url || ''
+  output.media_orig = data.media.orig
+  output.media_transcoded = data.media.transcoded
+  output.waveform = data.waveform
+  output.private = data.private
+  output.uploaded_on = data.uploaded_on
+
+  output.metadatas = {}
+  output.metadatas.licence = data.metadatas.licence
+  output.metadatas.duration = data.metadatas.duration
+  output.metadatas.type = data.metadatas.type
+  output.metadatas.codec = data.metadatas.codec
+  output.metadatas.format = data.metadatas.format
+  output.metadatas.channels = data.metadatas.channels
+  output.metadatas.rate = data.metadatas.rate
+
+  return output
+}
