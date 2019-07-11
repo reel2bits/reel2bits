@@ -264,8 +264,8 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
 
     @app.errorhandler(404)
     def page_not_found(msg):
-        if request.path.startswith('/api/'):
-            return jsonify({'error': 'page not found'}), 404
+        if request.path.startswith("/api/"):
+            return jsonify({"error": "page not found"}), 404
         pcfg = {
             "title": gettext("Whoops, something failed."),
             "error": 404,
@@ -276,8 +276,8 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
 
     @app.errorhandler(403)
     def err_forbidden(msg):
-        if request.path.startswith('/api/'):
-            return jsonify({'error': 'access forbidden'}), 403
+        if request.path.startswith("/api/"):
+            return jsonify({"error": "access forbidden"}), 403
         pcfg = {
             "title": gettext("Whoops, something failed."),
             "error": 403,
@@ -288,8 +288,8 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
 
     @app.errorhandler(410)
     def err_gone(msg):
-        if request.path.startswith('/api/'):
-            return jsonify({'error': 'gone'}), 410
+        if request.path.startswith("/api/"):
+            return jsonify({"error": "gone"}), 410
         pcfg = {"title": gettext("Whoops, something failed."), "error": 410, "message": gettext("Gone"), "e": msg}
         return render_template("error_page.jinja2", pcfg=pcfg), 410
 
@@ -297,8 +297,8 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
 
         @app.errorhandler(500)
         def err_failed(msg):
-            if request.path.startswith('/api/'):
-                return jsonify({'error': 'server error'}), 500
+            if request.path.startswith("/api/"):
+                return jsonify({"error": "server error"}), 500
             pcfg = {
                 "title": gettext("Whoops, something failed."),
                 "error": 500,
