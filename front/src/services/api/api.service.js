@@ -6,9 +6,9 @@ const MASTODON_REGISTRATION_URL = '/api/v1/accounts'
 const MASTODON_USER_URL = '/api/v1/accounts'
 
 const TRACKS_UPLOAD_URL = '/api/tracks/upload'
-const TRACKS_FETCH_URL = '/api/tracks/get/'
-// const TRACKS_EDIT = '/api/tracks/edit/'
-// const TRACKS_DELETE = '/api/tracks/delete/'
+const TRACKS_FETCH_URL = (username, id) => `/api/tracks/get/${username}/${id}`
+const TRACKS_EDIT_URL = (username, id) => `/api/tracks/edit/${username}/${id}`
+const TRACKS_DELETE_URL = (username, id) => `/api/tracks/delete/${username}/${id}`
 
 const oldfetch = window.fetch
 
@@ -131,7 +131,7 @@ const trackUpload = (trackInfo, store) => {
 }
 
 const trackFetch = (user, trackId, store) => {
-  let url = `${TRACKS_FETCH_URL}${user}/${trackId}`
+  let url = TRACKS_FETCH_URL(user, trackId)
   let credentials = store.getters.getToken()
 
   return fetch(url, { headers: authHeaders(credentials) })
@@ -143,6 +143,26 @@ const trackFetch = (user, trackId, store) => {
     })
     .then((data) => data.json())
     .then((data) => parseTrack(data))
+}
+
+const trackDelete = (user, trackId, store) => {
+  let url = TRACKS_DELETE_URL(user, trackId)
+  let credentials = store.getters.getToken()
+
+  return fetch(url, {
+    headers: authHeaders(credentials),
+    method: 'DELETE'
+  })
+}
+
+const trackEdit = (user, trackId, track, store) => {
+  let credentials = store.getters.getToken()
+  return promisedRequest({
+    url: TRACKS_EDIT_URL(user, trackId),
+    method: 'PATCH',
+    payload: track,
+    credentials
+  }).then((data) => parseTrack(data))
 }
 
 const fetchUser = ({ id, store }) => {
@@ -157,6 +177,8 @@ const apiService = {
   register,
   fetchUser,
   trackUpload,
+  trackDelete,
+  trackEdit,
   trackFetch
 }
 

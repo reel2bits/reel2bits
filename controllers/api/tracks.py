@@ -145,7 +145,7 @@ def show(username, soundslug):
     return jsonify(track_obj)
 
 
-@bp_api_tracks.route("/api/tracks/edit/<string:username>/<string:soundslug>", methods=["POST"])
+@bp_api_tracks.route("/api/tracks/edit/<string:username>/<string:soundslug>", methods=["PATCH"])
 @require_oauth("write")
 def edit(username, soundslug):
     current_user = current_token.user
