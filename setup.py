@@ -17,7 +17,6 @@ setup(
         "SQLAlchemy-Searchable==1.1.0",
         "SQLAlchemy-Utils==0.34.1",
         "Bootstrap-Flask==1.0.10",
-        "Flask-DebugToolbar==0.10.1",
         "Flask-Mail==0.9.1",
         "Flask-Migrate==2.4.0",
         "Flask-Uploads==0.2.1",

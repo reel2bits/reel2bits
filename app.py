@@ -21,7 +21,6 @@ from models import db, Config, user_datastore, Role, create_actor
 from utils import InvalidUsage, is_admin, duration_elapsed_human, duration_song_human, add_user_log
 
 import texttable
-from flask_debugtoolbar import DebugToolbarExtension
 
 from dbseed import make_db_seed
 from pprint import pprint as pp
@@ -117,7 +116,6 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
     migrate = Migrate(app, db)  # noqa: F841
     babel = Babel(app)  # noqa: F841
     app.babel = babel
-    toolbar = DebugToolbarExtension(app)  # noqa: F841
 
     db.init_app(app)
 
