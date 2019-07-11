@@ -104,5 +104,3 @@ def edit(username, soundslug):
         del form.private
 
     return render_template("sound/edit.jinja2", pcfg=pcfg, form=form, sound=sound)
-
-

@@ -16,7 +16,6 @@ flask_migrate==2.5.2
 flask_uploads==0.2.1
 wtforms_alchemy==0.16.9
 sqlalchemy_searchable==1.1.0
-flask_debugtoolbar==0.10.1
 redis==3.2.1
 flask-accept==0.0.6
 Bootstrap-Flask==1.0.10
