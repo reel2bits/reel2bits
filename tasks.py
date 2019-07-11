@@ -91,7 +91,11 @@ def upload_workflow(self, sound_id):
     )
     msg.body = render_template("email/song_processed.txt", sound=sound)
     msg.html = render_template("email/song_processed.html", sound=sound)
-    mail.send(msg)
+    try:
+        mail.send(msg)
+    except ConnectionRefusedError as e:
+        # TODO: do something about that maybe
+        print(f"Error sending mail: {e})
 
     # Federate if public
     if not sound.private:
