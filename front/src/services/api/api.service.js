@@ -7,9 +7,8 @@ const MASTODON_USER_URL = '/api/v1/accounts'
 
 const TRACKS_UPLOAD_URL = '/api/tracks/upload'
 const TRACKS_FETCH_URL = '/api/tracks/get/'
-
-// const TRACKS_EDIT = '/api/tracks/:id' // PATCH
-// const TRACKS_DELETE = '/api/tracks/:id' // DELETE
+// const TRACKS_EDIT = '/api/tracks/edit/'
+// const TRACKS_DELETE = '/api/tracks/delete/'
 
 const oldfetch = window.fetch
 
