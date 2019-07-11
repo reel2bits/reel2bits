@@ -95,7 +95,7 @@ def upload_workflow(self, sound_id):
         mail.send(msg)
     except ConnectionRefusedError as e:
         # TODO: do something about that maybe
-        print(f"Error sending mail: {e})
+        print(f"Error sending mail: {e}")
 
     # Federate if public
     if not sound.private:
