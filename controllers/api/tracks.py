@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, current_app, url_for
+from flask import Blueprint, request, jsonify, url_for
 from app_oauth import require_oauth
 from authlib.flask.oauth2 import current_token
 from forms import SoundUploadForm
@@ -21,8 +21,8 @@ def upload():
     """
     errors = {}
 
-    user = current_token.user
-    if not user:
+    current_user = current_token.user
+    if not current_user:
         return jsonify({"error": "Unauthorized"}), 403
 
     if "file" not in request.files:
@@ -37,7 +37,7 @@ def upload():
         filename_orig = request.files["file"].filename
         filename_hashed = get_hashed_filename(filename_orig)
 
-        sounds.save(request.files["file"], folder=user.slug, name=filename_hashed)
+        sounds.save(request.files["file"], folder=current_user.slug, name=filename_hashed)
 
         rec = Sound()
         rec.filename = filename_hashed
@@ -50,7 +50,7 @@ def upload():
             else:
                 rec.album_order = form.album.data.sounds.count() + 1
 
-        rec.user_id = user.id
+        rec.user_id = current_user.id
         if not form.title.data:
             rec.title = filename_orig
         else:
@@ -71,7 +71,7 @@ def upload():
         upload_workflow.delay(rec.id)
 
         # log
-        add_user_log(rec.id, user.id, "sounds", "info", "Uploaded {0} -- {1}".format(rec.id, rec.title))
+        add_user_log(rec.id, current_user.id, "sounds", "info", "Uploaded {0} -- {1}".format(rec.id, rec.title))
 
         return jsonify({"id": rec.flake_id, "slug": rec.slug})
 
@@ -87,7 +87,7 @@ def show(username, soundslug):
     # Get the associated User from url fetch
     track_user = User.query.filter(User.name == username).first()
     if not track_user:
-        return jsonify({'error': 'User not found'}), 404
+        return jsonify({"error": "User not found"}), 404
 
     if current_user and track_user.id == current_user.id:
         sound = Sound.query.filter(Sound.slug == soundslug, Sound.user_id == track_user.id).first()
@@ -99,47 +99,88 @@ def show(username, soundslug):
     if sound.private:
         if current_user:
             if sound.user_id != current_user.id:
-                return jsonify({'error': 'forbidden'}), 403
+                return jsonify({"error": "forbidden"}), 403
         else:
-            return jsonify({'error': 'forbidden'}), 403
+            return jsonify({"error": "forbidden"}), 403
 
     si = sound.sound_infos.first()
 
-    url_orig = url_for('get_uploads_stuff', thing='sounds', stuff=sound.path_sound(orig=True))
-    url_transcode = url_for('get_uploads_stuff', thing='sounds', stuff=sound.path_sound(orig=False))
+    url_orig = url_for("get_uploads_stuff", thing="sounds", stuff=sound.path_sound(orig=True))
+    url_transcode = url_for("get_uploads_stuff", thing="sounds", stuff=sound.path_sound(orig=False))
 
     track_obj = {
-        'id': sound.flake_id,
-        'title': sound.title,
-        'user': sound.user.name,
-        'description': sound.description,
-        'picture_url': None,  # FIXME not implemented yet
-        'media_orig': url_orig,
-        'media_transcoded': url_transcode,
-        'waveform': (si.waveform if si else None),
-        'private': sound.private,
-        'uploaded_on': sound.uploaded,
-        'uploaded_elapsed': sound.elapsed(),
-        'album_id': None,  # FIXME not implemented yet, needs album flake id
-        'processing': {
-            'basic': (si.done_basic if si else None),
-            'transcode_state': sound.transcode_state,
-            'transcode_needed': sound.transcode_needed,
-            'done': sound.processing_done()
+        "id": sound.flake_id,
+        "title": sound.title,
+        "user": sound.user.name,
+        "description": sound.description,
+        "picture_url": None,  # FIXME not implemented yet
+        "media_orig": url_orig,
+        "media_transcoded": url_transcode,
+        "waveform": (si.waveform if si else None),
+        "private": sound.private,
+        "uploaded_on": sound.uploaded,
+        "uploaded_elapsed": sound.elapsed(),
+        "album_id": None,  # FIXME not implemented yet, needs album flake id
+        "processing": {
+            "basic": (si.done_basic if si else None),
+            "transcode_state": sound.transcode_state,
+            "transcode_needed": sound.transcode_needed,
+            "done": sound.processing_done(),
         },
-        'metadatas': {
-            'licence': (sound.licence),
-            'duration': (si.duration if si else None),
-            'type': (si.type if si else None),
-            'codec': (si.codec if si else None),
-            'format': (si.format if si else None),
-            'channels': (si.channels if si else None),
-            'rate': (si.rate if si else None)  # Hz
-        }
+        "metadatas": {
+            "licence": (sound.licence),
+            "duration": (si.duration if si else None),
+            "type": (si.type if si else None),
+            "codec": (si.codec if si else None),
+            "format": (si.format if si else None),
+            "channels": (si.channels if si else None),
+            "rate": (si.rate if si else None),  # Hz
+        },
     }
     if si:
         if si.bitrate and si.bitrate_mode:
-            track_obj['metadatas']['bitrate'] = si.bitrate
-            track_obj['metadatas']['bitrate_mode'] = si.bitrate_mode
+            track_obj["metadatas"]["bitrate"] = si.bitrate
+            track_obj["metadatas"]["bitrate_mode"] = si.bitrate_mode
 
     return jsonify(track_obj)
+
+
+@bp_api_tracks.route("/api/tracks/edit/<string:username>/<string:soundslug>", methods=["POST"])
+@require_oauth("write")
+def edit(username, soundslug):
+    current_user = current_token.user
+    if not current_user:
+        return jsonify({"error": "Unauthorized"}), 403
+
+    # Get the track
+    sound = Sound.query.filter(Sound.user_id == current_user.id, Sound.slug == soundslug).first()
+    if not sound:
+        return jsonify({"error": "Not found"}), 404
+
+    return jsonify({"error": "Not implemented"}), 501
+
+
+@bp_api_tracks.route("/api/tracks/delete/<string:username>/<string:soundslug>", methods=["DELETE"])
+@require_oauth("write")
+def delete(username, soundslug):
+    current_user = current_token.user
+    if not current_user:
+        return jsonify({"error": "Unauthorized"}), 403
+
+    # Get the track
+    sound = Sound.query.filter(Sound.user_id == current_user.id, Sound.slug == soundslug).first()
+    if not sound:
+        return jsonify({"error": "Not found"}), 404
+
+    # Federate Delete
+    from tasks import federate_delete_sound
+
+    federate_delete_sound(sound)
+
+    db.session.delete(sound)
+    db.session.commit()
+
+    # log
+    add_user_log(sound.id, sound.user.id, "sounds", "info", "Deleted {0} -- {1}".format(sound.id, sound.title))
+
+    return jsonify({}), 200
