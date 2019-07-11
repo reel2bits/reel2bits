@@ -78,6 +78,40 @@ def upload():
     return jsonify({"error": json.dumps(form.errors)}), 400
 
 
+@bp_api_tracks.route("/api/tracks/waveform/<string:username>/<string:soundslug>", methods=["GET"])
+@require_oauth(None)
+def waveform(username, soundslug):
+    # Get logged in user from bearer token, or None if not logged in
+    current_user = current_token.user
+
+    # Get the associated User from url fetch
+    track_user = User.query.filter(User.name == username).first()
+    if not track_user:
+        return jsonify({"error": "User not found"}), 404
+
+    sound = Sound.query.filter(Sound.slug == soundslug, Sound.user_id == track_user.id).first()
+    if not sound:
+        return jsonify({"error": "not found"}), 404
+
+    if sound.private:
+        if current_user:
+            if sound.user_id != current_user.id:
+                return jsonify({"error": "forbidden"}), 403
+        else:
+            return jsonify({"error": "forbidden"}), 403
+
+    si = sound.sound_infos.first()
+    if not si:
+        return {"error": "not found"}, 404
+
+    wf = json.loads(si.waveform)
+    wf["filename"] = sound.path_sound()
+    wf["wf_png"] = sound.path_waveform()
+    wf["title"] = sound.title
+
+    return jsonify(wf), 200
+
+
 @bp_api_tracks.route("/api/tracks/get/<string:username>/<string:soundslug>", methods=["GET"])
 @require_oauth(None)
 def show(username, soundslug):
