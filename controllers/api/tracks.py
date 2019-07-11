@@ -96,6 +96,9 @@ def show(username, soundslug):
             Sound.slug == soundslug, Sound.user_id == track_user.id, Sound.transcode_state == Sound.TRANSCODE_DONE
         ).first()
 
+    if not sound:
+        return jsonify({"error": "not found"}), 404
+
     if sound.private:
         if current_user:
             if sound.user_id != current_user.id:

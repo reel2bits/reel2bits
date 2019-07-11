@@ -61,6 +61,11 @@ export default {
     },
     async deleteTrack () {
       console.log('want to delete track')
+      if (confirm('Are you sure ?')) {
+        apiService.trackDelete(this.userName, this.trackId, this.$store)
+          .then(this.$router.push({ name: 'user-profile', params: { name: this.$store.state.users.currentUser.screen_name } })
+          )
+      }
     }
   }
 }
