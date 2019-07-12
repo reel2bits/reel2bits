@@ -5,6 +5,7 @@ import interfaceModule from './modules/interface.js'
 import instanceModule from './modules/instance.js'
 import usersModule from './modules/users.js'
 import tracksModule from './modules/tracks.js'
+import albumsModule from './modules/albums.js'
 import oauthModule from './modules/oauth.js'
 import authFlowModule from './modules/auth_flow.js'
 
@@ -32,6 +33,7 @@ const persistedStateOptions = {
       instance: instanceModule,
       users: usersModule,
       tracks: tracksModule,
+      albums: albumsModule,
       oauth: oauthModule,
       authFlow: authFlowModule
     },
