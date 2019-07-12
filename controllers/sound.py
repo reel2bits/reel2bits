@@ -227,4 +227,3 @@ def delete(username, soundslug):
     add_user_log(sound.id, sound.user.id, "sounds", "info", "Deleted {0} -- {1}".format(sound.id, sound.title))
 
     return redirect(url_for("bp_users.profile", name=username))
-
