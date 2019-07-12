@@ -7,6 +7,7 @@ import OAuthCallback from './components/oauth_callback/oauth_callback.vue'
 import UserProfile from './components/user_profile/user_profile.vue'
 import TracksUpload from './views/tracks/Upload.vue'
 import TracksShow from './views/tracks/Show.vue'
+import AlbumsNew from './views/albums/New.vue'
 
 Vue.use(Router)
 
@@ -67,6 +68,12 @@ const router = new Router({
       name: 'tracks-show',
       path: '/users/:username/track/:trackId',
       component: TracksShow
+    },
+    // Albums
+    {
+      name: 'albums-new',
+      path: '/albums/new',
+      component: AlbumsNew
     }
   ]
 })

@@ -10,6 +10,8 @@ const TRACKS_FETCH_URL = (username, id) => `/api/tracks/get/${username}/${id}`
 const TRACKS_EDIT_URL = (username, id) => `/api/tracks/edit/${username}/${id}`
 const TRACKS_DELETE_URL = (username, id) => `/api/tracks/delete/${username}/${id}`
 
+const ALBUMS_NEW_URL = '/api/albums/new'
+
 const oldfetch = window.fetch
 
 let fetch = (url, options) => {
@@ -172,6 +174,27 @@ const fetchUser = ({ id, store }) => {
     .then((data) => parseUser(data))
 }
 
+const albumNew = (albumInfo, store) => {
+  const form = new window.FormData()
+  form.append('title', albumInfo.title)
+  form.append('description', albumInfo.description)
+  form.append('private', albumInfo.private)
+
+  return fetch(ALBUMS_NEW_URL, {
+    body: form,
+    method: 'POST',
+    headers: authHeaders(store.getters.getToken())
+  })
+    .then((response) => [response.ok, response])
+    .then(([ok, response]) => {
+      if (ok) {
+        return response.json()
+      } else {
+        return response.json().then((error) => { throw new Error(error.error) })
+      }
+    })
+}
+
 const apiService = {
   verifyCredentials,
   register,
@@ -179,7 +202,8 @@ const apiService = {
   trackUpload,
   trackDelete,
   trackEdit,
-  trackFetch
+  trackFetch,
+  albumNew
 }
 
 export default apiService
