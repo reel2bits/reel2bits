@@ -427,7 +427,7 @@ def make_album_slug(mapper, connection, target):
 def generate_album_flakeid(mapper, connection, target):
     if not target.flake_id:
         flake_id = uuid.UUID(int=gen_flakeid())
-        connection.execute(Album.__table__.update().where(Sound.__table__.c.id == target.id).values(flake_id=flake_id))
+        connection.execute(Album.__table__.update().where(Album.__table__.c.id == target.id).values(flake_id=flake_id))
 
 
 @event.listens_for(User, "after_update")
