@@ -323,6 +323,8 @@ class Album(db.Model):
     user_id = db.Column(db.Integer(), db.ForeignKey("user.id"), nullable=False)
     sounds = db.relationship("Sound", backref="album", lazy="dynamic")
 
+    flake_id = db.Column(UUID(as_uuid=True), unique=False, nullable=True)
+
     timeline = db.relationship("Timeline", uselist=False, back_populates="album")
 
     __mapper_args__ = {"order_by": created.desc()}
@@ -419,6 +421,13 @@ def make_album_slug(mapper, connection, target):
     title = "{0} {1}".format(target.id, target.title)
     slug = slugify(title[:255])
     connection.execute(Album.__table__.update().where(Album.__table__.c.id == target.id).values(slug=slug))
+
+
+@event.listens_for(Album, "after_insert")
+def generate_album_flakeid(mapper, connection, target):
+    if not target.flake_id:
+        flake_id = uuid.UUID(int=gen_flakeid())
+        connection.execute(Album.__table__.update().where(Album.__table__.c.id == target.id).values(flake_id=flake_id))
 
 
 @event.listens_for(User, "after_update")
