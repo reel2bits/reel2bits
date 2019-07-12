@@ -2,7 +2,7 @@
   <div>
     <h4>Show track</h4>
     <div v-if="isOwner">
-      <a href="#" @click="editTrack">edit</a> | <a href="#" @click="deleteTrack">delete</a>
+      <a href="#" @click.prevent="editTrack">edit</a> | <a href="#" @click.prevent="deleteTrack">delete</a>
     </div>
 
     <div v-if="errors">
