@@ -7,13 +7,12 @@ Create Date: 2019-07-12 18:12:09.386417
 """
 
 # revision identifiers, used by Alembic.
-from sqlalchemy.dialects import postgresql
-
 revision = "8b4238e4e1a3"
 down_revision = "7eb56606e9d6"
 
 from alembic import op  # noqa: E402
 import sqlalchemy as sa  # noqa: E402
+from sqlalchemy.dialects import postgresql
 
 
 def upgrade():
