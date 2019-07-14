@@ -90,7 +90,7 @@ export default {
         try {
           console.debug('album create: uploading')
           await this.albumNew(this.album)
-          this.$router.push({ name: 'album-show', params: { username: this.$store.state.users.currentUser.screen_name, albumId: this.$store.state.albums.albumSlug } })
+          this.$router.push({ name: 'albums-show', params: { username: this.$store.state.users.currentUser.screen_name, albumId: this.$store.state.albums.albumSlug } })
         } catch (error) {
           console.warn('Upload failed: ' + error)
         }
