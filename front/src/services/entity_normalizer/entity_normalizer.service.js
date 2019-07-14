@@ -147,3 +147,21 @@ export const parseTrack = (data) => {
 
   return output
 }
+
+export const parseAlbum = (data) => {
+  const output = {}
+
+  output.id = String(data.id)
+  output.title = data.title
+  output.created = data.created
+  output.updated = data.updated
+  output.description = data.description
+  output.private = data.private
+  output.slug = data.slug
+  output.user_id = data.user_id
+  output.sounds = data.sounds
+  output.flake_id = data.flake_id
+  output.timeline = data.timeline
+
+  return output
+}

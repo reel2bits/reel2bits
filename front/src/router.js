@@ -8,6 +8,7 @@ import UserProfile from './components/user_profile/user_profile.vue'
 import TracksUpload from './views/tracks/Upload.vue'
 import TracksShow from './views/tracks/Show.vue'
 import AlbumsNew from './views/albums/New.vue'
+import AlbumsShow from './views/albums/Show.vue'
 
 Vue.use(Router)
 
@@ -74,6 +75,11 @@ const router = new Router({
       name: 'albums-new',
       path: '/albums/new',
       component: AlbumsNew
+    },
+    {
+      name: 'albums-show',
+      path: '/users/:username/album/:albumId',
+      component: AlbumsShow
     }
   ]
 })

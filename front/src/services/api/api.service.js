@@ -1,4 +1,4 @@
-import { parseUser, parseTrack } from '../entity_normalizer/entity_normalizer.service.js'
+import { parseUser, parseTrack, parseAlbum } from '../entity_normalizer/entity_normalizer.service.js'
 import { StatusCodeError } from '../errors/errors'
 
 const MASTODON_LOGIN_URL = '/api/v1/accounts/verify_credentials'
@@ -11,6 +11,7 @@ const TRACKS_EDIT_URL = (username, id) => `/api/tracks/edit/${username}/${id}`
 const TRACKS_DELETE_URL = (username, id) => `/api/tracks/delete/${username}/${id}`
 
 const ALBUMS_NEW_URL = '/api/albums/new'
+const ALBUMS_FETCH_URL = (username, id) => `/api/albums/get/${username}/${id}`
 
 const oldfetch = window.fetch
 
@@ -195,6 +196,21 @@ const albumNew = (albumInfo, store) => {
     })
 }
 
+const albumFetch = (user, albumId, store) => {
+  let url = ALBUMS_FETCH_URL(user, albumId)
+  let credentials = store.getters.getToken()
+
+  return fetch(url, { headers: authHeaders(credentials) })
+    .then((data) => {
+      if (data.ok) {
+        return data
+      }
+      throw new Error('Error fetching album', data)
+    })
+    .then((data) => data.json())
+    .then((data) => parseAlbum(data))
+}
+
 const apiService = {
   verifyCredentials,
   register,
@@ -203,7 +219,8 @@ const apiService = {
   trackDelete,
   trackEdit,
   trackFetch,
-  albumNew
+  albumNew,
+  albumFetch
 }
 
 export default apiService
