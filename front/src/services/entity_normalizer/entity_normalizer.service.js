@@ -159,6 +159,7 @@ export const parseAlbum = (data) => {
   output.private = data.private
   output.slug = data.slug
   output.user_id = data.user_id
+  output.user = data.user
   output.sounds = data.sounds
   output.flake_id = data.flake_id
   output.timeline = data.timeline
