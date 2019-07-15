@@ -63,6 +63,11 @@ export default {
     },
     async deleteAlbum () {
       console.log('want to delete album')
+      if (confirm('Are you sure ?')) {
+        apiService.albumDelete(this.userName, this.albumId, this.$store)
+          .then(this.$router.push({ name: 'user-profile', params: { name: this.$store.state.users.currentUser.screen_name } })
+          )
+      }
     }
   }
 }
