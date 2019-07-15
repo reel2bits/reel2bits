@@ -70,6 +70,7 @@ def show(username, albumslug):
         "private": album.private,
         "slug": album.slug,
         "user_id": album.user_id,
+        "user": album.user.name,
         "sounds": album.sounds.all(),
         "timeline": album.timeline,
     }
