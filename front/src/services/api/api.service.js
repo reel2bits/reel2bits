@@ -12,6 +12,7 @@ const TRACKS_DELETE_URL = (username, id) => `/api/tracks/delete/${username}/${id
 
 const ALBUMS_NEW_URL = '/api/albums/new'
 const ALBUMS_FETCH_URL = (username, id) => `/api/albums/get/${username}/${id}`
+const ALBUMS_DELETE_URL = (username, id) => `/api/albums/delete/${username}/${id}`
 
 const oldfetch = window.fetch
 
@@ -211,6 +212,16 @@ const albumFetch = (user, albumId, store) => {
     .then((data) => parseAlbum(data))
 }
 
+const albumDelete = (user, trackId, store) => {
+  let url = ALBUMS_DELETE_URL(user, trackId)
+  let credentials = store.getters.getToken()
+
+  return fetch(url, {
+    headers: authHeaders(credentials),
+    method: 'DELETE'
+  })
+}
+
 const apiService = {
   verifyCredentials,
   register,
@@ -220,6 +231,7 @@ const apiService = {
   trackEdit,
   trackFetch,
   albumNew,
+  albumDelete,
   albumFetch
 }
 

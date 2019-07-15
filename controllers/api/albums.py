@@ -76,3 +76,24 @@ def show(username, albumslug):
     }
 
     return jsonify(album_obj)
+
+
+@bp_api_albums.route("/api/albums/delete/<string:username>/<string:albumslug>", methods=["DELETE"])
+@require_oauth("write")
+def delete(username, albumslug):
+    current_user = current_token.user
+    if not current_user:
+        return jsonify({"error": "Unauthorized"}), 403
+
+    # Get the track
+    album = Album.query.filter(Album.user_id == current_user.id, Album.slug == albumslug).first()
+    if not album:
+        return jsonify({"error": "Not found"}), 404
+
+    db.session.delete(album)
+    db.session.commit()
+
+    # log
+    add_user_log(album.id, album.user.id, "albums", "info", "Deleted {0} -- {1}".format(album.id, album.title))
+
+    return jsonify({}), 200
