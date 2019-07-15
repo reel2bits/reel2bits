@@ -2,7 +2,7 @@
   <div>
     <h4>Show album</h4>
     <div v-if="isOwner">
-      <a href="#" @click.prevent="editAlbum" >edit</a> | <a href="#" @click.prevent="deleteAlbum" >delete</a>
+      <a href="#" @click.prevent="editAlbum">edit</a> | <a href="#" @click.prevent="deleteAlbum">delete</a>
     </div>
 
     <div v-if="errors">
