@@ -52,7 +52,6 @@ export default {
     async fetchAlbum () {
       try {
         let data = await apiService.albumFetch(this.userName, this.albumId, this.$store)
-        console.log(data)
         this.album = data
         this.isOwner = (this.album.user === this.$store.state.users.currentUser.screen_name)
       } catch (e) {
