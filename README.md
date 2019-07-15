@@ -22,8 +22,7 @@ Reel2bits is a soundcloud-like self-hosted application. You can upload audio fil
 ActivityPub federation is still a work in progress, everything else works.
 
 ## Versions requirement
- - Python >= 3.6 (all under 3.6 are not supported) (say bye-bye to debian stable, sorry)
- - try https://github.com/chriskuehl/python3.6-debian-stretch if you use debian stable
+ - Python >= 3.6 (all under 3.6 are not supported)
 
 ## Installation
     Install PostgreSQL first for the database. MySQL or SQLITE3 are unsupported as we use PostgreSQL specific extensions.
