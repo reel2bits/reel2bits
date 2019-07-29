@@ -30,7 +30,7 @@ setup(
         "texttable==1.6.1",
         "python-slugify==3.0.2",
         "python-magic==0.4.15",
-        "redis==3.2.1",
+        "redis==3.3.0",
         "celery==4.3.0",
         "flask-accept==0.0.6",
     ],
