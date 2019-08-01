@@ -11,7 +11,7 @@ setup(
     author_email="dashie@sigpipe.me",
     install_requires=[
         "Flask==1.1.1",
-        "SQLAlchemy==1.3.5",
+        "SQLAlchemy==1.3.6",
         "WTForms==2.2.1",
         "WTForms-Alchemy==0.16.9",
         "SQLAlchemy-Searchable==1.1.0",
