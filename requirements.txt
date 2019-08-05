@@ -17,7 +17,7 @@ flask_uploads==0.2.1
 wtforms_alchemy==0.16.9
 sqlalchemy_searchable==1.1.0
 flask_debugtoolbar==0.10.1
-redis==3.3.4
+redis==3.3.5
 flask-accept==0.0.6
 Bootstrap-Flask==1.0.10
 PyQRCode==1.2.1
