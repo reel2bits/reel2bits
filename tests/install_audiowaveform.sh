@@ -1,6 +1,28 @@
-#!/bin/sh
+#!/bin/bash
 
 # Quick and dirty AudioWaveform build with cache logic for speedup
+
+if [ -z "$DRONE_RUNNER_PLATFORM" ]; then
+    # CircleCI
+    RUNNER="$(uname -s)"
+    BINPATH=/home/circleci/projects/audiowaveform/${RUNNER}/audiowaveform
+    CACHEPATH=~/projects
+    CI="CircleCI"
+    SUDO="sudo"
+else
+    # Drone
+    RUNNER=$DRONE_RUNNER_PLATFORM
+    BINPATH="${PWD}/.cache/audiowaveform/${RUNNER}/audiowaveform"
+    CACHEPATH=~/.cache
+    CI="DroneCI"
+fi
+
+echo "-- debug start"
+echo "-- CI detected: ${CI}"
+echo "-- runner: ${RUNNER}"
+echo "-- ls cachepath (${CACHEPATH}): $(ls -la ${CACHEPATH})"
+echo "-- file: $(file ${BINPATH})"
+echo "-- debug end"
 
 # Build function
 build() {
@@ -15,17 +37,15 @@ build() {
     cd build
     cmake ..
     make
-    mkdir -pv /usr/local/bin
-    cp -fv audiowaveform /usr/local/bin/audiowaveform
+    ${SUDO} mkdir -pv /usr/local/bin
+    ${SUDO} cp -fv audiowaveform /usr/local/bin/audiowaveform
 }
 
-BINPATH="${PWD}/.cache/audiowaveform/${DRONE_RUNNER_PLATFORM}/audiowaveform"
-
 # Cache logic : test if we have an executable already built, and working
-if [[ -d .cache ]]; then
+if [[ -d $CACHEPATH ]]; then
     echo "-- build audiowaveform; cache available"
     # We have a cache dir, create struct
-    mkdir -pv ".cache/audiowaveform/${DRONE_RUNNER_PLATFORM}"
+    mkdir -pv "${CACHEPATH}/audiowaveform/${RUNNER}"
 
     # Check if a binary exists
     if [[ -x ${BINPATH} ]]; then
@@ -34,7 +54,7 @@ if [[ -d .cache ]]; then
         if ${BINPATH} --help|grep "AudioWaveform v"; then
             echo "-- build audiowaveform; and can run; copying it"
             # can run
-            cp -fv ${BINPATH} /usr/local/bin/audiowaveform
+            ${SUDO} cp -fv ${BINPATH} /usr/local/bin/audiowaveform
         else
             # can't run
             build

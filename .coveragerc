@@ -5,3 +5,4 @@ omit =
     config.py
     configtest.py
     **/*__init__.py
+    venv/*
