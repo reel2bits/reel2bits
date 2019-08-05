@@ -25,6 +25,7 @@ aliases:
       restore_cache:
         keys:
           - v1-dependencies-{{ checksum "/tmp/.python-version" }}-{{ checksum "requirements.txt" }}
+          - v1-dependencies-{{ checksum "/tmp/.python-version" }}-
           - v1-dependencies-
 
   - &install_steps
@@ -51,7 +52,7 @@ aliases:
       persist_to_workspace:
         root: ~/projects/
         paths:
-          - ./audiowaveform/
+            - ./audiowaveform/
 
   - &install_python_dependencies
       steps:
