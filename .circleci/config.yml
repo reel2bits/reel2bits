@@ -85,8 +85,8 @@ aliases:
         - run:
             name: Full migrations
             command: |
-              #psql -U postgres -h localhost -w -c 'CREATE DATABASE reel2bits'
-              #psql -U postgres -h localhost -w -c 'CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";' reel2bits
+              psql -U postgres -h localhost -w -c 'CREATE DATABASE reel2bits'
+              psql -U postgres -h localhost -w -c 'CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";' reel2bits
               . venv/bin/activate
               cp config.py.sample config.py
               flask db upgrade
@@ -123,6 +123,7 @@ jobs:
       - image: circleci/postgres:10-alpine
         environment:
           POSTGRES_USER: postgres
+          POSTGRES_DB: reel2bits_test
     <<: *test_steps
 
   test-python3.7:
@@ -132,6 +133,7 @@ jobs:
       - image: circleci/postgres:10-alpine
         environment:
           POSTGRES_USER: postgres
+          POSTGRES_DB: reel2bits_test
     <<: *test_steps
 
   test-python3.8:
@@ -141,6 +143,7 @@ jobs:
       - image: circleci/postgres:10-alpine
         environment:
           POSTGRES_USER: postgres
+          POSTGRES_DB: reel2bits_test
     <<: *test_steps
 
 workflows:
