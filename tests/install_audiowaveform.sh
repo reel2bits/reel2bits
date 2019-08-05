@@ -17,6 +17,10 @@ else
     CI="DroneCI"
 fi
 
+env
+ls ~/
+ls ~/*/
+
 # Build function
 build() {
     echo "-- build audiowaveform; building AudioWaveform..."
