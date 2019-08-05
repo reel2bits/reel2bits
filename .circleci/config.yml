@@ -138,12 +138,12 @@ workflows:
   build-and-test:
     jobs:
       - install
-      - install-python3.6
+      - install-python3.6:
           requires:
             - install
-      - install-python3.7
+      - install-python3.7:
           requires:
             - install
-      - install-python3.8
+      - install-python3.8:
           requires:
             - install
