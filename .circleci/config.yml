@@ -86,7 +86,7 @@ aliases:
             name: Full migrations
             command: |
               psql -U postgres -h localhost -w -c 'CREATE DATABASE reel2bits'
-              psql -U postgres -h localhost -w -c 'CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";' reel2bits
+              psql -U postgres -h localhost -w -c 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";' reel2bits
               . venv/bin/activate
               cp config.py.sample config.py
               flask db upgrade
