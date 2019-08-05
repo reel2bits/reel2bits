@@ -18,14 +18,7 @@ aliases:
         paths:
           - ./reel2bits/
           - ./audiowaveform/
-
-  - &restore_python_dependencies
-      restore_cache:
-        keys:
-          - v1-dependencies-{{ checksum "/tmp/.python-version" }}-{{ checksum "requirements.txt" }}
-          - v1-dependencies-{{ checksum "/tmp/.python-version" }}-
-          - v1-dependencies-
-
+        
   - &install_steps
       steps:
         - checkout
@@ -52,10 +45,14 @@ aliases:
         - *attach_workspace
         - *install_system_dependencies
         - *install_audiowaveform
+        - *persist_to_workspace
+        - restore_cache:
+            keys:
+              - v1-dependencies-{{ checksum "/tmp/.python-version" }}-{{ checksum "requirements.txt" }}
+              - v1-dependencies-{{ checksum "/tmp/.python-version" }}-
+              - v1-dependencies-
         - run: python3 -m venv venv
         - run: python -V | tee /tmp/.python-version
-        - *persist_to_workspace
-        - *restore_python_dependencies
         - run:
             command: |
               . venv/bin/activate
@@ -65,7 +62,7 @@ aliases:
         - save_cache:
             key: v1-dependencies-{{ checksum "/tmp/.python-version" }}-{{ checksum "requirements.txt" }}
             paths:
-              - "./venv"
+              - ./venv
 
   - &test_steps
       steps:
