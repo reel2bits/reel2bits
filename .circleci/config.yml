@@ -52,6 +52,7 @@ aliases:
 
   - &install_python_dependencies
       steps:
+        - os-detect/init
         - *attach_workspace
         - *install_system_dependencies
         - *install_audiowaveform

@@ -7,13 +7,13 @@ if [ -z "$DRONE_RUNNER_PLATFORM" ]; then
     RUNNER="${OSD_ID}-${OSD_VERSION}"
     BINPATH="~/projects/audiowaveform/${RUNNER}/audiowaveform"
     CACHEPATH="~/projects/"
-    SUDO="sudo"
+    CI="CircleCI"
 else
     # Drone
     RUNNER=$DRONE_RUNNER_PLATFORM
     BINPATH="${PWD}/.cache/audiowaveform/${RUNNER}/audiowaveform"
     CACHEPATH="~/.cache"
-    SUDO=""
+    CI="DroneCI"
 fi
 
 # Build function
@@ -32,6 +32,8 @@ build() {
     ${SUDO} mkdir -pv /usr/local/bin
     ${SUDO} cp -fv audiowaveform /usr/local/bin/audiowaveform
 }
+
+echo "-- CI detected: ${CI}"
 
 # Cache logic : test if we have an executable already built, and working
 if [[ -d $CACHEPATH ]]; then
