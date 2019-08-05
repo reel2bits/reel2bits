@@ -65,7 +65,7 @@ aliases:
         - save_cache:
             key: v1-dependencies-{{ checksum "/tmp/.python-version" }}-{{ checksum "requirements.txt" }}
             paths:
-              - "venv"
+              - "./venv"
 
   - &test_steps
       steps:
