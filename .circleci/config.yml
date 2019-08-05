@@ -45,7 +45,6 @@ aliases:
         - *attach_workspace
         - *install_system_dependencies
         - *install_audiowaveform
-        - *persist_to_workspace
         - run: python -V | tee /tmp/.python-version
         - restore_cache:
             keys:
@@ -63,6 +62,7 @@ aliases:
             key: v1-dependencies-{{ checksum "/tmp/.python-version" }}-{{ checksum "requirements.txt" }}
             paths:
               - ./venv
+        - *persist_to_workspace
 
   - &test_steps
       steps:
