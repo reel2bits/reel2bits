@@ -6,20 +6,16 @@ if [ -z "$DRONE_RUNNER_PLATFORM" ]; then
     # CircleCI
     RUNNER="$(uname -s)-$(uname -r)"
     BINPATH="~/projects/audiowaveform/${RUNNER}/audiowaveform"
-    CACHEPATH="~/projects/"
+    CACHEPATH=~/projects
     CI="CircleCI"
     SUDO="sudo"
 else
     # Drone
     RUNNER=$DRONE_RUNNER_PLATFORM
     BINPATH="${PWD}/.cache/audiowaveform/${RUNNER}/audiowaveform"
-    CACHEPATH="~/.cache"
+    CACHEPATH=~/.cache
     CI="DroneCI"
 fi
-
-env
-ls ~/
-ls ~/*/
 
 # Build function
 build() {
