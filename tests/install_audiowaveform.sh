@@ -4,7 +4,7 @@
 
 if [ -z "$DRONE_RUNNER_PLATFORM" ]; then
     # CircleCI
-    RUNNER="${OSD_ID}-${OSD_VERSION}"
+    RUNNER="$(uname -s)-$(uname -r)"
     BINPATH="~/projects/audiowaveform/${RUNNER}/audiowaveform"
     CACHEPATH="~/projects/"
     CI="CircleCI"
