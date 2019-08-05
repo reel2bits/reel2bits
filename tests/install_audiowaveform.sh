@@ -7,11 +7,13 @@ if [ -z "$DRONE_RUNNER_PLATFORM" ]; then
     RUNNER="${OSD_ID}-${OSD_VERSION}"
     BINPATH="~/projects/audiowaveform/${RUNNER}/audiowaveform"
     CACHEPATH="~/projects/"
+    SUDO="sudo"
 else
     # Drone
     RUNNER=$DRONE_RUNNER_PLATFORM
     BINPATH="${PWD}/.cache/audiowaveform/${RUNNER}/audiowaveform"
     CACHEPATH="~/.cache"
+    SUDO=""
 fi
 
 # Build function
@@ -27,8 +29,8 @@ build() {
     cd build
     cmake ..
     make
-    mkdir -pv /usr/local/bin
-    cp -fv audiowaveform /usr/local/bin/audiowaveform
+    ${SUDO} mkdir -pv /usr/local/bin
+    ${SUDO} cp -fv audiowaveform /usr/local/bin/audiowaveform
 }
 
 # Cache logic : test if we have an executable already built, and working
@@ -44,7 +46,7 @@ if [[ -d $CACHEPATH ]]; then
         if ${BINPATH} --help|grep "AudioWaveform v"; then
             echo "-- build audiowaveform; and can run; copying it"
             # can run
-            cp -fv ${BINPATH} /usr/local/bin/audiowaveform
+            ${SUDO} cp -fv ${BINPATH} /usr/local/bin/audiowaveform
         else
             # can't run
             build
