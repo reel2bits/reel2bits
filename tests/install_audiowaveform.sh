@@ -8,6 +8,7 @@ if [ -z "$DRONE_RUNNER_PLATFORM" ]; then
     BINPATH="~/projects/audiowaveform/${RUNNER}/audiowaveform"
     CACHEPATH="~/projects/"
     CI="CircleCI"
+    SUDO="sudo"
 else
     # Drone
     RUNNER=$DRONE_RUNNER_PLATFORM
