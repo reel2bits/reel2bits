@@ -17,6 +17,13 @@ else
     CI="DroneCI"
 fi
 
+echo "-- debug start"
+echo "-- CI detected: ${CI}"
+echo "-- runner: ${RUNNER}"
+echo "-- ls cachepath (${CACHEPATH}): $(ls -la ${CACHEPATH})"
+echo "-- file: $(file ${BINPATH})"
+echo "-- debug end"
+
 # Build function
 build() {
     echo "-- build audiowaveform; building AudioWaveform..."
@@ -33,8 +40,6 @@ build() {
     ${SUDO} mkdir -pv /usr/local/bin
     ${SUDO} cp -fv audiowaveform /usr/local/bin/audiowaveform
 }
-
-echo "-- CI detected: ${CI}"
 
 # Cache logic : test if we have an executable already built, and working
 if [[ -d $CACHEPATH ]]; then

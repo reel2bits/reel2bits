@@ -74,8 +74,8 @@ aliases:
             name: Linters
             command: |
               . venv/bin/activate
-              black --check .
-              flake8 .
+              ./venv/bin/black --check .
+              ./venv/bin/flake8 .
         - run:
             name: Tests
             command: |
@@ -89,7 +89,7 @@ aliases:
               #psql -U postgres -h localhost -w -c 'CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";' reel2bits
               . venv/bin/activate
               cp config.py.sample config.py
-              flask db upgrade
+              ./venv/bin/flask db upgrade
 
 jobs:
   install:
