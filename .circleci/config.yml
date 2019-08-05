@@ -60,6 +60,8 @@ aliases:
             command: |
               . venv/bin/activate
               pip install --requirement requirements.txt
+              pip install black
+              pip install flake8
         - save_cache:
             key: v1-dependencies-{{ checksum "/tmp/.python-version" }}-{{ checksum "requirements.txt" }}
             paths:
@@ -74,8 +76,8 @@ aliases:
             name: Linters
             command: |
               . venv/bin/activate
-              ./venv/bin/black --check .
-              ./venv/bin/flake8 .
+              black --check .
+              flake8 .
         - run:
             name: Tests
             command: |
@@ -90,7 +92,7 @@ aliases:
               #psql -U postgres -h localhost -w -c 'CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";' reel2bits
               . venv/bin/activate
               cp config.py.sample config.py
-              ./venv/bin/flask db upgrade
+              flask db upgrade
         - store_test_results:
             path: test-reports
         - store_artifacts:
