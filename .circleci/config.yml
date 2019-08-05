@@ -71,25 +71,25 @@ aliases:
         - *install_system_dependencies
         - *install_audiowaveform
         - run:
-          name: Linters
-          command: |
-            . venv/bin/activate
-            black --check .
-            flake8 .
+            name: Linters
+            command: |
+              . venv/bin/activate
+              black --check .
+              flake8 .
         - run:
-          name: Tests
-          command: |
-            . venv/bin/activate
-            cp tests/config_test.py config.py
-            python setup.py test
+            name: Tests
+            command: |
+              . venv/bin/activate
+              cp tests/config_test.py config.py
+              python setup.py test
         - run:
-          name: Full migrations
-          command: |
-            #psql -U postgres -h localhost -w -c 'CREATE DATABASE reel2bits'
-            #psql -U postgres -h localhost -w -c 'CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";' reel2bits
-            . venv/bin/activate
-            cp config.py.sample config.py
-            flask db upgrade
+            name: Full migrations
+            command: |
+              #psql -U postgres -h localhost -w -c 'CREATE DATABASE reel2bits'
+              #psql -U postgres -h localhost -w -c 'CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";' reel2bits
+              . venv/bin/activate
+              cp config.py.sample config.py
+              flask db upgrade
 
 jobs:
   install:
@@ -109,7 +109,7 @@ jobs:
   install-python3.8:
     <<: *defaults
     docker:
-      - image: circleci/python:3.8-buster-node
+      - image: circleci/python:3.8-rc-buster-node
     <<: *install_python_dependencies
 
   test-python3.6:
