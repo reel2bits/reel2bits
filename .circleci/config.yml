@@ -12,27 +12,27 @@ aliases:
     working_directory: ~/projects/reel2bits
 
   - &attach_workspace
-    attach_workspace:
-      at: ~/projects/
+      attach_workspace:
+        at: ~/projects/
 
   - &persist_to_workspace
-    persist_to_workspace:
-      root: ~/projects/
-      paths:
-        - ./reel2bits/
+      persist_to_workspace:
+        root: ~/projects/
+        paths:
+          - ./reel2bits/
 
   - &restore_python_dependencies
-    restore_cache:
-      keys:
-        - v1-dependencies-{{ checksum "/tmp/.python-version" }}-{{ checksum "requirements.txt" }}
-        - v1-dependencies-
+      restore_cache:
+        keys:
+          - v1-dependencies-{{ checksum "/tmp/.python-version" }}-{{ checksum "requirements.txt" }}
+          - v1-dependencies-
 
   - &install_steps
-    steps:
-      - checkout
-      - *attach_workspace
-      # TODO: npm/node/front v2
-      - *persist_to_workspace
+      steps:
+        - checkout
+        - *attach_workspace
+        # TODO: npm/node/front v2
+        - *persist_to_workspace
 
   - &install_system_dependencies
       steps:
@@ -62,7 +62,7 @@ aliases:
         - *restore_python_dependencies
         - run: pip install --requirement requirements.txt
         - save_cache:
-          key: v1-dependencies-{{ checksum "/tmp/.python-version" }}-{{ checksum "requirements.txt" }}
+            key: v1-dependencies-{{ checksum "/tmp/.python-version" }}-{{ checksum "requirements.txt" }}
 
   - &test_steps
       steps:
