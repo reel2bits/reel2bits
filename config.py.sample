@@ -28,7 +28,7 @@ AP_ENABLED = False
 # Activate federation at your own risks
 
 SQLALCHEMY_DATABASE_URI = \
-    'postgresql+psycopg2://postgres@database/reel2bits'
+    'postgresql+psycopg2://postgres@localhost/reel2bits'
 
 # Should users confirm theire email address ?
 SECURITY_CONFIRMABLE = True

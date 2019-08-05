@@ -1,0 +1,149 @@
+# Python CircleCI 2.0 configuration file
+# Check https://circleci.com/docs/2.0/language-python/ for more details
+version: 2
+
+orbs:
+  os-detect: circleci/os-detect@0.1.1
+
+aliases:
+  - &defaults
+    docker:
+      - image: circleci/python:3.6-buster-node
+    working_directory: ~/projects/reel2bits
+
+  - &attach_workspace
+    attach_workspace:
+      at: ~/projects/
+
+  - &persist_to_workspace
+    persist_to_workspace:
+      root: ~/projects/
+      paths:
+        - ./reel2bits/
+
+  - &restore_python_dependencies
+    restore_cache:
+      keys:
+        - v1-dependencies-{{ checksum "/tmp/.python-version" }}-{{ checksum "requirements.txt" }}
+        - v1-dependencies-
+
+  - &install_steps
+    steps:
+      - checkout
+      - *attach_workspace
+      # TODO: npm/node/front v2
+      - *persist_to_workspace
+
+  - &install_system_dependencies
+      run:
+        name: Install system dependencies
+        command: |
+          sudo apt-get update
+          sudo apt-get install -y sox libtag1v5 libmagic1 libffi6 ffmpeg
+          sudo apt-get install -y cmake build-essential git wget make libboost-all-dev 
+          sudo apt-get install -y libsox-dev libsox-fmt-all libtag1-dev libmagic-dev libffi-dev libgd-dev libmad0-dev libsndfile1-dev libid3tag0-dev 
+  
+      run:
+        name: Install audiowaveform
+        command: ./tests/install_audiowaveform.sh
+
+      persist_to_workspace:
+        root: ~/projects/
+        paths:
+          - ./audiowaveform/
+
+  - &install_python_dependencies
+      steps:
+        - *attach_workspace
+        - *install_system_dependencies
+
+        - run: python -V | tee /tmp/.python-version
+        - *restore_python_dependencies
+        - run: pip install --requirement requirements.txt
+        - save_cache:
+          key: v1-dependencies-{{ checksum "/tmp/.python-version" }}-{{ checksum "requirements.txt" }}
+
+  - &test_steps
+      steps:
+        - *attach_workspace
+        - *install_system_dependencies
+        - run:
+          name: Linters
+          command: |
+            black --check .
+            flake8 .
+        - run:
+          name: Tests
+          command: |
+            cp tests/config_test.py config.py
+            python setup.py test
+        - run:
+          name: Full migrations
+          command: |
+            #psql -U postgres -h localhost -w -c 'CREATE DATABASE reel2bits'
+            #psql -U postgres -h localhost -w -c 'CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";' reel2bits
+            cp config.py.sample config.py
+            flask db upgrade
+
+jobs:
+  install:
+    <<: *defaults
+    <<: *install_steps
+
+  install-python3.6:
+    <<: *defaults
+    <<: *install_python_dependencies
+
+  install-python3.7:
+    <<: *defaults
+    docker:
+      - image: circleci/python:3.7-buster-node
+    <<: *install_python_dependencies
+
+  install-python3.8:
+    <<: *defaults
+    docker:
+      - image: circleci/python:3.8-buster-node
+    <<: *install_python_dependencies
+
+  test-python3.6:
+    <<: *defaults
+    docker:
+      - image: circleci/python:3.6-buster-node
+      - image: circleci/postgres:10-alpine
+        environment:
+          POSTGRES_USER: postgres
+    <<: *test_steps
+
+  test-python3.7:
+    <<: *defaults
+    docker:
+      - image: circleci/python:3.7-buster-node
+      - image: circleci/postgres:10-alpine
+        environment:
+          POSTGRES_USER: postgres
+    <<: *test_steps
+
+  test-python3.8:
+    <<: *defaults
+    docker:
+      - image: circleci/python:3.8-buster-node
+      - image: circleci/postgres:10-alpine
+        environment:
+          POSTGRES_USER: postgres
+    <<: *test_steps
+
+workflows:
+  version: 2
+  build-and-test:
+    jobs:
+      - install
+      - install-python3.6
+          requires:
+            - install
+      - install-python3.7
+          requires:
+            - install
+      - install-python3.8
+          requires:
+            - install

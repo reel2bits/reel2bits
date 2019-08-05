@@ -2,6 +2,18 @@
 
 # Quick and dirty AudioWaveform build with cache logic for speedup
 
+if [ -z "$DRONE_RUNNER_PLATFORM" ]; then
+    # CircleCI
+    RUNNER="${OSD_ID}-${OSD_VERSION}"
+    BINPATH="~/projects/audiowaveform/${RUNNER}/audiowaveform"
+    CACHEPATH="~/projects/"
+else
+    # Drone
+    RUNNER=$DRONE_RUNNER_PLATFORM
+    BINPATH="${PWD}/.cache/audiowaveform/${RUNNER}/audiowaveform"
+    CACHEPATH="~/.cache"
+fi
+
 # Build function
 build() {
     echo "-- build audiowaveform; building AudioWaveform..."
@@ -19,13 +31,11 @@ build() {
     cp -fv audiowaveform /usr/local/bin/audiowaveform
 }
 
-BINPATH="${PWD}/.cache/audiowaveform/${DRONE_RUNNER_PLATFORM}/audiowaveform"
-
 # Cache logic : test if we have an executable already built, and working
-if [[ -d .cache ]]; then
+if [[ -d $CACHEPATH ]]; then
     echo "-- build audiowaveform; cache available"
     # We have a cache dir, create struct
-    mkdir -pv ".cache/audiowaveform/${DRONE_RUNNER_PLATFORM}"
+    mkdir -pv "${CACHEPATH}/audiowaveform/${RUNNER}"
 
     # Check if a binary exists
     if [[ -x ${BINPATH} ]]; then
