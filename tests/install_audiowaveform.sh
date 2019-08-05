@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Quick and dirty AudioWaveform build with cache logic for speedup
 
