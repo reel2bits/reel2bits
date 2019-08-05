@@ -20,6 +20,7 @@ aliases:
         root: ~/projects/
         paths:
           - ./reel2bits/
+          - ./audiowaveform/
 
   - &restore_python_dependencies
       restore_cache:
@@ -49,16 +50,12 @@ aliases:
         name: Install audiowaveform
         command: ./tests/install_audiowaveform.sh
 
-      persist_to_workspace:
-        root: ~/projects/
-        paths:
-            - ./audiowaveform/
-
   - &install_python_dependencies
       steps:
         - *attach_workspace
         - *install_system_dependencies
         - *install_audiowaveform
+        - *persist_to_workspace
         - run: python3 -m venv venv
         - run: python -V | tee /tmp/.python-version
         - *restore_python_dependencies
