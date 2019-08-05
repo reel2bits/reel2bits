@@ -145,6 +145,17 @@ workflows:
       - install-python3.7:
           requires:
             - install
+            - install-python3.6
       - install-python3.8:
           requires:
             - install
+            - install-python3.6
+      - test-python3.6:
+          requires:
+            - install-python3.6
+      - test-python3.7:
+          requires:
+            - install-python3.7
+      - test-python3.8:
+          requires:
+            - install-python3.8
