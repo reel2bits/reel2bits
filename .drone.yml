@@ -34,7 +34,7 @@ steps:
   - python setup.py install
   - ./tests/install_audiowaveform.sh
   - black --check .
-  - flake8 .
+  - flake8 . --count --show-source --statistics
   - cp tests/config_test.py config.py
   - python setup.py test
 
