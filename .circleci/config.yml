@@ -3,7 +3,7 @@
 version: 2
 
 orbs:
-  os-detect: circleci/os-detect@0.1.1
+  detect: circleci/os-detect@0.1.1
 
 aliases:
   - &defaults
@@ -52,7 +52,7 @@ aliases:
 
   - &install_python_dependencies
       steps:
-        - os-detect/init
+        - detect/init
         - *attach_workspace
         - *install_system_dependencies
         - *install_audiowaveform
