@@ -58,12 +58,17 @@ aliases:
         - *attach_workspace
         - *install_system_dependencies
         - *install_audiowaveform
-
+        - run: python3 -m venv venv
         - run: python -V | tee /tmp/.python-version
         - *restore_python_dependencies
-        - run: pip install --requirement requirements.txt
+        - run:
+            command: |
+              . venv/bin/activate
+              pip install --requirement requirements.txt
         - save_cache:
             key: v1-dependencies-{{ checksum "/tmp/.python-version" }}-{{ checksum "requirements.txt" }}
+            paths:
+              - "venv"
 
   - &test_steps
       steps:
@@ -73,11 +78,13 @@ aliases:
         - run:
           name: Linters
           command: |
+            . venv/bin/activate
             black --check .
             flake8 .
         - run:
           name: Tests
           command: |
+            . venv/bin/activate
             cp tests/config_test.py config.py
             python setup.py test
         - run:
@@ -85,6 +92,7 @@ aliases:
           command: |
             #psql -U postgres -h localhost -w -c 'CREATE DATABASE reel2bits'
             #psql -U postgres -h localhost -w -c 'CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";' reel2bits
+            . venv/bin/activate
             cp config.py.sample config.py
             flask db upgrade
 
