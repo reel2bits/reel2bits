@@ -133,7 +133,7 @@ jobs:
   test-python3.8:
     <<: *defaults
     docker:
-      - image: circleci/python:3.8-buster-node
+      - image: circleci/python:3.8-rc-buster-node
       - image: circleci/postgres:10-alpine
         environment:
           POSTGRES_USER: postgres
