@@ -58,7 +58,6 @@ aliases:
               pip install --requirement requirements.txt
               pip install black
               pip install flake8
-              pip install coverage
         - save_cache:
             key: v1-dependencies-{{ checksum "/tmp/.python-version" }}-{{ checksum "requirements.txt" }}
             paths:
@@ -76,8 +75,6 @@ aliases:
               . venv/bin/activate
               black --check .
               flake8 . --count --show-source --statistics
-              coverage report
-              coverage xml -o test-reports/coverage.xml
         - run:
             name: Tests
             command: |
