@@ -35,28 +35,29 @@ aliases:
         - *persist_to_workspace
 
   - &install_system_dependencies
-      steps:
-        - run:
-            name: Install system dependencies
-            command: |
-              sudo apt-get update
-              sudo apt-get install -y sox libtag1v5 libmagic1 libffi6 ffmpeg
-              sudo apt-get install -y cmake build-essential git wget make libboost-all-dev 
-              sudo apt-get install -y libsox-dev libsox-fmt-all libtag1-dev libmagic-dev libffi-dev libgd-dev libmad0-dev libsndfile1-dev libid3tag0-dev 
-    
-        - run:
-            name: Install audiowaveform
-            command: ./tests/install_audiowaveform.sh
+      - run:
+          name: Install system dependencies
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y sox libtag1v5 libmagic1 libffi6 ffmpeg
+            sudo apt-get install -y cmake build-essential git wget make libboost-all-dev 
+            sudo apt-get install -y libsox-dev libsox-fmt-all libtag1-dev libmagic-dev libffi-dev libgd-dev libmad0-dev libsndfile1-dev libid3tag0-dev 
 
-        - persist_to_workspace:
-            root: ~/projects/
-            paths:
-              - ./audiowaveform/
+  - &install_audiowaveform
+      - run:
+          name: Install audiowaveform
+          command: ./tests/install_audiowaveform.sh
+
+      - persist_to_workspace:
+          root: ~/projects/
+          paths:
+            - ./audiowaveform/
 
   - &install_python_dependencies
       steps:
         - *attach_workspace
         - *install_system_dependencies
+        - *install_audiowaveform
 
         - run: python -V | tee /tmp/.python-version
         - *restore_python_dependencies
@@ -68,6 +69,7 @@ aliases:
       steps:
         - *attach_workspace
         - *install_system_dependencies
+        - *install_audiowaveform
         - run:
           name: Linters
           command: |
