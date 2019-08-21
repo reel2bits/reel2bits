@@ -15,7 +15,7 @@ setup(
         "WTForms==2.2.1",
         "WTForms-Alchemy==0.16.9",
         "SQLAlchemy-Searchable==1.1.0",
-        "SQLAlchemy-Utils==0.34.1",
+        "SQLAlchemy-Utils==0.34.2",
         "Bootstrap-Flask==1.0.10",
         "Flask-DebugToolbar==0.10.1",
         "Flask-Mail==0.9.1",
