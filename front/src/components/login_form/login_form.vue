@@ -10,7 +10,7 @@
       <input ref="passwordInput" v-model="user.password" required
              type="password" placeholder="Password"
       >
-      <hr>
+
       <button type="submit">
         login
       </button>
