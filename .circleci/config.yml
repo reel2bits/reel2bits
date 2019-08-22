@@ -57,20 +57,22 @@ aliases:
               - ./venv
         - *persist_to_workspace
 
-  - &install_front_dependencies
-      steps:
-        - *attach_workspace
-        - run:
-            name: Front yarn install
-            command: |
-              cd front
-              yarn install
-
   - &install_steps
       steps:
         - checkout
         - *attach_workspace
-        - *install_front_dependencies
+        - restore_cache:
+            keys:
+              - v1-node-dependencies-{{ checksum "front/yarn.lock" }}
+              - v1-node-dependencies-
+        - run:
+            command: |
+              cd front
+              yarn install --frozen-lockfile
+        - save_cache:
+            key: v1-node-depdencies-{{ checksum "front/yarn.lock" }}
+            paths:
+              - ./front/node_modules/
         - *persist_to_workspace
 
   - &test_steps
