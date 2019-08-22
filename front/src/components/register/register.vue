@@ -19,48 +19,60 @@
             aria-describedby="username-live-feedback"
           />
           <b-form-invalid-feedback id="username-live-feedback">
-            Username required
+            Username is required
           </b-form-invalid-feedback>
         </b-form-group>
 
-        <div class="form-group" :class="{ 'form-group--error': $v.user.fullname.$error }">
-          <label class="form--label" for="sign-up-fullname">Display name:</label>
-          <input id="sign-up-fullname" v-model.trim="$v.user.fullname.$model" :disabled="isPending"
-                 class="form-control" placeholder="foo bar"
-          >
-        </div>
-        <div v-if="$v.user.fullname.$dirty" class="form-error">
-          <ul>
-            <li v-if="!$v.user.fullname.required">
-              <span>full name required</span>
-            </li>
-          </ul>
-        </div>
+        <b-form-group
+          id="ig-fullname"
+          :class="{ 'form-group--error': $v.user.fullname.$error }"
+          label="Display name:"
+          label-for="fullname"
+        >
+          <b-form-input
+            id="fullname"
+            v-model.trim="$v.user.fullname.$model"
+            :disabled="isPending"
+            placeholder="display name"
+            :state="$v.user.fullname.$dirty ? !$v.user.fullname.$error : null"
+            aria-describedby="fullname-live-feedback"
+          />
+          <b-form-invalid-feedback id="fullname-live-feedback">
+            Display name is required
+          </b-form-invalid-feedback>
+        </b-form-group>
 
-        <div class="form-group" :class="{ 'form-group--error': $v.user.email.$error }">
-          <label class="form--label" for="email">Email:</label>
-          <input id="email" v-model="$v.user.email.$model" :disabled="isPending"
-                 class="form-control" type="email"
-          >
-        </div>
-        <div v-if="$v.user.email.$dirty" class="form-error">
-          <ul>
-            <li v-if="!$v.user.email.required">
-              <span>email required</span>
-            </li>
-          </ul>
-        </div>
+        <b-form-group
+          id="ig-email"
+          :class="{ 'form-group--error': $v.user.email.$error }"
+          label="Email:"
+          label-for="email"
+        >
+          <b-form-input
+            id="email"
+            v-model.trim="$v.user.email.$model"
+            :disabled="isPending"
+            placeholder="email"
+            :state="$v.user.email.$dirty ? !$v.user.email.$error : null"
+            aria-describedby="email-live-feedback"
+          />
+          <b-form-invalid-feedback id="email-live-feedback">
+            Your email is required
+          </b-form-invalid-feedback>
+        </b-form-group>
 
-        <div class="form-group">
-          <label class="form--label" for="bio">bio (optional):</label>
-          <textarea
+        <b-form-group
+          id="ig-bio"
+          label="Bio (optional):"
+          label-for="bio"
+        >
+          <b-form-textarea
             id="bio"
             v-model="user.bio"
             :disabled="isPending"
-            class="form-control"
             :placeholder="bioPlaceholder"
           />
-        </div>
+        </b-form-group>
 
         <div class="form-group" :class="{ 'form-group--error': $v.user.password.$error }">
           <label class="form--label" for="sign-up-password">Password:</label>
@@ -144,7 +156,7 @@ export default {
       return this.$route.params.token
     },
     bioPlaceholder () {
-      return 'quack quack im a cat'.replace(/\s*\n\s*/g, ' \n')
+      return 'quack quack i\'m a cat'.replace(/\s*\n\s*/g, ' \n')
     },
     ...mapState({
       registrationOpen: state => state.instance.registrationOpen,
