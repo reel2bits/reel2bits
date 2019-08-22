@@ -1,7 +1,8 @@
 // Snippets from https://git.pleroma.social/pleroma/pleroma-fe/blob/develop/src/boot/after_store.js
 
 import Vue from 'vue'
-import router from '../router'
+import VueRouter from 'vue-router'
+import routes from './routes'
 import App from '../App.vue'
 import { getOrCreateApp, getClientToken } from '../backend/oauth/oauth.js'
 
@@ -78,6 +79,12 @@ const afterStoreSetup = async ({ store }) => {
     getTOS({ store }), // get the terms of service
     getNodeInfo({ store }) // fetch nodeinfo and feed infos in store
   ])
+
+  const router = new VueRouter({
+    mode: 'history',
+    base: process.env.BASE_URL,
+    routes: routes(store)
+  })
 
   return new Vue({
     router,
