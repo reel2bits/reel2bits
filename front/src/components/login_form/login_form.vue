@@ -1,26 +1,45 @@
 <template>
-  <div>
-    <form class="login" @submit.prevent="submitPassword">
-      <h1>Sign in</h1>
-      <label>username</label>
-      <input v-model="user.username" required type="text"
-             placeholder="Username"
-      >
-      <label>password</label>
-      <input ref="passwordInput" v-model="user.password" required
-             type="password" placeholder="Password"
-      >
+  <div class="row justify-content-md-center">
+    <div class="col-md-3">
+      <b-form class="login" @submit.prevent="submitPassword">
+        <h1>Sign in</h1>
+        <b-form-group
+          id="ig-username"
+          label="Username:"
+          label-for="username"
+        >
+          <b-form-input
+            id="username"
+            v-model="user.username"
+            type="text"
+            required
+            placeholder="Enter username"
+          />
+        </b-form-group>
 
-      <button type="submit">
-        login
-      </button>
-    </form>
+        <b-form-group
+          id="ig-password"
+          label="Password:"
+          label-for="password"
+        >
+          <b-form-input
+            id="password"
+            v-model="user.password"
+            type="password"
+            required
+            placeholder="Enter password"
+          />
 
-    <div v-if="error" class="form-group">
-      <div class="alert error">
+          <br>
+          <b-button type="submit" variant="primary">
+            Login
+          </b-button>
+        </b-form-group>
+      </b-form>
+
+      <b-alert v-if="error" variant="danger" show>
         {{ error }}
-        <i class="button-icon icon-cancel" @click="clearError" />
-      </div>
+      </b-alert>
     </div>
   </div>
 </template>
