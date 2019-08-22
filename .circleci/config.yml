@@ -224,7 +224,7 @@ workflows:
           requires:
             - install-python3.8
       - install-front
-      - front-lint-lts
+      - front-lint-lts:
           requires:
             - install-front
       - front-lint:
