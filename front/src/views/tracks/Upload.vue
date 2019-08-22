@@ -147,13 +147,6 @@ export default {
       serverValidationErrors: state => state.tracks.uploadErrors
     })
   },
-  created () {
-    console.log('upload view created() called')
-    if (!this.signedIn) {
-      console.debug('not logged in, redirecting')
-      this.$router.push({ name: 'home' })
-    }
-  },
   methods: {
     ...mapActions(['uploadTrack']),
     async upload () {

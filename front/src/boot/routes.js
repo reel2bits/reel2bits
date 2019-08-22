@@ -1,21 +1,23 @@
-import Vue from 'vue'
-import Router from 'vue-router'
-import Home from './views/Home.vue'
-import LoginForm from './components/login_form/login_form.vue'
-import Register from './components/register/register.vue'
-import OAuthCallback from './components/oauth_callback/oauth_callback.vue'
-import UserProfile from './components/user_profile/user_profile.vue'
-import TracksUpload from './views/tracks/Upload.vue'
-import TracksShow from './views/tracks/Show.vue'
-import AlbumsNew from './views/albums/New.vue'
-import AlbumsShow from './views/albums/Show.vue'
+import Home from '../views/Home.vue'
+import LoginForm from '../components/login_form/login_form.vue'
+import Register from '../components/register/register.vue'
+import OAuthCallback from '../components/oauth_callback/oauth_callback.vue'
+import UserProfile from '../components/user_profile/user_profile.vue'
+import TracksUpload from '../views/tracks/Upload.vue'
+import TracksShow from '../views/tracks/Show.vue'
+import AlbumsNew from '../views/albums/New.vue'
+import AlbumsShow from '../views/albums/Show.vue'
 
-Vue.use(Router)
+export default (store) => {
+  const validateAuthenticatedRoute = (to, from, next) => {
+    if (store.state.users.currentUser) {
+      next()
+    } else {
+      next('/')
+    }
+  }
 
-const router = new Router({
-  mode: 'history',
-  base: process.env.BASE_URL,
-  routes: [
+  return [
     {
       path: '/',
       name: 'home',
@@ -24,13 +26,12 @@ const router = new Router({
     {
       path: '/about',
       name: 'about',
-      component: () => import(/* webpackChunkName: "about" */ './views/About.vue')
+      component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
     },
     {
       name: 'profile',
       path: '/profile',
-      component: () => import(/* webpackChunkName: "profile" */ './views/Profile.vue'),
-      meta: { requiresAuth: true }
+      component: () => import(/* webpackChunkName: "profile" */ '../views/Profile.vue')
     },
     {
       path: '/login',
@@ -63,7 +64,7 @@ const router = new Router({
       name: 'tracks-upload',
       path: '/tracks/upload',
       component: TracksUpload,
-      meta: { requiresAuth: true }
+      beforeEnter: validateAuthenticatedRoute
     },
     {
       name: 'tracks-show',
@@ -74,7 +75,8 @@ const router = new Router({
     {
       name: 'albums-new',
       path: '/albums/new',
-      component: AlbumsNew
+      component: AlbumsNew,
+      beforeEnter: validateAuthenticatedRoute
     },
     {
       name: 'albums-show',
@@ -82,6 +84,4 @@ const router = new Router({
       component: AlbumsShow
     }
   ]
-})
-
-export default router
+}
