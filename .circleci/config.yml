@@ -23,7 +23,7 @@ aliases:
       steps:
         - checkout
         - *attach_workspace
-        # TODO: npm/node/front v2
+        - *install_front_dependencies
         - *persist_to_workspace
 
   - &install_system_dependencies
@@ -173,12 +173,6 @@ jobs:
           POSTGRES_DB: reel2bits_test
     <<: *test_steps
 
-  install-front:
-    <<: *defaults
-    docker:
-      - image: circleci/node:12.9.0-buster-browsers
-    <<: *install_front_dependencies
-
   front-lint:
     <<: *defaults
     docker:
@@ -223,16 +217,15 @@ workflows:
       - test-python3.8:
           requires:
             - install-python3.8
-      - install-front
       - front-lint-lts:
           requires:
-            - install-front
+            - install
       - front-lint:
           requires:
-            - install-front
+            - install
             - front-lint-lts
       - front-build:
           requires:
-            - install-front
+            - install
             - front-lint-lts
             - front-lint
