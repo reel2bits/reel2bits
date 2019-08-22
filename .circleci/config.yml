@@ -223,11 +223,16 @@ workflows:
       - test-python3.8:
           requires:
             - install-python3.8
+      - install-front
       - front-lint-lts
+          requires:
+            - install-front
       - front-lint:
           requires:
+            - install-front
             - front-lint-lts
       - front-build:
           requires:
+            - install-front
             - front-lint-lts
             - front-lint
