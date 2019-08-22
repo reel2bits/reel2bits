@@ -19,13 +19,6 @@ aliases:
           - ./reel2bits/
           - ./audiowaveform/
         
-  - &install_steps
-      steps:
-        - checkout
-        - *attach_workspace
-        - *install_front_dependencies
-        - *persist_to_workspace
-
   - &install_system_dependencies
       run:
         name: Install system dependencies
@@ -64,6 +57,22 @@ aliases:
               - ./venv
         - *persist_to_workspace
 
+  - &install_front_dependencies
+      steps:
+        - *attach_workspace
+        - run:
+            name: Front yarn install
+            command: |
+              cd front
+              yarn install
+
+  - &install_steps
+      steps:
+        - checkout
+        - *attach_workspace
+        - *install_front_dependencies
+        - *persist_to_workspace
+
   - &test_steps
       steps:
         - *attach_workspace
@@ -94,15 +103,6 @@ aliases:
             path: test-reports
         - store_artifacts:
             path: test-reports
-
-  - &install_front_dependencies
-      steps:
-        - *attach_workspace
-        - run:
-            name: Front yarn install
-            command: |
-              cd front
-              yarn install
 
   - &test_steps_front
       steps:
