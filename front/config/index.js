@@ -40,19 +40,22 @@ module.exports = {
         target,
         changeOrigin: false,
         cookieDomainRewrite: 'localhost',
-        headers: { host: host }
+        headers: { host: host },
+        secure: false
       },
       '/nodeinfo': {
         target,
         changeOrigin: false,
         cookieDomainRewrite: 'localhost',
-        headers: { host: host }
+        headers: { host: host },
+        secure: false
       },
       '/oauth': {
         target,
         changeOrigin: false,
         cookieDomainRewrite: 'localhost',
-        headers: { host: host }
+        headers: { host: host },
+        secure: false
       }
     },
     // CSS Sourcemaps off by default because relative paths are "buggy"
