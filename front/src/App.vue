@@ -1,32 +1,50 @@
 <template>
   <div id="app">
+    <!-- Top navigation -->
     <nav class="navbar fixed-top bg-light">
-      <h1>{{ sitename }}</h1>
-      <hr>
-      <router-link to="/">
-        Home
-      </router-link> |
-      <router-link to="/about">
-        About
-      </router-link>
-      <span v-if="currentUser">
-        | <router-link to="/tracks/upload">Upload track</router-link>
-        | <router-link to="/albums/new">New album</router-link>
-        | <router-link :to="{ name: 'user-profile', params: { name: currentUser.screen_name } }">Me</router-link>
-        | <a
-          href="#"
-          @click.prevent="logout"
-        >Logout</a></span>
-      <span v-else>
-        | <router-link to="/login">Login</router-link>
-        |
-        <router-link
-          v-if="!currentUser"
-          to="/register"
-        >Register</router-link>
-      </span>
+      <div class="container">
+        <div class="w-100 border-bottom align-items-center d-flex justify-content-between">
+          <b-link to="/" class="navbar-brand">
+            <img src="/static/logo.svg" width="64" height="64"
+                 alt="Reel2Bits logo"
+            ><h3 class="text-body mx-3 d-inline">
+              {{ sitename }}
+            </h3>
+          </b-link>
+          <div class="col-md-4">
+            <input id="topsearch" class="form-control" type="search"
+                   placeholder="Search" aria-label="Search"
+            >
+          </div>
+          <div>
+            <router-link to="/about">
+              About
+            </router-link>
+            <span v-if="currentUser">
+              | <router-link to="/tracks/upload">Upload track</router-link>
+              | <router-link to="/albums/new">New album</router-link>
+              | <router-link :to="{ name: 'user-profile', params: { name: currentUser.screen_name } }">Me</router-link>
+              | <a
+                href="#"
+                @click.prevent="logout"
+              >Logout</a></span>
+            <span v-else>
+              | <router-link to="/login">Login</router-link>
+              |
+              <router-link
+                v-if="!currentUser"
+                to="/register"
+              >Register</router-link>
+            </span>
+          </div>
+        </div>
+      </div>
     </nav>
-    <router-view />
+
+    <!-- content -->
+    <div class="container">
+      <router-view />
+    </div>
   </div>
 </template>
 
