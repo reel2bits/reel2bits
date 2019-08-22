@@ -95,6 +95,33 @@ aliases:
         - store_artifacts:
             path: test-reports
 
+  - &install_front_dependencies
+      steps:
+        - *attach_workspace
+        - run:
+            name: Front yarn install
+            command: |
+              cd front
+              yarn install
+
+  - &test_steps_front
+      steps:
+        - *attach_workspace
+        - run:
+            name: Front lint
+            command: |
+              cd front
+              npm run lint
+
+  - &build_front
+      steps:
+        - *attach_workspace
+        - run:
+            name: Front build
+            command: |
+              cd front
+              npm run build
+
 jobs:
   install:
     <<: *defaults
@@ -146,6 +173,31 @@ jobs:
           POSTGRES_DB: reel2bits_test
     <<: *test_steps
 
+  install-front:
+    <<: *defaults
+    docker:
+      - image: circleci/node:12.9.0-buster-browsers
+    <<: *install_front_dependencies
+
+  front-lint:
+    <<: *defaults
+    docker:
+      - image: circleci/node:12.9.0-buster-browsers
+    <<: *test_steps_front
+
+  front-lint-lts:
+    <<: *defaults
+    docker:
+      - image: circleci/node:10.16.3-buster-browsers
+    <<: *test_steps_front
+
+  front-build:
+    <<: *defaults
+    docker:
+      - image: circleci/node:10.16.3-buster-browsers
+    <<: *build_front
+
+
 workflows:
   version: 2
   build-and-test:
@@ -171,3 +223,11 @@ workflows:
       - test-python3.8:
           requires:
             - install-python3.8
+      - front-lint-lts
+      - front-lint:
+          requires:
+            - front-lint-lts
+      - front-build:
+          requires:
+            - front-lint-lts
+            - front-lint
