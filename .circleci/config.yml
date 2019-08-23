@@ -51,6 +51,7 @@ aliases:
               pip install --requirement requirements.txt
               pip install black
               pip install flake8
+              touch front/dist/index.html
         - save_cache:
             key: v1-dependencies-{{ checksum "/tmp/.python-version" }}-{{ checksum "requirements.txt" }}
             paths:
