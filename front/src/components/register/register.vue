@@ -74,43 +74,51 @@
           />
         </b-form-group>
 
-        <div class="form-group" :class="{ 'form-group--error': $v.user.password.$error }">
-          <label class="form--label" for="sign-up-password">Password:</label>
-          <input id="sign-up-password" v-model="user.password" :disabled="isPending"
-                 class="form-control" type="password"
-          >
-        </div>
-        <div v-if="$v.user.password.$dirty" class="form-error">
-          <ul>
-            <li v-if="!$v.user.password.required">
-              <span>password required</span>
-            </li>
-          </ul>
-        </div>
+        <b-form-group
+          id="ig-password"
+          :class="{ 'form-group--error': $v.user.password.$error }"
+          label="Password:"
+          label-for="password"
+        >
+          <b-form-input
+            id="password"
+            v-model.trim="$v.user.password.$model"
+            :disabled="isPending"
+            placeholder="password"
+            :state="$v.user.password.$dirty ? !$v.user.password.$error : null"
+            aria-describedby="password-live-feedback"
+          />
+          <b-form-invalid-feedback id="password-live-feedback">
+            A secure password is required
+          </b-form-invalid-feedback>
+        </b-form-group>
 
-        <div class="form-group" :class="{ 'form-group--error': $v.user.confirm.$error }">
-          <label class="form--label" for="sign-up-password-confirmation">Confirm password:</label>
-          <input id="sign-up-password-confirmation" v-model="user.confirm" :disabled="isPending"
-                 class="form-control" type="password"
-          >
-        </div>
-        <div v-if="$v.user.confirm.$dirty" class="form-error">
-          <ul>
-            <li v-if="!$v.user.confirm.required">
-              <span>password confirmation required</span>
-            </li>
-            <li v-if="!$v.user.confirm.sameAsPassword">
-              <span>password and confirmation needs to match</span>
-            </li>
-          </ul>
-        </div>
-        <div class="form-group">
-          <b-button :disabled="isPending" type="submit" variant="primary">
-            Register
-          </b-button>
-        </div>
+        <b-form-group
+          id="ig-password-confirmation"
+          :class="{ 'form-group--error': $v.user.confirm.$error }"
+          label="Confirm password:"
+          label-for="password-confirmation"
+        >
+          <b-form-input
+            id="password-confirmation"
+            v-model.trim="$v.user.confirm.$model"
+            :disabled="isPending"
+            placeholder="password"
+            :state="$v.user.confirm.$dirty ? !$v.user.confirm.$error : null"
+            aria-describedby="password-confirmation-live-feedback"
+          />
+          <b-form-invalid-feedback id="password-confirmation-live-feedback">
+            <span v-if="!$v.user.confirm.required">You need to confirm your password</span>
+            <span v-if="!$v.user.confirm.sameAsPassword">Both passwords needs to match</span>
+          </b-form-invalid-feedback>
+        </b-form-group>
+
+        <b-button :disabled="isPending" type="submit" variant="primary">
+          Register
+        </b-button>
       </b-form>
 
+      <br>
       <b-alert v-if="serverValidationErrors.length > 0" variant="danger" show>
         <span v-for="error in serverValidationErrors" :key="error">{{ error }}</span>
       </b-alert>

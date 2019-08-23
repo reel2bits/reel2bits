@@ -12,9 +12,13 @@
             id="username"
             v-model="user.username"
             type="text"
-            required
             placeholder="Enter username"
+            :state="$v.user.username.$dirty ? !$v.user.username.$error : null"
+            aria-describedby="login-live-feedback"
           />
+          <b-form-invalid-feedback id="login-live-feedback">
+            Please enter your login
+          </b-form-invalid-feedback>
         </b-form-group>
 
         <b-form-group
@@ -26,9 +30,13 @@
             id="password"
             v-model="user.password"
             type="password"
-            required
             placeholder="Enter password"
+            :state="$v.user.password.$dirty ? !$v.user.password.$error : null"
+            aria-describedby="password-live-feedback"
           />
+          <b-form-invalid-feedback id="password-live-feedback">
+            Please enter your password
+          </b-form-invalid-feedback>
         </b-form-group>
 
         <b-button type="submit" variant="primary">
@@ -36,6 +44,7 @@
         </b-button>
       </b-form>
 
+      <br>
       <b-alert v-if="error" variant="danger" show>
         {{ error }}
       </b-alert>
@@ -44,14 +53,23 @@
 </template>
 
 <script>
+import { validationMixin } from 'vuelidate'
+import { required, maxLength } from 'vuelidate/lib/validators'
 import { mapState, mapActions } from 'vuex'
 import oauthApi from '../../backend/oauth/oauth.js'
 
 export default {
+  mixins: [validationMixin],
   data: () => ({
     user: {},
     error: false
   }),
+  validations: {
+    user: {
+      username: { required, maxLength: maxLength(250) },
+      password: { required, maxLength: maxLength(250) }
+    }
+  },
   computed: {
     ...mapState({
       registrationOpen: state => state.instance.registrationOpen,
@@ -63,6 +81,12 @@ export default {
   methods: {
     ...mapActions({ login: 'authFlow/login' }),
     submitPassword: function () {
+      this.$v.$touch()
+
+      if (this.$v.$invalid) {
+        return
+      }
+
       const { clientId } = this.oauth
       const data = {
         clientId,
