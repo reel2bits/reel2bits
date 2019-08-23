@@ -198,9 +198,10 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
     patch_request_class(app, 500 * 1024 * 1024)  # 500m limit
 
     if register_blueprints:
-        from controllers.main import bp_main
+        from controllers.main import bp_main, bp_vue
 
         app.register_blueprint(bp_main)
+        app.register_blueprint(bp_vue)
 
         from controllers.users import bp_users
 
