@@ -9,6 +9,11 @@ server {
 
         client_max_body_size 1G;
 
+        location /static {
+                root /home/reel2bits/reel2bits/front/dist;
+                try_files $uri $uri/ @proxy;
+        }
+
         location / {
             try_files $request_uri @proxy;
         }
