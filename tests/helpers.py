@@ -23,7 +23,7 @@ def register(c, email, password, name):
     assert resp.status_code == 200
     # logout
     logout(c)
-    resp = c.get("/")
+    resp = c.get("/home")
     assert b"Logged as" not in resp.data
 
 
