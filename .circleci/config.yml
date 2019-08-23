@@ -123,6 +123,10 @@ aliases:
             command: |
               cd front
               npm run build
+        - persist_to_workspace:
+          root: ~/projects/
+          paths:
+              - ./reel2bits/front/dist
 
   - &sync_front
       steps:
@@ -139,9 +143,7 @@ aliases:
             name: deploy
             command: |
               if [ "${CIRCLE_BRANCH}" = "frontv2" ]; then
-                cd front
-                npm run build
-                rsync -avc -e "ssh -o StrictHostKeyChecking=no -p 23" dist/ r2bdev@videaudio.cadance.licorn.eu:/home/r2bdev/reel2bits/front/dist/
+                rsync -avc -e "ssh -o StrictHostKeyChecking=no -p 23" front/dist/ r2bdev@videaudio.cadance.licorn.eu:/home/r2bdev/reel2bits/front/dist/
               else
                 echo "Not frontv2, no deployment"
               fi
