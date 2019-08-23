@@ -124,6 +124,20 @@ aliases:
               cd front
               npm run build
 
+  - &sync_front
+      steps:
+        - add_ssh_keys:
+            fingerprints:
+              - "8b:e8:75:22:8a:21:35:5a:50:1c:da:75:2f:11:6c:2b"
+
+        - deploy:
+            name: deploy
+            command: |
+              if [ "${CIRCLE_BRANCH}" = "frontv2" ]; then
+                rsync -avc -e "ssh -o StrictHostKeyChecking=no" front/dist/ r2bdev@videaudio.cadance.licorn.eu:/home/r2bdev/reel2bits/front/dist/
+              else
+                echo "Not frontv2, no deployment"
+              fi
 jobs:
   install:
     <<: *defaults
@@ -193,6 +207,11 @@ jobs:
       - image: circleci/node:10.16.3-buster-browsers
     <<: *build_front
 
+  front-sync:
+    <<: *defaults
+    docker:
+      - image: circleci/node:10.16.3-buster-browsers
+    <<: *sync_front
 
 workflows:
   version: 2
@@ -231,3 +250,8 @@ workflows:
             - install
             - front-lint-lts
             - front-lint
+      - front-sync:
+          requires:
+            - install
+            - front-lint
+            - front-build
