@@ -1,14 +1,16 @@
 <template>
-  <div class="about">
-    <h2>Welcome on instance: {{ instanceName }}</h2>
-    <div>
-      <h3>Description</h3>
-      {{ instanceDescription }}
-    </div>
-    <div v-html="instanceTos" />
-    <div>
-      <h3>Versions and sources</h3>
-      Frontend version: {{ frontVersion }}<br>
+  <div class="row justify-content-md-center">
+    <div class="col-md-8">
+      <h2>Welcome on instance: {{ instanceName }}</h2>
+      <div>
+        <h3>Description</h3>
+        {{ instanceDescription }}
+      </div>
+      <div v-html="instanceTos" />
+      <div>
+        <h3>Versions and sources</h3>
+        Frontend version: {{ frontVersion }}<br>
+      </div>
     </div>
   </div>
 </template>
