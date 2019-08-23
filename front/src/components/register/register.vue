@@ -19,7 +19,8 @@
             aria-describedby="username-live-feedback"
           />
           <b-form-invalid-feedback id="username-live-feedback">
-            Username is required
+            <span v-if="!$v.user.username.required">Username is required</span>
+            <span v-if="!$v.user.username.usernameIsLegal">Username can only contains letters or numbers</span>
           </b-form-invalid-feedback>
         </b-form-group>
 
@@ -137,6 +138,10 @@ import { validationMixin } from 'vuelidate'
 import { required, sameAs, maxLength } from 'vuelidate/lib/validators'
 import { mapActions, mapState } from 'vuex'
 
+const usernameIsLegal = value => {
+  return /^[a-zA-Z\d]+$/.test(value)
+}
+
 export default {
   mixins: [validationMixin],
   data: () => ({
@@ -151,7 +156,7 @@ export default {
   validations: {
     user: {
       email: { required, maxLength: maxLength(250) },
-      username: { required, maxLength: maxLength(250) },
+      username: { required, maxLength: maxLength(250), usernameIsLegal },
       fullname: { required, maxLength: maxLength(250) },
       password: { required, maxLength: maxLength(250) },
       confirm: {
