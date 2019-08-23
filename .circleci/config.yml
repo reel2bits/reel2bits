@@ -130,6 +130,11 @@ aliases:
         - add_ssh_keys:
             fingerprints:
               - "8b:e8:75:22:8a:21:35:5a:50:1c:da:75:2f:11:6c:2b"
+        - run:
+            name: Install rsync
+            command: |
+              sudo apt-get update
+              sudo apt-get install -y rsync
         - deploy:
             name: deploy
             command: |
@@ -253,5 +258,5 @@ workflows:
       - front-sync:
           requires:
             - install
-            - front-lint
+            - front-lint-lts
             - front-build
