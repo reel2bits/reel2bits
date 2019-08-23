@@ -124,8 +124,8 @@ aliases:
               cd front
               npm run build
         - persist_to_workspace:
-          root: ~/projects/
-          paths:
+            root: ~/projects/
+            paths:
               - ./reel2bits/front/dist
 
   - &sync_front
