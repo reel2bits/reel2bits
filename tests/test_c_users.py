@@ -4,7 +4,7 @@ from helpers import login, logout, register
 def test_empty_db(client, session):
     """Start with a blank database."""
 
-    rv = client.get("/")
+    rv = client.get("/home")
     assert rv.status_code == 200
 
 
