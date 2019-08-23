@@ -126,10 +126,10 @@ aliases:
 
   - &sync_front
       steps:
+        - *attach_workspace
         - add_ssh_keys:
             fingerprints:
               - "8b:e8:75:22:8a:21:35:5a:50:1c:da:75:2f:11:6c:2b"
-
         - deploy:
             name: deploy
             command: |
