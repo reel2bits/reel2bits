@@ -4,9 +4,11 @@ from flask_security.utils import encrypt_password
 from flask_security import confirmable as FSConfirmable
 from app_oauth import authorization, require_oauth
 from authlib.flask.oauth2 import current_token
+import re
 
 bp_api_v1_accounts = Blueprint("bp_api_v1_accounts", __name__)
 
+username_is_legal = re.compile("^[a-Z0-9]+$")
 
 # Parameters needed:
 #  nickname(==username), email, fullname, password, confirm, agreement, locale(dropped here for now)
@@ -66,6 +68,11 @@ def accounts():
     user = User.query.filter(User.email == request.json["email"]).first()
     if user:
         return jsonify({"error": str({"email": ["has already been taken"]})}), 400
+
+    # Check username is valid
+    # /^[a-zA-Z\d]+$/
+    if not username_is_legal.match(request.json["username"]):
+        return jsonify({"error": str({"ap_id": ["should contains only letters and numbers"]})}), 400
 
     # Proceed to register the user
     role = Role.query.filter(Role.name == "user").first()
