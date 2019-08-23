@@ -19,8 +19,8 @@ def register(c, email, password, name):
         follow_redirects=True,
     )
     # should be directly logged
+    resp = c.get("/home")
     assert b"Logged as" in resp.data
-    assert resp.status_code == 200
     # logout
     logout(c)
     resp = c.get("/home")
