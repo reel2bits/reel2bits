@@ -14,10 +14,12 @@ def test_login_logout(client, session):
     register(client, "dashie@sigpipe.me", "fluttershy", "UserA")
 
     rv = login(client, "dashie@sigpipe.me", "fluttershy")
+    rv = client.get("/home")
     assert rv.status_code == 200
     assert b"Logged as UserA" in rv.data
 
     rv = logout(client)
+    rv = client.get("/home")
     assert rv.status_code == 200
     assert b"UserA" not in rv.data
 
@@ -74,6 +76,7 @@ def test_change_password(client, session):
 
     # Test login with new password
     resp = login(client, "dashie+UserB@sigpipe.me", new_password)
+    rv = client.get("/home")
     print(resp.data)
     assert b"Logged as UserB" in resp.data
     logout(client)
