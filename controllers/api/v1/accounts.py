@@ -8,7 +8,7 @@ import re
 
 bp_api_v1_accounts = Blueprint("bp_api_v1_accounts", __name__)
 
-username_is_legal = re.compile("^[a-Z0-9]+$")
+username_is_legal = re.compile("^[a-zA-Z0-9]+$")
 
 # Parameters needed:
 #  nickname(==username), email, fullname, password, confirm, agreement, locale(dropped here for now)
