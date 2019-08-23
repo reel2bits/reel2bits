@@ -140,7 +140,7 @@ aliases:
             command: |
               if [ "${CIRCLE_BRANCH}" = "frontv2" ]; then
                 cd front
-                ls dist/
+                npm run build
                 rsync -avc -e "ssh -o StrictHostKeyChecking=no -p 23" dist/ r2bdev@videaudio.cadance.licorn.eu:/home/r2bdev/reel2bits/front/dist/
               else
                 echo "Not frontv2, no deployment"
