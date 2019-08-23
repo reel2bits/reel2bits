@@ -87,6 +87,7 @@
             placeholder="password"
             :state="$v.user.password.$dirty ? !$v.user.password.$error : null"
             aria-describedby="password-live-feedback"
+            type="password"
           />
           <b-form-invalid-feedback id="password-live-feedback">
             A secure password is required
@@ -106,6 +107,7 @@
             placeholder="password"
             :state="$v.user.confirm.$dirty ? !$v.user.confirm.$error : null"
             aria-describedby="password-confirmation-live-feedback"
+            type="password"
           />
           <b-form-invalid-feedback id="password-confirmation-live-feedback">
             <span v-if="!$v.user.confirm.required">You need to confirm your password</span>
