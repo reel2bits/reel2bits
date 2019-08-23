@@ -143,7 +143,7 @@ aliases:
             name: deploy
             command: |
               if [ "${CIRCLE_BRANCH}" = "frontv2" ]; then
-                rsync -avc -e "ssh -o StrictHostKeyChecking=no -p 23" front/dist/ r2bdev@videaudio.cadance.licorn.eu:/home/r2bdev/reel2bits/front/dist/
+                rsync -avc -e "ssh -o StrictHostKeyChecking=no -p 23" --delete front/dist/ r2bdev@videaudio.cadance.licorn.eu:/home/r2bdev/reel2bits/front/dist/
               else
                 echo "Not frontv2, no deployment"
               fi
