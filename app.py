@@ -358,9 +358,7 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
             role = Role.query.filter(Role.name == role).first()
             if not role:
                 raise click.UsageError("Roles not present in database")
-            u = user_datastore.create_user(
-                name=username, email=email, password=hash_password(password), roles=[role]
-            )
+            u = user_datastore.create_user(name=username, email=email, password=hash_password(password), roles=[role])
 
             actor = create_actor(u)
             actor.user = u

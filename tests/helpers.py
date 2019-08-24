@@ -10,8 +10,9 @@ def create_oauth_app(c):
         data=dict(
             client_name=f"pytest_{datetime.datetime.utcnow()}",
             redirect_uris="urn:ietf:wg:oauth:2.0:oob",
-            scopes="read write follow push"),
-        follow_redirects=True
+            scopes="read write follow push",
+        ),
+        follow_redirects=True,
     )
     resp = json.loads(resp.data)
     assert "client_id" in resp
@@ -27,8 +28,8 @@ def get_oauth_client_token(c, client_id, client_secret):
             client_secret=client_secret,
             grant_type="client_credentials",
             scope="read write follow push",
-            redirect_uri="urn:ietf:wg:oauth:2.0:oob"
-        )
+            redirect_uri="urn:ietf:wg:oauth:2.0:oob",
+        ),
     )
     resp = json.loads(resp.data)
     assert "access_token" in resp
@@ -36,10 +37,7 @@ def get_oauth_client_token(c, client_id, client_secret):
 
 
 def headers(bearer):
-    return {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {bearer}"
-    }
+    return {"Content-Type": "application/json", "Authorization": f"Bearer {bearer}"}
 
 
 # TODO FIXME oauth
@@ -59,17 +57,19 @@ def register(c, email, password, username, display_name):
 
     resp = c.post(
         "/api/v1/accounts",
-        data=json.dumps({
-            "nickname": username,
-            "locale": "en_US",
-            "agreement": True,
-            "username": username,
-            "fullname": display_name,
-            "email": email,
-            "password": password,
-            "confirm": password
-        }),
-        headers=headers(bearer)
+        data=json.dumps(
+            {
+                "nickname": username,
+                "locale": "en_US",
+                "agreement": True,
+                "username": username,
+                "fullname": display_name,
+                "email": email,
+                "password": password,
+                "confirm": password,
+            }
+        ),
+        headers=headers(bearer),
     )
     return resp
 
