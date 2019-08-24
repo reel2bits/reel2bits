@@ -13,7 +13,7 @@ def nodeinfo():
 
     resp = {
         "version": "2.0",
-        "software": {"name": "reel2bits", "version": g.cfg["REEL2BITS_VERSION_VER"]},
+        "software": {"name": "reel2bits", "version": g.cfg["REEL2BITS_VERSION"]},
         "services": {"inbound": [], "outbound": []},
         "protocols": ["activitypub"],
         "openRegistrations": current_app.config["SECURITY_REGISTERABLE"],
