@@ -94,6 +94,10 @@ class User(db.Model, UserMixin):
 
     __mapper_args__ = {"order_by": name}
 
+    def is_admin(self):
+        admin_role = db.session.query(Role).filter(Role.name == 'admin').one()
+        return admin_role in self.roles
+
     def join_roles(self, string):
         return string.join([i.description for i in self.roles])
 
