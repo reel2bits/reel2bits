@@ -3,15 +3,19 @@ from os.path import join, dirname
 from jsonschema import validate
 
 
+# TODO FIXME oauth
 def login(client, email, password):
     return client.post("/login", data=dict(email=email, password=password), follow_redirects=True)
 
 
+# TODO FIXME oauth
 def logout(client):
     return client.get("/logout", follow_redirects=True)
 
 
+# TODO FIXME oauth
 def register(c, email, password, name):
+
     logout(c)
     resp = c.post(
         "/register",

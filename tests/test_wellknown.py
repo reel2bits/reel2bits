@@ -2,6 +2,7 @@ from helpers import logout, register, assert_valid_schema
 from flask import current_app
 
 
+# TODO FIXME oauth
 def test_webfinger(client, session):
     register(client, "dashie+webfinger@sigpipe.me", "fluttershy", "TestWebfinger")
     logout(client)
@@ -20,6 +21,7 @@ def test_webfinger(client, session):
     assert datas["subject"] == f"acct:TestWebfinger@" f"{current_app.config['AP_DOMAIN']}"
 
 
+# TODO FIXME oauth
 def test_webfinger_case(client, session):
     register(client, "dashie+webfingercase@sigpipe.me", "fluttershy", "TestWebfingerCase")
     logout(client)
