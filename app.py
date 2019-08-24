@@ -251,6 +251,10 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
 
         app.register_blueprint(bp_api_albums)
 
+        # Pleroma API
+        from controllers.api.pleroma_admin import bp_api_pleroma_admin
+        app.register_blueprint(bp_api_pleroma_admin)
+
     @app.route("/uploads/<string:thing>/<path:stuff>", methods=["GET"])
     def get_uploads_stuff(thing, stuff):
         if app.testing:
