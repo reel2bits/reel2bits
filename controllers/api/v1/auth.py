@@ -91,15 +91,17 @@ def oauth_authorize():
 def oauth_token():
     if request.json:
         # Ugly workaround because authlib doesn't handle JSON queries
-        request.form = ImmutableMultiDict({
-            "client_id": request.json["client_id"],
-            "client_secret": request.json["client_secret"],
-            "grant_type": request.json["grant_type"],
-            "password": request.json["password"],
-            "username": request.json["username"],
-            # This is an admin-fe workaround because scopes aren't specified
-            "scope": request.json.get("scope", "read write follow")
-        })
+        request.form = ImmutableMultiDict(
+            {
+                "client_id": request.json["client_id"],
+                "client_secret": request.json["client_secret"],
+                "grant_type": request.json["grant_type"],
+                "password": request.json["password"],
+                "username": request.json["username"],
+                # This is an admin-fe workaround because scopes aren't specified
+                "scope": request.json.get("scope", "read write follow"),
+            }
+        )
     return authorization.create_token_response()
 
 

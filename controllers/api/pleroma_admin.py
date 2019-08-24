@@ -26,23 +26,18 @@ def list_users():
 
     q = User.query.paginate(page=p_page, per_page=p_page_size)
 
-    resp = {
-        "page_size": p_page_size,
-        "count": len(q.items),
-        "users": []
-    }
+    resp = {"page_size": p_page_size, "count": len(q.items), "users": []}
     for i in q.items:
-        resp["users"].append({
-            "deactivated": False,
-            "id": i.id,
-            "nickname": i.name,
-            "roles": {
-                "admin": i.is_admin(),
-                "moderator": False  # not implemented, pleroma specific
-            },
-            "local": True,
-            "tags": []  # not implemented, pleroma specific
-        })
+        resp["users"].append(
+            {
+                "deactivated": False,
+                "id": i.id,
+                "nickname": i.name,
+                "roles": {"admin": i.is_admin(), "moderator": False},  # not implemented, pleroma specific
+                "local": True,
+                "tags": [],  # not implemented, pleroma specific
+            }
+        )
     response = jsonify(resp)
     response.mimetype = "application/json; charset=utf-8"
     response.status_code = 200
@@ -117,17 +112,12 @@ def infos_user(user_id):
             "note": user.actor[0].summary,
             "fields": [],
         },
-        pleroma={
-            "is_admin": user.is_admin()
-        },
+        pleroma={"is_admin": user.is_admin()},
         tags=[],
-        roles={
-                "admin": user.is_admin(),
-                "moderator": False  # not implemented, pleroma specific
-        },
+        roles={"admin": user.is_admin(), "moderator": False},  # not implemented, pleroma specific
         local=True,
         deactivated=False,
-        nickname=user.name
+        nickname=user.name,
     )
 
 
