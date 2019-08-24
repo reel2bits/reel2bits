@@ -7,6 +7,7 @@ import TracksUpload from '../views/tracks/Upload.vue'
 import TracksShow from '../views/tracks/Show.vue'
 import AlbumsNew from '../views/albums/New.vue'
 import AlbumsShow from '../views/albums/Show.vue'
+import AccountLogs from '../views/account/Logs.vue'
 
 export default (store) => {
   const validateAuthenticatedRoute = (to, from, next) => {
@@ -82,6 +83,13 @@ export default (store) => {
       name: 'albums-show',
       path: '/users/:username/album/:albumId',
       component: AlbumsShow
+    },
+    // Account
+    {
+      name: 'account-logs',
+      path: '/account/logs',
+      component: AccountLogs,
+      beforeEnter: validateAuthenticatedRoute
     }
   ]
 }
