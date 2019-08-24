@@ -8,6 +8,7 @@ def test_empty_db(client, session):
     assert rv.status_code == 200
 
 
+# TODO FIXME oauth
 def test_login_logout(client, session):
     """Make sure login and logout works."""
 
@@ -32,6 +33,7 @@ def test_login_logout(client, session):
     assert b"Invalid password" in rv.data
 
 
+# TODO FIXME oauth
 def test_register_two_identical_users(client, session):
     # Will register
     register(client, "dashie+imunique@sigpipe.me", "fluttershy", "ImUnique")
@@ -51,6 +53,7 @@ def test_register_two_identical_users(client, session):
     assert resp.status_code == 200
 
 
+# TODO FIXME oauth
 def test_change_password(client, session):
     init_password = "fluttershy"
     new_password = "jortsjortsjorts"
