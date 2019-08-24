@@ -1,11 +1,16 @@
 from helpers import logout, register, assert_valid_schema
 from flask import current_app
+import json
 
 
 # TODO FIXME oauth
 def test_webfinger(client, session):
-    register(client, "dashie+webfinger@sigpipe.me", "fluttershy", "TestWebfinger")
-    logout(client)
+    resp = register(client, "dashie+webfinger@sigpipe.me", "fluttershy", "TestWebfinger", "Test Webfinger")
+    assert resp.status_code == 200
+
+    resp = json.loads(resp.data)
+    assert "created_at" in resp
+    assert "access_token" in resp
 
     rv = client.get(f"/.well-known/webfinger?resource=acct:TestWebfinger@{current_app.config['AP_DOMAIN']}")
     assert rv.status_code == 200
@@ -23,8 +28,12 @@ def test_webfinger(client, session):
 
 # TODO FIXME oauth
 def test_webfinger_case(client, session):
-    register(client, "dashie+webfingercase@sigpipe.me", "fluttershy", "TestWebfingerCase")
-    logout(client)
+    resp = register(client, "dashie+webfingercase@sigpipe.me", "fluttershy", "TestWebfingerCase", "Test Webfinger Case")
+    assert resp.status_code == 200
+
+    resp = json.loads(resp.data)
+    assert "created_at" in resp
+    assert "access_token" in resp
 
     rv = client.get(f"/.well-known/webfinger?resource=acct:testwebfingercase@{current_app.config['AP_DOMAIN']}")
     assert rv.status_code == 200

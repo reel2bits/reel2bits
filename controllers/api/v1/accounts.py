@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, abort, current_app
 from models import db, User, user_datastore, Role, create_actor, OAuth2Token, OAuth2Client
-from flask_security.utils import encrypt_password
+from flask_security.utils import hash_password
 from flask_security import confirmable as FSConfirmable
 from app_oauth import authorization, require_oauth
 from authlib.flask.oauth2 import current_token
@@ -83,7 +83,7 @@ def accounts():
         name=request.json["username"],
         email=request.json["email"],
         display_name=request.json["fullname"],
-        password=encrypt_password(request.json["password"]),
+        password=hash_password(request.json["password"]),
         roles=[role],
     )
 
