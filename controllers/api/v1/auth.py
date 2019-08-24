@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify, abort
 from models import db, OAuth2Client, User
 from werkzeug.security import gen_salt
 from app_oauth import authorization
+from werkzeug.datastructures import ImmutableMultiDict
 
 bp_api_v1_auth = Blueprint("bp_api_v1_auth", __name__)
 
@@ -12,12 +13,19 @@ def create_client():
     Eats: client_name, redirect_uris, scopes, website(opt)
     :return:
     """
+    if request.form:
+        req = request.form
+    elif request.json:
+        req = request.json
+    else:
+        abort(400)
+
     err = False
-    if "client_name" not in request.form:
+    if "client_name" not in req:
         err = True
-    elif "redirect_uris" not in request.form:
+    elif "redirect_uris" not in req:
         err = True
-    elif "scopes" not in request.form:
+    elif "scopes" not in req:
         err = True
 
     if err:
@@ -28,10 +36,10 @@ def create_client():
         return response
 
     client = OAuth2Client()
-    client.client_name = request.form.get("client_name")
-    client.client_uri = request.form.get("website", None)
-    client.redirect_uri = request.form.get("redirect_uris")
-    client.scope = request.form.get("scopes")
+    client.client_name = req.get("client_name")
+    client.client_uri = req.get("website", None)
+    client.redirect_uri = req.get("redirect_uris")
+    client.scope = req.get("scopes")
     client.client_id = gen_salt(24)
     if client.token_endpoint_auth_method == "none":
         client.client_secret = ""
@@ -81,6 +89,17 @@ def oauth_authorize():
 
 @bp_api_v1_auth.route("/oauth/token", methods=["POST"])
 def oauth_token():
+    if request.json:
+        # Ugly workaround because authlib doesn't handle JSON queries
+        request.form = ImmutableMultiDict({
+            "client_id": request.json["client_id"],
+            "client_secret": request.json["client_secret"],
+            "grant_type": request.json["grant_type"],
+            "password": request.json["password"],
+            "username": request.json["username"],
+            # This is an admin-fe workaround because scopes aren't specified
+            "scope": request.json.get("scope", "read write follow")
+        })
     return authorization.create_token_response()
 
 
