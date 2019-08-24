@@ -14,6 +14,8 @@ const ALBUMS_NEW_URL = '/api/albums/new'
 const ALBUMS_FETCH_URL = (username, id) => `/api/albums/get/${username}/${id}`
 const ALBUMS_DELETE_URL = (username, id) => `/api/albums/delete/${username}/${id}`
 
+const ACCOUNT_LOGS_URL = (username, currentPage, perPage) => `/api/users/${username}/logs?page=${currentPage}&page_size=${perPage}`
+
 const oldfetch = window.fetch
 
 let fetch = (url, options) => {
@@ -222,6 +224,20 @@ const albumDelete = (user, trackId, store) => {
   })
 }
 
+const fetchUserLogs = (user, currentPage, perPage, store) => {
+  let url = ACCOUNT_LOGS_URL(user, currentPage, perPage)
+  let credentials = store.getters.getToken()
+
+  return fetch(url, { headers: authHeaders(credentials) })
+    .then((data) => {
+      if (data.ok) {
+        return data
+      }
+      throw new Error('Error fetching user logs', data)
+    })
+    .then((data) => data.json())
+}
+
 const apiService = {
   verifyCredentials,
   register,
@@ -232,7 +248,8 @@ const apiService = {
   trackFetch,
   albumNew,
   albumDelete,
-  albumFetch
+  albumFetch,
+  fetchUserLogs
 }
 
 export default apiService
