@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, abort
 from app_oauth import require_oauth
 from authlib.flask.oauth2 import current_token
 from models import UserLogging
@@ -16,7 +16,10 @@ def logs(username):
     if current_user.name != username:
         return jsonify({"error": "Unauthorized"}), 403
 
-    page = int(request.args.get("page", 1))
+    page = request.args.get("page", 1)
+    if page == "null":
+        abort(400)
+    page = int(page)
     per_page = int(request.args.get("page_size", 20))
 
     logs = UserLogging.query.filter(UserLogging.user_id == current_user.id).paginate(page=page, per_page=per_page)
