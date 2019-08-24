@@ -166,7 +166,5 @@ def accounts_verify_credentials():
             "note": user.actor[0].summary,
             "fields": [],
         },
-        pleroma={
-            "is_admin": user.is_admin()
-        }
+        pleroma={"is_admin": user.is_admin()},
     )
