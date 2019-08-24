@@ -9,7 +9,7 @@ from flask_bootstrap import Bootstrap
 from flask_mail import Mail
 from flask_migrate import Migrate
 from flask_security import Security
-from flask_security.utils import encrypt_password
+from flask_security.utils import hash_password
 from flask_security import signals as FlaskSecuritySignals
 from flask_security import confirmable as FSConfirmable
 from flask_uploads import configure_uploads, UploadSet, AUDIO, patch_request_class
@@ -181,7 +181,7 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
         cfg = {
             "REEL2BITS_VERSION_VER": VERSION,
             "REEL2BITS_VERSION_GIT": GIT_VERSION,
-            "REEL2BITS_VERSION": "{0} ({1})".format(VERSION, GIT_VERSION),
+            "REEL2BITS_VERSION": "{0}-({1})".format(VERSION, GIT_VERSION),
             "app_name": _config.app_name,
             "app_description": _config.app_description,
         }
@@ -359,7 +359,7 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
             if not role:
                 raise click.UsageError("Roles not present in database")
             u = user_datastore.create_user(
-                name=username, email=email, password=encrypt_password(password), roles=[role]
+                name=username, email=email, password=hash_password(password), roles=[role]
             )
 
             actor = create_actor(u)
