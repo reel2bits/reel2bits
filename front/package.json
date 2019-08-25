@@ -20,7 +20,7 @@
     "axios": "^0.19.0",
     "bootstrap": "^4.3.1",
     "bootstrap-vue": "^2.0.0-rc.28",
-    "core-js": "^2.6.5",
+    "core-js": "^3.2.1",
     "localforage": "^1.7.3",
     "lodash": "^4.17.11",
     "lodash.merge": "^4.6.1",
