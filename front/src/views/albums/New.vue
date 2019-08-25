@@ -1,44 +1,65 @@
 <template>
-  <div>
-    <h4>Create a new album</h4>
-    <form class="albums-new-form" @submit.prevent="create(album)">
-      <div class="container">
-        <div class="text-fields">
-          <div class="form-group" :class="{ 'form-group--error': $v.album.title.$error }">
-            <label class="form--label" for="album-new-title">title</label>
-            <input id="album-new-title" v-model.trim="$v.album.title.$model" :disabled="isPending"
-                   class="form-control" placeholder="title"
-            >
-          </div>
+  <div class="row justify-content-md-center">
+    <div class="col-md-6">
+      <h4>Create a new album</h4>
+      <b-form class="albums-new-form" @submit.prevent="create(album)">
+        <b-form-group
+          id="ig-title"
+          :class="{ 'form-group--error': $v.album.title.$error }"
+          label="Title:"
+          label-for="title"
+        >
+          <b-form-input
+            id="title"
+            v-model.trim="$v.album.title.$model"
+            :disabled="isPending"
+            placeholder="title"
+            :state="$v.album.title.$dirty ? !$v.album.title.$error : null"
+            aria-describedby="title-live-feedback"
+          />
+          <b-form-invalid-feedback id="title-live-feedback">
+            <span v-if="!$v.album.title.required">A title is required</span>
+            <span v-if="!$v.album.title.maxLength">Length is limited to 250 characters</span>
+          </b-form-invalid-feedback>
+        </b-form-group>
 
-          <div class="form-group">
-            <label class="form--label" for="description">description</label>
-            <textarea id="description" v-model="album.description" :disabled="isPending"
-                      class="form-control" :placeholder="descriptionPlaceholder"
-            />
-          </div>
+        <b-form-group
+          id="ig-description"
+          label="Description:"
+          label-for="description"
+        >
+          <b-form-textarea
+            id="description"
+            v-model="album.description"
+            :disabled="isPending"
+            :placeholder="descriptionPlaceholder"
+          />
+        </b-form-group>
 
-          <div class="form-group">
-            <label class="form--label" for="private">private</label>
-            <input id="private" v-model="album.private" type="checkbox"
-                   name="private" value="y" :disabled="isPending"
-                   class="form-control"
-            >
-          </div>
+        <b-form-checkbox
+          id="private"
+          v-model="album.private"
+          name="private"
+          value="y"
+          unchecked-value=""
+          :disabled="isPending"
+        >
+          this album is private
+        </b-form-checkbox>
 
-          <div class="form-group">
-            <button :disabled="isPending" type="submit" class="btn btn-default">
-              upload
-            </button>
-          </div>
-        </div>
-      </div>
-      <div v-if="serverValidationErrors.length" class="form-group">
-        <div class="alert error">
+        <br>
+
+        <b-button :disabled="isPending" type="submit" variant="primary">
+          Create
+        </b-button>
+
+        <br>
+
+        <b-alert v-if="serverValidationErrors.length > 0" variant="danger" show>
           <span v-for="error in serverValidationErrors" :key="error">{{ error }}</span>
-        </div>
-      </div>
-    </form>
+        </b-alert>
+      </b-form>
+    </div>
   </div>
 </template>
 
