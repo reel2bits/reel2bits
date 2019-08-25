@@ -1,85 +1,104 @@
 <template>
-  <div>
-    <h4>Upload a new track</h4>
-    <form class="upload-track-form" enctype="multipart/form-data" @submit.prevent="upload(track)">
-      <div class="container">
-        <div class="text-fields">
-          <div class="form-group" :class="{ 'form-group--error': $v.track.title.$error }">
-            <label class="form--label" for="track-upload-title">title</label>
-            <input id="track-upload-title" v-model.trim="$v.track.title.$model" :disabled="isPending"
-                   class="form-control" placeholder="title"
-            >
-          </div>
+  <div class="row justify-content-md-center">
+    <div class="col-md-6">
+      <h4>Upload a new track</h4>
+      <b-form class="upload-track-form" enctype="multipart/form-data" @submit.prevent="upload(track)">
+        <b-form-group
+          id="ig-title"
+          :class="{ 'form-group--error': $v.track.title.$error }"
+          label="Title:"
+          label-for="title"
+        >
+          <b-form-input
+            id="title"
+            v-model.trim="$v.track.title.$model"
+            :disabled="isPending"
+            placeholder="title"
+            :state="$v.track.title.$dirty ? !$v.track.title.$error : null"
+            aria-describedby="title-live-feedback"
+          />
+          <b-form-invalid-feedback id="title-live-feedback">
+            <span v-if="!$v.track.title.maxLength">Length is limited to 250 characters</span>
+          </b-form-invalid-feedback>
+        </b-form-group>
 
-          <div class="form-group">
-            <label class="form--label" for="description">description</label>
-            <textarea id="description" v-model="track.description" :disabled="isPending"
-                      class="form-control" :placeholder="descriptionPlaceholder"
-            />
-          </div>
+        <b-form-group
+          id="ig-description"
+          label="Description:"
+          label-for="description"
+        >
+          <b-form-textarea
+            id="description"
+            v-model="track.description"
+            :disabled="isPending"
+            :placeholder="descriptionPlaceholder"
+          />
+        </b-form-group>
 
-          <div class="form-group">
-            <label class="form--label" for="file">file</label>
-            <input id="file" :accept="acceptedMimeTypes" type="file"
-                   name="file" required :disabled="isPending"
-                   class="form-control-file"
-                   @change="uploadFile($event)"
-            >
-          </div>
-          <div v-if="$v.track.file.$dirty" class="form-error">
-            <ul>
-              <li v-if="!$v.track.file.required">
-                <span>file required</span>
-              </li>
-            </ul>
-          </div>
-          <div v-if="trackUploadError" class="form-error">
-            Error: {{ trackUploadError }}
-          </div>
+        <b-form-group
+          id="ig-file"
+          label="Track file:"
+          label-for="file"
+        >
+          <b-form-file
+            :accept="acceptedMimeTypes"
+            name="file"
+            :disabled="isPending"
+            required
+            @change="uploadFile($event)"
+          />
+        </b-form-group>
 
-          <div class="form-group">
-            <label class="form--label" for="album">album</label>
-            <select id="album" v-model="track.album" class="form-control"
-                    name="album"
-            >
-              <option v-for="album in albumsList" :key="album.value" :value="album.value">
-                {{ album.text }}
-              </option>
-            </select>
-          </div>
+        <b-form-group
+          id="ig-album"
+          label="Album:"
+          label-for="album"
+        >
+          <b-form-select
+            id="album"
+            v-model="track.album"
+            :disabled="isPending"
+            :options="albumsList"
+          />
+        </b-form-group>
 
-          <div class="form-group">
-            <label class="form--label" for="licence">licence</label>
-            <select id="licence" v-model="track.licence" class="form-control"
-                    name="licence"
-            >
-              <option v-for="lic in licenceChoices" :key="lic.value" :value="lic.value">
-                {{ lic.text }}
-              </option>
-            </select>
-          </div>
+        <b-form-group
+          id="ig-license"
+          label="License:"
+          label-for="license"
+        >
+          <b-form-select
+            id="license"
+            v-model="track.licence"
+            :disabled="isPending"
+            :options="licenceChoices"
+          />
+        </b-form-group>
 
-          <div class="form-group">
-            <label class="form--label" for="private">private</label>
-            <input id="private" v-model="track.private" type="checkbox"
-                   name="private" value="y" :disabled="isPending"
-                   class="form-control"
-            >
-          </div>
+        <b-form-checkbox
+          id="private"
+          v-model="track.private"
+          name="private"
+          value="y"
+          unchecked-value=""
+          :disabled="isPending"
+        >
+          this track is private
+        </b-form-checkbox>
 
-          <div class="form-group">
-            <button :disabled="isPending" type="submit" class="btn btn-default">
-              upload
-            </button>
-          </div>
-        </div>
-      </div>
-      <div v-if="serverValidationErrors.length" class="form-group">
-        <div class="alert error">
+        <br>
+
+        <b-button :disabled="isPending" type="submit" variant="primary">
+          Upload
+        </b-button>
+
+        <br>
+
+        <b-alert v-if="serverValidationErrors.length > 0" variant="danger" show>
           <span v-for="error in serverValidationErrors" :key="error">{{ error }}</span>
-        </div>
-      </div>
-    </form>
+        </b-alert>
+      </b-form>
+    </div>
   </div>
 </template>
 
