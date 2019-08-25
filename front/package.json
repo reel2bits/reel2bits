@@ -34,7 +34,7 @@
     "karma-mocha-reporter": "^2.2.1"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^3.8.0",
+    "@vue/cli-plugin-babel": "^3.11.0",
     "@vue/cli-plugin-eslint": "^3.8.0",
     "@vue/cli-service": "^3.11.0",
     "@vue/eslint-config-standard": "^4.0.0",
