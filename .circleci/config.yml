@@ -108,7 +108,7 @@ aliases:
         - store_artifacts:
             path: test-reports
 
-  - &test_steps_front
+  - &lint_steps_front
       steps:
         - *attach_workspace
         - run:
@@ -116,6 +116,15 @@ aliases:
             command: |
               cd front
               npm run lint
+
+  - &test_steps_front
+      steps:
+        - *attach_workspace
+        - run:
+            name: Front test
+            command: |
+              cd front
+              npm run unit
 
   - &build_front
       steps:
@@ -204,9 +213,15 @@ jobs:
     <<: *defaults
     docker:
       - image: circleci/node:12.9.0-buster-browsers
-    <<: *test_steps_front
+    <<: *lint_steps_front
 
   front-lint-lts:
+    <<: *defaults
+    docker:
+      - image: circleci/node:10.16.3-buster-browsers
+    <<: *lint_steps_front
+
+  front-test-lts:
     <<: *defaults
     docker:
       - image: circleci/node:10.16.3-buster-browsers

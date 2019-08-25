@@ -15,3 +15,5 @@
 /.ropeproject
 /.mypy_cache
 /test-reports
+test/unit/coverage/
+test/e2e/reports

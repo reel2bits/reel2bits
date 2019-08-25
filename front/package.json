@@ -6,7 +6,11 @@
     "dev": "node build/dev-server.js",
     "build": "node build/build.js",
     "lint": "eslint --ext .js,.vue src",
-    "lint-fix": "eslint --fix --ext .js,.vue src"
+    "lint-fix": "eslint --fix --ext .js,.vue src",
+    "e2e": "node test/e2e/runner.js",
+    "unit": "karma start test/unit/karma.conf.js --single-run",
+    "unit:watch": "karma start test/unit/karma.conf.js --single-run=false",
+    "test": "npm run unit && npm run e2e"
   },
   "engines": {
     "node": ">= 4.0.0",
@@ -26,13 +30,15 @@
     "vue-axios": "^2.1.4",
     "vue-router": "^3.0.3",
     "vuelidate": "^0.7.4",
-    "vuex": "^3.0.1"
+    "vuex": "^3.0.1",
+    "karma-mocha-reporter": "^2.2.1"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.8.0",
     "@vue/cli-plugin-eslint": "^3.8.0",
     "@vue/cli-service": "^3.8.0",
     "@vue/eslint-config-standard": "^4.0.0",
+    "@vue/test-utils": "^1.0.0-beta.26",
     "babel-eslint": "^10.0.1",
     "eslint": "^5.16.0",
     "eslint-friendly-formatter": "^4.0.1",
@@ -48,7 +54,19 @@
     "shelljs": "^0.7.4",
     "vue-loader": "^14.0.0",
     "vue-template-compiler": "^2.6.10",
-    "webpack-hot-middleware": "^2.25.0"
+    "webpack-hot-middleware": "^2.25.0",
+    "karma": "^3.0.0",
+    "karma-coverage": "^1.1.1",
+    "karma-firefox-launcher": "^1.1.0",
+    "karma-mocha": "^1.2.0",
+    "karma-sinon-chai": "^2.0.2",
+    "karma-sourcemap-loader": "^0.3.7",
+    "karma-spec-reporter": "0.0.26",
+    "karma-webpack": "^4.0.0-rc.3",
+    "mocha": "^3.1.0",
+    "sinon": "^2.1.0",
+    "sinon-chai": "^2.8.0",
+    "chai": "^3.5.0"
   },
   "eslintConfig": {
     "root": true,
