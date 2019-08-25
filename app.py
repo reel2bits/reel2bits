@@ -255,6 +255,10 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
 
         app.register_blueprint(bp_api_account)
 
+        from controllers.api.reel2bits import bp_api_reel2bits
+
+        app.register_blueprint(bp_api_reel2bits)
+
         # Pleroma API
         from controllers.api.pleroma_admin import bp_api_pleroma_admin
 
