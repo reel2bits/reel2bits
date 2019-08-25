@@ -123,6 +123,7 @@ aliases:
         - run:
             name: Front test
             command: |
+              firefox --version
               cd front
               npm run unit
 
