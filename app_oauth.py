@@ -53,7 +53,7 @@ class PasswordGrant(grants.ResourceOwnerPasswordCredentialsGrant):
     def authenticate_user(self, username, password):
         current_app.logger.debug("password grant auth user")
         user = User.query.filter_by(name=username).first()
-        if user.check_password(password):
+        if user and user.check_password(password):
             return user
 
 
