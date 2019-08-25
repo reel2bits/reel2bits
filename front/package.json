@@ -22,7 +22,7 @@
     "bootstrap-vue": "^2.0.0-rc.28",
     "core-js": "^3.2.1",
     "localforage": "^1.7.3",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.13",
     "lodash.merge": "^4.6.1",
     "object-path": "^0.11.4",
     "opn": "^6.0.0",
