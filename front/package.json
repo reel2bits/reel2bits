@@ -56,7 +56,7 @@
     "vue-template-compiler": "^2.6.10",
     "webpack-hot-middleware": "^2.25.0",
     "karma": "^3.0.0",
-    "karma-coverage": "^1.1.1",
+    "karma-coverage": "^2.0.1",
     "karma-firefox-launcher": "^1.1.0",
     "karma-mocha": "^1.2.0",
     "karma-sinon-chai": "^2.0.2",
