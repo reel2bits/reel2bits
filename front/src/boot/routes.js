@@ -8,6 +8,8 @@ import TracksShow from '../views/tracks/Show.vue'
 import AlbumsNew from '../views/albums/New.vue'
 import AlbumsShow from '../views/albums/Show.vue'
 import AccountLogs from '../views/account/Logs.vue'
+import About from '../views/About.vue'
+import Profile from '../views/Profile.vue'
 
 export default (store) => {
   const validateAuthenticatedRoute = (to, from, next) => {
@@ -27,12 +29,12 @@ export default (store) => {
     {
       path: '/about',
       name: 'about',
-      component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+      component: About
     },
     {
       name: 'profile',
       path: '/profile',
-      component: () => import(/* webpackChunkName: "profile" */ '../views/Profile.vue')
+      component: Profile
     },
     {
       path: '/login',
