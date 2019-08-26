@@ -62,7 +62,7 @@ if os.path.isdir(gitpath):
 
 @cached(spa_cache)
 def get_spa_html():
-    with open(os.path.join(os.getcwd(), 'front/dist/index.html')) as f:
+    with open(os.path.join(os.getcwd(), "front/dist/index.html")) as f:
         return f.read()
 
 
@@ -291,7 +291,7 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
 
     @app.errorhandler(404)
     def page_not_found(msg):
-        excluded = ['/api', '/.well-known']
+        excluded = ["/api", "/.well-known"]
         if any([request.path.startswith(m) for m in excluded]):
             return jsonify({"error": "page not found"}), 404
 
