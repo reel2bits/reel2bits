@@ -80,11 +80,11 @@ const afterStoreSetup = async ({ store }) => {
     getTOS({ store }), // get the terms of service
     getNodeInfo({ store }) // fetch nodeinfo and feed infos in store
   ])
-    .catch(function (error) {
-      console.log('Cannot init Frontend')
-      console.log(error)
-      throw new Error('Cannot initialize the frontend')
-    })
+  // .catch(function (error) {
+  //  console.log('Cannot init Frontend')
+  //  console.log(error)
+  //  throw new Error('Cannot initialize the frontend')
+  // })
 
   const router = new VueRouter({
     mode: 'history',
