@@ -10,6 +10,7 @@ import AlbumsShow from '../views/albums/Show.vue'
 import AccountLogs from '../views/account/Logs.vue'
 import About from '../views/About.vue'
 import Profile from '../views/Profile.vue'
+import NotFound from '../views/NotFound.vue'
 
 export default (store) => {
   const validateAuthenticatedRoute = (to, from, next) => {
@@ -92,6 +93,11 @@ export default (store) => {
       path: '/account/logs',
       component: AccountLogs,
       beforeEnter: validateAuthenticatedRoute
+    },
+    // Always last
+    {
+      path: '*',
+      component: NotFound
     }
   ]
 }
