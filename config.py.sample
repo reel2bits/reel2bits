@@ -30,6 +30,10 @@ AP_ENABLED = False
 SQLALCHEMY_DATABASE_URI = \
     'postgresql+psycopg2://postgres@localhost/reel2bits'
 
+# Use the default URL if you did no customisation
+# But use the URL of your repository if you did any
+SOURCES_REPOSITORY_URL = "https://github.com/rhaamo/reel2bits/"
+
 # Should users confirm theire email address ?
 SECURITY_CONFIRMABLE = True
 # Can users register on this instance ?
