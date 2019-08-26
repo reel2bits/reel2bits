@@ -1,18 +1,21 @@
-from flask import Blueprint, current_app, jsonify, Response, g
+from flask import Blueprint, current_app, jsonify, Response, g, abort
 
 from models import db, Config, User, Sound
 
 bp_nodeinfo = Blueprint("bp_nodeinfo", __name__, url_prefix="/nodeinfo")
 
 
-@bp_nodeinfo.route("/2.0", methods=["GET"])
-def nodeinfo():
+@bp_nodeinfo.route("/<string:version>", methods=["GET"])
+def nodeinfo(version):
     _config = Config.query.one()
     if not _config:
         return Response("", status=500, content_type="application/jrd+json; charset=utf-8")
 
+    if version not in ["2.0", "2.1"]:
+        abort(404)
+
     resp = {
-        "version": "2.0",
+        "version": version,
         "software": {"name": "reel2bits", "version": g.cfg["REEL2BITS_VERSION"]},
         "services": {"inbound": [], "outbound": []},
         "protocols": ["activitypub"],
@@ -28,6 +31,11 @@ def nodeinfo():
         },
     }
 
+    if version == "2.1":
+        resp["software"]["repository"] = current_app.config["SOURCES_REPOSITORY_URL"]
+
     response = jsonify(resp)
-    response.mimetype = "application/json; charset=utf-8; profile=" '"http://nodeinfo.diaspora.software/ns/schema/2.0#"'
+    response.mimetype = (
+        "application/json; charset=utf-8; profile=" f'"http://nodeinfo.diaspora.software/ns/schema/{version}#"'
+    )
     return response
