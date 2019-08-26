@@ -133,6 +133,24 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
         "host": app.config["AP_DOMAIN"],
         "basePath": "/",
         "schemes": ["https"],
+        "securityDefinitions": {
+            "OAuth2": {
+                "type": "oauth2",
+                "flows": {
+                    "authorizationCode": {
+                        "authorizationUrl": f"https://{app.config['AP_DOMAIN']}/oauth/authorize",
+                        "tokenUrl": f"https://{app.config['AP_DOMAIN']}/oauth/token",
+                        "scopes": {
+                            "read": "Grants read access",
+                            "write": "Grants write access",
+                            "admin": "Grants admin operations",
+                        },
+                    }
+                },
+            }
+        },
+        "consumes": ["application/json", "application/jrd+json"],
+        "produces": ["application/json", "application/jrd+json"],
     }
 
     db.init_app(app)
