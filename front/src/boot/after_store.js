@@ -8,7 +8,7 @@ import { getOrCreateApp, getClientToken } from '../backend/oauth/oauth.js'
 
 const getNodeInfo = async ({ store }) => {
   try {
-    const res = await window.fetch(`/nodeinfo/2.0`)
+    const res = await window.fetch(`/nodeinfo/2.1`)
     if (res.ok) {
       const data = await res.json()
 
@@ -20,6 +20,7 @@ const getNodeInfo = async ({ store }) => {
 
       const software = data.software
       store.dispatch('setInstanceOption', { name: 'backendVersion', value: software.version })
+      store.dispatch('setInstanceOption', { name: 'sourceUrl', value: software.repository })
 
       const frontendVersion = window.___reel2bitsfe_commit_hash
       store.dispatch('setInstanceOption', { name: 'frontendVersion', value: frontendVersion })

@@ -6,7 +6,8 @@ const defaultState = {
   description: 'A reel2bits instance',
   backendVersion: '',
   frontendVersion: '',
-  tos: ''
+  tos: '',
+  sourceUrl: ''
 }
 
 const instance = {
