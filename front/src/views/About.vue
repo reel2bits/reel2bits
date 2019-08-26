@@ -10,7 +10,8 @@
       <div>
         <h3>Versions and sources</h3>
         Frontend version: {{ frontVersion }}<br>
-        Backend version: {{ backendVersion }}
+        Backend version: {{ backendVersion }}<br>
+        Source: <a :href="sourceUrl" target="_blank">{{ sourceUrl }}</a>
       </div>
     </div>
   </div>
@@ -26,7 +27,8 @@ export default {
       instanceDescription: state => state.instance.description,
       instanceTos: state => state.instance.tos,
       frontVersion () { return window.___reel2bitsfe_commit_hash },
-      backendVersion: state => state.instance.backendVersion
+      backendVersion: state => state.instance.backendVersion,
+      sourceUrl: state => state.instance.sourceUrl
     })
   }
 }
