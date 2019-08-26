@@ -15,6 +15,7 @@ from flask_security import confirmable as FSConfirmable
 from flask_uploads import configure_uploads, UploadSet, AUDIO, patch_request_class
 from app_oauth import config_oauth
 from flask_cors import CORS
+from cachetools import cached, TTLCache
 
 from forms import ExtendedRegisterForm
 from models import db, Config, user_datastore, Role, create_actor
@@ -36,6 +37,8 @@ __VERSION__ = VERSION
 
 AVAILABLE_LOCALES = ["fr", "fr_FR", "en", "en_US", "pl"]
 
+spa_cache = TTLCache(maxsize=100, ttl=900)
+
 try:
     import sentry_sdk
     from sentry_sdk.integrations.flask import FlaskIntegration as SentryFlaskIntegration
@@ -55,6 +58,12 @@ if os.path.isdir(gitpath):
     GIT_VERSION = subprocess.check_output(["git", "rev-parse", "--short", "HEAD"])
     if GIT_VERSION:
         GIT_VERSION = GIT_VERSION.strip().decode("UTF-8")
+
+
+@cached(spa_cache)
+def get_spa_html():
+    with open(os.path.join(os.getcwd(), 'front/dist/index.html')) as f:
+        return f.read()
 
 
 def make_celery(remoulade):
@@ -198,10 +207,9 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
     patch_request_class(app, 500 * 1024 * 1024)  # 500m limit
 
     if register_blueprints:
-        from controllers.main import bp_main, bp_vue
+        from controllers.main import bp_main
 
         app.register_blueprint(bp_main)
-        app.register_blueprint(bp_vue)
 
         from controllers.users import bp_users
 
@@ -278,17 +286,22 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
             resp.headers["Content-Type"] = ""  # empty it so Nginx will guess it correctly
             return resp
 
+    def render_tags(tags):
+        return tags
+
     @app.errorhandler(404)
     def page_not_found(msg):
-        if request.path.startswith("/api/"):
+        excluded = ['/api', '/.well-known']
+        if any([request.path.startswith(m) for m in excluded]):
             return jsonify({"error": "page not found"}), 404
-        pcfg = {
-            "title": gettext("Whoops, something failed."),
-            "error": 404,
-            "message": gettext("Page not found"),
-            "e": msg,
-        }
-        return render_template("error_page.jinja2", pcfg=pcfg), 404
+
+        html = get_spa_html()
+        head, tail = html.split("</head>", 1)
+
+        tags = ""  # TODO OG/OEmbed
+
+        head += "\n" + "\n".join(render_tags(tags)) + "\n</head>"
+        return head + tail
 
     @app.errorhandler(403)
     def err_forbidden(msg):

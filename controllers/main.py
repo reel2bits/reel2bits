@@ -13,15 +13,3 @@ def home():
     users = User.query.all()
 
     return render_template("home.jinja2", pcfg=pcfg, users=users)
-
-
-# Ugly temporary until the old templates are all removed
-bp_vue = Blueprint(
-    "bp_vue", __name__, static_folder="front/dist/static/", template_folder="../front/dist/", static_url_path="/static/"
-)
-
-
-@bp_vue.route("/", defaults={"path": ""})
-@bp_vue.route("/<path:path>")
-def root(path):
-    return render_template("index.html")
