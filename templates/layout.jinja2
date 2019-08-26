@@ -69,8 +69,6 @@
                     </div>
                 </form>
 
-                <li class="nav-item {% if request.endpoint.startswith('bp_main.about') %}active{% endif %}"><a
-                        class="nav-link" href="{{ url_for('bp_main.about') }}">{{ gettext('About') }}</a></li>
                 {% if current_user.is_authenticated %}
                     <li class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
