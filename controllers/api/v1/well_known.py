@@ -6,6 +6,15 @@ bp_wellknown = Blueprint("bp_wellknown", __name__, url_prefix="/.well-known")
 
 @bp_wellknown.route("/webfinger", methods=["GET"])
 def webfinger():
+    """
+    ???
+    ---
+    tags:
+        - ActivityPub
+    responses:
+        200:
+            description: ???
+    """
     resource = request.args.get("resource")
     if not resource:
         return Response("", status=400, content_type="application/jrd+json; charset=utf-8")
@@ -51,6 +60,15 @@ def webfinger():
 
 @bp_wellknown.route("/nodeinfo", methods=["GET"])
 def nodeinfo():
+    """
+    ???
+    ---
+    tags:
+        - Nodeinfo
+    responses:
+        200:
+            description: ???
+    """
     method = "https"
     domain = current_app.config["AP_DOMAIN"]
     resp = {

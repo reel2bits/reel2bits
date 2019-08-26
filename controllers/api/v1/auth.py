@@ -10,8 +10,13 @@ bp_api_v1_auth = Blueprint("bp_api_v1_auth", __name__)
 @bp_api_v1_auth.route("/api/v1/apps", methods=["POST"])
 def create_client():
     """
-    Eats: client_name, redirect_uris, scopes, website(opt)
-    :return:
+    Create a new application to obtain OAuth2 credentials.
+    ---
+    tags:
+        - Apps
+    responses:
+        200:
+            description: Returns App with client_id and client_secret
     """
     if request.form:
         req = request.form
@@ -71,6 +76,17 @@ def create_client():
 # This endpoint is used by the grants: authorization_code and implicit
 @bp_api_v1_auth.route("/oauth/authorize", methods=["GET", "POST"])
 def oauth_authorize():
+    """
+    Redirect here with response_type=code, client_id, client_secret, redirect_uri, scope.
+    Displays an authorization form to the user.
+    If approved, it will create and return an authorization code, then redirect to the desired redirect_uri, or show the authorization code if urn:ietf:wg:oauth:2.0:oob was requested.
+    ---
+    tags:
+        - Authentication
+    responses:
+        200:
+            description: ???
+    """
     # input: client_id, client_secret, redirect_uri, scope
     # should authorize the user, and then return auth code if urn:ietf:wg:oauth:2.0:oob or redirect
     if request.method == "GET":
@@ -89,6 +105,17 @@ def oauth_authorize():
 
 @bp_api_v1_auth.route("/oauth/token", methods=["POST"])
 def oauth_token():
+    """
+    Post here with authorization_code for authorization code grant type or username and password for password grant type.
+    Returns an access token.
+    This corresponds to the token endpoint, section 3.2 of the OAuth 2 RFC.
+    ---
+    tags:
+        - Authentication
+    responses:
+        200:
+            description: ???
+    """
     if request.json:
         # Ugly workaround because authlib doesn't handle JSON queries
         request.form = ImmutableMultiDict(
@@ -107,5 +134,15 @@ def oauth_token():
 
 @bp_api_v1_auth.route("/oauth/revoke", methods=["POST"])
 def oauth_revoke():
+    """
+    Post here with client credentials (in basic auth or in params client_id and client_secret) to revoke an access token.
+    This corresponds to the token endpoint, using the OAuth 2.0 Token Revocation RFC (RFC 7009).
+    ---
+    tags:
+        - Authentication
+    responses:
+        200:
+            description: ???
+    """
     # input: client_id, client_secret
     return authorization.create_endpoint_response("revocation")
