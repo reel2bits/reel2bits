@@ -181,7 +181,7 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
         cfg = {
             "REEL2BITS_VERSION_VER": VERSION,
             "REEL2BITS_VERSION_GIT": GIT_VERSION,
-            "REEL2BITS_VERSION": "{0}-({1})".format(VERSION, GIT_VERSION),
+            "REEL2BITS_VERSION": "{0}-{1}".format(VERSION, GIT_VERSION),
             "app_name": _config.app_name,
             "app_description": _config.app_description,
         }
