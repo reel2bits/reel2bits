@@ -9,7 +9,7 @@ from utils import add_user_log
 bp_api_albums = Blueprint("bp_api_albums", __name__)
 
 
-@bp_api_albums.route("/api/albums/new", methods=["POST"])
+@bp_api_albums.route("/api/albums", methods=["POST"])
 @require_oauth("write")
 def new():
     """
@@ -48,7 +48,7 @@ def new():
     return jsonify({"error": json.dumps(form.errors)}), 400
 
 
-@bp_api_albums.route("/api/albums/get/<string:username>/<string:albumslug>", methods=["GET"])
+@bp_api_albums.route("/api/albums/<string:username>/<string:albumslug>", methods=["GET"])
 @require_oauth(None)
 def get(username, albumslug):
     """
@@ -110,7 +110,7 @@ def get(username, albumslug):
     return jsonify(album_obj)
 
 
-@bp_api_albums.route("/api/albums/delete/<string:username>/<string:albumslug>", methods=["DELETE"])
+@bp_api_albums.route("/api/albums/<string:username>/<string:albumslug>", methods=["DELETE"])
 @require_oauth("write")
 def delete(username, albumslug):
     """

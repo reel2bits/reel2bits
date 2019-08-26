@@ -12,7 +12,7 @@ bp_api_tracks = Blueprint("bp_api_tracks", __name__)
 sounds = UploadSet("sounds", AUDIO)
 
 
-@bp_api_tracks.route("/api/tracks/upload", methods=["POST"])
+@bp_api_tracks.route("/api/tracks", methods=["POST"])
 @require_oauth("write")
 def upload():
     """
@@ -86,7 +86,7 @@ def upload():
     return jsonify({"error": json.dumps(form.errors)}), 400
 
 
-@bp_api_tracks.route("/api/tracks/waveform/<string:username>/<string:soundslug>", methods=["GET"])
+@bp_api_tracks.route("/api/waveform/<string:username>/<string:soundslug>", methods=["GET"])
 @require_oauth(None)
 def waveform(username, soundslug):
     """
@@ -140,7 +140,7 @@ def waveform(username, soundslug):
     return jsonify(wf), 200
 
 
-@bp_api_tracks.route("/api/tracks/get/<string:username>/<string:soundslug>", methods=["GET"])
+@bp_api_tracks.route("/api/tracks/<string:username>/<string:soundslug>", methods=["GET"])
 @require_oauth(None)
 def show(username, soundslug):
     """
@@ -230,7 +230,7 @@ def show(username, soundslug):
     return jsonify(track_obj)
 
 
-@bp_api_tracks.route("/api/tracks/edit/<string:username>/<string:soundslug>", methods=["PATCH"])
+@bp_api_tracks.route("/api/tracks/<string:username>/<string:soundslug>", methods=["PATCH"])
 @require_oauth("write")
 def edit(username, soundslug):
     """
@@ -268,7 +268,7 @@ def edit(username, soundslug):
     return jsonify({"error": "Not implemented"}), 501
 
 
-@bp_api_tracks.route("/api/tracks/delete/<string:username>/<string:soundslug>", methods=["DELETE"])
+@bp_api_tracks.route("/api/tracks/<string:username>/<string:soundslug>", methods=["DELETE"])
 @require_oauth("write")
 def delete(username, soundslug):
     """

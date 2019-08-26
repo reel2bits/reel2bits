@@ -5,14 +5,14 @@ const MASTODON_LOGIN_URL = '/api/v1/accounts/verify_credentials'
 const MASTODON_REGISTRATION_URL = '/api/v1/accounts'
 const MASTODON_USER_URL = '/api/v1/accounts'
 
-const TRACKS_UPLOAD_URL = '/api/tracks/upload'
-const TRACKS_FETCH_URL = (username, id) => `/api/tracks/get/${username}/${id}`
-const TRACKS_EDIT_URL = (username, id) => `/api/tracks/edit/${username}/${id}`
-const TRACKS_DELETE_URL = (username, id) => `/api/tracks/delete/${username}/${id}`
+const TRACKS_UPLOAD_URL = '/api/tracks'
+const TRACKS_FETCH_URL = (username, id) => `/api/tracks/${username}/${id}`
+const TRACKS_EDIT_URL = (username, id) => `/api/tracks/${username}/${id}`
+const TRACKS_DELETE_URL = (username, id) => `/api/tracks/${username}/${id}`
 
-const ALBUMS_NEW_URL = '/api/albums/new'
-const ALBUMS_FETCH_URL = (username, id) => `/api/albums/get/${username}/${id}`
-const ALBUMS_DELETE_URL = (username, id) => `/api/albums/delete/${username}/${id}`
+const ALBUMS_NEW_URL = '/api/albums'
+const ALBUMS_FETCH_URL = (username, id) => `/api/albums/${username}/${id}`
+const ALBUMS_DELETE_URL = (username, id) => `/api/albums/${username}/${id}`
 
 const ACCOUNT_LOGS_URL = (username, currentPage, perPage) => `/api/users/${username}/logs?page=${currentPage}&page_size=${perPage}`
 
