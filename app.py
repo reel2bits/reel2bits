@@ -16,6 +16,7 @@ from flask_uploads import configure_uploads, UploadSet, AUDIO, patch_request_cla
 from app_oauth import config_oauth
 from flask_cors import CORS
 from cachetools import cached, TTLCache
+from flasgger import Swagger
 
 from forms import ExtendedRegisterForm
 from models import db, Config, user_datastore, Role, create_actor
@@ -125,6 +126,14 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
     migrate = Migrate(app, db)  # noqa: F841
     babel = Babel(app)  # noqa: F841
     app.babel = babel
+
+    template = {
+        "swagger": "2.0",
+        "info": {"title": "reel2bits API", "description": "API instance", "version": VERSION},
+        "host": app.config["AP_DOMAIN"],
+        "basePath": "/",
+        "schemes": ["https"],
+    }
 
     db.init_app(app)
 
@@ -271,6 +280,8 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
         from controllers.api.pleroma_admin import bp_api_pleroma_admin
 
         app.register_blueprint(bp_api_pleroma_admin)
+
+        swagger = Swagger(app, template=template)  # noqa: F841
 
     @app.route("/uploads/<string:thing>/<path:stuff>", methods=["GET"])
     def get_uploads_stuff(thing, stuff):

@@ -7,6 +7,15 @@ bp_nodeinfo = Blueprint("bp_nodeinfo", __name__, url_prefix="/nodeinfo")
 
 @bp_nodeinfo.route("/<string:version>", methods=["GET"])
 def nodeinfo(version):
+    """
+    Nodeinfo endpoint
+    ---
+    tags:
+        - Nodeinfo
+    responses:
+        200:
+            description: Nodeinfo
+    """
     _config = Config.query.one()
     if not _config:
         return Response("", status=500, content_type="application/jrd+json; charset=utf-8")

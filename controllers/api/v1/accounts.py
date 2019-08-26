@@ -18,7 +18,29 @@ username_is_legal = re.compile("^[a-zA-Z0-9]+$")
 def accounts():
     """
     Register an account
-    :return: JSON
+    The method is available to apps with a token obtained via the client credentials grant.
+    It creates a user and account records, as well as an access token for the app that initiated the request.
+    The method returns the access token, which the app should save for later.
+    ---
+    tags:
+        - Accounts
+    definitions:
+      Token:
+        type: object
+        properties:
+            access_token:
+                type: string
+            token_type:
+                type: string
+            scope:
+                type: string
+            created_at:
+                type: integer
+    responses:
+      200:
+        description: Returns Token
+        schema:
+            $ref: '#/definitions/Token'
     """
     errors = {}
 
@@ -135,8 +157,13 @@ def accounts():
 @require_oauth("read")
 def accounts_verify_credentials():
     """
-    Eats nothing
-    :return: Account object with extra source attribute
+    User’s own account.
+    ---
+    tags:
+        - Accounts
+    responses:
+        200:
+            description: Returns Account with extra source attribute.
     """
     user = current_token.user
     return jsonify(
