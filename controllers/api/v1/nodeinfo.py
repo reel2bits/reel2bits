@@ -12,6 +12,14 @@ def nodeinfo(version):
     ---
     tags:
         - Nodeinfo
+    parameters:
+        - name: version
+          in: path
+          type: string
+          enum: ['2.0', '2.1']
+          required: true
+          default: '2.1'
+          description: Nodeinfo version
     responses:
         200:
             description: Nodeinfo

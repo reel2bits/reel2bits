@@ -9,6 +9,24 @@ bp_api_account = Blueprint("bp_api_account", __name__)
 @bp_api_account.route("/api/users/<string:username>/logs", methods=["GET"])
 @require_oauth("read")
 def logs(username):
+    """
+    User logs.
+    ---
+    tags:
+        - Users
+    security:
+        - OAuth2:
+            - read
+    parameters:
+        - name: username
+          in: path
+          type: string
+          required: true
+          description: User username
+    responses:
+        200:
+            description: Returns user logs.
+    """
     current_user = current_token.user
     if not current_user:
         return jsonify({"error": "Unauthorized"}), 403

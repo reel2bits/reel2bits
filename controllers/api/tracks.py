@@ -16,8 +16,16 @@ sounds = UploadSet("sounds", AUDIO)
 @require_oauth("write")
 def upload():
     """
-    Upload a track
-    :return: JSON
+    Create a new track.
+    ---
+    tags:
+        - Tracks
+    security:
+        - OAuth2:
+            - write
+    responses:
+        200:
+            description: Returns the track id and slug.
     """
     errors = {}
 
@@ -81,6 +89,26 @@ def upload():
 @bp_api_tracks.route("/api/tracks/waveform/<string:username>/<string:soundslug>", methods=["GET"])
 @require_oauth(None)
 def waveform(username, soundslug):
+    """
+    Get track waveform.
+    ---
+    tags:
+        - Tracks
+    parameters:
+        - name: username
+          in: path
+          type: string
+          required: true
+          description: User username
+        - name: soundslug
+          in: path
+          type: string
+          required: true
+          description: Track slug
+    responses:
+        200:
+            description: Returns the waveform datas.
+    """
     # Get logged in user from bearer token, or None if not logged in
     current_user = current_token.user
 
@@ -115,6 +143,26 @@ def waveform(username, soundslug):
 @bp_api_tracks.route("/api/tracks/get/<string:username>/<string:soundslug>", methods=["GET"])
 @require_oauth(None)
 def show(username, soundslug):
+    """
+    Get track details.
+    ---
+    tags:
+        - Tracks
+    parameters:
+        - name: username
+          in: path
+          type: string
+          required: true
+          description: User username
+        - name: soundslug
+          in: path
+          type: string
+          required: true
+          description: Track slug
+    responses:
+        200:
+            description: Returns track details.
+    """
     # Get logged in user from bearer token, or None if not logged in
     current_user = current_token.user
 
@@ -185,6 +233,29 @@ def show(username, soundslug):
 @bp_api_tracks.route("/api/tracks/edit/<string:username>/<string:soundslug>", methods=["PATCH"])
 @require_oauth("write")
 def edit(username, soundslug):
+    """
+    Edit track.
+    ---
+    tags:
+        - Tracks
+    security:
+        - OAuth2:
+            - write
+    parameters:
+        - name: username
+          in: path
+          type: string
+          required: true
+          description: User username
+        - name: soundslug
+          in: path
+          type: string
+          required: true
+          description: Track slug
+    responses:
+        200:
+            description: Returns nothing.
+    """
     current_user = current_token.user
     if not current_user:
         return jsonify({"error": "Unauthorized"}), 403
@@ -200,6 +271,29 @@ def edit(username, soundslug):
 @bp_api_tracks.route("/api/tracks/delete/<string:username>/<string:soundslug>", methods=["DELETE"])
 @require_oauth("write")
 def delete(username, soundslug):
+    """
+    Delete a track.
+    ---
+    tags:
+        - Tracks
+    security:
+        - OAuth2:
+            - write
+    parameters:
+        - name: username
+          in: path
+          type: string
+          required: true
+          description: User username
+        - name: soundslug
+          in: path
+          type: string
+          required: true
+          description: Track slug
+    responses:
+        200:
+            description: Returns nothing.
+    """
     current_user = current_token.user
     if not current_user:
         return jsonify({"error": "Unauthorized"}), 403

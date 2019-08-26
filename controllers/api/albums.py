@@ -11,7 +11,19 @@ bp_api_albums = Blueprint("bp_api_albums", __name__)
 
 @bp_api_albums.route("/api/albums/new", methods=["POST"])
 @require_oauth("write")
-def upload():
+def new():
+    """
+    Create a new album.
+    ---
+    tags:
+        - Albums
+    security:
+        - OAuth2:
+            - write
+    responses:
+        200:
+            description: Returns id and slug.
+    """
     current_user = current_token.user
     if not current_user:
         return jsonify({"error": "Unauthorized"}), 403
@@ -38,7 +50,27 @@ def upload():
 
 @bp_api_albums.route("/api/albums/get/<string:username>/<string:albumslug>", methods=["GET"])
 @require_oauth(None)
-def show(username, albumslug):
+def get(username, albumslug):
+    """
+    Get album details.
+    ---
+    tags:
+        - Albums
+    parameters:
+        - name: username
+          in: path
+          type: string
+          required: true
+          description: User username
+        - name: albumslug
+          in: path
+          type: string
+          required: true
+          description: Album slug
+    responses:
+        200:
+            description: Returns album object.
+    """
     # Get logged in user from bearer token, or None if not logged in
     current_user = current_token.user
 
@@ -81,6 +113,29 @@ def show(username, albumslug):
 @bp_api_albums.route("/api/albums/delete/<string:username>/<string:albumslug>", methods=["DELETE"])
 @require_oauth("write")
 def delete(username, albumslug):
+    """
+    Delete album.
+    ---
+    tags:
+        - Albums
+    security:
+        - OAuth2:
+            - write
+    parameters:
+        - name: username
+          in: path
+          type: string
+          required: true
+          description: User username
+        - name: albumslug
+          in: path
+          type: string
+          required: true
+          description: Album slug
+    responses:
+        200:
+            description: Returns nothing.
+    """
     current_user = current_token.user
     if not current_user:
         return jsonify({"error": "Unauthorized"}), 403

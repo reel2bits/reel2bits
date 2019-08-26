@@ -161,6 +161,9 @@ def accounts_verify_credentials():
     ---
     tags:
         - Accounts
+    security:
+        - OAuth2:
+            - read
     responses:
         200:
             description: Returns Account with extra source attribute.

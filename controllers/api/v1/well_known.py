@@ -11,6 +11,12 @@ def webfinger():
     ---
     tags:
         - ActivityPub
+    parameters:
+        - name: resource
+          in: query
+          type: string
+          required: true
+          description: user@host
     responses:
         200:
             description: ???

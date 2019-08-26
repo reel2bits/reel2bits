@@ -11,6 +11,18 @@ bp_api_pleroma_admin = Blueprint("bp_api_pleroma_admin", __name__)
 @bp_api_pleroma_admin.route("/api/pleroma/admin/users", methods=["GET"])
 @require_oauth("read")
 def list_users():
+    """
+    List users.
+    ---
+    tags:
+        - Admin
+    security:
+        - OAuth2:
+            - read
+    responses:
+        200:
+            description: Returns list of users.
+    """
     user = current_token.user
     if not user.is_admin():
         abort(403)
@@ -47,6 +59,24 @@ def list_users():
 @bp_api_pleroma_admin.route("/api/pleroma/admin/users", methods=["DELETE"])
 @require_oauth("read")
 def remove_user():
+    """
+    Delete an user.
+    ---
+    tags:
+        - Admin
+    security:
+        - OAuth2:
+            - read
+    parameters:
+        - name: nickname
+          in: query
+          type: string
+          required: true
+          description: User username
+    responses:
+        200:
+            description: Returns the username.
+    """
     user = current_token.user
     if not user.is_admin():
         abort(403)
@@ -74,6 +104,24 @@ def remove_user():
 @bp_api_pleroma_admin.route("/api/pleroma/admin/users/<int:user_id>", methods=["GET"])
 @require_oauth("read")
 def infos_user(user_id):
+    """
+    Get user infos.
+    ---
+    tags:
+        - Admin
+    security:
+        - OAuth2:
+            - read
+    parameters:
+        - name: user_id
+          in: path
+          type: string
+          required: true
+          description: User ID
+    responses:
+        200:
+            description: Returns user.
+    """
     user = current_token.user
     if not user.is_admin():
         abort(403)
@@ -125,6 +173,24 @@ def infos_user(user_id):
 @bp_api_pleroma_admin.route("/api/pleroma/admin/users/<int:user_id>/statuses", methods=["GET"])
 @require_oauth("read")
 def statuses_user(user_id):
+    """
+    Get user statuses.
+    ---
+    tags:
+        - Admin
+    security:
+        - OAuth2:
+            - read
+    parameters:
+        - name: user_id
+          in: path
+          type: string
+          required: true
+          description: User ID
+    responses:
+        200:
+            description: Returns an empty list.
+    """
     # params: godmode
     user = current_token.user
     if not user.is_admin():
