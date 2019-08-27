@@ -3,7 +3,7 @@ from app_oauth import require_oauth
 from authlib.flask.oauth2 import current_token
 from forms import SoundUploadForm
 from models import db, Sound, User
-from models import licenses as track_licenses
+from models import licences as track_licenses
 import json
 from utils import add_user_log, get_hashed_filename
 from flask_uploads import UploadSet, AUDIO
