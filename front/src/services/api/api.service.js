@@ -1,5 +1,6 @@
-import { parseUser, parseTrack, parseAlbum } from '../entity_normalizer/entity_normalizer.service.js'
+import { parseUser, parseTrack, parseAlbum, parseNotification } from '../entity_normalizer/entity_normalizer.service.js'
 import { StatusCodeError } from '../errors/errors'
+import { map } from 'lodash'
 
 const MASTODON_LOGIN_URL = '/api/v1/accounts/verify_credentials'
 const MASTODON_REGISTRATION_URL = '/api/v1/accounts'
@@ -15,6 +16,12 @@ const ALBUMS_FETCH_URL = (username, id) => `/api/albums/${username}/${id}`
 const ALBUMS_DELETE_URL = (username, id) => `/api/albums/${username}/${id}`
 
 const ACCOUNT_LOGS_URL = (username, currentPage, perPage) => `/api/users/${username}/logs?page=${currentPage}&page_size=${perPage}`
+
+const MASTODON_PUBLIC_TIMELINE = '/api/v1/timelines/public'
+const MASTODON_USER_HOME_TIMELINE_URL = '/api/v1/timelines/home'
+const MASTODON_DIRECT_MESSAGES_TIMELINE_URL = '/api/v1/timelines/direct'
+const MASTODON_USER_NOTIFICATIONS_URL = '/api/v1/notifications'
+const MASTODON_USER_TIMELINE_URL = id => `/api/v1/accounts/${id}/statuses`
 
 const oldfetch = window.fetch
 
@@ -238,6 +245,68 @@ const fetchUserLogs = (user, currentPage, perPage, store) => {
     .then((data) => data.json())
 }
 
+const fetchTimeline = ({
+  timeline,
+  credentials,
+  since = false,
+  until = false,
+  userId = false,
+  tag = false,
+  withMuted = false
+}) => {
+  const timelineUrls = {
+    public: MASTODON_PUBLIC_TIMELINE,
+    friends: MASTODON_USER_HOME_TIMELINE_URL,
+    dms: MASTODON_DIRECT_MESSAGES_TIMELINE_URL,
+    notifications: MASTODON_USER_NOTIFICATIONS_URL,
+    'publicAndExternal': MASTODON_PUBLIC_TIMELINE,
+    user: MASTODON_USER_TIMELINE_URL
+  }
+  const isNotifications = timeline === 'notifications'
+  const params = []
+
+  let url = timelineUrls[timeline]
+
+  if (timeline === 'user' || timeline === 'media') {
+    url = url(userId)
+  }
+
+  if (since) {
+    params.push(['since_id', since])
+  }
+  if (until) {
+    params.push(['max_id', until])
+  }
+  if (tag) {
+    url = url(tag)
+  }
+  if (timeline === 'media') {
+    params.push(['only_media', 1])
+  }
+  if (timeline === 'public') {
+    params.push(['local', true])
+  }
+  if (timeline === 'public' || timeline === 'publicAndExternal') {
+    params.push(['only_media', false])
+  }
+
+  params.push(['count', 20])
+  params.push(['with_muted', withMuted])
+
+  const queryString = map(params, (param) => `${param[0]}=${param[1]}`).join('&')
+  url += `?${queryString}`
+
+  return fetch(url, { headers: authHeaders(credentials) })
+    .then((data) => {
+      if (data.ok) {
+        return data
+      }
+      throw new Error('Error fetching timeline', data)
+    })
+    .then((data) => data.json())
+    .then((data) => data.map(isNotifications ? parseNotification : parseTrack))
+}
+
 const apiService = {
   verifyCredentials,
   register,
@@ -249,7 +318,8 @@ const apiService = {
   albumNew,
   albumDelete,
   albumFetch,
-  fetchUserLogs
+  fetchUserLogs,
+  fetchTimeline
 }
 
 export default apiService

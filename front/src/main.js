@@ -5,7 +5,10 @@ import BootstrapVue from 'bootstrap-vue'
 
 import interfaceModule from './modules/interface.js'
 import instanceModule from './modules/instance.js'
+import statusesModule from './modules/statuses.js'
 import usersModule from './modules/users.js'
+import apiModule from './modules/api.js'
+import configModule from './modules/config.js'
 import tracksModule from './modules/tracks.js'
 import albumsModule from './modules/albums.js'
 import oauthModule from './modules/oauth.js'
@@ -35,7 +38,10 @@ const persistedStateOptions = {
     modules: {
       interface: interfaceModule,
       instance: instanceModule,
+      statuses: statusesModule,
       users: usersModule,
+      api: apiModule,
+      config: configModule,
       tracks: tracksModule,
       albums: albumsModule,
       oauth: oauthModule,

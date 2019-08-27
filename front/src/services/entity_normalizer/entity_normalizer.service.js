@@ -166,3 +166,36 @@ export const parseAlbum = (data) => {
 
   return output
 }
+
+export const parseNotification = (data) => {
+  const mastoDict = {
+    'favourite': 'like',
+    'reblog': 'repeat'
+  }
+  const masto = !data.hasOwnProperty('ntype')
+  const output = {}
+
+  if (masto) {
+    output.type = mastoDict[data.type] || data.type
+    output.seen = data.pleroma.is_seen
+    output.status = output.type === 'follow'
+      ? null
+      : parseTrack(data.status)
+    output.action = output.status // TODO: Refactor, this is unneeded
+    output.from_profile = parseUser(data.account)
+  } else {
+    const parsedNotice = parseTrack(data.notice)
+    output.type = data.ntype
+    output.seen = Boolean(data.is_seen)
+    output.status = output.type === 'like'
+      ? parseTrack(data.notice.favorited_status)
+      : parsedNotice
+    output.action = parsedNotice
+    output.from_profile = parseUser(data.from_profile)
+  }
+
+  output.created_at = new Date(data.created_at)
+  output.id = parseInt(data.id)
+
+  return output
+}

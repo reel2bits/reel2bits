@@ -278,6 +278,14 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
 
         app.register_blueprint(bp_api_v1_accounts)
 
+        from controllers.api.v1.timelines import bp_api_v1_timelines
+
+        app.register_blueprint(bp_api_v1_timelines)
+
+        from controllers.api.v1.notifications import bp_api_v1_notifications
+
+        app.register_blueprint(bp_api_v1_notifications)
+
         from controllers.api.tracks import bp_api_tracks
 
         app.register_blueprint(bp_api_tracks)

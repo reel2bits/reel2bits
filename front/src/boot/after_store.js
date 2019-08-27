@@ -5,6 +5,7 @@ import VueRouter from 'vue-router'
 import routes from './routes'
 import App from '../App.vue'
 import { getOrCreateApp, getClientToken } from '../backend/oauth/oauth.js'
+import backendInteractorService from '../services/backend_interactor_service/backend_interactor_service.js'
 
 const getNodeInfo = async ({ store }) => {
   try {
@@ -55,6 +56,7 @@ const getAppSecret = async ({ store }) => {
     .then((app) => getClientToken({ ...app }))
     .then((token) => {
       commit('setAppToken', token.access_token)
+      commit('setBackendInteractor', backendInteractorService(store.getters.getToken()))
     })
 }
 

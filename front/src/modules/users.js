@@ -2,6 +2,7 @@ import { each, merge } from 'lodash'
 import apiService from '../services/api/api.service.js'
 import { humanizeErrors } from './errors'
 import vue from 'vue'
+import backendInteractorService from '../services/backend_interactor_service/backend_interactor_service.js'
 
 // Function from https://git.pleroma.social/pleroma/pleroma-fe/blob/develop/src/modules/users.js
 export const mergeOrAdd = (arr, obj, item) => {
@@ -102,6 +103,13 @@ const users = {
               store.commit('addNewUsers', [user])
 
               // TODO: getNotificationPermission()
+              // Set our new backend interactor
+              store.commit('setBackendInteractor', backendInteractorService(accessToken))
+              // Start getting fresh posts.
+              store.dispatch('startFetchingTimeline', { timeline: 'friends' })
+
+              // Start fetching notifications
+              store.dispatch('startFetchingNotifications')
             } else {
               const response = data.error
               // Authentication failed
@@ -148,6 +156,11 @@ const users = {
     logout (store) {
       store.commit('clearCurrentUser')
       store.commit('clearToken')
+      store.dispatch('stopFetching', 'friends')
+      store.commit('setBackendInteractor', backendInteractorService(store.getters.getToken()))
+      store.dispatch('stopFetching', 'notifications')
+      store.commit('clearNotifications')
+      store.commit('resetStatuses')
     }
   }
 }
