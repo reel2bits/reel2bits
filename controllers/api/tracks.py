@@ -3,6 +3,7 @@ from app_oauth import require_oauth
 from authlib.flask.oauth2 import current_token
 from forms import SoundUploadForm
 from models import db, Sound, User
+from models import licenses as track_licenses
 import json
 from utils import add_user_log, get_hashed_filename
 from flask_uploads import UploadSet, AUDIO
@@ -213,7 +214,7 @@ def show(username, soundslug):
             "done": sound.processing_done(),
         },
         "metadatas": {
-            "licence": (sound.licence),
+            "licence": track_licenses[sound.licence],
             "duration": (si.duration if si else None),
             "type": (si.type if si else None),
             "codec": (si.codec if si else None),
