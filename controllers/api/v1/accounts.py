@@ -164,9 +164,145 @@ def accounts_verify_credentials():
     security:
         - OAuth2:
             - read
+    definitions:
+      Field:
+        type: object
+        properties:
+            name:
+                type: string
+                nullable: false
+            value:
+                type: string
+                nullable: false
+            verified_at:
+                type: integer
+                nullable: true
+      Emoji:
+        type: object
+        properties:
+            shortcode:
+                type: string
+                nullable: false
+            static_url:
+                type: string
+                format: uri
+                nullable: false
+            url:
+                type: string
+                format: uri
+                nullable: false
+            visible_in_picker:
+                type: boolean
+                nullable: false
+      Source:
+        type: object
+        properties:
+            privacy:
+                type: string
+                nullable: true
+            sensitive:
+                type: boolean
+                nullable: true
+            language:
+                type: string
+                nullable: true
+            note:
+                type: string
+                nullable: false
+            fields:
+                type: array
+                nullable: false
+                items:
+                    type: object
+                    $ref: '#/definitions/Field'
+      AccountPleroma:
+        type: object
+        properties:
+            pleroma:
+                type: object
+                properties:
+                    is_admin:
+                        type: boolean
+      Account:
+        type: object
+        properties:
+            id:
+                type: string
+                nullable: false
+            username:
+                type: string
+                nullable: false
+            acct:
+                type: string
+                nullable: false
+            display_name:
+                type: integer
+                nullable: false
+            locked:
+                type: boolean
+                nullable: false
+            created_at:
+                type: integer
+                nullable: false
+            followers_count:
+                type: integer
+                nullable: false
+            following_count:
+                type: integer
+                nullable: false
+            statuses_count:
+                type: integer
+                nullable: false
+            note:
+                type: string
+                nullable: false
+            url:
+                type: string
+                format: uri
+                nullable: false
+            avatar:
+                type: string
+                format: uri
+                nullable: false
+            avatar_static:
+                type: string
+                format: uri
+                nullable: false
+            header:
+                type: string
+                format: uri
+                nullable: false
+            header_static:
+                type: string
+                format: uri
+                nullable: false
+            emojis:
+                type: hash
+                nullable: false
+                items:
+                    type: object
+                    $ref: '#/definitions/Emoji'
+            moved:
+                type: object
+                $ref: '#/definitions/Account'
+                nullable: true
+            fields:
+                type: array
+                nullable: true
+                items:
+                    type: object
+                    $ref: '#/definitions/Field'
+            bot:
+                type: boolean
+                nullable: true
     responses:
         200:
-            description: Returns Account with extra source attribute.
+            description: Returns Account with extra Source and Pleroma attributes.
+            schema:
+                allOf:
+                    - $ref: '#/definitions/Account'
+                    - $ref: '#/definitions/Source'
+                    - $ref: '#/definitions/AccountPleroma'
     """
     user = current_token.user
     return jsonify(
