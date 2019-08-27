@@ -202,7 +202,7 @@ def show(username, soundslug):
         "picture_url": None,  # FIXME not implemented yet
         "media_orig": url_orig,
         "media_transcoded": url_transcode,
-        "waveform": (si.waveform if si else None),
+        "waveform": (json.loads(si.waveform) if si else None),
         "private": sound.private,
         "uploaded_on": sound.uploaded,
         "uploaded_elapsed": sound.elapsed(),
