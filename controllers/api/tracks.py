@@ -206,7 +206,7 @@ def show(username, soundslug):
         "private": sound.private,
         "uploaded_on": sound.uploaded,
         "uploaded_elapsed": sound.elapsed(),
-        "album_id": sound.album.flake_id,
+        "album_id": (sound.album.flake_id if sound.album else None),
         "processing": {
             "basic": (si.done_basic if si else None),
             "transcode_state": sound.transcode_state,
