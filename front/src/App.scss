@@ -93,11 +93,7 @@ body {
     color: $shade-100;
     border-bottom: 4px $brand-2 solid;
 }
-#topsearch::placeholder::before {
-    content: "HI";
-    //box-sizing: border-box;
-    //font-family: ForkAwesome;
-}
+
 #topsearch::placeholder {
     color: $brand-1;
 }
