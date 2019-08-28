@@ -46,7 +46,12 @@
 
       <div>
         <p>{{ track.description }}</p>
-        <p>Licence: <a :href="track.metadatas.licence.link">{{ track.metadatas.licence.name }}</a></p>
+        <p v-if="track.metadatas.licence.link">
+          Licence: <a :href="track.metadatas.licence.link">{{ track.metadatas.licence.name }}</a>
+        </p>
+        <p v-else>
+          Licence: {{ track.metadatas.licence.name }}
+        </p>
       </div>
 
       <!-- Tabs -->
