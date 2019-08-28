@@ -1,6 +1,10 @@
 <template>
-  <div v-if="trackError && !track" class="row justify-content-md-center">
-    <div class="col-md-6" />
+  <div v-if="trackError || !track" class="row justify-content-md-center">
+    <div class="col-md-6">
+      <b-alert variant="danger" show>
+        {{ trackError }}
+      </b-alert>
+    </div>
   </div>
   <div v-else class="row">
     <div class="col-md-8">
