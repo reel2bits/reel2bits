@@ -212,16 +212,17 @@ export default {
   methods: {
     async fetchTrack () {
       console.log('fetching track...')
-      try {
-        let data = await apiService.trackFetch(this.userName, this.trackId, this.$store)
-        this.track = data
-        this.processing_done = this.track.processing.done
-        this.isOwner = (this.track.account.username === this.$store.state.users.currentUser.screen_name)
-        console.log('track fetched')
-      } catch (e) {
-        console.log('cannot fetch track:' + e.message)
-        this.trackError = e.message
-      }
+      await this.$store.state.api.backendInteractor.trackFetch({ user: this.userName, trackId: this.trackId })
+        .then((status) => {
+          this.track = status
+          this.processing_done = this.track.processing.done
+          this.isOwner = (this.track.account.username === this.$store.state.users.currentUser.screen_name)
+          console.log('track fetched')
+        })
+        .catch((e) => {
+          console.log('cannot fetch track:' + e.message)
+          this.trackError = e
+        })
     },
     async editTrack () {
       console.log('want to edit track')

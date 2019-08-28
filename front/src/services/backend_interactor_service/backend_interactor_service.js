@@ -9,6 +9,10 @@ const backendInteractorService = credentials => {
     return apiService.fetchStatus({ id, credentials })
   }
 
+  const trackFetch = ({ user, trackId }) => {
+    return apiService.trackFetch({ user, trackId, credentials })
+  }
+
   const fetchConversation = ({ id }) => {
     return apiService.fetchConversation({ id, credentials })
   }
@@ -158,6 +162,7 @@ const backendInteractorService = credentials => {
 
   const backendInteractorServiceInstance = {
     fetchStatus,
+    trackFetch,
     fetchConversation,
     fetchFriends,
     exportFriends,
