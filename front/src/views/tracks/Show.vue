@@ -38,7 +38,7 @@
               </div>
             </div>
             <div class="ml-auto align-self-end">
-              <span class="text-secondary">04:20</span> <span class="text-muted">04:33</span>
+              <span class="text-secondary">04:20</span> / <span class="text-muted">{{ track.metadatas.duration }}</span>
             </div>
           </div>
         </div>
@@ -53,16 +53,16 @@
       <div>
         <ul class="nav mt-5 pb-2">
           <li class="nav-item pr-3">
-            <a class="nav-link" href="#">3 Comments</a>
+            <a class="nav-link" href="#">{{ track.comments }} Comments</a>
           </li>
           <li class="nav-item px-3 border-left">
-            <a class="nav-link" href="#">10 Likes</a>
+            <a class="nav-link" href="#">{{ track.favorited }} Likes</a>
           </li>
           <li class="nav-item px-3 border-left">
-            <a class="nav-link" href="#">2 Reposts</a>
+            <a class="nav-link" href="#">{{ track.reblogged }} Reposts</a>
           </li>
           <li class="nav-item px-3 border-left">
-            <a class="nav-link active" href="#">Meta Data</a>
+            <a class="nav-link active" href="#">Metadatas</a>
           </li>
         </ul>
         <div class="border-top border-bottom py-4 my-4">
@@ -120,37 +120,37 @@
         <div class="card-body py-3 px-3">
           <div class="d-flex mb-2">
             <div class="d-flex rounded-circle mr-2" style="width:96px; height:96px; overflow:hidden">
-              <img src="https://lastfm-img2.akamaized.net/i/u/770x0/a4c9b3bb4d0443abc3bac418835c66a7.jpg#a4c9b3bb4d0443abc3bac418835c66a7" alt="Downliners Sekt" style="height:96px;">
+              <img :src="track.account.avatar" alt="user avatar" style="height:96px;">
             </div>
             <div class="align-self-center">
               <h2 class="h2 m-0">
-                {{ track.user }}
+                {{ track.account.display_name }}
               </h2>
               <p class="h3 font-weight-normal m-0">
-                @alexsleepy <button type="button" class="btn btn-primary btn-sm">
+                @{{ track.account.username }} <button type="button" class="btn btn-primary btn-sm">
                   Follow
                 </button>
               </p>
               <p class="text-muted m-0">
-                Follows you
+                <!-- Follows you -->
               </p>
             </div>
           </div>
           <p class="card-text">
-            FIXME bio
+            {{ track.account.note }}
           </p>
           <ul class="nav nav-fill">
             <li class="nav-item border-right">
-              <a class="nav-link px-2" href="#"><p class="h3 font-weight-normal m-0">59</p><p class="m-0">Tracks</p></a>
+              <a class="nav-link px-2" href="#"><p class="h3 font-weight-normal m-0">{{ track.account.statuses_count }}</p><p class="m-0">Tracks</p></a>
             </li>
             <li class="nav-item border-right">
-              <a class="nav-link px-2" href="#"><p class="h3 font-weight-normal m-0">5</p><p class="m-0">Albums</p></a>
+              <a class="nav-link px-2" href="#"><p class="h3 font-weight-normal m-0">0</p><p class="m-0">Albums</p></a>
             </li>
             <li class="nav-item border-right">
-              <a class="nav-link px-2" href="#"><p class="h3 font-weight-normal m-0">841</p><p class="m-0">Followers</p></a>
+              <a class="nav-link px-2" href="#"><p class="h3 font-weight-normal m-0">{{ track.account.followers_count }}</p><p class="m-0">Followers</p></a>
             </li>
             <li class="nav-item">
-              <a class="nav-link px-2" href="#"><p class="h3 font-weight-normal m-0">12</p><p class="m-0">Following</p></a>
+              <a class="nav-link px-2" href="#"><p class="h3 font-weight-normal m-0">{{ track.account.following_count }}</p><p class="m-0">Following</p></a>
             </li>
           </ul>
         </div>
@@ -216,7 +216,7 @@ export default {
         let data = await apiService.trackFetch(this.userName, this.trackId, this.$store)
         this.track = data
         this.processing_done = this.track.processing.done
-        this.isOwner = (this.track.user === this.$store.state.users.currentUser.screen_name)
+        this.isOwner = (this.track.account.username === this.$store.state.users.currentUser.screen_name)
         console.log('track fetched')
       } catch (e) {
         console.log('cannot fetch track:' + e.message)

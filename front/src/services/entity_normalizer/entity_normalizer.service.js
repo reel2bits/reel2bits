@@ -116,34 +116,39 @@ export const parseTrack = (data) => {
   const output = {}
 
   output.id = String(data.id)
-  output.title = data.title
-  output.user = data.user
-  output.description = data.description
-  output.picture_url = data.picture_url
-  output.media_orig = data.media_orig
-  output.media_transcoded = data.media_transcoded
-  output.waveform = data.waveform
-  output.private = data.private
-  output.uploaded_on = data.uploaded_on
+  output.title = data.reel2bits.title
+  output.account = data.account
+  output.description = data.content
+  output.picture_url = (data.reel2bits.picture_url || '/static/logo.svg')
+  output.media_orig = data.reel2bits.media_orig
+  output.media_transcoded = data.reel2bits.media_transcoded
+  output.waveform = data.reel2bits.waveform
+  output.private = data.reel2bits.private
+  output.uploaded_on = data.created_at
   output.uploaded_elapsed = data.uploaded_elapsed
-  output.album_id = data.album_id
+  output.album_id = data.reel2bits.album_id
+  output.favorited = data.favorited
+  output.reblogged = data.reblogged
+  output.comments = 0 // FIXME TODO
 
   output.processing = {}
-  output.processing.basic = data.processing.basic
-  output.processing.transcode_state = data.processing.transcode_state
-  output.processing.transcode_needed = data.processing.transcode_needed
-  output.processing.done = data.processing.done
+  output.processing.basic = data.reel2bits.processing.basic
+  output.processing.transcode_state = data.reel2bits.processing.transcode_state
+  output.processing.transcode_needed = data.reel2bits.processing.transcode_needed
+  output.processing.done = data.reel2bits.processing.done
 
   output.metadatas = {}
-  output.metadatas.licence = data.metadatas.licence
-  output.metadatas.duration = data.metadatas.duration
-  output.metadatas.type = data.metadatas.type
-  output.metadatas.codec = data.metadatas.codec
-  output.metadatas.format = data.metadatas.format
-  output.metadatas.channels = data.metadatas.channels
-  output.metadatas.rate = data.metadatas.rate
-  output.metadatas.bitrate = data.metadatas.bitrate
-  output.metadatas.bitrate_mode = data.metadatas.bitrate_mode
+  output.metadatas.licence = data.reel2bits.metadatas.licence
+  output.metadatas.duration = data.reel2bits.metadatas.duration
+  output.metadatas.type = data.reel2bits.metadatas.type
+  output.metadatas.codec = data.reel2bits.metadatas.codec
+  output.metadatas.format = data.reel2bits.metadatas.format
+  output.metadatas.channels = data.reel2bits.metadatas.channels
+  output.metadatas.rate = data.reel2bits.metadatas.rate
+  output.metadatas.bitrate = data.reel2bits.metadatas.bitrate
+  output.metadatas.bitrate_mode = data.reel2bits.metadatas.bitrate_mode
+
+  output.account.avatar = (output.account.avatar || '/static/logo.svg')
 
   return output
 }
