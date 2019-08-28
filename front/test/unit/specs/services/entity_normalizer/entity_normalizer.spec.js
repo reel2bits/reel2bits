@@ -23,6 +23,7 @@ const makeMockUserMasto = (overrides = {}) => {
     note:
     'Volatile Internet Weirdo. Name pronounced as Hee Jay. JS and Java dark arts mage, Elixir trainee. I love sampo and lain. Matrix is <span><a data-user="1" href="https://shigusegubu.club/users/hj">@<span>hj</span></a></span>:matrix.heldscal.la Pronouns are whatever. Do not DM me unless it\'s truly private matter and you\'re instance\'s admin or you risk your DM to be reposted publicly.Wish i was Finnish girl.',
     pleroma: { confirmation_pending: false, tags: null },
+    reel2bits: { albums_count: 42 },
     source: { note: '', privacy: 'public', sensitive: false },
     statuses_count: 41775,
     url: 'https://shigusegubu.club/users/hj',
