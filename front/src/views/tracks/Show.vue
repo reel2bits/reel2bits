@@ -265,11 +265,11 @@ export default {
             })
 
             this.wavesurfer.on('play', () => {
-              this.$emit('updateLogoSpinDuration', '5s')
+              this.$emit('updateLogoSpinDuration', true)
             })
 
             this.wavesurfer.on('pause', () => {
-              this.$emit('updateLogoSpinDuration', '0s')
+              this.$emit('updateLogoSpinDuration', false)
             })
 
             if (this.track.waveform) {

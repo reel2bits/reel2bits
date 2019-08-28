@@ -55,7 +55,7 @@ export default {
     MainLogo
   },
   data: () => ({
-    logoSpinDuration: '0s'
+    logoSpinDuration: false
   }),
   computed: {
     currentUser () { return this.$store.state.users.currentUser },
