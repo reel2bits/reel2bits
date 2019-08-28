@@ -16,10 +16,14 @@
             </div>
           </div>
           <div v-if="processingDone" class="d-flex my-2">
-            <a href="#" role="button" class="btn btn-play btn-primary d-flex mr-2 align-items-center"
-               @click="play"
-            ><i class="fa fa-play" aria-hidden="true" />
-            </a>
+            <b-button v-if="!isPlaying" class="playPause" variant="primary"
+                      @click.prevent="togglePlay"
+            >
+              <i class="fa fa-play" aria-hidden="true" />
+            </b-button>
+            <b-button v-if="isPlaying" class="playPause" @click.prevent="togglePlay">
+              <i class="fa fa-pause" aria-hidden="true" />
+            </b-button>
             <div id="waveform" class="flex-fill" />
           </div>
           <div v-else-if="processingDone" class="alert alert-dark">
@@ -38,7 +42,7 @@
               </div>
             </div>
             <div class="ml-auto align-self-end">
-              <span class="text-secondary">04:20</span> / <span class="text-muted">{{ track.metadatas.duration }}</span>
+              <span class="text-secondary">{{ playerTimeCur }}</span> / <span class="text-muted">{{ playerTimeTot }}</span>
             </div>
           </div>
         </div>
@@ -167,12 +171,19 @@
   </div>
 </template>
 
+<style lang="scss">
+button.playPause {
+  margin-right: 5px;
+}
+</style>
+
 <script>
 import { mapState } from 'vuex'
 import apiService from '../../services/api/api.service.js'
 import WaveSurfer from 'wavesurfer.js'
 import moment from 'moment'
 import Footer from '../../components/footer/footer.vue'
+import playerUtils from '../../services/player_utils/player_utils.js'
 
 export default {
   components: {
@@ -182,7 +193,10 @@ export default {
     track: null,
     trackError: '',
     processing_done: false,
-    isOwner: false
+    isOwner: false,
+    wavesurfer: null,
+    playerTimeCur: '00:00',
+    playerTimeTot: '00:00'
   }),
   computed: {
     ...mapState({
@@ -200,6 +214,10 @@ export default {
     },
     publishedAgo () {
       return moment(this.track.uploaded_on).fromNow()
+    },
+    isPlaying () {
+      if (!this.wavesurfer) return false
+      return this.wavesurfer.isPlaying()
     }
   },
   mounted () {
@@ -208,13 +226,34 @@ export default {
         if (!this.trackError && this.track) {
           console.log('initiating wavesurfer')
           this.$nextTick(() => {
-            this.wavesurfer = WaveSurfer.create({
+            let opts = {
               container: '#waveform',
               height: 40,
               progressColor: '#C728B6',
               waveColor: '#C8D1F4',
               cursorColor: '#313DF2'
+            }
+            if (!this.track.waveform) {
+              opts['normalize'] = true
+            }
+            this.wavesurfer = WaveSurfer.create(opts)
+
+            this.wavesurfer.on('ready', () => {
+              // This will never trigger with pre-processed waveform
+              // https://github.com/katspaugh/wavesurfer.js/issues/1244
+              this.playerTimeTot = playerUtils.secondsTimeSpanToMS(this.wavesurfer.getDuration())
             })
+
+            this.wavesurfer.on('audioprocess', () => {
+              console.log('wavesurfer audioprocessing')
+              this.playerTimeCur = playerUtils.secondsTimeSpanToMS(this.wavesurfer.getCurrentTime())
+            })
+
+            this.wavesurfer.on('seek', () => {
+              console.log('wavesurfer seeking')
+              this.playerTimeCur = playerUtils.secondsTimeSpanToMS(this.wavesurfer.getCurrentTime())
+            })
+
             if (this.track.waveform) {
               console.log('smoothing the waveform')
               let max = Math.max.apply(Math, this.track.waveform.data)
@@ -222,6 +261,10 @@ export default {
             } else {
               this.wavesurfer.load(this.track.media_transcoded)
             }
+
+            // Workaround because of wavesurfer issue which can't fire event or do anything unless
+            // you hit play, when using pre-processed waveform...
+            this.playerTimeTot = moment.utc(this.track.metadatas.duration * 1000).format('mm:ss')
           })
         }
       })
@@ -252,7 +295,7 @@ export default {
           )
       }
     },
-    play: function () {
+    togglePlay: function () {
       this.wavesurfer.playPause()
       // console.log(this.track.media_transcoded)
     }
