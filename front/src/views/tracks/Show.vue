@@ -1,7 +1,7 @@
 <template>
   <div v-if="trackError || !track" class="row justify-content-md-center">
     <div class="col-md-6">
-      <b-alert variant="danger" show>
+      <b-alert v-if="trackError" variant="danger" show>
         {{ trackError }}
       </b-alert>
     </div>
@@ -234,7 +234,7 @@ export default {
       }
     }
   },
-  mounted () {
+  created () {
     this.fetchTrack()
       .then((v) => {
         if (!this.trackError && this.track) {
