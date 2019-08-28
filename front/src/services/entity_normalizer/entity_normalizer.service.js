@@ -120,7 +120,7 @@ export const parseTrack = (data) => {
   output.title = data.reel2bits.title
   output.account = data.account
   output.description = data.content
-  output.picture_url = (data.reel2bits.picture_url || '/static/logo.svg')
+  output.picture_url = (data.reel2bits.picture_url || '/static/artwork_placeholder.svg')
   output.media_orig = data.reel2bits.media_orig
   output.media_transcoded = data.reel2bits.media_transcoded
   output.waveform = data.reel2bits.waveform
@@ -149,7 +149,7 @@ export const parseTrack = (data) => {
   output.metadatas.bitrate = data.reel2bits.metadatas.bitrate
   output.metadatas.bitrate_mode = data.reel2bits.metadatas.bitrate_mode
 
-  output.account.avatar = (output.account.avatar || '/static/logo.svg')
+  output.account.avatar = (output.account.avatar || '/static/userpic_placeholder.svg')
 
   return output
 }
