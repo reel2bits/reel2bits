@@ -246,7 +246,9 @@ export default {
               progressColor: '#C728B6',
               waveColor: '#C8D1F4',
               cursorColor: '#313DF2'
+              // backend: 'MediaElement'
             }
+            // TODO: WebAudio (default) seems a bit slow to start the playback with ~1/2s delay
             if (!this.track.waveform) {
               opts['normalize'] = true
             }
