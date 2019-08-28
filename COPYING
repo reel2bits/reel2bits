@@ -7,7 +7,7 @@ copy of the license file as AGPL-3.
 
 The following logo assets:
 - assets/logo/Logo.png, Logo.svg, Logo@0.25.png, Logo@0.5x.png, Logo@2x.png, Logo_white_bg.png, Logo_white_bg@0.25x.png, Logo_white_bg@0.5x.png, Logo_white_bg@2x.png
-
+- front/static/artwork_placeholder.* front/static/logo.svg front/static/userpic_placeholder.*
 Have been created by Alex Sleepy and are under the same license as the project (AGPL-3) and are made for exclusive usage within this project use.
 
 ---
