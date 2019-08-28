@@ -17,10 +17,10 @@
           </div>
           <div v-if="processingDone" class="d-flex my-2">
             <a href="#" role="button" class="btn btn-play btn-primary d-flex mr-2 align-items-center"
-               @click="Play"
+               @click="play"
             ><i class="fa fa-play" aria-hidden="true" />
             </a>
-            <div id="wave" class="flex-fill" />
+            <div id="waveform" class="flex-fill" />
           </div>
           <div v-else-if="processingDone" class="alert alert-dark">
             Track not yet available.
@@ -167,7 +167,7 @@
 <script>
 import { mapState } from 'vuex'
 import apiService from '../../services/api/api.service.js'
-import WaveSurfer from 'wavesurfer'
+import WaveSurfer from 'wavesurfer.js'
 
 export default {
   data: () => ({
@@ -197,7 +197,7 @@ export default {
         if (!this.trackError && this.track) {
           console.log('initiating wavesurfer')
           this.wavesurfer = WaveSurfer.create({
-            container: '#wave',
+            container: '#waveform',
             height: 40,
             progressColor: '#C728B6',
             waveColor: '#C8D1F4',
@@ -232,7 +232,7 @@ export default {
           )
       }
     },
-    Play: function () {
+    play: function () {
       this.wavesurfer.playPause()
       // console.log(this.track.media_transcoded)
     }
