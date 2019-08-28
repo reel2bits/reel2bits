@@ -1,9 +1,8 @@
 <template>
-  <div class="row">
-    <div v-if="errors" class="alert alert-danger" role="alert">
-      {{ errors }}
-    </div>
-
+  <div v-if="trackError && !track" class="row justify-content-md-center">
+    <div class="col-md-6" />
+  </div>
+  <div v-else class="row">
     <div class="col-md-8">
       <div class="d-flex my-4">
         <img :src="track.picture_url" class="d-flex mr-3" style="width:112px; height:112px; background: #C8D1F4; ">
@@ -115,7 +114,7 @@
       </div>
     </div>
 
-    <div class="col-md-4 d-flex flex-column">
+    <div v-if="track" class="col-md-4 d-flex flex-column">
       <!-- Profile Card -->
       <div class="card my-4">
         <div class="card-body py-3 px-3">
@@ -138,7 +137,7 @@
             </div>
           </div>
           <p class="card-text">
-            For most of us, the idea of astronomy is something we directly connect to “stargazing”, telescopes and seeing magnificent displays in the heavens. And to be sure, that is the exciting area of astronomy that accounts for it’s hu... <a href="#">read more</a>
+            FIXME bio
           </p>
           <ul class="nav nav-fill">
             <li class="nav-item border-right">
@@ -159,7 +158,7 @@
 
       <!-- Footer -->
       <footer class="mt-auto mb-4">
-        Powered by <a href="https://github.com/rhaamo/reel2bits">Reel2Bits</a>
+        Powered by <a :href="sourceUrl" target="_blank">reel2bits</a>
       </footer>
     </div>
   </div>
@@ -173,13 +172,14 @@ import WaveSurfer from 'wavesurfer'
 export default {
   data: () => ({
     track: null,
-    errors: null,
-    processing_done: null,
+    trackError: '',
+    processing_done: false,
     isOwner: false
   }),
   computed: {
     ...mapState({
-      signedIn: state => !!state.users.currentUser
+      signedIn: state => !!state.users.currentUser,
+      sourceUrl: state => state.instance.sourceUrl
     }),
     trackId () {
       return this.$route.params.trackId
@@ -191,28 +191,34 @@ export default {
       return (this.processing_done && this.track)
     }
   },
-  created () {
-    this.fetchTrack()
-  },
   mounted () {
-    this.wavesurfer = WaveSurfer.create({
-      container: '#wave',
-      height: 40,
-      progressColor: '#C728B6',
-      waveColor: '#C8D1F4',
-      cursorColor: '#313DF2'
-    })
-    this.wavesurfer.load(this.track.media_transcoded)
+    this.fetchTrack()
+      .then((v) => {
+        if (!this.trackError && this.track) {
+          console.log('initiating wavesurfer')
+          this.wavesurfer = WaveSurfer.create({
+            container: '#wave',
+            height: 40,
+            progressColor: '#C728B6',
+            waveColor: '#C8D1F4',
+            cursorColor: '#313DF2'
+          })
+          this.wavesurfer.load(this.track.media_transcoded)
+        }
+      })
   },
   methods: {
     async fetchTrack () {
+      console.log('fetching track...')
       try {
         let data = await apiService.trackFetch(this.userName, this.trackId, this.$store)
         this.track = data
         this.processing_done = this.track.processing.done
         this.isOwner = (this.track.user === this.$store.state.users.currentUser.screen_name)
+        console.log('track fetched')
       } catch (e) {
-        this.errors = e.message
+        console.log('cannot fetch track:' + e.message)
+        this.trackError = e.message
       }
     },
     async editTrack () {
@@ -228,7 +234,7 @@ export default {
     },
     Play: function () {
       this.wavesurfer.playPause()
-      console.log(this.track.media_transcoded)
+      // console.log(this.track.media_transcoded)
     }
   }
 }
