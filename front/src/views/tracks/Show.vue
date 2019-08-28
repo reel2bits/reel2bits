@@ -204,7 +204,13 @@ export default {
               waveColor: '#C8D1F4',
               cursorColor: '#313DF2'
             })
-            this.wavesurfer.load(this.track.media_transcoded)
+            if (this.track.waveform) {
+              console.log('smoothing the waveform')
+              let max = Math.max.apply(Math, this.track.waveform.data)
+              this.wavesurfer.load(this.track.media_transcoded, this.track.waveform.data.map(p => p / max))
+            } else {
+              this.wavesurfer.load(this.track.media_transcoded)
+            }
           })
         }
       })
