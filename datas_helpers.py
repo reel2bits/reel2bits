@@ -32,6 +32,7 @@ def to_json_account(user):
             "fields": [],
         },
         pleroma={"is_admin": user.is_admin()},
+        reel2bits={"albums_count": user.albums.count()}
     )
 
 

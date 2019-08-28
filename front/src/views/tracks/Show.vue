@@ -144,7 +144,7 @@
               <a class="nav-link px-2" href="#"><p class="h3 font-weight-normal m-0">{{ track.account.statuses_count }}</p><p class="m-0">Tracks</p></a>
             </li>
             <li class="nav-item border-right">
-              <a class="nav-link px-2" href="#"><p class="h3 font-weight-normal m-0">0</p><p class="m-0">Albums</p></a>
+              <a class="nav-link px-2" href="#"><p class="h3 font-weight-normal m-0">{{ track.account.reel2bits.albums_count }}</p><p class="m-0">Albums</p></a>
             </li>
             <li class="nav-item border-right">
               <a class="nav-link px-2" href="#"><p class="h3 font-weight-normal m-0">{{ track.account.followers_count }}</p><p class="m-0">Followers</p></a>

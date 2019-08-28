@@ -104,6 +104,7 @@ export const parseUser = (data) => {
   output.friendIds = []
   output.followerIds = []
   output.pinnedStatuseIds = []
+  output.albums_count = data.reel2bits.albums_count
 
   output.tags = output.tags || []
   output.rights = output.rights || {}
