@@ -5,9 +5,7 @@
       <div class="container">
         <div class="w-100 border-bottom align-items-center d-flex justify-content-between">
           <b-link to="/" class="navbar-brand">
-            <img src="/static/logo.svg" width="64" height="64"
-                 alt="Reel2Bits logo"
-            ><h3 class="text-body mx-3 d-inline">
+            <MainLogo :logo_spin_duration="logoSpinDuration" /><h3 class="text-body mx-3 d-inline">
               {{ sitename }}
             </h3>
           </b-link>
@@ -41,7 +39,7 @@
 
     <!-- content -->
     <div class="container">
-      <router-view />
+      <router-view @updateLogoSpinDuration="updateLogoSpinDuration" />
     </div>
   </div>
 </template>
@@ -49,8 +47,16 @@
 <style lang="scss" src="./App.scss"></style>
 
 <script>
+import MainLogo from 'components/main_logo/main_logo.vue'
+
 export default {
   name: 'App',
+  components: {
+    MainLogo
+  },
+  data: () => ({
+    logoSpinDuration: '0s'
+  }),
   computed: {
     currentUser () { return this.$store.state.users.currentUser },
     sitename () { return this.$store.state.instance.name }
@@ -59,6 +65,9 @@ export default {
     logout () {
       this.$router.replace('/')
       this.$store.dispatch('logout')
+    },
+    updateLogoSpinDuration (dur) {
+      this.logoSpinDuration = dur
     }
   }
 }

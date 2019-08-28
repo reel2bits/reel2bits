@@ -5,7 +5,9 @@
   <div v-else class="row">
     <div class="col-md-8">
       <div class="d-flex my-4">
-        <img :src="track.picture_url" class="d-flex mr-3" style="width:112px; height:112px; background: #C8D1F4; ">
+        <img :src="track.picture_url" class="d-flex mr-3"
+             style="width:112px; height:112px; background: #C8D1F4; "
+        >
         <div class="flex-fill">
           <div class="d-flex">
             <h1 class="flex-fill h3">
@@ -218,6 +220,14 @@ export default {
     isPlaying () {
       if (!this.wavesurfer) return false
       return this.wavesurfer.isPlaying()
+    },
+    svgDuration () {
+      if (!this.wavesurfer) return '0'
+      if (this.wavesurfer.isPlaying()) {
+        return '10s'
+      } else {
+        return '0'
+      }
     }
   },
   mounted () {
@@ -252,6 +262,14 @@ export default {
             this.wavesurfer.on('seek', () => {
               console.log('wavesurfer seeking')
               this.playerTimeCur = playerUtils.secondsTimeSpanToMS(this.wavesurfer.getCurrentTime())
+            })
+
+            this.wavesurfer.on('play', () => {
+              this.$emit('updateLogoSpinDuration', '5s')
+            })
+
+            this.wavesurfer.on('pause', () => {
+              this.$emit('updateLogoSpinDuration', '0s')
             })
 
             if (this.track.waveform) {
