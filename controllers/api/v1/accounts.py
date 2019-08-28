@@ -4,6 +4,7 @@ from flask_security.utils import hash_password
 from flask_security import confirmable as FSConfirmable
 from app_oauth import authorization, require_oauth
 from authlib.flask.oauth2 import current_token
+from datas_helpers import to_json_account
 import re
 
 bp_api_v1_accounts = Blueprint("bp_api_v1_accounts", __name__)
@@ -305,32 +306,4 @@ def accounts_verify_credentials():
                     - $ref: '#/definitions/AccountPleroma'
     """
     user = current_token.user
-    return jsonify(
-        id=user.id,
-        username=user.name,
-        acct=user.name,
-        display_name=user.display_name,
-        locked=False,
-        created_at=user.created_at,
-        followers_count=len(user.actor[0].followers),
-        following_count=len(user.actor[0].followings),
-        statuses_count=user.sounds.count(),
-        note=user.actor[0].summary,
-        url=user.actor[0].url,
-        avatar="",
-        avatar_static="",
-        header="",
-        header_static="",
-        emojis=[],
-        moved=None,
-        fields=[],
-        bot=False,
-        source={
-            "privacy": "unlisted",
-            "sensitive": False,
-            "language": user.locale,
-            "note": user.actor[0].summary,
-            "fields": [],
-        },
-        pleroma={"is_admin": user.is_admin()},
-    )
+    return jsonify(to_json_account(user))

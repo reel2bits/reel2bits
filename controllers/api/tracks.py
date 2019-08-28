@@ -1,12 +1,13 @@
-from flask import Blueprint, request, jsonify, url_for
+from flask import Blueprint, request, jsonify
 from app_oauth import require_oauth
 from authlib.flask.oauth2 import current_token
 from forms import SoundUploadForm
 from models import db, Sound, User
-from models import licences as track_licenses
 import json
 from utils import add_user_log, get_hashed_filename
 from flask_uploads import UploadSet, AUDIO
+from datas_helpers import to_json_statuses, to_json_account
+
 
 bp_api_tracks = Blueprint("bp_api_tracks", __name__)
 
@@ -189,46 +190,7 @@ def show(username, soundslug):
         else:
             return jsonify({"error": "forbidden"}), 403
 
-    si = sound.sound_infos.first()
-
-    url_orig = url_for("get_uploads_stuff", thing="sounds", stuff=sound.path_sound(orig=True), _external=True)
-    url_transcode = url_for("get_uploads_stuff", thing="sounds", stuff=sound.path_sound(orig=False), _external=True)
-
-    track_obj = {
-        "id": sound.flake_id,
-        "title": sound.title,
-        "user": sound.user.name,
-        "description": sound.description,
-        "picture_url": None,  # FIXME not implemented yet
-        "media_orig": url_orig,
-        "media_transcoded": url_transcode,
-        "waveform": (json.loads(si.waveform) if si else None),
-        "private": sound.private,
-        "uploaded_on": sound.uploaded,
-        "uploaded_elapsed": sound.elapsed(),
-        "album_id": (sound.album.flake_id if sound.album else None),
-        "processing": {
-            "basic": (si.done_basic if si else None),
-            "transcode_state": sound.transcode_state,
-            "transcode_needed": sound.transcode_needed,
-            "done": sound.processing_done(),
-        },
-        "metadatas": {
-            "licence": track_licenses[sound.licence],
-            "duration": (si.duration if si else None),
-            "type": (si.type if si else None),
-            "codec": (si.codec if si else None),
-            "format": (si.format if si else None),
-            "channels": (si.channels if si else None),
-            "rate": (si.rate if si else None),  # Hz
-        },
-    }
-    if si:
-        if si.bitrate and si.bitrate_mode:
-            track_obj["metadatas"]["bitrate"] = si.bitrate
-            track_obj["metadatas"]["bitrate_mode"] = si.bitrate_mode
-
-    return jsonify(track_obj)
+    return jsonify(to_json_statuses(sound, to_json_account(sound.user)))
 
 
 @bp_api_tracks.route("/api/tracks/<string:username>/<string:soundslug>", methods=["PATCH"])
