@@ -196,14 +196,16 @@ export default {
       .then((v) => {
         if (!this.trackError && this.track) {
           console.log('initiating wavesurfer')
-          this.wavesurfer = WaveSurfer.create({
-            container: '#waveform',
-            height: 40,
-            progressColor: '#C728B6',
-            waveColor: '#C8D1F4',
-            cursorColor: '#313DF2'
+          this.$nextTick(() => {
+            this.wavesurfer = WaveSurfer.create({
+              container: '#waveform',
+              height: 40,
+              progressColor: '#C728B6',
+              waveColor: '#C8D1F4',
+              cursorColor: '#313DF2'
+            })
+            this.wavesurfer.load(this.track.media_transcoded)
           })
-          this.wavesurfer.load(this.track.media_transcoded)
         }
       })
   },
