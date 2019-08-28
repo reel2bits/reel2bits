@@ -191,8 +191,8 @@ def show(username, soundslug):
 
     si = sound.sound_infos.first()
 
-    url_orig = url_for("get_uploads_stuff", thing="sounds", stuff=sound.path_sound(orig=True))
-    url_transcode = url_for("get_uploads_stuff", thing="sounds", stuff=sound.path_sound(orig=False))
+    url_orig = url_for("get_uploads_stuff", thing="sounds", stuff=sound.path_sound(orig=True), _external=True)
+    url_transcode = url_for("get_uploads_stuff", thing="sounds", stuff=sound.path_sound(orig=False), _external=True)
 
     track_obj = {
         "id": sound.flake_id,
