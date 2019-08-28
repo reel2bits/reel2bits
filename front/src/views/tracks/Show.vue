@@ -11,8 +11,8 @@
             <h1 class="flex-fill h3">
               {{ track.title }}
             </h1>
-            <div class="d-flex">
-              {{ track.uploaded_on }}
+            <div class="d-flex" :title="track.uploaded_on">
+              {{ publishedAgo }}
             </div>
           </div>
           <div v-if="processingDone" class="d-flex my-2">
@@ -168,6 +168,7 @@
 import { mapState } from 'vuex'
 import apiService from '../../services/api/api.service.js'
 import WaveSurfer from 'wavesurfer.js'
+import moment from 'moment'
 
 export default {
   data: () => ({
@@ -189,6 +190,9 @@ export default {
     },
     processingDone () {
       return (this.processing_done && this.track)
+    },
+    publishedAgo () {
+      return moment(this.track.uploaded_on).fromNow()
     }
   },
   mounted () {
