@@ -17,6 +17,7 @@ from app_oauth import config_oauth
 from flask_cors import CORS
 from cachetools import cached, TTLCache
 from flasgger import Swagger
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from forms import ExtendedRegisterForm
 from models import db, Config, user_datastore, Role, create_actor
@@ -87,6 +88,8 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
     # App configuration
     app = Flask(app_name or __name__)
     app.config.from_pyfile(config_filename)
+
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
     Bootstrap(app)
 
