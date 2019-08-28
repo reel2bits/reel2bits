@@ -162,9 +162,7 @@
       </div>
 
       <!-- Footer -->
-      <footer class="mt-auto mb-4">
-        Powered by <a :href="sourceUrl" target="_blank">reel2bits</a>
-      </footer>
+      <Footer />
     </div>
   </div>
 </template>
@@ -174,8 +172,12 @@ import { mapState } from 'vuex'
 import apiService from '../../services/api/api.service.js'
 import WaveSurfer from 'wavesurfer.js'
 import moment from 'moment'
+import Footer from '../../components/footer/footer.vue'
 
 export default {
+  components: {
+    Footer
+  },
   data: () => ({
     track: null,
     trackError: '',

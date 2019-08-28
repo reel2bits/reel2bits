@@ -17,11 +17,8 @@
             >
           </div>
           <div>
-            <router-link to="/about">
-              About
-            </router-link>
             <span v-if="currentUser">
-              | <router-link to="/tracks/upload">Upload track</router-link>
+              <router-link to="/tracks/upload">Upload track</router-link>
               | <router-link to="/albums/new">New album</router-link>
               | <router-link to="/account/logs">logs</router-link>
               | <router-link :to="{ name: 'user-profile', params: { name: currentUser.screen_name } }">Me</router-link>
