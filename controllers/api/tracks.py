@@ -7,6 +7,7 @@ import json
 from utils import add_user_log, get_hashed_filename
 from flask_uploads import UploadSet, AUDIO
 from datas_helpers import to_json_statuses, to_json_account
+from os.path import splitext
 
 
 bp_api_tracks = Blueprint("bp_api_tracks", __name__)
@@ -62,7 +63,7 @@ def upload():
 
         rec.user_id = current_user.id
         if not form.title.data:
-            rec.title = filename_orig
+            rec.title, _ = splitext(filename_orig)
         else:
             rec.title = form.title.data
         rec.description = form.description.data
