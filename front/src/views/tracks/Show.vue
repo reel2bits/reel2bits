@@ -20,8 +20,8 @@
         >
         <div class="flex-fill">
           <div class="d-flex">
-            <h1 class="flex-fill h3">
-              {{ track.title }}
+            <h1 class="flex-fill h3" :title="track.title">
+              {{ track.title | truncate(35) }}
             </h1>
             <div class="d-flex" :title="track.uploaded_on">
               {{ publishedAgo }}
@@ -66,12 +66,22 @@
       </div>
 
       <div>
-        <p>{{ track.description }}</p>
+        <p class="h6">
+          {{ track.title }}
+        </p>
+        <blockquote class="blockquote">
+          <p>
+            {{ track.description }}
+          </p>
+        </blockquote>
         <p v-if="track.metadatas.licence.link">
           Licence: <a :href="track.metadatas.licence.link">{{ track.metadatas.licence.name }}</a>
         </p>
         <p v-else>
           Licence: {{ track.metadatas.licence.name }}
+        </p>
+        <p>
+          Download links: <a :href="track.media_orig">original</a><span v-if="track.processing.transcode_needed">, <a :href="track.media_transcoded">transcoded mp3</a></span>.
         </p>
       </div>
 
@@ -92,6 +102,7 @@
           </li>
         </ul>
         <div class="border-top border-bottom py-4 my-4">
+          <h4>Metadatas of the original file</h4>
           <table class="table table-sm my-0">
             <tbody>
               <tr>
@@ -102,7 +113,7 @@
                   {{ track.metadatas.type }}
                 </td>
               </tr>
-              <tr>
+              <tr v-if="track.metadatas.codec">
                 <th scope="row" class="border-0 font-weight-normal">
                   Codec
                 </th>
@@ -126,7 +137,7 @@
                   {{ track.metadatas.rate }}
                 </td>
               </tr>
-              <tr>
+              <tr v-if="track.metadatas.bitrate && track.metadatas.bitrate_mode">
                 <th scope="row" class="border-0 font-weight-normal">
                   Bit rate
                 </th>
