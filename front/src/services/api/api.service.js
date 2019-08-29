@@ -157,14 +157,20 @@ const trackFetch = ({ user, trackId, credentials }) => {
     .then((data) => parseTrack(data))
 }
 
-const trackDelete = (user, trackId, store) => {
+const trackDelete = ({ user, trackId, credentials }) => {
   let url = TRACKS_DELETE_URL(user, trackId)
-  let credentials = store.getters.getToken()
 
   return fetch(url, {
     headers: authHeaders(credentials),
     method: 'DELETE'
   })
+    .then((data) => {
+      if (data.ok) {
+        return data
+      }
+      throw new Error('Error deleting track', data)
+    })
+    .then((data) => data.json())
 }
 
 const trackEdit = (user, trackId, track, store) => {

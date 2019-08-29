@@ -8,6 +8,12 @@
   </div>
   <div v-else class="row">
     <div class="col-md-8">
+      <b-alert v-if="deleteError" variant="danger" show
+               dismissible
+               @dismissed="deleteError=null"
+      >
+        {{ deleteError }}
+      </b-alert>
       <div class="d-flex my-4">
         <img :src="track.picture_url" class="d-flex mr-3"
              style="width:112px; height:112px; background: #C8D1F4; "
@@ -42,9 +48,14 @@
                 <b-button size="sm" variant="light" @click.prevent="editTrack">
                   <i class="fa fa-pencil" aria-hidden="true" /> Edit
                 </b-button>
-                <b-button size="sm" variant="danger" @click.prevent="deleteTrack">
+                <b-button v-b-modal.modal-delete size="sm" variant="danger">
                   <i class="fa fa-times" aria-hidden="true" /> Delete
                 </b-button>
+                <b-modal id="modal-delete" title="Deleting track" @ok="deleteTrack">
+                  <p class="my-4">
+                    Are you sure you want to delete '{{ track.title }}' ?
+                  </p>
+                </b-modal>
               </div>
             </div>
             <div class="ml-auto align-self-end">
@@ -185,7 +196,6 @@ button.playPause {
 
 <script>
 import { mapState } from 'vuex'
-import apiService from '../../services/api/api.service.js'
 import WaveSurfer from 'wavesurfer.js'
 import moment from 'moment'
 import Footer from '../../components/footer/footer.vue'
@@ -198,6 +208,7 @@ export default {
   data: () => ({
     track: null,
     trackError: '',
+    deleteError: null,
     processing_done: false,
     isOwner: false,
     wavesurfer: null,
@@ -312,12 +323,16 @@ export default {
       console.log('want to edit track')
     },
     async deleteTrack () {
-      console.log('want to delete track')
-      if (confirm('Are you sure ?')) {
-        apiService.trackDelete(this.userName, this.trackId, this.$store)
-          .then(this.$router.push({ name: 'user-profile', params: { name: this.$store.state.users.currentUser.screen_name } })
-          )
+      console.log('deleting track')
+      try {
+        await this.$store.state.api.backendInteractor.trackDelete({ user: this.userName, trackId: this.trackId })
+      } catch (e) {
+        console.log('an error occured')
+        console.log(e)
+        this.deleteError = 'an error occured while deleting the track.'
+        return
       }
+      this.$router.push({ name: 'user-profile', params: { name: this.$store.state.users.currentUser.screen_name } })
     },
     togglePlay: function () {
       this.wavesurfer.playPause()
