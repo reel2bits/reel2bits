@@ -127,8 +127,8 @@ def upload_workflow(self, sound_id):
         print(f"Error sending mail: {e}")
         err = e
     if err:
-        add_log('global', 'ERROR', f'Error sending email for track {sound.id}: {err}')
-        add_user_log(sound.id, sound.user.id, 'sounds', 'error', 'An error occured while sending email')
+        add_log("global", "ERROR", f"Error sending email for track {sound.id}: {err}")
+        add_user_log(sound.id, sound.user.id, "sounds", "error", "An error occured while sending email")
 
     print("UPLOAD WORKFLOW finished")
 
