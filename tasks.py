@@ -120,7 +120,12 @@ def upload_workflow(self, sound_id):
     except smtplib.SMTPException as e:
         print(f"Error sending mail: {e}")
         err = e
-
+    except smtplib.SMTPAuthenticationError as e:
+        print(f"Error sending mail: {e}")
+        err = e
+    except smtplib.SMTPRecipientsRefused as e:
+        print(f"Error sending mail: {e}")
+        err = e
     if err:
         add_log('global', 'ERROR', f'Error sending email for track {sound.id}: {err}')
         add_user_log(sound.id, sound.user.id, 'sounds', 'error', 'An error occured while sending email')
