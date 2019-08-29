@@ -164,6 +164,8 @@ const backendInteractorService = credentials => {
     apiService.search2({ credentials, q, resolve, limit, offset, following })
   const searchUsers = (query) => apiService.searchUsers({ query, credentials })
 
+  const fetchLicenses = () => apiService.fetchLicenses()
+
   const backendInteractorServiceInstance = {
     fetchStatus,
     trackFetch,
@@ -230,7 +232,8 @@ const backendInteractorService = credentials => {
     unretweet,
     updateNotificationSettings,
     search2,
-    searchUsers
+    searchUsers,
+    fetchLicenses
   }
 
   return backendInteractorServiceInstance

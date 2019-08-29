@@ -1,6 +1,13 @@
 <template>
   <div class="row justify-content-md-center">
     <div class="col-md-6">
+      <b-alert v-if="fetchErrors.length > 0" variant="danger" show
+               dismissible
+               @dismissed="fetchErrors=[]"
+      >
+        <span v-for="error in fetchErrors" :key="error">{{ error }}</span>
+      </b-alert>
+
       <h4>Upload a new track</h4>
       <b-form class="upload-track-form" enctype="multipart/form-data" @submit.prevent="upload(track)">
         <b-form-group
@@ -113,6 +120,7 @@ export default {
   mixins: [validationMixin],
   data: () => ({
     trackUploadError: '',
+    fetchErrors: [],
     track: {
       title: '',
       description: '',
@@ -120,7 +128,8 @@ export default {
       album: '__None',
       licence: 0,
       private: ''
-    }
+    },
+    licenceChoices: []
   }),
   validations: {
     track: {
@@ -145,19 +154,6 @@ export default {
       const mimes = [].concat(exts, mp3, ogg, flac, wav)
       return mimes.join(',')
     },
-    licenceChoices () {
-      return [
-        { value: 0, text: 'Not Specified' },
-        { value: 1, text: 'CC Attribution' },
-        { value: 2, text: 'CC Attribution Share Alike' },
-        { value: 3, text: 'CC Attribution No Derivatives' },
-        { value: 4, text: 'CC Attribution Non Commercial' },
-        { value: 5, text: 'CC Attribution Non Commercial - Share Alike' },
-        { value: 6, text: 'CC Attribution Non Commercial - No Derivatives' },
-        { value: 7, text: 'Public Domain Dedication' },
-        { value: 99, text: 'Other, see description' }
-      ]
-    },
     albumsList () {
       return [{ value: '__None', text: 'No album' }]
     },
@@ -166,6 +162,17 @@ export default {
       isPending: state => state.tracks.uploadPending,
       serverValidationErrors: state => state.tracks.uploadErrors
     })
+  },
+  created () {
+    this.$store.state.api.backendInteractor.fetchLicenses()
+      .then((licenses) => {
+        this.licenceChoices = licenses.map(function (x) { return { value: x.id, text: x.name } })
+      })
+      .catch((e) => {
+        console.log('error fetching licenses: ' + e)
+        this.fetchErrors += 'Error fetching licenses'
+        this.licenceChoices = []
+      })
   },
   methods: {
     ...mapActions(['uploadTrack']),
