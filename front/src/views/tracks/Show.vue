@@ -20,9 +20,9 @@
         >
         <div class="flex-fill">
           <div class="d-flex">
-            <h1 class="flex-fill h3" :title="track.title">
-              {{ track.title | truncate(35) }}
-            </h1>
+            <p class="flex-fill h5" :title="track.title">
+              {{ track.title | truncate(45) }}
+            </p>
             <div class="d-flex" :title="track.uploaded_on">
               {{ publishedAgo }}
             </div>
