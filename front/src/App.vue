@@ -26,9 +26,12 @@
                           text="new album"
                 >album</b-button>
               </b-button-group>
-              <img :src="currentUser.avatar" class="rounded-circle mx-2" width="40"
-                   height="40" :alt="usernameAvatar"
-              >
+              <router-link :to="{ name: 'user-profile', params: { name: currentUser.screen_name } }">
+                <img :src="currentUser.avatar" class="rounded-circle mx-2" width="40"
+                     height="40" :alt="usernameAvatar"
+                     title="go to profile"
+                >
+              </router-link>
               <b-dropdown id="userDropdown" :text="atUsername" class="m-md-2">
                 <b-dropdown-item><router-link :to="{ name: 'user-profile', params: { name: currentUser.screen_name } }">My profile</router-link></b-dropdown-item>
                 <b-dropdown-item><router-link :to="{ name: 'account-logs' }">Logs</router-link></b-dropdown-item>
