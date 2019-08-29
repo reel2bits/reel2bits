@@ -266,6 +266,8 @@ def delete(username, soundslug):
     if not sound:
         return jsonify({"error": "Not found"}), 404
 
+    track_name = sound.title
+
     # Federate Delete
     from tasks import federate_delete_sound
 
@@ -277,4 +279,4 @@ def delete(username, soundslug):
     # log
     add_user_log(sound.id, sound.user.id, "sounds", "info", "Deleted {0} -- {1}".format(sound.id, sound.title))
 
-    return jsonify({}), 200
+    return jsonify(track_name), 200

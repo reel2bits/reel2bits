@@ -28,6 +28,9 @@ celery = make_celery(app)
 
 
 def federate_new_sound(sound: Sound) -> int:
+    if not current_app.config["AP_ENABLED"]:
+        return None
+
     actor = sound.user.actor[0]
     cc = [actor.followers_url]
     href = url_for("get_uploads_stuff", thing="sounds", stuff=sound.path_sound())
@@ -53,6 +56,9 @@ def federate_new_sound(sound: Sound) -> int:
 
 
 def federate_delete_sound(sound: Sound) -> None:
+    if not current_app.config["AP_ENABLED"]:
+        return
+
     actor = sound.user.actor[0].to_dict()
     # Get activity
     # Create delete
@@ -97,10 +103,10 @@ def upload_workflow(self, sound_id):
         # TODO: do something about that maybe
         print(f"Error sending mail: {e}")
 
-    # Federate if public
-    if not sound.private:
-        print("UPLOAD WORKFLOW federating sound")
+    # Federate if public and AP enabled
+    if current_app.config["AP_ENABLED"]:
         if not sound.private:
+            print("UPLOAD WORKFLOW federating sound")
             # Federate only if sound is public
             sound.activity_id = federate_new_sound(sound)
             db.session.commit()
