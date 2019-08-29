@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import VueRouter from 'vue-router'
 import BootstrapVue from 'bootstrap-vue'
+import VueStringFilter from 'vue-string-filter'
 
 import interfaceModule from './modules/interface.js'
 import instanceModule from './modules/instance.js'
@@ -23,6 +24,7 @@ Vue.config.productionTip = false
 Vue.use(Vuex)
 Vue.use(VueRouter)
 Vue.use(BootstrapVue)
+Vue.use(VueStringFilter)
 
 const persistedStateOptions = {
   paths: [
