@@ -99,6 +99,7 @@ const users = {
               user.credentials = accessToken
               user.blockIds = []
               user.muteIds = []
+              user.avatar = (user.avatar || '/static/userpic_placeholder.svg')
               store.commit('setCurrentUser', user)
               store.commit('addNewUsers', [user])
 
