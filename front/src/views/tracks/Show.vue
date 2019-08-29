@@ -70,7 +70,7 @@
           {{ track.title }}
         </p>
         <blockquote class="blockquote">
-          <p>
+          <p class="small">
             {{ track.description }}
           </p>
         </blockquote>
