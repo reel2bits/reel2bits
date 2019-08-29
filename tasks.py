@@ -19,6 +19,8 @@ from little_boxes.key import Key
 from models import Activity, Actor
 from activitypub.vars import HEADERS, Box
 from controllers.sound import bp_sound
+import smtplib
+from utils import add_log, add_user_log
 
 # TRANSCODING
 
@@ -88,6 +90,14 @@ def upload_workflow(self, sound_id):
     work_transcode(sound_id)
     print("TRANSCODE finished")
 
+    # Federate if public and AP enabled
+    if current_app.config["AP_ENABLED"]:
+        if not sound.private:
+            print("UPLOAD WORKFLOW federating sound")
+            # Federate only if sound is public
+            sound.activity_id = federate_new_sound(sound)
+            db.session.commit()
+
     app.register_blueprint(bp_sound)
 
     msg = Message(
@@ -97,19 +107,23 @@ def upload_workflow(self, sound_id):
     )
     msg.body = render_template("email/song_processed.txt", sound=sound)
     msg.html = render_template("email/song_processed.html", sound=sound)
+    err = None
     try:
         mail.send(msg)
     except ConnectionRefusedError as e:
         # TODO: do something about that maybe
         print(f"Error sending mail: {e}")
+        err = e
+    except smtplib.SMTPRecipientsRefused as e:
+        print(f"Error sending mail: {e}")
+        err = e
+    except smtplib.SMTPException as e:
+        print(f"Error sending mail: {e}")
+        err = e
 
-    # Federate if public and AP enabled
-    if current_app.config["AP_ENABLED"]:
-        if not sound.private:
-            print("UPLOAD WORKFLOW federating sound")
-            # Federate only if sound is public
-            sound.activity_id = federate_new_sound(sound)
-            db.session.commit()
+    if err:
+        add_log('global', 'ERROR', f'Error sending email for track {sound.id}: {err}')
+        add_user_log(sound.id, sound.user.id, 'sounds', 'error', 'An error occured while sending email')
 
     print("UPLOAD WORKFLOW finished")
 
