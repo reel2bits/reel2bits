@@ -267,8 +267,8 @@ export default {
               height: 40,
               progressColor: '#C728B6',
               waveColor: '#C8D1F4',
-              cursorColor: '#313DF2'
-              // backend: 'MediaElement'
+              cursorColor: '#313DF2',
+              backend: 'WebAudio'
             }
             // TODO: WebAudio (default) seems a bit slow to start the playback with ~1/2s delay
             if (!this.track.waveform) {
@@ -314,6 +314,10 @@ export default {
           })
         }
       })
+  },
+  destroyed () {
+    this.wavesurfer.stop()
+    this.$emit('updateLogoSpinDuration', false)
   },
   methods: {
     async fetchTrack () {
