@@ -23,6 +23,8 @@ const MASTODON_DIRECT_MESSAGES_TIMELINE_URL = '/api/v1/timelines/direct'
 const MASTODON_USER_NOTIFICATIONS_URL = '/api/v1/notifications'
 const MASTODON_USER_TIMELINE_URL = id => `/api/v1/accounts/${id}/statuses`
 
+const REEL2BITS_LICENSES = '/api/reel2bits/licenses'
+
 const oldfetch = window.fetch
 
 let fetch = (url, options) => {
@@ -190,6 +192,19 @@ const fetchUser = ({ id, store }) => {
     .then((data) => parseUser(data))
 }
 
+const fetchLicenses = () => {
+  let url = REEL2BITS_LICENSES
+
+  return fetch(url)
+    .then((data) => {
+      if (data.ok) {
+        return data
+      }
+      throw new Error('Error fetching licenses', data)
+    })
+    .then((data) => data.json())
+}
+
 const albumNew = (albumInfo, store) => {
   const form = new window.FormData()
   form.append('title', albumInfo.title)
@@ -324,7 +339,8 @@ const apiService = {
   albumDelete,
   albumFetch,
   fetchUserLogs,
-  fetchTimeline
+  fetchTimeline,
+  fetchLicenses
 }
 
 export default apiService
