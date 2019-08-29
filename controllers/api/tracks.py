@@ -68,7 +68,11 @@ def upload():
         rec.description = form.description.data
         rec.private = form.private.data
 
-        if "flac" in request.files["file"].mimetype or "ogg" in request.files["file"].mimetype or "wav" in request.files["file"].mimetype:
+        if (
+            "flac" in request.files["file"].mimetype
+            or "ogg" in request.files["file"].mimetype
+            or "wav" in request.files["file"].mimetype
+        ):
             rec.transcode_state = Sound.TRANSCODE_WAITING
             rec.transcode_needed = True
 
