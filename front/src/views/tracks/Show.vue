@@ -39,12 +39,12 @@
           <div class="pt-1 d-flex">
             <div class="btn-group" role="group" aria-label="Track actions">
               <div v-if="isOwner">
-                <button type="button" class="btn btn-link py-0 pl-0" @click.prevent="editTrack">
+                <b-button size="sm" variant="light" @click.prevent="editTrack">
                   <i class="fa fa-pencil" aria-hidden="true" /> Edit
-                </button>
-                <button type="button" class="btn btn-link py-0" @click.prevent="deleteTrack">
+                </b-button>
+                <b-button size="sm" variant="danger" @click.prevent="deleteTrack">
                   <i class="fa fa-times" aria-hidden="true" /> Delete
-                </button>
+                </b-button>
               </div>
             </div>
             <div class="ml-auto align-self-end">

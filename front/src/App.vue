@@ -16,21 +16,35 @@
           </div>
           <div>
             <span v-if="currentUser">
-              <router-link to="/tracks/upload">Upload track</router-link>
-              | <router-link to="/albums/new">New album</router-link>
-              | <router-link to="/account/logs">logs</router-link>
-              | <router-link :to="{ name: 'user-profile', params: { name: currentUser.screen_name } }">Me</router-link>
-              | <a
-                href="#"
-                @click.prevent="logout"
-              >Logout</a></span>
+              <b-button-group>
+                <b-button type="button" variant="primary"
+                          :to="{ name: 'tracks-upload' }"
+                          text="new track"
+                >track</b-button>
+                <b-button type="button" variant="info"
+                          :to="{ name: 'albums-new' }"
+                          text="new album"
+                >album</b-button>
+              </b-button-group>
+              <img :src="currentUser.avatar" class="rounded-circle mx-2" width="40"
+                   height="40" :alt="usernameAvatar"
+              >
+              <b-dropdown id="userDropdown" :text="atUsername" class="m-md-2">
+                <b-dropdown-item><router-link :to="{ name: 'user-profile', params: { name: currentUser.screen_name } }">My profile</router-link></b-dropdown-item>
+                <b-dropdown-item><router-link :to="{ name: 'account-logs' }">Logs</router-link></b-dropdown-item>
+                <b-dropdown-divider />
+                <b-dropdown-item><a href="#" @click.prevent="logout">Logout</a></b-dropdown-item>
+              </b-dropdown>
+            </span>
             <span v-else>
-              | <router-link to="/login">Login</router-link>
-              |
-              <router-link
-                v-if="!currentUser"
-                to="/register"
-              >Register</router-link>
+              <b-button-group>
+                <b-button type="button" variant="primary"
+                          :to="{ name: 'login_form' }"
+                >Login</b-button>
+                <b-button type="button" variant="info"
+                          :to="{ name: 'register' }"
+                >Register</b-button>
+              </b-button-group>
             </span>
           </div>
         </div>
@@ -59,7 +73,9 @@ export default {
   }),
   computed: {
     currentUser () { return this.$store.state.users.currentUser },
-    sitename () { return this.$store.state.instance.name }
+    sitename () { return this.$store.state.instance.name },
+    atUsername () { return '@' + this.currentUser.screen_name },
+    usernameAvatar () { return this.currentUser.screen_name + ' avatar' }
   },
   methods: {
     logout () {
