@@ -8,6 +8,7 @@
           :class="{ 'form-group--error': $v.track.title.$error }"
           label="Title:"
           label-for="title"
+          description="If no title provided, the filename will be used."
         >
           <b-form-input
             id="title"
