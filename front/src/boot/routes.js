@@ -1,4 +1,6 @@
-import Home from '../views/Home.vue'
+import PublicTimeline from '../components/public_timeline/public_timeline.vue'
+import PublicAndExternalTimeline from '../components/public_and_external_timeline/public_and_external_timeline.vue'
+import FriendsTimeline from '../components/friends_timeline/friends_timeline.vue'
 import LoginForm from '../components/login_form/login_form.vue'
 import Register from '../components/register/register.vue'
 import OAuthCallback from '../components/oauth_callback/oauth_callback.vue'
@@ -22,82 +24,33 @@ export default (store) => {
   }
 
   return [
-    {
+    { name: 'home',
       path: '/',
-      name: 'home',
-      component: Home
+      redirect: _to => {
+        return (store.state.users.currentUser
+          ? store.state.instance.redirectRootLogin
+          : store.state.instance.redirectRootNoLogin) || '/main/all'
+      }
     },
-    {
-      path: '/about',
-      name: 'about',
-      component: About
-    },
-    {
-      name: 'profile',
-      path: '/profile',
-      component: Profile
-    },
-    {
-      path: '/login',
-      name: 'login_form',
-      component: LoginForm
-    },
-    {
-      path: '/register',
-      name: 'register',
-      component: Register
-    },
-    {
-      name: 'oauth-callback',
-      path: '/oauth-callback',
-      component: OAuthCallback,
-      props: (route) => ({ code: route.query.code })
-    },
-    {
-      name: 'external-user-profile',
-      path: '/users/:id',
-      component: UserProfile
-    },
-    {
-      name: 'user-profile',
-      path: '/(users/)?:name',
-      component: UserProfile
-    },
+    { name: 'public-external-timeline', path: '/main/all', component: PublicAndExternalTimeline },
+    { name: 'public-timeline', path: '/main/public', component: PublicTimeline },
+    { name: 'friends', path: '/main/friends', component: FriendsTimeline, beforeEnter: validateAuthenticatedRoute },
+    { path: '/about', name: 'about', component: About },
+    { name: 'profile', path: '/profile', component: Profile },
+    { path: '/login', name: 'login_form', component: LoginForm },
+    { path: '/register', name: 'register', component: Register },
+    { name: 'oauth-callback', path: '/oauth-callback', component: OAuthCallback, props: (route) => ({ code: route.query.code }) },
+    { name: 'external-user-profile', path: '/users/:id', component: UserProfile },
+    { name: 'user-profile', path: '/(users/)?:name', component: UserProfile },
     // Tracks
-    {
-      name: 'tracks-upload',
-      path: '/tracks/upload',
-      component: TracksUpload,
-      beforeEnter: validateAuthenticatedRoute
-    },
-    {
-      name: 'tracks-show',
-      path: '/users/:username/track/:trackId',
-      component: TracksShow
-    },
+    { name: 'tracks-upload', path: '/tracks/upload', component: TracksUpload, beforeEnter: validateAuthenticatedRoute },
+    { name: 'tracks-show', path: '/users/:username/track/:trackId', component: TracksShow },
     // Albums
-    {
-      name: 'albums-new',
-      path: '/albums/new',
-      component: AlbumsNew,
-      beforeEnter: validateAuthenticatedRoute
-    },
-    {
-      name: 'albums-show',
-      path: '/users/:username/album/:albumId',
-      component: AlbumsShow
-    },
+    { name: 'albums-new', path: '/albums/new', component: AlbumsNew, beforeEnter: validateAuthenticatedRoute },
+    { name: 'albums-show', path: '/users/:username/album/:albumId', component: AlbumsShow },
     // Account
-    {
-      name: 'account-logs',
-      path: '/account/logs',
-      component: AccountLogs,
-      beforeEnter: validateAuthenticatedRoute
-    },
+    { name: 'account-logs', path: '/account/logs', component: AccountLogs, beforeEnter: validateAuthenticatedRoute },
     // Always last
-    {
-      path: '*',
-      component: NotFound
-    }
+    { path: '*', component: NotFound }
   ]
 }

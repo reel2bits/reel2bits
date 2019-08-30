@@ -7,7 +7,9 @@ const defaultState = {
   backendVersion: '',
   frontendVersion: '',
   tos: '',
-  sourceUrl: ''
+  sourceUrl: '',
+  redirectRootNoLogin: '/main/all',
+  redirectRootLogin: '/main/friends'
 }
 
 const instance = {
