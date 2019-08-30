@@ -4,6 +4,7 @@ from app_oauth import require_oauth
 import json
 from models import licences as track_licenses
 from datas_helpers import to_json_statuses, to_json_account
+from sqlalchemy import func
 
 
 bp_api_v1_timelines = Blueprint("bp_api_v1_timelines", __name__)
@@ -153,6 +154,7 @@ def public():
         200:
             description: Returns array of Status
     """
+    # Caveats: only handle public Sounds since we either federate (public) or no
     local_only = request.args.get("local", False)
     count = int(request.args.get("count", 20))
 
@@ -162,7 +164,11 @@ def public():
     if local_only:
         q = q.filter(Activity.local is True)
 
+    q = q.filter(Activity.payload["to"].astext.contains("https://www.w3.org/ns/activitystreams#Public"))
+
     q = q.outerjoin(Sound, Sound.activity_id == Activity.id)
+
+    # TODO: handle since_id
 
     tracks = []
     for t in q.order_by(Activity.creation_date.desc()).limit(count).all():
