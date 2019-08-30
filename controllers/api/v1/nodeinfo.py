@@ -48,8 +48,8 @@ def nodeinfo(version):
         },
     }
 
-    if current_app.config['AP_ENABLED']:
-        resp['protocols'].append('activitypub')
+    if current_app.config["AP_ENABLED"]:
+        resp["protocols"].append("activitypub")
 
     if version == "2.1":
         resp["software"]["repository"] = current_app.config["SOURCES_REPOSITORY_URL"]
