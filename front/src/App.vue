@@ -15,6 +15,21 @@
             >
           </div>
           <div>
+            <b-button-group>
+              <b-button type="button" variant="light"
+                        :to="{ name: 'public-external-timeline' }"
+                        text="The Whole Known Network"
+              >
+                TWKN
+              </b-button>
+              <b-button type="button" variant="light"
+                        :to="{ name: 'public-timeline' }"
+                        text="Public"
+              >
+                PUB
+              </b-button>
+            </b-button-group>
+
             <span v-if="currentUser">
               <b-button-group>
                 <b-button type="button" variant="primary"

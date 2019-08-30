@@ -8,9 +8,9 @@ from models import licences as track_licenses
 bp_api_v1_timelines = Blueprint("bp_api_v1_timelines", __name__)
 
 
-@bp_api_v1_timelines.route("/api/v1/timelines/home", methods=["GET"])
+@bp_api_v1_timelines.route("/api/v1/timelines/invalid", methods=["GET"])
 @require_oauth(None)
-def home():
+def invalid():
     """
     Statuses from accounts the user follows.
     ---
@@ -94,3 +94,63 @@ def home():
     response.mimetype = "application/json; charset=utf-8"
     response.status_code = 200
     return response
+
+
+@bp_api_v1_timelines.route("/api/v1/timelines/home", methods=["GET"])
+@require_oauth(None)
+def home():
+    """
+    User friends statuses.
+    ---
+    tags:
+        - Timelines
+    parameters:
+        - name: count
+          in: query
+          type: integer
+          required: true
+          description: count
+        - name: with_muted
+          in: query
+          type: boolean
+          required: true
+          description: with muted users
+        - name: since_id
+          in: query
+          type: string
+          description: last ID
+    responses:
+        200:
+            description: Returns array of Status
+    """
+    return jsonify([])
+
+
+@bp_api_v1_timelines.route("/api/v1/timelines/public", methods=["GET"])
+@require_oauth(None)
+def public():
+    """
+    Public or TWKN statuses.
+    ---
+    tags:
+        - Timelines
+    parameters:
+        - name: count
+          in: query
+          type: integer
+          required: true
+          description: count
+        - name: with_muted
+          in: query
+          type: boolean
+          required: true
+          description: with muted users
+        - name: local
+          in: query
+          type: boolean
+          description: local only or TWKN
+    responses:
+        200:
+            description: Returns array of Status
+    """
+    return jsonify([])
