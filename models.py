@@ -14,10 +14,9 @@ from sqlalchemy.sql import func
 from sqlalchemy_searchable import make_searchable
 from sqlalchemy_utils.types.choice import ChoiceType
 from sqlalchemy_utils.types.url import URLType
-from sqlalchemy_utils.types.json import JSONType
 from little_boxes.key import Key as LittleBoxesKey
 from activitypub.utils import ap_url
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy import text as sa_text
 from little_boxes import activitypub as ap
 from urllib.parse import urlparse
@@ -278,7 +277,6 @@ class Sound(db.Model):
     __mapper_args__ = {"order_by": uploaded.desc()}
 
     def elapsed(self):
-        print("db: {0}, now: {1}".format(self.uploaded, datetime.datetime.utcnow()))
         el = datetime.datetime.utcnow() - self.uploaded
         return el.total_seconds()
 
@@ -582,7 +580,7 @@ class Activity(db.Model):
     url = db.Column(URLType(), unique=True, nullable=True)
     type = db.Column(db.String(100), index=True)
     box = db.Column(db.String(100))
-    payload = db.Column(JSONType())
+    payload = db.Column(JSONB())
     creation_date = db.Column(db.DateTime(timezone=False), default=datetime.datetime.utcnow)
     delivered = db.Column(db.Boolean, default=None, nullable=True)
     delivered_date = db.Column(db.DateTime(timezone=False), nullable=True)
