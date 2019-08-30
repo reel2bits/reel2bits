@@ -1,9 +1,19 @@
 <template>
-  <div>timeline here</div>
+  <div>
+    <p class="h3">
+      {{ title }}
+    </p>
+  </div>
 </template>
 
 <script>
-const Timeline = {}
+const Timeline = {
+  props: [
+    'timeline',
+    'timelineName',
+    'title'
+  ]
+}
 
 export default Timeline
 </script>
