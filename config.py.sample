@@ -27,6 +27,9 @@ AP_ENABLED = False
 # ActivityPub support isn't finished and things like update or delete might not work at all
 # Activate federation at your own risks
 
+# Can users registers ?
+REGISTRATION_ENABLED = True
+
 SQLALCHEMY_DATABASE_URI = \
     'postgresql+psycopg2://postgres@localhost/reel2bits'
 

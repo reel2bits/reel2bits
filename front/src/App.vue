@@ -44,7 +44,8 @@
                 <b-button type="button" variant="primary"
                           :to="{ name: 'login_form' }"
                 >Login</b-button>
-                <b-button type="button" variant="info"
+                <b-button v-if="registrationOpen"
+                          type="button" variant="info"
                           :to="{ name: 'register' }"
                 >Register</b-button>
               </b-button-group>
@@ -65,6 +66,7 @@
 
 <script>
 import MainLogo from 'components/main_logo/main_logo.vue'
+import { mapState } from 'vuex'
 
 export default {
   name: 'App',
@@ -75,6 +77,9 @@ export default {
     logoSpinDuration: false
   }),
   computed: {
+    ...mapState({
+      registrationOpen: state => state.instance.registrationOpen
+    }),
     currentUser () { return this.$store.state.users.currentUser },
     sitename () { return this.$store.state.instance.name },
     atUsername () { return '@' + this.currentUser.screen_name },

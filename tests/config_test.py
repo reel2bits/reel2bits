@@ -4,6 +4,8 @@ TESTING = True
 # Disable CSRF tokens in the Forms (only valid for testing purposes!)
 WTF_CSRF_ENABLED = False
 
+REGISTRATION_ENABLED = True
+
 SECRET_KEY = "udf298euf02uf2f02f2uf0"
 SQLALCHEMY_DATABASE_URI = "postgresql+psycopg2://postgres@localhost:5432/reel2bits_test"
 # SQLALCHEMY_DATABASE_URI = 'sqlite:///ahrl.db'
