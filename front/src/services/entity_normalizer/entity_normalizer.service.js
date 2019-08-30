@@ -132,6 +132,8 @@ export const parseTrack = (data) => {
   output.reblogged = data.reblogged
   output.comments = 0 // FIXME TODO
 
+  output.type = data.reblog ? 'retweet' : 'status'
+
   output.processing = {}
   output.processing.basic = data.reel2bits.processing.basic
   output.processing.transcode_state = data.reel2bits.processing.transcode_state
