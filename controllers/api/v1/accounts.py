@@ -43,6 +43,10 @@ def accounts():
         schema:
             $ref: '#/definitions/Token'
     """
+
+    if not current_app.config["REGISTRATION_ENABLED"]:
+        abort(403)
+
     errors = {}
 
     # Get the bearer token

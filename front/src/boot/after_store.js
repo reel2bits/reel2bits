@@ -12,9 +12,9 @@ const getNodeInfo = async ({ store }) => {
     const res = await window.fetch(`/nodeinfo/2.1`)
     if (res.ok) {
       const data = await res.json()
+      store.dispatch('setInstanceOption', { name: 'registrationOpen', value: data.openRegistrations })
 
       const metadata = data.metadata
-      store.dispatch('setInstanceOption', { name: 'registrationOpen', value: metadata.openRegistrations })
       store.dispatch('setInstanceOption', { name: 'name', value: metadata.nodeName })
       store.dispatch('setInstanceOption', { name: 'description', value: metadata.nodeDescription })
       store.dispatch('setInstanceOption', { name: 'track_size_limit', value: 536807912 }) // FIXME TODO implement in backend

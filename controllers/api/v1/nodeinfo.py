@@ -35,8 +35,8 @@ def nodeinfo(version):
         "version": version,
         "software": {"name": "reel2bits", "version": g.cfg["REEL2BITS_VERSION"]},
         "services": {"inbound": [], "outbound": []},
-        "protocols": ["activitypub"],
-        "openRegistrations": current_app.config["SECURITY_REGISTERABLE"],
+        "protocols": [],
+        "openRegistrations": current_app.config["REGISTRATION_ENABLED"],
         "usage": {
             "localPosts": db.session.query(Sound.id).count(),
             "users": {"total": db.session.query(User.id).count()},
@@ -47,6 +47,9 @@ def nodeinfo(version):
             "taxonomy": {"postsName": "Tracks"},
         },
     }
+
+    if current_app.config['AP_ENABLED']:
+        resp['protocols'].append('activitypub')
 
     if version == "2.1":
         resp["software"]["repository"] = current_app.config["SOURCES_REPOSITORY_URL"]
