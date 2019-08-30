@@ -1,8 +1,9 @@
 from flask import Blueprint, jsonify, request, url_for
-from models import Sound
+from models import db, Sound, Activity
 from app_oauth import require_oauth
 import json
 from models import licences as track_licenses
+from datas_helpers import to_json_statuses, to_json_account
 
 
 bp_api_v1_timelines = Blueprint("bp_api_v1_timelines", __name__)
@@ -127,7 +128,6 @@ def home():
 
 
 @bp_api_v1_timelines.route("/api/v1/timelines/public", methods=["GET"])
-@require_oauth(None)
 def public():
     """
     Public or TWKN statuses.
@@ -153,4 +153,20 @@ def public():
         200:
             description: Returns array of Status
     """
-    return jsonify([])
+    local_only = request.args.get("local", False)
+    count = int(request.args.get("count", 20))
+
+    q = db.session.query(Activity, Sound).filter(
+        Activity.type == "Create", Activity.payload[("object", "type")].astext == "Audio"
+    )
+    if local_only:
+        q = q.filter(Activity.local is True)
+
+    q = q.outerjoin(Sound, Sound.activity_id == Activity.id)
+
+    tracks = []
+    for t in q.order_by(Activity.creation_date.desc()).limit(count).all():
+        if t.Sound:
+            tracks.append(to_json_statuses(t.Sound, to_json_account(t.Sound.user)))
+
+    return jsonify(tracks)
