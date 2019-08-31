@@ -26,7 +26,9 @@
 
     <div class="row">
       <div class="col-md-8">
-        <b-pagination-nav :link-gen="linkGen" :number-of-pages="totalPages" use-router />
+        <b-pagination-nav :link-gen="linkGen" :number-of-pages="perPage"
+                          use-router @change="onPageChanged"
+        />
       </div>
     </div>
   </div>
@@ -45,23 +47,30 @@ const Timeline = {
   ],
   data: () => ({
     tracks: [],
-    totalPages: 1,
+    perPage: 1,
     currentPage: 1,
     timelineError: ''
   }),
   created () {
+    this.currentPage = this.$route.query.page || 1
     console.log('loading timeline: ' + this.title)
     this.fetchTimeline()
   },
   methods: {
+    onPageChanged (page) {
+      this.currentPage = page
+      this.fetchTimeline()
+    },
     linkGen (pageNum) {
       return pageNum === 1 ? '?' : `?page=${pageNum}`
     },
     async fetchTimeline () {
+      console.log(`fetching timeline ${this.timelineName} page ${this.currentPage}`)
       await this.$store.state.api.backendInteractor.fetchTimeline({ timeline: this.timelineName, page: this.currentPage })
         .then((tracks) => {
           this.tracks = tracks.items
-          this.totalPages = tracks.totalPages
+          this.perPage = tracks.totalPages
+          console.log(tracks.page)
           this.currentPage = tracks.page
           console.log('timeline fetched')
         })

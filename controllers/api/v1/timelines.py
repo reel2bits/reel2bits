@@ -156,7 +156,7 @@ def public():
     # Caveats: only handle public Sounds since we either federate (public) or no
     local_only = request.args.get("local", False)
     count = int(request.args.get("count", 20))
-    page = request.args.get("page", 1)
+    page = int(request.args.get("page", 1))
 
     q = db.session.query(Activity, Sound).filter(
         Activity.type == "Create", Activity.payload[("object", "type")].astext == "Audio"

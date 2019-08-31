@@ -272,7 +272,8 @@ const fetchTimeline = ({
   until = false,
   userId = false,
   tag = false,
-  withMuted = false
+  withMuted = false,
+  page = 1
 }) => {
   const timelineUrls = {
     public: MASTODON_PUBLIC_TIMELINE,
@@ -308,8 +309,13 @@ const fetchTimeline = ({
   if (timeline === 'public' || timeline === 'publicAndExternal') {
     params.push(['only_media', false])
   }
+  if (page <= 0) {
+    params.push(['page', 1])
+  } else {
+    params.push(['page', page])
+  }
 
-  params.push(['count', 20])
+  params.push(['count', 5])
   params.push(['with_muted', withMuted])
 
   const queryString = map(params, (param) => `${param[0]}=${param[1]}`).join('&')

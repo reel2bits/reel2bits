@@ -199,7 +199,7 @@
   </div>
 </template>
 
-<style lang="scss">
+<style scoped lang="scss">
 button.playPause {
   margin-right: 5px;
 }
