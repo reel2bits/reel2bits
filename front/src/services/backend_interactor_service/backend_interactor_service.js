@@ -8,8 +8,8 @@ const backendInteractorService = credentials => {
     return apiService.fetchStatus({ id, credentials })
   }
 
-  const fetchTimeline = ({ timeline, since = false, until = false, userId = false, tag = false, withMuted = false }) => {
-    return apiService.fetchTimeline({ timeline, credentials, since, until, userId, tag, withMuted })
+  const fetchTimeline = ({ timeline, since = false, until = false, userId = false, tag = false, withMuted = false, page = 1 }) => {
+    return apiService.fetchTimeline({ timeline, credentials, since, until, userId, tag, withMuted, page })
   }
 
   const trackFetch = ({ user, trackId }) => {
