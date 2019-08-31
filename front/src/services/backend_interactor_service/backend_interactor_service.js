@@ -1,12 +1,15 @@
 // This file have been imported from https://git.pleroma.social/pleroma/pleroma-fe
 
 import apiService from '../api/api.service.js'
-import timelineFetcherService from '../timeline_fetcher/timeline_fetcher.service.js'
 import notificationsFetcher from '../notifications_fetcher/notifications_fetcher.service.js'
 
 const backendInteractorService = credentials => {
   const fetchStatus = ({ id }) => {
     return apiService.fetchStatus({ id, credentials })
+  }
+
+  const fetchTimeline = ({ timeline, since = false, until = false, userId = false, tag = false, withMuted = false }) => {
+    return apiService.fetchTimeline({ timeline, credentials, since, until, userId, tag, withMuted })
   }
 
   const trackFetch = ({ user, trackId }) => {
@@ -63,10 +66,6 @@ const backendInteractorService = credentials => {
 
   const denyUser = (id) => {
     return apiService.denyUser({ credentials, id })
-  }
-
-  const startFetchingTimeline = ({ timeline, store, userId = false, tag }) => {
-    return timelineFetcherService.startFetching({ timeline, store, credentials, userId, tag })
   }
 
   const startFetchingNotifications = ({ store }) => {
@@ -167,6 +166,7 @@ const backendInteractorService = credentials => {
   const fetchLicenses = () => apiService.fetchLicenses()
 
   const backendInteractorServiceInstance = {
+    fetchTimeline,
     fetchStatus,
     trackFetch,
     trackDelete,
@@ -181,7 +181,6 @@ const backendInteractorService = credentials => {
     fetchUser,
     fetchUserRelationship,
     verifyCredentials: apiService.verifyCredentials,
-    startFetchingTimeline,
     startFetchingNotifications,
     fetchMutes,
     muteUser,

@@ -106,8 +106,6 @@ const users = {
               // TODO: getNotificationPermission()
               // Set our new backend interactor
               store.commit('setBackendInteractor', backendInteractorService(accessToken))
-              // Start getting fresh posts.
-              store.dispatch('startFetchingTimeline', { timeline: 'friends' })
 
               // Start fetching notifications
               store.dispatch('startFetchingNotifications')

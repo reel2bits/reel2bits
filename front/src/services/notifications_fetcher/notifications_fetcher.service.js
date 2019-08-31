@@ -1,5 +1,7 @@
 // This file have been imported from https://git.pleroma.social/pleroma/pleroma-fe
 
+// TODO adapt to r2b
+
 import apiService from '../api/api.service.js'
 
 const update = ({ store, notifications, older }) => {
