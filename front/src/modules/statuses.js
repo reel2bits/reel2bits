@@ -1,5 +1,10 @@
 // This file have been imported from https://git.pleroma.social/pleroma/pleroma-fe
 
+// TODO adapt to r2b
+// Rename to notifications
+// We don't care about the pure statuses part, only notifications
+// But we might still use masto-statuses for notifications
+
 import { remove, slice, each, findIndex, find, maxBy, minBy, merge, first, last, isArray, omitBy } from 'lodash'
 import { set } from 'vue'
 import apiService from '../services/api/api.service.js'

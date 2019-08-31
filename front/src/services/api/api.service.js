@@ -1,4 +1,4 @@
-import { parseUser, parseTrack, parseAlbum, parseNotification } from '../entity_normalizer/entity_normalizer.service.js'
+import { parseUser, parseTrack, parseAlbum } from '../entity_normalizer/entity_normalizer.service.js'
 import { StatusCodeError } from '../errors/errors'
 import { map } from 'lodash'
 
@@ -282,7 +282,6 @@ const fetchTimeline = ({
     'publicAndExternal': MASTODON_PUBLIC_TIMELINE,
     user: MASTODON_USER_TIMELINE_URL
   }
-  const isNotifications = timeline === 'notifications'
   const params = []
 
   let url = timelineUrls[timeline]
@@ -324,7 +323,6 @@ const fetchTimeline = ({
       throw new Error('Error fetching timeline', data)
     })
     .then((data) => data.json())
-    .then((data) => data.map(isNotifications ? parseNotification : parseTrack))
 }
 
 const apiService = {
