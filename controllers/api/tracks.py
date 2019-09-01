@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from app_oauth import require_oauth
 from authlib.flask.oauth2 import current_token
 from forms import SoundUploadForm
-from models import db, Sound, User
+from models import db, Sound, User, Album
 import json
 from utils import add_user_log, get_hashed_filename
 from flask_uploads import UploadSet, AUDIO
@@ -179,7 +179,7 @@ def edit(username, soundslug):
     if not sound:
         return jsonify({"error": "Not found"}), 404
 
-    # TODO: handle album
+    album = request.json.get("album")
     description = request.json.get("description")
     licence = request.json.get("licence")
     private = request.json.get("private")
@@ -195,6 +195,19 @@ def edit(username, soundslug):
 
     sound.description = description
     sound.licence = licence
+
+    # Fetch album, and associate if owner
+    if album and (album != "__None"):
+        db_album = Album.query.filter(Album.id == album).first()
+        if db_album and (db_album.user_id == current_user.id):
+            sound.album_id = db_album.id
+            if not db_album.sounds:
+                sound.album_order = 0
+            else:
+                sound.album_order = db_album.sounds.count() + 1
+    elif album == "__None":
+        sound.album_id = None
+        sound.album_order = 0
 
     db.session.commit()
 
