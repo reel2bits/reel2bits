@@ -9,7 +9,7 @@
           <b-tabs content="mt-3">
             <b-tab title="Tracks">
               <Timeline
-                title="User timeline"
+                :key="userId"
                 timeline-name="user"
                 :user-id="userId"
               />
@@ -85,12 +85,10 @@ export default {
       if (user) {
         this.userId = user.id
         console.warn('load::user::nothing to do')
-        // TODO fetch timelines etc.
       } else {
         this.$store.dispatch('fetchUser', userNameOrId)
           .then(({ id }) => {
             this.userId = id
-            // TODO same
             console.warn('load::!user::fetchUser::id::nothing to do')
           })
           .catch((reason) => {
