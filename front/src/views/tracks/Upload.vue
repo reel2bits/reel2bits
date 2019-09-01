@@ -66,7 +66,7 @@
             id="album"
             v-model="track.album"
             :disabled="isPending"
-            :options="albumsList"
+            :options="albumChoices"
           />
         </b-form-group>
 
@@ -129,7 +129,8 @@ export default {
       licence: 0,
       private: ''
     },
-    licenceChoices: []
+    licenceChoices: [],
+    albumChoices: []
   }),
   validations: {
     track: {
@@ -164,6 +165,7 @@ export default {
     })
   },
   created () {
+    // Fetch licenses
     this.$store.state.api.backendInteractor.fetchLicenses()
       .then((licenses) => {
         this.licenceChoices = licenses.map(function (x) { return { value: x.id, text: x.name } })
@@ -172,6 +174,20 @@ export default {
         console.log('error fetching licenses: ' + e)
         this.fetchErrors += 'Error fetching licenses'
         this.licenceChoices = []
+      })
+    // Fetch user albums
+    this.$store.state.api.backendInteractor.fetchUserAlbums({ username: this.$store.state.users.currentUser.screen_name, short: true })
+      .then((albums) => {
+        let noAlbum = [
+          { value: '__None', text: 'No album' }
+        ]
+        let userAlbums = albums.map(function (x) { return { value: x.id, text: (x.private ? `${x.title} (private)` : x.title) } })
+        this.albumChoices = noAlbum.concat(userAlbums)
+      })
+      .catch((e) => {
+        console.log('error fetching user albums: ' + e)
+        this.fetchErrors += 'Error fetching albums'
+        this.albumChoices = []
       })
   },
   methods: {

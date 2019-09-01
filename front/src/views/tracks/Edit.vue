@@ -49,7 +49,7 @@
           <b-form-select
             id="album"
             v-model="track.album"
-            :options="albumsList"
+            :options="albumChoices"
           />
         </b-form-group>
 
@@ -116,6 +116,7 @@ export default {
     },
     trackObj: null,
     licenceChoices: [],
+    albumChoices: [],
     alreadyFederated: null
   }),
   validations: {
@@ -131,9 +132,6 @@ export default {
     descriptionPlaceholder () {
       return 'Optional, what is this track about ?'
     },
-    albumsList () {
-      return [{ value: '__None', text: 'No album' }]
-    },
     trackId () {
       return this.$route.params.trackId
     },
@@ -144,17 +142,32 @@ export default {
       signedIn: state => !!state.users.currentUser
     })
   },
-  created () {
+  async created () {
+    // Fetch licenses
     this.$store.state.api.backendInteractor.fetchLicenses()
       .then((licenses) => {
         this.licenceChoices = licenses.map(function (x) { return { value: x.id, text: x.name } })
-        this.fetchTrack()
       })
       .catch((e) => {
         console.log('error fetching licenses: ' + e)
         this.fetchErrors += 'Error fetching licenses'
         this.licenceChoices = []
       })
+    // Fetch user albums
+    this.$store.state.api.backendInteractor.fetchUserAlbums({ username: this.$store.state.users.currentUser.screen_name, short: true })
+      .then((albums) => {
+        let noAlbum = [
+          { value: '__None', text: 'No album' }
+        ]
+        let userAlbums = albums.map(function (x) { return { value: x.id, text: (x.private ? `${x.title} (private)` : x.title) } })
+        this.albumChoices = noAlbum.concat(userAlbums)
+      })
+      .catch((e) => {
+        console.log('error fetching user albums: ' + e)
+        this.fetchErrors += 'Error fetching albums'
+        this.albumChoices = []
+      })
+    this.fetchTrack()
   },
   methods: {
     async fetchTrack () {
@@ -163,7 +176,7 @@ export default {
         .then((track) => {
           this.track.title = track.title
           this.track.description = unescape(track.description)
-          this.track.album = '__None'
+          this.track.album = track.album_id ? track.album_id : '__None'
           this.track.licence = track.metadatas.licence.id
           this.track.private = track.private
           this.alreadyFederated = !this.track.private

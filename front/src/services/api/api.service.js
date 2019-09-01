@@ -24,6 +24,7 @@ const MASTODON_USER_NOTIFICATIONS_URL = '/api/v1/notifications'
 const MASTODON_USER_TIMELINE_URL = id => `/api/v1/accounts/${id}/statuses`
 
 const REEL2BITS_LICENSES = '/api/reel2bits/licenses'
+const REEL2BITS_ALBUMS = (username) => `/api/albums/${username}`
 
 const oldfetch = window.fetch
 
@@ -204,6 +205,25 @@ const fetchLicenses = () => {
     .then((data) => data.json())
 }
 
+const fetchUserAlbums = ({ username, short = false, credentials }) => {
+  let url = REEL2BITS_ALBUMS(username)
+
+  const params = []
+  params.push(['short', short])
+
+  const queryString = map(params, (param) => `${param[0]}=${param[1]}`).join('&')
+  url += `?${queryString}`
+
+  return fetch(url, { headers: authHeaders(credentials) })
+    .then((data) => {
+      if (data.ok) {
+        return data
+      }
+      throw new Error('Error fetching albums', data)
+    })
+    .then((data) => data.json())
+}
+
 const albumNew = (albumInfo, store) => {
   const form = new window.FormData()
   form.append('title', albumInfo.title)
@@ -347,7 +367,8 @@ const apiService = {
   albumFetch,
   fetchUserLogs,
   fetchTimeline,
-  fetchLicenses
+  fetchLicenses,
+  fetchUserAlbums
 }
 
 export default apiService
