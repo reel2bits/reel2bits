@@ -123,7 +123,7 @@ export const parseTrack = (data) => {
 
   output.id = String(data.id)
   output.title = data.reel2bits.title
-  output.account = data.account
+  output.account = parseUser(data.account)
   output.description = data.content
   output.picture_url = (data.reel2bits.picture_url || '/static/artwork_placeholder.svg')
   output.media_orig = data.reel2bits.media_orig

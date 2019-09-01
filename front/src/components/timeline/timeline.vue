@@ -19,12 +19,15 @@
     </div>
 
     <div class="row">
-      <div class="col-md-8">
+      <div v-if="tracks.length > 0" class="col-md-8">
         <Track v-for="track in tracks" :key="track.id" :track="track" />
+      </div>
+      <div v-else class="col-md-8">
+        Nothing to show
       </div>
     </div>
 
-    <div class="row">
+    <div v-if="tracks.length > 0" class="row">
       <div class="col-md-8">
         <b-pagination-nav :link-gen="linkGen" :number-of-pages="perPage"
                           use-router @change="onPageChanged"

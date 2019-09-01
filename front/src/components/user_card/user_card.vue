@@ -7,10 +7,14 @@
         </div>
         <div class="align-self-center">
           <h2 class="h2 m-0">
-            {{ account.name }}
+            <b-link :to="{ name: 'user-profile', params: { name: account.screen_name } }">
+              {{ account.name }}
+            </b-link>
           </h2>
           <p class="h3 font-weight-normal m-0">
-            @{{ account.screen_name }} <button type="button" class="btn btn-primary btn-sm">
+            <b-link :to="{ name: 'user-profile', params: { name: account.screen_name } }">
+              @{{ account.screen_name }}
+            </b-link> <button type="button" class="btn btn-primary btn-sm">
               Follow
             </button>
           </p>
@@ -44,7 +48,12 @@
 const UserCard = {
   props: [
     'account'
-  ]
+  ],
+  computed: {
+    isOtherUser () {
+      return this.user.id !== this.$store.state.users.currentUser.id
+    }
+  }
 }
 
 export default UserCard

@@ -162,6 +162,28 @@ def accounts():
     return jsonify({**token, "created_at": tok.issued_at}), 200
 
 
+@bp_api_v1_accounts.route("/api/v1/accounts/<string:username>", methods=["GET"])
+def account_get(username):
+    """
+    Returns Account
+    ---
+    tags:
+        - Accounts
+    responses:
+      200:
+        description: Returns Account
+        schema:
+            $ref: '#/definitions/Account'
+    """
+    user = User.query.filter(User.name == username).first()
+    if not user:
+        abort(404)
+    if len(user.actor) != 1:
+        abort(404)
+
+    return jsonify(to_json_account(user))
+
+
 @bp_api_v1_accounts.route("/api/v1/accounts/verify_credentials", methods=["GET"])
 @require_oauth("read")
 def accounts_verify_credentials():
