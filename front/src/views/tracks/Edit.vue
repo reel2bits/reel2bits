@@ -82,6 +82,10 @@
           Edit
         </b-button>
 
+        <b-button variant="warning" :to="{ name: 'tracks-show', params: { username: userName, trackId: trackId } }">
+          Cancel
+        </b-button>
+
         <br>
 
         <b-alert v-if="trackEditError" variant="danger" show>
