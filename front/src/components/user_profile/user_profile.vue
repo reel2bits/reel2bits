@@ -6,11 +6,17 @@
     <div v-if="user">
       <div class="row">
         <div class="col-md-8">
-          <Timeline
-            title="User timeline"
-            timeline-name="user"
-            :user-id="userId"
-          />
+          <b-tabs content="mt-3">
+            <b-tab title="Tracks">
+              <Timeline
+                title="User timeline"
+                timeline-name="user"
+                :user-id="userId"
+              />
+            </b-tab>
+            <b-tab title="Albums" />
+            <b-tab v-if="isUs" title="Drafts" />
+          </b-tabs>
         </div>
         <div class="col-md-4">
           <UserCard :account="user" />
