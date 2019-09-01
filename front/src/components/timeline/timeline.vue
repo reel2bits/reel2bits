@@ -43,7 +43,8 @@ const Timeline = {
   },
   props: [
     'timelineName',
-    'title'
+    'title',
+    'userId'
   ],
   data: () => ({
     tracks: [],
@@ -66,7 +67,7 @@ const Timeline = {
     },
     async fetchTimeline () {
       console.log(`fetching timeline ${this.timelineName} page ${this.currentPage}`)
-      await this.$store.state.api.backendInteractor.fetchTimeline({ timeline: this.timelineName, page: this.currentPage })
+      await this.$store.state.api.backendInteractor.fetchTimeline({ timeline: this.timelineName, page: this.currentPage, userId: this.userId })
         .then((tracks) => {
           this.tracks = tracks.items
           this.perPage = tracks.totalPages

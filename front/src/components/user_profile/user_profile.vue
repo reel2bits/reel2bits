@@ -1,18 +1,38 @@
 <template>
   <div>
-    <div v-if="user">
-      Profile of {{ user }}
-    </div>
     <div v-if="error">
       {{ error }}
+    </div>
+    <div v-if="user">
+      <div class="row">
+        <div class="col-md-8">
+          <Timeline
+            title="User timeline"
+            timeline-name="user"
+            :user-id="userId"
+          />
+        </div>
+        <div class="col-md-4">
+          <UserCard :account="user" />
+          <Footer />
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import get from 'lodash/get'
+import Timeline from '../timeline/timeline.vue'
+import Footer from '../../components/footer/footer.vue'
+import UserCard from '../../components/user_card/user_card.vue'
 
 export default {
+  components: {
+    Timeline,
+    UserCard,
+    Footer
+  },
   data () {
     return {
       error: false,
