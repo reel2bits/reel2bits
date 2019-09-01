@@ -102,7 +102,7 @@ export default {
   },
   methods: {
     logout () {
-      this.$router.replace('/')
+      this.$router.replace('/main/public')
       this.$store.dispatch('logout')
     },
     updateLogoSpinDuration (dur) {

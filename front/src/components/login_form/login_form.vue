@@ -114,7 +114,7 @@ export default {
               return
             }
             this.login(result).then(() => {
-              this.$router.push({ name: 'profile' })
+              this.$router.push({ name: 'friends' })
             })
           })
           .catch(error => {
