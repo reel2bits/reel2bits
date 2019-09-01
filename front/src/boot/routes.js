@@ -7,6 +7,7 @@ import OAuthCallback from '../components/oauth_callback/oauth_callback.vue'
 import UserProfile from '../components/user_profile/user_profile.vue'
 import TracksUpload from '../views/tracks/Upload.vue'
 import TracksShow from '../views/tracks/Show.vue'
+import TracksEdit from '../views/tracks/Edit.vue'
 import AlbumsNew from '../views/albums/New.vue'
 import AlbumsShow from '../views/albums/Show.vue'
 import AccountLogs from '../views/account/Logs.vue'
@@ -44,6 +45,7 @@ export default (store) => {
     // Tracks
     { name: 'tracks-upload', path: '/tracks/upload', component: TracksUpload, beforeEnter: validateAuthenticatedRoute },
     { name: 'tracks-show', path: '/:username/:trackId', component: TracksShow },
+    { name: 'tracks-edit', path: '/:username/:trackId/edit', component: TracksEdit, beforeEnter: validateAuthenticatedRoute },
     // Albums
     { name: 'albums-new', path: '/albums/new', component: AlbumsNew, beforeEnter: validateAuthenticatedRoute },
     { name: 'albums-show', path: '/users/:username/album/:albumId', component: AlbumsShow },

@@ -289,7 +289,7 @@ export default {
         .then((status) => {
           this.track = status
           this.processing_done = this.track.processing.done
-          this.isOwner = (this.track.account.username === this.$store.state.users.currentUser.screen_name)
+          this.isOwner = (this.track.account.screen_name === this.$store.state.users.currentUser.screen_name)
           console.log('track fetched')
         })
         .catch((e) => {
@@ -298,9 +298,12 @@ export default {
         })
     },
     async editTrack () {
+      if (!this.isOwner) { return }
       console.log('want to edit track')
+      this.$router.push({ name: 'tracks-edit', params: { username: this.track.account.screen_name, trackId: this.track.slug } })
     },
     async deleteTrack () {
+      if (!this.isOwner) { return }
       console.log('deleting track')
       try {
         await this.$store.state.api.backendInteractor.trackDelete({ user: this.userName, trackId: this.trackId })

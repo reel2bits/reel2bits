@@ -233,7 +233,26 @@ def edit(username, soundslug):
     if not sound:
         return jsonify({"error": "Not found"}), 404
 
-    return jsonify({"error": "Not implemented"}), 501
+    # TODO: handle album
+    description = request.json.get("description")
+    licence = request.json.get("licence")
+    private = request.json.get("private")
+    title = request.json.get("title")
+
+    if sound.private and not private:
+        return jsonify({"error": "Cannot change to private: track already federated"})
+
+    if not title:
+        title, _ = splitext(sound.filename_orig)
+    else:
+        sound.title = title
+
+    sound.description = description
+    sound.licence = licence
+
+    db.session.commit()
+
+    return jsonify(to_json_statuses(sound, to_json_account(sound.user)))
 
 
 @bp_api_tracks.route("/api/tracks/<string:username>/<string:soundslug>", methods=["DELETE"])
