@@ -21,6 +21,7 @@
           <b-form-invalid-feedback id="username-live-feedback">
             <span v-if="!$v.user.username.required">Username is required</span>
             <span v-if="!$v.user.username.usernameIsLegal">Username can only contains letters or numbers</span>
+            <span v-if="!$v.user.username.usernameNotRestricted">This username cannot be used</span>
           </b-form-invalid-feedback>
         </b-form-group>
 
@@ -142,6 +143,10 @@ const usernameIsLegal = value => {
   return /^[a-zA-Z\d]+$/.test(value)
 }
 
+function usernameNotRestricted (value) {
+  return !this.$store.state.instance.restrictedNicknames.includes(value)
+}
+
 export default {
   mixins: [validationMixin],
   data: () => ({
@@ -156,7 +161,7 @@ export default {
   validations: {
     user: {
       email: { required, maxLength: maxLength(250) },
-      username: { required, maxLength: maxLength(250), usernameIsLegal },
+      username: { required, maxLength: maxLength(250), usernameIsLegal, usernameNotRestricted },
       fullname: { required, maxLength: maxLength(250) },
       password: { required, maxLength: maxLength(250) },
       confirm: {

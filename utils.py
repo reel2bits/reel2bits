@@ -257,3 +257,48 @@ def get_hashed_filename(filename):
     fs_fname = fs_fname.hexdigest()
 
     return fs_fname + f_e
+
+
+RESTRICTED_NICKNAMES = [
+    ".well-known",
+    "~",
+    "about",
+    "activities",
+    "api",
+    "auth",
+    "check_password",
+    "dev",
+    "friend-requests",
+    "inbox",
+    "internal",
+    "main",
+    "media",
+    "nodeinfo",
+    "notice",
+    "oauth",
+    "objects",
+    "ostatus_subscribe",
+    "pleroma",
+    "proxy",
+    "push",
+    "registration",
+    "relay",
+    "settings",
+    "status",
+    "tag",
+    "user-search",
+    "user_exists",
+    "users",
+    "web",
+    "reel2bits",
+    "register",
+    "login",
+    "oauth-callback",
+    "tracks",
+    "albums",
+    "account",
+]
+
+
+def forbidden_username(username):
+    return username in RESTRICTED_NICKNAMES

@@ -1,5 +1,5 @@
 from flask import Blueprint, current_app, jsonify, Response, g, abort
-
+from utils import RESTRICTED_NICKNAMES
 from models import db, Config, User, Sound
 
 bp_nodeinfo = Blueprint("bp_nodeinfo", __name__, url_prefix="/nodeinfo")
@@ -45,6 +45,8 @@ def nodeinfo(version):
             "nodeName": _config.app_name,
             "nodeDescription": _config.app_description,
             "taxonomy": {"postsName": "Tracks"},
+            "restrictedNicknames": RESTRICTED_NICKNAMES,
+            "trackLengthLimit": 536807912,
         },
     }
 

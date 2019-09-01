@@ -9,7 +9,9 @@ const defaultState = {
   tos: '',
   sourceUrl: '',
   redirectRootNoLogin: '/main/all',
-  redirectRootLogin: '/main/friends'
+  redirectRootLogin: '/main/friends',
+  restrictedNicknames: [],
+  trackSizeLimit: 536807912
 }
 
 const instance = {
