@@ -43,7 +43,7 @@ export default (store) => {
     { name: 'user-profile', path: '/(users/)?:name', component: UserProfile },
     // Tracks
     { name: 'tracks-upload', path: '/tracks/upload', component: TracksUpload, beforeEnter: validateAuthenticatedRoute },
-    { name: 'tracks-show', path: '/users/:username/track/:trackId', component: TracksShow },
+    { name: 'tracks-show', path: '/:username/:trackId', component: TracksShow },
     // Albums
     { name: 'albums-new', path: '/albums/new', component: AlbumsNew, beforeEnter: validateAuthenticatedRoute },
     { name: 'albums-show', path: '/users/:username/album/:albumId', component: AlbumsShow },

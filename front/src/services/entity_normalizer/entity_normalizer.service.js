@@ -33,8 +33,8 @@ export const parseUser = (data) => {
     output.description_html = addEmojis(data.note, data.emojis)
 
     // Utilize avatar_static for gif avatars?
-    output.profile_image_url = data.avatar
-    output.profile_image_url_original = data.avatar
+    output.profile_image_url = data.avatar || '/static/userpic_placeholder.svg'
+    output.profile_image_url_original = data.avatar || '/static/userpic_placeholder.svg'
 
     // Same, utilize header_static?
     output.cover_photo = data.header
@@ -139,6 +139,8 @@ export const parseTrack = (data) => {
 
   output.type = data.reblog ? 'retweet' : 'status'
 
+  output.slug = data.reel2bits.slug
+
   output.processing = {}
   output.processing.basic = data.reel2bits.processing.basic
   output.processing.transcode_state = data.reel2bits.processing.transcode_state
@@ -155,8 +157,6 @@ export const parseTrack = (data) => {
   output.metadatas.rate = data.reel2bits.metadatas.rate
   output.metadatas.bitrate = data.reel2bits.metadatas.bitrate
   output.metadatas.bitrate_mode = data.reel2bits.metadatas.bitrate_mode
-
-  output.account.avatar = (output.account.avatar || '/static/userpic_placeholder.svg')
 
   return output
 }

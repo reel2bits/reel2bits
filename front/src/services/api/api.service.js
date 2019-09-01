@@ -329,6 +329,10 @@ const fetchTimeline = ({
       throw new Error('Error fetching timeline', data)
     })
     .then((data) => data.json())
+    .then((data) => {
+      data.items = data.items.map(parseTrack)
+      return data
+    })
 }
 
 const apiService = {

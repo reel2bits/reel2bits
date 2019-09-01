@@ -68,6 +68,7 @@ def to_json_statuses(track, account):
         "language": None,
         "pinned": None,
         "reel2bits": {
+            "slug": track.slug,
             "local": track.user.actor[0].is_local(),
             "title": track.title,
             "picture_url": None,  # FIXME not implemented yet
