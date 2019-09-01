@@ -20,6 +20,10 @@ const backendInteractorService = credentials => {
     return apiService.trackDelete({ user, trackId, credentials })
   }
 
+  const trackEdit = ({ username, trackId, track }) => {
+    return apiService.trackEdit({ username, trackId, track, credentials })
+  }
+
   const fetchConversation = ({ id }) => {
     return apiService.fetchConversation({ id, credentials })
   }
@@ -170,6 +174,7 @@ const backendInteractorService = credentials => {
     fetchStatus,
     trackFetch,
     trackDelete,
+    trackEdit,
     fetchConversation,
     fetchFriends,
     exportFriends,

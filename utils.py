@@ -298,7 +298,7 @@ RESTRICTED_NICKNAMES = [
     "albums",
     "account",
     "uploads",
-    "static"
+    "static",
 ]
 
 

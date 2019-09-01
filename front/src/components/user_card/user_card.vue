@@ -3,7 +3,7 @@
     <div class="card-body py-3 px-3">
       <div class="d-flex mb-2">
         <div class="d-flex rounded-circle mr-2" style="width:96px; height:96px; overflow:hidden">
-          <img :src="account.avatar" alt="user avatar" style="height:96px;">
+          <img :src="account.profile_image_url" alt="user avatar" style="height:96px;">
         </div>
         <div class="align-self-center">
           <h2 class="h2 m-0">

@@ -42,7 +42,7 @@
                 >album</b-button>
               </b-button-group>
               <router-link :to="{ name: 'user-profile', params: { name: currentUser.screen_name } }">
-                <img :src="currentUser.avatar" class="rounded-circle mx-2" width="40"
+                <img :src="currentUser.profile_image_url" class="rounded-circle mx-2" width="40"
                      height="40" :alt="usernameAvatar"
                      title="go to profile"
                 >

@@ -33,8 +33,8 @@ export const parseUser = (data) => {
     output.description_html = addEmojis(data.note, data.emojis)
 
     // Utilize avatar_static for gif avatars?
-    output.profile_image_url = data.avatar || '/static/userpic_placeholder.svg'
-    output.profile_image_url_original = data.avatar || '/static/userpic_placeholder.svg'
+    output.profile_image_url = (data.avatar || '/static/userpic_placeholder.svg')
+    output.profile_image_url_original = (data.avatar || '/static/userpic_placeholder.svg')
 
     // Same, utilize header_static?
     output.cover_photo = data.header

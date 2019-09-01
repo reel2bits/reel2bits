@@ -175,13 +175,12 @@ const trackDelete = ({ user, trackId, credentials }) => {
     .then((data) => data.json())
 }
 
-const trackEdit = (user, trackId, track, store) => {
-  let credentials = store.getters.getToken()
+const trackEdit = ({ username, trackId, track, credentials }) => {
   return promisedRequest({
-    url: TRACKS_EDIT_URL(user, trackId),
+    url: TRACKS_EDIT_URL(username, trackId),
     method: 'PATCH',
     payload: track,
-    credentials
+    credentials: credentials
   }).then((data) => parseTrack(data))
 }
 
