@@ -11,7 +11,6 @@ import AlbumsNew from '../views/albums/New.vue'
 import AlbumsShow from '../views/albums/Show.vue'
 import AccountLogs from '../views/account/Logs.vue'
 import About from '../views/About.vue'
-import Profile from '../views/Profile.vue'
 import NotFound from '../views/NotFound.vue'
 
 export default (store) => {
@@ -36,7 +35,6 @@ export default (store) => {
     { name: 'public-timeline', path: '/main/public', component: PublicTimeline },
     { name: 'friends', path: '/main/friends', component: FriendsTimeline, beforeEnter: validateAuthenticatedRoute },
     { path: '/about', name: 'about', component: About },
-    { name: 'profile', path: '/profile', component: Profile },
     { path: '/login', name: 'login_form', component: LoginForm },
     { path: '/register', name: 'register', component: Register },
     { name: 'oauth-callback', path: '/oauth-callback', component: OAuthCallback, props: (route) => ({ code: route.query.code }) },

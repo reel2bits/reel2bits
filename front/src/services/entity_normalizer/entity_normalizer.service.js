@@ -110,6 +110,11 @@ export const parseUser = (data) => {
   output.rights = output.rights || {}
   output.notification_settings = output.notification_settings || {}
 
+  if (data.reel2bits) {
+    output.reel2bits = {}
+    output.reel2bits.albums_count = data.reel2bits.albums_count
+  }
+
   return output
 }
 

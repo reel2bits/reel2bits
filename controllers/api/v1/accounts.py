@@ -1,10 +1,10 @@
 from flask import Blueprint, request, jsonify, abort, current_app
-from models import db, User, user_datastore, Role, create_actor, OAuth2Token, OAuth2Client
+from models import db, User, user_datastore, Role, create_actor, OAuth2Token, OAuth2Client, Activity, Sound
 from flask_security.utils import hash_password
 from flask_security import confirmable as FSConfirmable
 from app_oauth import authorization, require_oauth
 from authlib.flask.oauth2 import current_token
-from datas_helpers import to_json_account
+from datas_helpers import to_json_statuses, to_json_account
 import re
 
 bp_api_v1_accounts = Blueprint("bp_api_v1_accounts", __name__)
@@ -311,3 +311,62 @@ def accounts_verify_credentials():
     """
     user = current_token.user
     return jsonify(to_json_account(user))
+
+
+@bp_api_v1_accounts.route("/api/v1/accounts/<int:user_id>/statuses", methods=["GET"])
+def user_statuses(user_id):
+    """
+    User statuses.
+    ---
+    tags:
+        - Timelines
+    parameters:
+        - name: count
+          in: query
+          type: integer
+          required: true
+          description: count per page
+        - name: with_muted
+          in: query
+          type: boolean
+          required: true
+          description: with muted users
+        - name: page
+          in: query
+          type: integer
+          description: page number
+    responses:
+        200:
+            description: Returns array of Status
+    """
+    # Caveats: only handle public Sounds since we either federate (public) or no
+    count = int(request.args.get("count", 20))
+    page = int(request.args.get("page", 1))
+
+    # Get associated user
+    user = User.query.filter(User.id == user_id).first()
+    if not user:
+        abort(404)
+
+    q = db.session.query(Activity, Sound).filter(
+        Activity.type == "Create", Activity.payload[("object", "type")].astext == "Audio"
+    )
+    q = q.filter(Activity.meta_deleted.is_(False))
+
+    q = q.filter(Activity.payload["to"].astext.contains("https://www.w3.org/ns/activitystreams#Public"))
+
+    q = q.filter(Activity.actor == user.actor[0].id)
+
+    q = q.join(Sound, Sound.activity_id == Activity.id)
+    q = q.order_by(Activity.creation_date.desc())
+
+    q = q.paginate(page=page, per_page=count)
+
+    tracks = []
+    for t in q.items:
+        if t.Sound:
+            tracks.append(to_json_statuses(t.Sound, to_json_account(t.Sound.user)))
+        else:
+            print(t.Activity)
+    resp = {"page": page, "page_size": count, "totalItems": q.total, "items": tracks, "totalPages": q.pages}
+    return jsonify(resp)
