@@ -1,7 +1,7 @@
 <template>
   <div v-if="timelineError" class="row justify-content-md-center">
     <div class="col-md-8">
-      <p class="h3">
+      <p v-if="title" class="h3">
         {{ title }}
       </p>
       <b-alert v-if="timelineError" variant="danger" show>
@@ -23,7 +23,9 @@
         <Track v-for="track in tracks" :key="track.id" :track="track" />
       </div>
       <div v-else class="col-md-8">
-        Nothing to show
+        <div v-if="timelineLoaded">
+          Nothing to show
+        </div>
       </div>
     </div>
 
@@ -53,7 +55,8 @@ const Timeline = {
     tracks: [],
     perPage: 1,
     currentPage: 1,
-    timelineError: ''
+    timelineError: '',
+    timelineLoaded: false
   }),
   created () {
     this.currentPage = this.$route.query.page || 1
@@ -77,10 +80,12 @@ const Timeline = {
           console.log(tracks.page)
           this.currentPage = tracks.page
           console.log('timeline fetched')
+          this.timelineLoaded = true
         })
         .catch((e) => {
           console.log('cannot fetch timeline: ' + e.message)
           this.timelineError = e
+          this.timelineLoaded = false
         })
     }
   }
