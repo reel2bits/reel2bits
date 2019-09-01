@@ -5,6 +5,7 @@ from flask_security import confirmable as FSConfirmable
 from app_oauth import authorization, require_oauth
 from authlib.flask.oauth2 import current_token
 from datas_helpers import to_json_statuses, to_json_account
+from utils import forbidden_username
 import re
 
 bp_api_v1_accounts = Blueprint("bp_api_v1_accounts", __name__)
@@ -79,6 +80,9 @@ def accounts():
 
     if len(errors) > 0:
         return jsonify({"error": str(errors)}), 400
+
+    if forbidden_username(request.json["nickname"]):
+        return jsonify({"error": str({"nickname": ["this username cannot be used"]})}), 400
 
     if request.json["password"] != request.json["confirm"]:
         return jsonify({"error": str({"confirm": ["passwords doesn't match"]})}), 400

@@ -22,6 +22,7 @@ export default (store) => {
     }
   }
 
+  // On new routes, don't forget to update utile.py::forbidden_username list
   return [
     { name: 'home',
       path: '/',

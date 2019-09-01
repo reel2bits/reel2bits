@@ -197,10 +197,10 @@ export default {
       if (!file) {
         return
       }
-      if (file.size > this.$store.state.instance.track_size_limit) {
+      if (file.size > this.$store.state.instance.trackSizeLimit) {
         const filesize = fileSizeFormatService.fileSizeFormat(file.size)
         const allowedSize = fileSizeFormatService.fileSizeFormat(
-          this.$store.state.instance.track_size_limit
+          this.$store.state.instance.trackSizeLimit
         )
         this.trackUploadError =
           'file too big: ' +
