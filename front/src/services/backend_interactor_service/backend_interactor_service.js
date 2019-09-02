@@ -28,6 +28,10 @@ const backendInteractorService = credentials => {
     return apiService.trackEdit({ username, trackId, track, credentials })
   }
 
+  const updateUserSettings = ({ settings }) => {
+    return apiService.updateUserSettings({ settings, credentials })
+  }
+
   const fetchConversation = ({ id }) => {
     return apiService.fetchConversation({ id, credentials })
   }
@@ -242,7 +246,8 @@ const backendInteractorService = credentials => {
     updateNotificationSettings,
     search2,
     searchUsers,
-    fetchLicenses
+    fetchLicenses,
+    updateUserSettings
   }
 
   return backendInteractorServiceInstance

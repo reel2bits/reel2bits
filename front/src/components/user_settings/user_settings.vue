@@ -2,6 +2,18 @@
   <div class="row justify-content-md-center">
     <div class="col-md-6">
       <h4>User settings</h4>
+
+      <b-alert v-if="saveError" variant="danger" show>
+        <span>Error saving settings.</span>
+      </b-alert>
+
+      <b-alert v-if="saveOk" variant="success" :show="5"
+               dismissible fade
+               @dismissed="saveOk=false"
+      >
+        <span>Settings saved.</span>
+      </b-alert>
+
       <b-form class="edit-track-form" @submit.prevent="save(user)">
         <b-form-group
           id="ig-fullname"
@@ -12,7 +24,6 @@
           <b-form-input
             id="fullname"
             v-model.trim="$v.user.fullname.$model"
-            :disabled="isPending"
             placeholder="display name"
             :state="$v.user.fullname.$dirty ? !$v.user.fullname.$error : null"
             aria-describedby="fullname-live-feedback"
@@ -30,7 +41,6 @@
           <b-form-textarea
             id="bio"
             v-model="user.bio"
-            :disabled="isPending"
             :placeholder="bioPlaceholder"
           />
         </b-form-group>
@@ -52,12 +62,6 @@
         <b-button type="submit" variant="primary">
           Save
         </b-button>
-
-        <br>
-
-        <b-alert v-if="userSettingsError" variant="danger" show>
-          <span>{{ error }}</span>
-        </b-alert>
       </b-form>
     </div>
   </div>
@@ -75,8 +79,8 @@ export default {
       fullname: '',
       bio: ''
     },
-    userSettingsError: '',
-    isPending: false
+    saveError: false,
+    saveOk: false
   }),
   validations: {
     user: {
@@ -105,6 +109,18 @@ export default {
     async save () {
       console.log('saving settings')
       this.$v.$touch()
+      if (!this.$v.$invalid) {
+        await this.$store.state.api.backendInteractor.updateUserSettings({ settings: this.user })
+          .then((user) => {
+            this.$store.commit('addNewUsers', [user])
+            this.$store.commit('setCurrentUser', user)
+            this.saveOk = true
+          })
+          .catch((e) => {
+            console.log('Cannot save settings: ' + e)
+            this.saveError = true
+          })
+      }
     }
   }
 }
