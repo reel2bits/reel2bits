@@ -49,6 +49,7 @@
               </router-link>
               <b-dropdown id="userDropdown" :text="atUsername" class="m-md-2">
                 <b-dropdown-item><router-link :to="{ name: 'user-profile', params: { name: currentUser.screen_name } }">My profile</router-link></b-dropdown-item>
+                <b-dropdown-item><router-link :to="{ name: 'user-settings' }">Settings</router-link></b-dropdown-item>
                 <b-dropdown-item><router-link :to="{ name: 'account-logs' }">Logs</router-link></b-dropdown-item>
                 <b-dropdown-divider />
                 <b-dropdown-item><a href="#" @click.prevent="logout">Logout</a></b-dropdown-item>
