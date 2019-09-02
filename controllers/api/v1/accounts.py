@@ -5,7 +5,8 @@ from flask_security import confirmable as FSConfirmable
 from app_oauth import authorization, require_oauth
 from authlib.flask.oauth2 import current_token
 from datas_helpers import to_json_statuses, to_json_account
-from utils import forbidden_username
+from utils import forbidden_username, add_user_log
+from tasks import send_update_profile
 import re
 
 bp_api_v1_accounts = Blueprint("bp_api_v1_accounts", __name__)
@@ -337,6 +338,56 @@ def accounts_verify_credentials():
     """
     user = current_token.user
     return jsonify(to_json_account(user))
+
+
+@bp_api_v1_accounts.route("/api/v1/accounts/update_credentials", methods=["PATCH"])
+@require_oauth("write")
+def accounts_update_credentials():
+    """
+    Update user’s own account.
+    ---
+    tags:
+        - Accounts
+    security:
+        - OAuth2:
+            - write
+    responses:
+        200:
+            description: Returns Account with extra Source and Pleroma attributes.
+            schema:
+                allOf:
+                    - $ref: '#/definitions/Account'
+                    - $ref: '#/definitions/Source'
+                    - $ref: '#/definitions/AccountPleroma'
+    """
+    user = current_token.user
+
+    r_lang = request.json.get("lang", None)
+    r_fullname = request.json.get("fullname", None)
+    r_bio = request.json.get("bio", None)
+
+    r_user = User.query.filter(User.id == user.id).first()
+    if not r_user:
+        # WTF ?
+        abort(500)
+
+    if r_lang:
+        r_user.locale = r_lang
+    if r_fullname:
+        r_user.display_name = r_fullname
+    if r_bio:
+        r_user.actor[0].summary = r_bio
+
+    # commit changes
+    db.session.commit()
+
+    # log action
+    add_user_log(user.id, user.id, "user", "info", "Edited user profile")
+
+    # trigger a profile update
+    send_update_profile(r_user)
+
+    return jsonify(to_json_account(r_user))
 
 
 @bp_api_v1_accounts.route("/api/v1/accounts/<int:user_id>/statuses", methods=["GET"])
