@@ -435,6 +435,9 @@ def post_to_outbox(activity: ap.BaseActivity) -> str:
 
 
 def send_update_profile(user: User) -> None:
+    if not current_app.config["AP_ENABLED"]:
+        return  # not federating if not enabled
+
     # FIXME: not sure at all about that
     actor = user.actor[0]
     raw_update = dict(
@@ -446,6 +449,9 @@ def send_update_profile(user: User) -> None:
 
 
 def send_update_sound(sound: Sound) -> None:
+    if not current_app.config["AP_ENABLED"]:
+        return  # not federating if not enabled
+
     # FIXME: not sure at all about that
     # Should not even work
     actor = sound.user.actor[0]
