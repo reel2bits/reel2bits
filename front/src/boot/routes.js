@@ -5,6 +5,7 @@ import LoginForm from '../components/login_form/login_form.vue'
 import Register from '../components/register/register.vue'
 import OAuthCallback from '../components/oauth_callback/oauth_callback.vue'
 import UserProfile from '../components/user_profile/user_profile.vue'
+import UserSettings from '../components/user_settings/user_settings.vue'
 import TracksUpload from '../views/tracks/Upload.vue'
 import TracksShow from '../views/tracks/Show.vue'
 import TracksEdit from '../views/tracks/Edit.vue'
@@ -42,6 +43,7 @@ export default (store) => {
     { name: 'oauth-callback', path: '/oauth-callback', component: OAuthCallback, props: (route) => ({ code: route.query.code }) },
     { name: 'external-user-profile', path: '/users/:id', component: UserProfile },
     { name: 'user-profile', path: '/(users/)?:name', component: UserProfile },
+    { name: 'user-settings', path: '/account/settings', component: UserSettings, beforeEnter: validateAuthenticatedRoute },
     // Tracks
     { name: 'tracks-upload', path: '/tracks/upload', component: TracksUpload, beforeEnter: validateAuthenticatedRoute },
     { name: 'tracks-show', path: '/:username/:trackId', component: TracksShow },
