@@ -16,35 +16,6 @@ from tasks import post_to_outbox, send_update_profile
 bp_users = Blueprint("bp_users", __name__)
 
 
-@bp_users.route("/account/logs", methods=["GET"])
-@login_required
-def logs():
-    level = request.args.get("level")
-    pcfg = {"title": gettext("User Logs")}
-    if level:
-        _logs = (
-            UserLogging.query.filter(UserLogging.level == level.upper(), UserLogging.user_id == current_user.id)
-            .limit(100)
-            .all()
-        )
-    else:
-        _logs = UserLogging.query.filter(UserLogging.user_id == current_user.id).limit(100).all()
-    return render_template("users/user_logs.jinja2", pcfg=pcfg, logs=_logs)
-
-
-@bp_users.route("/account/logs/<int:log_id>/delete", methods=["GET", "DELETE", "PUT"])
-@login_required
-def logs_delete(log_id):
-    log = UserLogging.query.filter(UserLogging.id == log_id, UserLogging.user_id == current_user.id).first()
-    if not log:
-        _datas = {"status": "error", "id": log_id}
-    else:
-        db.session.delete(log)
-        db.session.commit()
-        _datas = {"status": "deleted", "id": log_id}
-    return Response(json.dumps(_datas), mimetype="application/json;charset=utf-8")
-
-
 @bp_users.route("/user/<string:name>", methods=["GET"])
 @accept_fallback
 def profile(name):
