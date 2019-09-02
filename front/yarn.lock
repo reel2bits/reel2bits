@@ -8862,7 +8862,6 @@ safe-regex@^1.1.0:
 
 "sass-loader@git://github.com/webpack-contrib/sass-loader":
   version "8.0.0"
-  uid aa9b53b4d1c14117c4ca114a13cecb6e53b4e87a
   resolved "git://github.com/webpack-contrib/sass-loader#aa9b53b4d1c14117c4ca114a13cecb6e53b4e87a"
   dependencies:
     clone-deep "^4.0.1"
@@ -10160,6 +10159,11 @@ vue-hot-reload-api@^2.2.0, vue-hot-reload-api@^2.3.0:
   version "2.3.3"
   resolved "https://registry.yarnpkg.com/vue-hot-reload-api/-/vue-hot-reload-api-2.3.3.tgz#2756f46cb3258054c5f4723de8ae7e87302a1ccf"
   integrity sha512-KmvZVtmM26BQOMK1rwUZsrqxEGeKiYSZGA7SNWE6uExx8UX/cj9hq2MRV/wWC3Cq6AoeDGk57rL9YMFRel/q+g==
+
+vue-i18n@^8.14.0:
+  version "8.14.0"
+  resolved "https://registry.yarnpkg.com/vue-i18n/-/vue-i18n-8.14.0.tgz#613cbbc21d71dc608cd085f8a94ea3a40badcd33"
+  integrity sha512-utI1Rvc8i+fmmUkkKRmHaf4QQ87s7rGVL5ZZLsKvvRzmgaIr1l+GfGxxxRmsZxHpPlgeB8OxoUZ4noqZgDL6xg==
 
 vue-loader@^14.0.0:
   version "14.2.4"
