@@ -73,7 +73,9 @@
 
     <!-- content -->
     <div class="container">
-      <router-view @updateLogoSpinDuration="updateLogoSpinDuration" />
+      <transition name="fade">
+        <router-view @updateLogoSpinDuration="updateLogoSpinDuration" />
+      </transition>
     </div>
   </div>
 </template>
