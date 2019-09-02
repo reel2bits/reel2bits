@@ -26,6 +26,7 @@ const MASTODON_PROFILE_UPDATE_URL = '/api/v1/accounts/update_credentials'
 
 const REEL2BITS_LICENSES = '/api/reel2bits/licenses'
 const REEL2BITS_ALBUMS = (username) => `/api/albums/${username}`
+const CHANGE_PASSWORD_URL = '/api/reel2bits/change_password'
 
 const oldfetch = window.fetch
 
@@ -364,6 +365,21 @@ const fetchTimeline = ({
     })
 }
 
+const changePassword = ({ credentials, password, newPassword, newPasswordConfirmation }) => {
+  const form = new FormData()
+
+  form.append('password', password)
+  form.append('new_password', newPassword)
+  form.append('new_password_confirmation', newPasswordConfirmation)
+
+  return fetch(CHANGE_PASSWORD_URL, {
+    body: form,
+    method: 'POST',
+    headers: authHeaders(credentials)
+  })
+    .then((response) => response.json())
+}
+
 const apiService = {
   verifyCredentials,
   register,
@@ -379,7 +395,8 @@ const apiService = {
   fetchTimeline,
   fetchLicenses,
   fetchUserAlbums,
-  updateUserSettings
+  updateUserSettings,
+  changePassword
 }
 
 export default apiService
