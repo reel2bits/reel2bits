@@ -1,11 +1,11 @@
 import pytz
 import requests
-from flask import Blueprint, render_template, request, redirect, url_for, flash, Response, json, jsonify, current_app
+from flask import Blueprint, render_template, request, redirect, url_for, flash, Response, jsonify, current_app
 from flask_babelex import gettext
 from flask_security import login_required, current_user
 
 from forms import UserProfileForm
-from models import db, User, UserLogging, Sound, Album, Follower, Actor, Activity, create_remote_actor
+from models import db, User, Sound, Album, Follower, Actor, Activity, create_remote_actor
 from utils import add_user_log
 from flask_accept import accept_fallback
 from little_boxes.webfinger import get_actor_url
