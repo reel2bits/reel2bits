@@ -22,6 +22,7 @@ const MASTODON_USER_HOME_TIMELINE_URL = '/api/v1/timelines/home'
 const MASTODON_DIRECT_MESSAGES_TIMELINE_URL = '/api/v1/timelines/direct'
 const MASTODON_USER_NOTIFICATIONS_URL = '/api/v1/notifications'
 const MASTODON_USER_TIMELINE_URL = id => `/api/v1/accounts/${id}/statuses`
+const MASTODON_PROFILE_UPDATE_URL = '/api/v1/accounts/update_credentials'
 
 const REEL2BITS_LICENSES = '/api/reel2bits/licenses'
 const REEL2BITS_ALBUMS = (username) => `/api/albums/${username}`
@@ -190,6 +191,15 @@ const fetchUser = ({ id, store }) => {
   let credentials = store.getters.getToken()
   return promisedRequest({ url, credentials }, store)
     .then((data) => parseUser(data))
+}
+
+const updateUserSettings = ({ settings, credentials }) => {
+  return promisedRequest({
+    url: MASTODON_PROFILE_UPDATE_URL,
+    method: 'PATCH',
+    payload: settings,
+    credentials: credentials
+  }).then((data) => parseUser(data))
 }
 
 const fetchLicenses = () => {
@@ -368,7 +378,8 @@ const apiService = {
   fetchUserLogs,
   fetchTimeline,
   fetchLicenses,
-  fetchUserAlbums
+  fetchUserAlbums,
+  updateUserSettings
 }
 
 export default apiService
