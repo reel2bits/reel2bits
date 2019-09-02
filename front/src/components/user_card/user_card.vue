@@ -24,7 +24,7 @@
         </div>
       </div>
       <p class="card-text">
-        {{ account.note }}
+        {{ account.description }}
       </p>
       <ul class="nav nav-fill">
         <li class="nav-item border-right">
