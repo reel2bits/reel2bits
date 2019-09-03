@@ -4,7 +4,7 @@
     <nav class="navbar fixed-top bg-light">
       <div class="container">
         <div class="w-100 border-bottom align-items-center d-flex justify-content-between">
-          <b-link to="/" class="navbar-brand">
+          <b-link :to="{ name: 'public-timeline' }" class="navbar-brand">
             <MainLogo :logo_spin_duration="logoSpinDuration" /><h3 class="text-body mx-3 d-inline">
               {{ sitename }}
             </h3>
@@ -15,21 +15,6 @@
             >
           </div>
           <div>
-            <b-button-group>
-              <b-button type="button" variant="light"
-                        :to="{ name: 'public-external-timeline' }"
-                        text="The Whole Known Network"
-              >
-                TWKN
-              </b-button>
-              <b-button type="button" variant="light"
-                        :to="{ name: 'public-timeline' }"
-                        text="Public"
-              >
-                PUB
-              </b-button>
-            </b-button-group>
-
             <span v-if="currentUser">
 
               <b-dropdown id="userDropdown" text="Create" 
@@ -56,7 +41,7 @@
               <b-dropdown id="userDropdown" :text="atUsername" 
                 right 
                 variant="link" 
-                toggle-class="px-0">
+                toggle-class="px-0 text-decoration-none">
                 <b-dropdown-item><router-link :to="{ name: 'user-profile', params: { name: currentUser.screen_name } }">My profile</router-link></b-dropdown-item>
                 <b-dropdown-item><router-link :to="{ name: 'user-settings' }">Settings</router-link></b-dropdown-item>
                 <b-dropdown-item><router-link :to="{ name: 'account-logs' }">Logs</router-link></b-dropdown-item>
