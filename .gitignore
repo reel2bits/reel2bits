@@ -17,3 +17,4 @@
 /test-reports
 test/unit/coverage/
 test/e2e/reports
+.DS_Store
