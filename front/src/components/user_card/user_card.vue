@@ -7,12 +7,12 @@
         </div>
         <div class="align-self-center">
           <h2 class="h2 m-0">
-            <b-link :to="{ name: 'user-profile', params: { name: account.screen_name } }">
+            <b-link :to="{ name: 'user-profile', params: { name: account.screen_name } }" class="text-decoration-none text-body">
               {{ account.name }}
             </b-link>
           </h2>
           <p class="h3 font-weight-normal m-0">
-            <b-link :to="{ name: 'user-profile', params: { name: account.screen_name } }">
+            <b-link :to="{ name: 'user-profile', params: { name: account.screen_name } }" class="text-decoration-none text-body">
               @{{ account.screen_name }}
             </b-link> <button type="button" class="btn btn-primary btn-sm">
               Follow

@@ -16,13 +16,13 @@
       </b-alert>
       <div class="d-flex my-4">
         <img :src="track.picture_url" class="d-flex mr-3"
-             style="width:112px; height:112px; background: #C8D1F4; "
+             style="width:112px; height:112px;"
         >
         <div class="flex-fill">
           <div class="d-flex">
-            <p class="flex-fill h5" :title="track.title">
+            <h1 class="flex-fill h5" :title="track.title">
               {{ track.title | truncate(45) }}
-            </p>
+            </h1>
             <div class="d-flex" :title="track.uploaded_on">
               {{ publishedAgo }}
             </div>
@@ -42,13 +42,19 @@
             Track not yet available.
           </div>
 
-          <div class="pt-1 d-flex">
+          <div class="pt-0 d-flex">
             <div class="btn-group" role="group" aria-label="Track actions">
+              <b-button :href="track.media_orig" variant="link"
+                  class="text-decoration-none pl-0">
+                  <i class="fa fa-cloud-download" aria-hidden="true" /> Download
+              </b-button>
               <div v-if="isOwner">
-                <b-button size="sm" variant="light" @click.prevent="editTrack">
+                <b-button @click.prevent="editTrack" variant="link"
+                  class="text-decoration-none">
                   <i class="fa fa-pencil" aria-hidden="true" /> Edit
                 </b-button>
-                <b-button v-b-modal.modal-delete size="sm" variant="danger">
+                <b-button v-b-modal.modal-delete variant="link"
+                  class="text-decoration-none">
                   <i class="fa fa-times" aria-hidden="true" /> Delete
                 </b-button>
                 <b-modal id="modal-delete" title="Deleting track" @ok="deleteTrack">
@@ -59,7 +65,7 @@
               </div>
             </div>
             <div class="ml-auto align-self-end">
-              <span class="text-secondary">{{ playerTimeCur }}</span> / <span class="text-muted">{{ playerTimeTot }}</span>
+              <span class="text-secondary">{{ playerTimeCur }}</span> <span class="text-muted">{{ playerTimeTot }}</span>
             </div>
           </div>
         </div>
