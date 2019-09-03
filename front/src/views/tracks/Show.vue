@@ -45,16 +45,19 @@
           <div class="pt-0 d-flex">
             <div class="btn-group" role="group" aria-label="Track actions">
               <b-button :href="track.media_orig" variant="link"
-                  class="text-decoration-none pl-0">
-                  <i class="fa fa-cloud-download" aria-hidden="true" /> Download
+                        class="text-decoration-none pl-0"
+              >
+                <i class="fa fa-cloud-download" aria-hidden="true" /> Download
               </b-button>
               <div v-if="isOwner">
-                <b-button @click.prevent="editTrack" variant="link"
-                  class="text-decoration-none">
+                <b-button variant="link" class="text-decoration-none"
+                          @click.prevent="editTrack"
+                >
                   <i class="fa fa-pencil" aria-hidden="true" /> Edit
                 </b-button>
                 <b-button v-b-modal.modal-delete variant="link"
-                  class="text-decoration-none">
+                          class="text-decoration-none"
+                >
                   <i class="fa fa-times" aria-hidden="true" /> Delete
                 </b-button>
                 <b-modal id="modal-delete" title="Deleting track" @ok="deleteTrack">
