@@ -4,7 +4,7 @@
     <nav class="navbar fixed-top bg-light">
       <div class="container">
         <div class="w-100 border-bottom align-items-center d-flex justify-content-between">
-          <b-link to="/" class="navbar-brand">
+          <b-link :to="{ name: 'public-timeline' }" class="navbar-brand">
             <MainLogo :logo_spin_duration="logoSpinDuration" /><h3 class="text-body mx-3 d-inline">
               {{ sitename }}
             </h3>
@@ -15,39 +15,33 @@
             >
           </div>
           <div>
-            <b-button-group>
-              <b-button type="button" variant="light"
-                        :to="{ name: 'public-external-timeline' }"
-                        text="The Whole Known Network"
-              >
-                TWKN
-              </b-button>
-              <b-button type="button" variant="light"
-                        :to="{ name: 'public-timeline' }"
-                        text="Public"
-              >
-                PUB
-              </b-button>
-            </b-button-group>
-
             <span v-if="currentUser">
-              <b-button-group>
-                <b-button type="button" variant="primary"
-                          :to="{ name: 'tracks-upload' }"
-                          text="new track"
-                >track</b-button>
-                <b-button type="button" variant="info"
-                          :to="{ name: 'albums-new' }"
-                          text="new album"
-                >album</b-button>
-              </b-button-group>
+
+              <b-dropdown id="userDropdown" text="Create" 
+                right 
+                variant="primary">
+                <b-dropdown-item>
+                  <router-link :to="{ name: 'tracks-upload' }"
+                            text="new track"
+                  >New Track</router-link>
+                </b-dropdown-item>
+                <b-dropdown-item>
+                  <router-link :to="{ name: 'albums-new' }"
+                            text="new album"
+                  >New Album</router-link>
+                </b-dropdown-item>
+              </b-dropdown>
+
               <router-link :to="{ name: 'user-profile', params: { name: currentUser.screen_name } }">
                 <img :src="currentUser.profile_image_url" class="rounded-circle mx-2" width="40"
                      height="40" :alt="usernameAvatar"
                      title="go to profile"
                 >
               </router-link>
-              <b-dropdown id="userDropdown" :text="atUsername" class="m-md-2">
+              <b-dropdown id="userDropdown" :text="atUsername" 
+                right 
+                variant="link" 
+                toggle-class="px-0 text-decoration-none">
                 <b-dropdown-item><router-link :to="{ name: 'user-profile', params: { name: currentUser.screen_name } }">My profile</router-link></b-dropdown-item>
                 <b-dropdown-item><router-link :to="{ name: 'user-settings' }">Settings</router-link></b-dropdown-item>
                 <b-dropdown-item><router-link :to="{ name: 'account-logs' }">Logs</router-link></b-dropdown-item>
@@ -56,15 +50,13 @@
               </b-dropdown>
             </span>
             <span v-else>
-              <b-button-group>
-                <b-button type="button" variant="primary"
-                          :to="{ name: 'login_form' }"
-                >Login</b-button>
-                <b-button v-if="registrationOpen"
-                          type="button" variant="info"
-                          :to="{ name: 'register' }"
-                >Register</b-button>
-              </b-button-group>
+              <b-button type="button" variant="link"
+                        :to="{ name: 'login_form' }"
+              >Login</b-button>
+              <b-button v-if="registrationOpen"
+                        type="button" variant="primary"
+                        :to="{ name: 'register' }"
+              >Register</b-button>
             </span>
           </div>
         </div>

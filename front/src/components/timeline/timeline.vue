@@ -11,14 +11,6 @@
   </div>
   <div v-else>
     <div class="row">
-      <div class="col-md-8">
-        <p class="h3">
-          {{ title }}
-        </p>
-      </div>
-    </div>
-
-    <div class="row">
       <div v-if="tracks.length > 0" class="col-md-8">
         <Track v-for="track in tracks" :key="track.id" :track="track" />
       </div>
