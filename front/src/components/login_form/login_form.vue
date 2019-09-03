@@ -42,6 +42,9 @@
         <b-button type="submit" variant="primary">
           Login
         </b-button>
+        <router-link :to="{name: 'password-reset'}">
+          Reset password
+        </router-link>
       </b-form>
 
       <br>

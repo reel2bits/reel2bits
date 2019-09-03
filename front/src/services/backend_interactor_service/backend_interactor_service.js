@@ -156,6 +156,7 @@ const backendInteractorService = credentials => {
   const deleteAccount = ({ password }) => apiService.deleteAccount({ credentials, password })
   const changePassword = ({ password, newPassword, newPasswordConfirmation }) =>
     apiService.changePassword({ credentials, password, newPassword, newPasswordConfirmation })
+  const resetPassword = ({ email }) => apiService.resetPassword({ email })
 
   const fetchSettingsMFA = () => apiService.settingsMFA({ credentials })
   const generateMfaBackupCodes = () => apiService.generateMfaBackupCodes({ credentials })
@@ -247,7 +248,8 @@ const backendInteractorService = credentials => {
     search2,
     searchUsers,
     fetchLicenses,
-    updateUserSettings
+    updateUserSettings,
+    resetPassword
   }
 
   return backendInteractorServiceInstance

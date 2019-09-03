@@ -3,6 +3,8 @@ import hashlib
 import os
 import subprocess
 from os.path import splitext
+import random
+import string
 
 from flask import current_app
 from flask_security import current_user
@@ -257,6 +259,16 @@ def get_hashed_filename(filename):
     fs_fname = fs_fname.hexdigest()
 
     return fs_fname + f_e
+
+
+def generate_random_token():
+    t = hashlib.sha256()
+
+    magic_sauce = "".join([random.choice(string.ascii_letters + string.digits) for n in range(250)])
+    magic_sauce += str(datetime.datetime.now())
+
+    t.update(magic_sauce.encode("utf-8"))
+    return t.hexdigest()[:250]
 
 
 RESTRICTED_NICKNAMES = [

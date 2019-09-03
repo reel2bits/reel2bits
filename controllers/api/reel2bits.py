@@ -1,6 +1,6 @@
-from flask import Blueprint, jsonify, request
-from models import db, licences
-from utils import add_user_log
+from flask import Blueprint, jsonify, request, abort
+from models import db, licences, User, PasswordResetToken
+from utils import add_user_log, generate_random_token
 from app_oauth import require_oauth
 from authlib.flask.oauth2 import current_token
 from flask_security.utils import hash_password, verify_password
@@ -59,3 +59,26 @@ def change_password():
         add_user_log(user.id, user.id, "user", "info", "Password changed")
         return jsonify({"status": "success"})
     return jsonify({"error": "old password doesn't match"}), 401
+
+
+@bp_api_reel2bits.route("/api/reel2bits/reset_password", methods=["POST"])
+def reset_password():
+    email = request.args.get("email", None)
+    if not email:
+        abort(400)
+
+    user = User.query.filter(User.email == email).first()
+    if not user:
+        abort(404)
+
+    # generate a reset link
+    prt = PasswordResetToken()
+    prt.token = generate_random_token()
+    prt.expires_at = None
+    prt.user_id = user.id
+
+    db.session.add(prt)
+    db.session.commit()
+    add_user_log(user.id, user.id, "user", "info", "Password reset token generated")
+
+    return jsonify({"status": "ok"}), 204

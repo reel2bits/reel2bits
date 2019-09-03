@@ -61,6 +61,20 @@ class Role(db.Model, RoleMixin):
     __mapper_args__ = {"order_by": name}
 
 
+class PasswordResetToken(db.Model):
+    __tablename__ = "password_reset_token"
+    id = db.Column(db.Integer, primary_key=True)
+    token = db.Column(db.String(255), unique=True, nullable=False)
+    created_at = db.Column(db.DateTime(timezone=False), default=datetime.datetime.utcnow)
+    updated_at = db.Column(
+        db.DateTime(timezone=False), default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow
+    )
+    expires_at = db.Column(db.DateTime(timezone=False), nullable=True)
+    used = db.Column(db.Boolean(), default=False)
+
+    user_id = db.Column(db.Integer(), db.ForeignKey("user.id"), nullable=True)
+
+
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(255), unique=True, nullable=False, info={"label": "Email"})
@@ -85,6 +99,7 @@ class User(db.Model, UserMixin):
     roles = db.relationship("Role", secondary=roles_users, backref=db.backref("users", lazy="dynamic"))
     apitokens = db.relationship("Apitoken", backref="user", lazy="dynamic", cascade="delete")
 
+    password_reset_tokens = db.relationship("PasswordResetToken", backref="user", lazy="dynamic", cascade="delete")
     user_loggings = db.relationship("UserLogging", backref="user", lazy="dynamic", cascade="delete")
     loggings = db.relationship("Logging", backref="user", lazy="dynamic", cascade="delete")
 

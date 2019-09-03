@@ -1,6 +1,6 @@
 import { parseUser, parseTrack, parseAlbum } from '../entity_normalizer/entity_normalizer.service.js'
 import { StatusCodeError } from '../errors/errors'
-import { map } from 'lodash'
+import { map, reduce } from 'lodash'
 
 const MASTODON_LOGIN_URL = '/api/v1/accounts/verify_credentials'
 const MASTODON_REGISTRATION_URL = '/api/v1/accounts'
@@ -27,6 +27,7 @@ const MASTODON_PROFILE_UPDATE_URL = '/api/v1/accounts/update_credentials'
 const REEL2BITS_LICENSES = '/api/reel2bits/licenses'
 const REEL2BITS_ALBUMS = (username) => `/api/albums/${username}`
 const CHANGE_PASSWORD_URL = '/api/reel2bits/change_password'
+const RESET_PASSWORD_URL = '/api/reel2bits/reset_password'
 
 const oldfetch = window.fetch
 
@@ -380,6 +381,18 @@ const changePassword = ({ credentials, password, newPassword, newPasswordConfirm
     .then((response) => response.json())
 }
 
+const resetPassword = ({ email }) => {
+  const params = { email }
+  const query = reduce(params, (acc, v, k) => {
+    const encoded = `${k}=${encodeURIComponent(v)}`
+    return `${acc}&${encoded}`
+  }, '')
+  const url = `${RESET_PASSWORD_URL}?${query}`
+  return fetch(url, {
+    method: 'POST'
+  })
+}
+
 const apiService = {
   verifyCredentials,
   register,
@@ -396,7 +409,8 @@ const apiService = {
   fetchLicenses,
   fetchUserAlbums,
   updateUserSettings,
-  changePassword
+  changePassword,
+  resetPassword
 }
 
 export default apiService
