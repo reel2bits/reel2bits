@@ -83,16 +83,22 @@
           />
         </b-form-group>
 
-        <b-form-checkbox
-          id="private"
-          v-model="track.private"
-          name="private"
-          value="y"
-          unchecked-value=""
-          :disabled="isPending"
+        <b-form-group
+          id="ig-private"
+          label-for="private"
+          description="A private track won't federate. You can use this as your unpublished drafts. Note that you can't replace audio file after upload."
         >
-          this track is private
-        </b-form-checkbox>
+          <b-form-checkbox
+            id="private"
+            v-model="track.private"
+            name="private"
+            value="y"
+            unchecked-value=""
+            :disabled="isPending"
+          >
+            this track is private
+          </b-form-checkbox>
+        </b-form-group>
 
         <br>
 
