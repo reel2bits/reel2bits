@@ -89,6 +89,10 @@ const passwordResetToken = {
     if (this.signedIn) {
       this.$router.push({ name: 'root' })
     }
+    this.user.token = (this.$route.params.token || '')
+    this.$nextTick(() => {
+      this.$refs.password.focus()
+    })
   },
   methods: {
     submit () {
@@ -106,7 +110,7 @@ const passwordResetToken = {
           if (status === 204) {
             this.success = true
             this.error = null
-          } else if (status === 404 || status === 400) {
+          } else if (status === 404 || status === 400 || status === 500) {
             this.error = 'Cannot reset password'
             this.$nextTick(() => {
               this.$refs.token.focus()

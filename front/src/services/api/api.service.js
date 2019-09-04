@@ -398,6 +398,9 @@ const resetPasswordToken = ({ token, password, passwordConfirm }) => {
   const url = RESET_PASSWORD_URL_TOKEN(token)
   return fetch(url, {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
     body: JSON.stringify({
       token: token,
       new_password: password,
