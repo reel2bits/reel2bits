@@ -15,6 +15,7 @@ import AccountLogs from '../views/account/Logs.vue'
 import About from '../views/About.vue'
 import NotFound from '../views/NotFound.vue'
 import PasswordReset from '../components/password_reset/password_reset.vue'
+import PasswordResetToken from '../components/password_reset_token/password_reset_token.vue'
 
 export default (store) => {
   const validateAuthenticatedRoute = (to, from, next) => {
@@ -42,6 +43,7 @@ export default (store) => {
     { path: '/login', name: 'login_form', component: LoginForm },
     { path: '/register', name: 'register', component: Register },
     { name: 'password-reset', path: '/password-reset', component: PasswordReset },
+    { name: 'password-reset-token', path: '/password-reset/:token', component: PasswordResetToken },
     { name: 'oauth-callback', path: '/oauth-callback', component: OAuthCallback, props: (route) => ({ code: route.query.code }) },
     { name: 'external-user-profile', path: '/users/:id', component: UserProfile },
     { name: 'user-profile', path: '/(users/)?:name', component: UserProfile },

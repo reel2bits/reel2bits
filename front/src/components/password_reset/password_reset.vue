@@ -19,7 +19,7 @@
         </b-form-group>
 
         <b-button type="submit" variant="primary" :disabled="isPending">
-          Login
+          Send reset email
         </b-button>
       </b-form>
 
