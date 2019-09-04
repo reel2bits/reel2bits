@@ -14,7 +14,13 @@
                 :user-id="userId"
               />
             </b-tab>
-            <b-tab title="Albums" />
+            <b-tab title="Albums">
+              <Timeline
+                key="{{ userId }}albums"
+                timeline-name="albums"
+                :user-id="userId"
+              />
+            </b-tab>
             <b-tab v-if="isUs" title="Drafts">
               <Timeline
                 key="{{ userId }}drafts"
