@@ -9,13 +9,19 @@
           <b-tabs content="mt-3">
             <b-tab title="Tracks">
               <Timeline
-                :key="userId"
+                key="{{ userId }}user"
                 timeline-name="user"
                 :user-id="userId"
               />
             </b-tab>
             <b-tab title="Albums" />
-            <b-tab v-if="isUs" title="Drafts" />
+            <b-tab v-if="isUs" title="Drafts">
+              <Timeline
+                key="{{ userId }}drafts"
+                timeline-name="drafts"
+                :user-id="userId"
+              />
+            </b-tab>
           </b-tabs>
         </div>
         <div class="col-md-4">
