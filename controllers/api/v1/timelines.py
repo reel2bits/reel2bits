@@ -1,9 +1,9 @@
-from flask import Blueprint, jsonify, request, url_for
-from models import db, Sound, Activity
+from flask import Blueprint, jsonify, request, url_for, abort
+from models import db, Sound, Activity, Album, User
 from app_oauth import require_oauth
 import json
 from models import licences as track_licenses
-from datas_helpers import to_json_statuses, to_json_account
+from datas_helpers import to_json_track, to_json_account, to_json_album
 from authlib.flask.oauth2 import current_token
 
 
@@ -177,7 +177,7 @@ def public():
     tracks = []
     for t in q.items:
         if t.Sound:
-            tracks.append(to_json_statuses(t.Sound, to_json_account(t.Sound.user)))
+            tracks.append(to_json_track(t.Sound, to_json_account(t.Sound.user)))
         else:
             print(t.Activity)
     resp = {"page": page, "page_size": count, "totalItems": q.total, "items": tracks, "totalPages": q.pages}
@@ -221,6 +221,59 @@ def drafts():
 
     tracks = []
     for t in q.items:
-        tracks.append(to_json_statuses(t, to_json_account(t.user)))
+        tracks.append(to_json_track(t, to_json_account(t.user)))
     resp = {"page": page, "page_size": count, "totalItems": q.total, "items": tracks, "totalPages": q.pages}
+    return jsonify(resp)
+
+
+@bp_api_v1_timelines.route("/api/v1/timelines/albums", methods=["GET"])
+@require_oauth(None)
+def albums():
+    """
+    User albums timeline.
+    ---
+    tags:
+        - Timelines
+    parameters:
+        - name: count
+          in: query
+          type: integer
+          required: true
+          description: count
+        - name: page
+          in: query
+          type: integer
+          description: page number
+        - name: user
+          in: query
+          type: string
+          description: the user ID to get albums list
+    responses:
+        200:
+            description: Returns array of Status
+    """
+    tok_user = current_token.user
+    count = int(request.args.get("count", 20))
+    page = int(request.args.get("page", 1))
+    user = request.args.get("user", None)
+    if not user:
+        abort(400)
+
+    user = User.query.filter(User.id == user).first()
+    if not user:
+        return jsonify({"error": "User does not exist"}), 404
+
+    q = Album.query.order_by(Album.created.desc())
+
+    if user.id != tok_user.id:
+        q = q.filter(Album.user_id == user.id, Album.private.is_(False))
+    else:
+        q = q.filter(Album.user_id == user.id)
+
+    q = q.paginate(page=page, per_page=count)
+
+    albums = []
+    for t in q.items:
+        albums.append(to_json_album(t, to_json_account(t.user)))
+    resp = {"page": page, "page_size": count, "totalItems": q.total, "items": albums, "totalPages": q.pages}
     return jsonify(resp)

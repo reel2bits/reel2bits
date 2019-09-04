@@ -54,7 +54,7 @@ export default (store) => {
     { name: 'tracks-edit', path: '/:username/:trackId/edit', component: TracksEdit, beforeEnter: validateAuthenticatedRoute },
     // Albums
     { name: 'albums-new', path: '/albums/new', component: AlbumsNew, beforeEnter: validateAuthenticatedRoute },
-    { name: 'albums-show', path: '/users/:username/album/:albumId', component: AlbumsShow },
+    { name: 'albums-show', path: '/albums/:username/:albumId', component: AlbumsShow },
     // Account
     { name: 'account-logs', path: '/account/logs', component: AccountLogs, beforeEnter: validateAuthenticatedRoute },
     // Always last

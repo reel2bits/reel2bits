@@ -138,27 +138,31 @@ export const parseTrack = (data) => {
   output.reblogged = data.reblogged
   output.comments = 0 // FIXME TODO
 
-  output.type = data.reblog ? 'retweet' : 'status'
+  output.type = (data.reel2bits.type || 'status')
 
   output.slug = data.reel2bits.slug
 
-  output.processing = {}
-  output.processing.basic = data.reel2bits.processing.basic
-  output.processing.transcode_state = data.reel2bits.processing.transcode_state
-  output.processing.transcode_needed = data.reel2bits.processing.transcode_needed
-  output.processing.done = data.reel2bits.processing.done
+  if (output.type === 'track') {
+    output.processing = {}
+    output.processing.basic = data.reel2bits.processing.basic
+    output.processing.transcode_state = data.reel2bits.processing.transcode_state
+    output.processing.transcode_needed = data.reel2bits.processing.transcode_needed
+    output.processing.done = data.reel2bits.processing.done
 
-  output.metadatas = {}
-  output.metadatas.licence = data.reel2bits.metadatas.licence
-  output.metadatas.duration = data.reel2bits.metadatas.duration
-  output.metadatas.type = data.reel2bits.metadatas.type
-  output.metadatas.codec = data.reel2bits.metadatas.codec
-  output.metadatas.format = data.reel2bits.metadatas.format
-  output.metadatas.channels = data.reel2bits.metadatas.channels
-  output.metadatas.rate = data.reel2bits.metadatas.rate
-  output.metadatas.bitrate = data.reel2bits.metadatas.bitrate
-  output.metadatas.bitrate_mode = data.reel2bits.metadatas.bitrate_mode
-
+    output.metadatas = {}
+    output.metadatas.licence = data.reel2bits.metadatas.licence
+    output.metadatas.duration = data.reel2bits.metadatas.duration
+    output.metadatas.type = data.reel2bits.metadatas.type
+    output.metadatas.codec = data.reel2bits.metadatas.codec
+    output.metadatas.format = data.reel2bits.metadatas.format
+    output.metadatas.channels = data.reel2bits.metadatas.channels
+    output.metadatas.rate = data.reel2bits.metadatas.rate
+    output.metadatas.bitrate = data.reel2bits.metadatas.bitrate
+    output.metadatas.bitrate_mode = data.reel2bits.metadatas.bitrate_mode
+  }
+  if (output.type === 'album') {
+    output.tracks_count = data.reel2bits.tracks_count
+  }
   return output
 }
 

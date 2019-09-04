@@ -36,7 +36,7 @@ def to_json_account(user):
     )
 
 
-def to_json_statuses(track, account):
+def to_json_track(track, account):
     si = track.sound_infos.first()
     url_orig = url_for("get_uploads_stuff", thing="sounds", stuff=track.path_sound(orig=True), _external=True)
     url_transcode = url_for("get_uploads_stuff", thing="sounds", stuff=track.path_sound(orig=False), _external=True)
@@ -68,6 +68,7 @@ def to_json_statuses(track, account):
         "language": None,
         "pinned": None,
         "reel2bits": {
+            "type": "track",
             "slug": track.slug,
             "local": track.user.actor[0].is_local(),
             "title": track.title,
@@ -99,4 +100,46 @@ def to_json_statuses(track, account):
         if si.bitrate and si.bitrate_mode:
             obj["reel2bits"]["metadatas"]["bitrate"] = si.bitrate
             obj["reel2bits"]["metadatas"]["bitrate_mode"] = si.bitrate_mode
+    return obj
+
+
+def to_json_album(album, account):
+    obj = {
+        "id": album.flake_id,
+        "uri": None,
+        "url": None,
+        "account": account,
+        "in_reply_to_id": None,
+        "in_reply_to_account_id": None,
+        "reblog": None,
+        "content": album.description,
+        "created_at": album.created,
+        "emojis": [],
+        "replies_count": 0,
+        "reblogs_count": 0,
+        "favourites_count": 0,
+        "reblogged": None,
+        "favorited": None,
+        "muted": None,
+        "sensitive": None,
+        "spoiler_text": None,
+        "visibility": None,
+        "media_attachment": [],
+        "mentions": [],
+        "tags": [],
+        "card": None,
+        "application": None,
+        "language": None,
+        "pinned": None,
+        "reel2bits": {
+            "type": "album",
+            "slug": album.slug,
+            "local": True,  # NOTE, albums doesn't federate (yet)
+            "title": album.title,
+            "picture_url": None,  # FIXME not implemented yet
+            "private": album.private,
+            "uploaded_elapsed": album.elapsed(),
+            "tracks_count": album.sounds.count(),
+        },
+    }
     return obj

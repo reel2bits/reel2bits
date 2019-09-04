@@ -12,7 +12,10 @@
   <div v-else>
     <div class="row">
       <div v-if="tracks.length > 0" class="col-md-8">
-        <Track v-for="track in tracks" :key="track.id" :track="track" />
+        <div v-for="status in tracks" :key="status.id" :status="status">
+          <Track v-if="status.type==='track'" :key="status.id" :track="status" />
+          <Album v-if="status.type==='album'" :key="status.id" :album="status" />
+        </div>
       </div>
       <div v-else class="col-md-8">
         <div v-if="timelineLoaded">
@@ -33,10 +36,12 @@
 
 <script>
 import Track from '../track/track.vue'
+import Album from '../album/album.vue'
 
 const Timeline = {
   components: {
-    Track
+    Track,
+    Album
   },
   props: [
     'timelineName',

@@ -4,7 +4,7 @@ from flask_security.utils import hash_password
 from flask_security import confirmable as FSConfirmable
 from app_oauth import authorization, require_oauth
 from authlib.flask.oauth2 import current_token
-from datas_helpers import to_json_statuses, to_json_account
+from datas_helpers import to_json_track, to_json_account
 from utils import forbidden_username, add_user_log
 from tasks import send_update_profile
 import re
@@ -442,7 +442,7 @@ def user_statuses(user_id):
     tracks = []
     for t in q.items:
         if t.Sound:
-            tracks.append(to_json_statuses(t.Sound, to_json_account(t.Sound.user)))
+            tracks.append(to_json_track(t.Sound, to_json_account(t.Sound.user)))
         else:
             print(t.Activity)
     resp = {"page": page, "page_size": count, "totalItems": q.total, "items": tracks, "totalPages": q.pages}
