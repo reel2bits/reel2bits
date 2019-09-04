@@ -1,9 +1,12 @@
-from flask import Blueprint, jsonify, request, abort
+from flask import Blueprint, jsonify, request, abort, current_app, render_template
 from models import db, licences, User, PasswordResetToken
-from utils import add_user_log, generate_random_token
+from utils import add_user_log, generate_random_token, add_log
 from app_oauth import require_oauth
 from authlib.flask.oauth2 import current_token
 from flask_security.utils import hash_password, verify_password
+from flask_mail import Message
+import smtplib
+from app import mail
 
 bp_api_reel2bits = Blueprint("bp_api_reel2bits", __name__)
 
@@ -81,4 +84,59 @@ def reset_password():
     db.session.commit()
     add_user_log(user.id, user.id, "user", "info", "Password reset token generated")
 
+    # Send email
+    token_link = f"https://{current_app.config['AP_DOMAIN']}/password-reset/{prt.token}"
+    msg = Message(subject="Password reset", recipients=[user.email], sender=current_app.config["MAIL_DEFAULT_SENDER"])
+    msg.body = render_template("email/password_reset.txt", token_link=token_link, user=user)
+    msg.html = render_template("email/password_reset.html", token_link=token_link, user=user)
+    err = None
+    try:
+        mail.send(msg)
+    except ConnectionRefusedError as e:
+        # TODO: do something about that maybe
+        print(f"Error sending mail: {e}")
+        err = e
+    except smtplib.SMTPRecipientsRefused as e:
+        print(f"Error sending mail: {e}")
+        err = e
+    except smtplib.SMTPException as e:
+        print(f"Error sending mail: {e}")
+        err = e
+    except smtplib.SMTPAuthenticationError as e:
+        print(f"Error sending mail: {e}")
+        err = e
+    except smtplib.SMTPRecipientsRefused as e:
+        print(f"Error sending mail: {e}")
+        err = e
+    if err:
+        add_log("global", "ERROR", f"Error sending email for password reset user {user.id}: {err}")
+        add_user_log(user.id, user.id, "user", "error", "An error occured while sending email")
+
     return jsonify({"status": "ok"}), 204
+
+
+@bp_api_reel2bits.route("/api/reel2bits/reset_password/<string:token>", methods=["GET"])
+def reset_password_token(token):
+    new_password = request.json.get("new_password", None)
+    new_password_confirmation = request.json.get("new_password_confirmation", None)
+
+    if not new_password:
+        return jsonify({"error": "new password missing"}), 400
+    if not new_password_confirmation:
+        return jsonify({"error": "new password confirmation missing"}), 400
+
+    if new_password != new_password_confirmation:
+        return jsonify({"error": "new password and confirmation doesn't match"}), 400
+
+    new_hash = hash_password(new_password)
+    # Check if the token is valid
+    tok = PasswordResetToken.query.find(PasswordResetToken.token == token).first()
+    if not tok:
+        return jsonify({"error": "invalid token"}), 404
+
+    tok.user.password = new_hash
+    tok.used = True
+    db.session.commit()
+    add_user_log(tok.user.id, tok.user.id, "user", "info", "Password have been changed")
+
+    return jsonify({"status": "success"}), 401
