@@ -185,7 +185,7 @@ def public():
 
 
 @bp_api_v1_timelines.route("/api/v1/timelines/drafts", methods=["GET"])
-@require_oauth('read')
+@require_oauth("read")
 def drafts():
     """
     User drafts timeline.
@@ -198,7 +198,7 @@ def drafts():
           type: integer
           required: true
           description: count
-        - name: Page
+        - name: page
           in: query
           type: integer
           description: page number
