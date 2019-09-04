@@ -28,6 +28,7 @@ const REEL2BITS_LICENSES = '/api/reel2bits/licenses'
 const REEL2BITS_ALBUMS = (username) => `/api/albums/${username}`
 const CHANGE_PASSWORD_URL = '/api/reel2bits/change_password'
 const RESET_PASSWORD_URL = '/api/reel2bits/reset_password'
+const RESET_PASSWORD_URL_TOKEN = (token) => `${RESET_PASSWORD_URL}/${token}`
 
 const oldfetch = window.fetch
 
@@ -393,6 +394,18 @@ const resetPassword = ({ email }) => {
   })
 }
 
+const resetPasswordToken = ({ token, password, passwordConfirm }) => {
+  const url = RESET_PASSWORD_URL_TOKEN(token)
+  return fetch(url, {
+    method: 'POST',
+    body: JSON.stringify({
+      token: token,
+      new_password: password,
+      new_password_confirmation: passwordConfirm
+    })
+  })
+}
+
 const apiService = {
   verifyCredentials,
   register,
@@ -410,7 +423,8 @@ const apiService = {
   fetchUserAlbums,
   updateUserSettings,
   changePassword,
-  resetPassword
+  resetPassword,
+  resetPasswordToken
 }
 
 export default apiService

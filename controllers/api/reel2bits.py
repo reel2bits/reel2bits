@@ -115,7 +115,7 @@ def reset_password():
     return jsonify({"status": "ok"}), 204
 
 
-@bp_api_reel2bits.route("/api/reel2bits/reset_password/<string:token>", methods=["GET"])
+@bp_api_reel2bits.route("/api/reel2bits/reset_password/<string:token>", methods=["POST"])
 def reset_password_token(token):
     new_password = request.json.get("new_password", None)
     new_password_confirmation = request.json.get("new_password_confirmation", None)
