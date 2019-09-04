@@ -130,7 +130,7 @@ def reset_password_token(token):
 
     new_hash = hash_password(new_password)
     # Check if the token is valid
-    tok = PasswordResetToken.query.find(PasswordResetToken.token == token).first()
+    tok = PasswordResetToken.query.filter(PasswordResetToken.token == token).first()
     if not tok:
         return jsonify({"error": "invalid token"}), 404
 
@@ -139,4 +139,4 @@ def reset_password_token(token):
     db.session.commit()
     add_user_log(tok.user.id, tok.user.id, "user", "info", "Password have been changed")
 
-    return jsonify({"status": "success"}), 401
+    return jsonify({"status": "success"}), 204
