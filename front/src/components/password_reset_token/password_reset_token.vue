@@ -3,20 +3,6 @@
     <div class="col-md-3">
       <b-form class="password-reset-form" @submit.prevent="submit">
         <h1>Reset password</h1>
-        <b-form-group
-          id="ig-token"
-          label="Token:"
-          label-for="token"
-        >
-          <b-form-input
-            id="token"
-            ref="token"
-            v-model="user.token"
-            type="text"
-            placeholder="Enter token"
-            :disabled="isPending"
-          />
-        </b-form-group>
 
         <b-form-group
           id="ig-password"
