@@ -29,6 +29,7 @@ const REEL2BITS_ALBUMS = (username) => `/api/albums/${username}`
 const CHANGE_PASSWORD_URL = '/api/reel2bits/change_password'
 const RESET_PASSWORD_URL = '/api/reel2bits/reset_password'
 const RESET_PASSWORD_URL_TOKEN = (token) => `${RESET_PASSWORD_URL}/${token}`
+const REEL2BITS_DRAFTS_TIMELINE = '/api/v1/timelines/drafts'
 
 const oldfetch = window.fetch
 
@@ -313,7 +314,8 @@ const fetchTimeline = ({
     dms: MASTODON_DIRECT_MESSAGES_TIMELINE_URL,
     notifications: MASTODON_USER_NOTIFICATIONS_URL,
     'publicAndExternal': MASTODON_PUBLIC_TIMELINE,
-    user: MASTODON_USER_TIMELINE_URL
+    user: MASTODON_USER_TIMELINE_URL,
+    drafts: REEL2BITS_DRAFTS_TIMELINE
   }
   const params = []
 

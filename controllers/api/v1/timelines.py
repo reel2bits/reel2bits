@@ -4,6 +4,7 @@ from app_oauth import require_oauth
 import json
 from models import licences as track_licenses
 from datas_helpers import to_json_statuses, to_json_account
+from authlib.flask.oauth2 import current_token
 
 
 bp_api_v1_timelines = Blueprint("bp_api_v1_timelines", __name__)
@@ -179,5 +180,47 @@ def public():
             tracks.append(to_json_statuses(t.Sound, to_json_account(t.Sound.user)))
         else:
             print(t.Activity)
+    resp = {"page": page, "page_size": count, "totalItems": q.total, "items": tracks, "totalPages": q.pages}
+    return jsonify(resp)
+
+
+@bp_api_v1_timelines.route("/api/v1/timelines/drafts", methods=["GET"])
+@require_oauth('read')
+def drafts():
+    """
+    User drafts timeline.
+    ---
+    tags:
+        - Timelines
+    parameters:
+        - name: count
+          in: query
+          type: integer
+          required: true
+          description: count
+        - name: Page
+          in: query
+          type: integer
+          description: page number
+    responses:
+        200:
+            description: Returns array of Status
+    """
+    user = current_token.user
+    if not user:
+        return jsonify({"error": "Unauthorized"}), 403
+
+    count = int(request.args.get("count", 20))
+    page = int(request.args.get("page", 1))
+
+    q = Sound.query.filter(Sound.user_id == user.id, Sound.private.is_(True))
+
+    q = q.order_by(Sound.uploaded.desc())
+
+    q = q.paginate(page=page, per_page=count)
+
+    tracks = []
+    for t in q.items:
+        tracks.append(to_json_statuses(t, to_json_account(t.user)))
     resp = {"page": page, "page_size": count, "totalItems": q.total, "items": tracks, "totalPages": q.pages}
     return jsonify(resp)
