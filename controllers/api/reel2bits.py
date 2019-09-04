@@ -14,7 +14,7 @@ bp_api_reel2bits = Blueprint("bp_api_reel2bits", __name__)
 @bp_api_reel2bits.route("/api/reel2bits/licenses", methods=["GET"])
 def licenses():
     """
-    List of various licenses.
+    List of known licenses.
     ---
     tags:
         - Tracks
@@ -32,6 +32,18 @@ def licenses():
 @bp_api_reel2bits.route("/api/reel2bits/change_password", methods=["POST"])
 @require_oauth("write")
 def change_password():
+    """
+    Change user password.
+    ---
+    tags:
+        - Accounts
+    security:
+        - OAuth2:
+            - write
+    responses:
+        200:
+            description: fixme.
+    """
     user = current_token.user
     if not user:
         return jsonify({"error": "Unauthorized"}), 403
@@ -66,6 +78,15 @@ def change_password():
 
 @bp_api_reel2bits.route("/api/reel2bits/reset_password", methods=["POST"])
 def reset_password():
+    """
+    Ask for a reset password link by email.
+    ---
+    tags:
+        - Accounts
+    responses:
+        200:
+            description: fixme.
+    """
     email = request.args.get("email", None)
     if not email:
         abort(400)
@@ -117,6 +138,15 @@ def reset_password():
 
 @bp_api_reel2bits.route("/api/reel2bits/reset_password/<string:token>", methods=["POST"])
 def reset_password_token(token):
+    """
+    Change user password with token.
+    ---
+    tags:
+        - Accounts
+    responses:
+        200:
+            description: fixme.
+    """
     new_password = request.json.get("new_password", None)
     new_password_confirmation = request.json.get("new_password_confirmation", None)
 
@@ -133,6 +163,9 @@ def reset_password_token(token):
     tok = PasswordResetToken.query.filter(PasswordResetToken.token == token).first()
     if not tok:
         return jsonify({"error": "invalid token"}), 404
+
+    if tok.used:
+        return jsonify({"error": "token already used"}), 400
 
     tok.user.password = new_hash
     tok.used = True
