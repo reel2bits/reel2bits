@@ -265,10 +265,15 @@ def albums():
 
     q = Album.query.order_by(Album.created.desc())
 
-    if user.id != tok_user.id:
+    only_public = True
+    if tok_user:
+        if user.id == tok_user.id:
+            only_public = False
+
+    if only_public:
         q = q.filter(Album.user_id == user.id, Album.private.is_(False))
     else:
-        q = q.filter(Album.user_id == user.id)
+        q = q.filter(Album.user_id == tok_user.id)
 
     q = q.paginate(page=page, per_page=count)
 
