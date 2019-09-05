@@ -116,6 +116,18 @@ export const parseUser = (data) => {
     output.reel2bits.lang = data.reel2bits.lang || 'en'
   }
 
+  if (data.pleroma) {
+    const relationship = data.pleroma.relationship
+    if (relationship) {
+      output.follows_you = relationship.followed_by
+      output.requested = relationship.requested
+      output.following = relationship.following
+      output.statusnet_blocking = relationship.blocking
+      output.muted = relationship.muting
+      output.subscribed = relationship.subscribing
+    }
+  }
+
   return output
 }
 
