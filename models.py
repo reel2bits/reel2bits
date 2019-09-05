@@ -569,10 +569,12 @@ class Actor(db.Model):
             db.session.commit()
 
     def is_followed_by(self, target):
-        pass
+        # TODO FIXME use probably .followers.filter(Follower.actor_id==target.id).first()
+        return target in self.followers
 
     def is_following(self, target):
-        pass
+        # TODO FIXME same as is_followed_by
+        return target in self.followings
 
     def to_dict(self):
         return {

@@ -58,7 +58,7 @@ def to_json_account(user, relationship=False):
         reel2bits={"albums_count": user.albums.count(), "lang": user.locale},
     )
     if relationship:
-        obj.pleroma["relationship"] = relationship
+        obj["pleroma"]["relationship"] = relationship
     return obj
 
 
