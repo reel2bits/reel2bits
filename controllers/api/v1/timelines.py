@@ -1,9 +1,7 @@
-from flask import Blueprint, jsonify, request, url_for, abort
+from flask import Blueprint, jsonify, request, abort
 from models import db, Sound, Activity, Album, User
 from app_oauth import require_oauth
-import json
-from models import licences as track_licenses
-from datas_helpers import to_json_track, to_json_account, to_json_album
+from datas_helpers import to_json_track, to_json_account, to_json_album, to_json_relationship
 from authlib.flask.oauth2 import current_token
 
 
@@ -41,6 +39,7 @@ def home():
 
 
 @bp_api_v1_timelines.route("/api/v1/timelines/public", methods=["GET"])
+@require_oauth(None)
 def public():
     """
     Public or TWKN statuses.
@@ -89,7 +88,11 @@ def public():
     tracks = []
     for t in q.items:
         if t.Sound:
-            tracks.append(to_json_track(t.Sound, to_json_account(t.Sound.user)))
+            relationship = False
+            if current_token.user:
+                relationship = to_json_relationship(current_token.user, t.Sound.user)
+            account = to_json_account(t.Sound.user, relationship)
+            tracks.append(to_json_track(t.Sound, account))
         else:
             print(t.Activity)
     resp = {"page": page, "page_size": count, "totalItems": q.total, "items": tracks, "totalPages": q.pages}
@@ -133,7 +136,9 @@ def drafts():
 
     tracks = []
     for t in q.items:
-        tracks.append(to_json_track(t, to_json_account(t.user)))
+        relationship = to_json_relationship(current_token.user, t.user)
+        account = to_json_account(t.user, relationship)
+        tracks.append(to_json_track(t, account))
     resp = {"page": page, "page_size": count, "totalItems": q.total, "items": tracks, "totalPages": q.pages}
     return jsonify(resp)
 
@@ -191,6 +196,10 @@ def albums():
 
     albums = []
     for t in q.items:
-        albums.append(to_json_album(t, to_json_account(t.user)))
+        relationship = False
+        if current_token.user:
+            relationship = to_json_relationship(current_token.user, t.user)
+        account = to_json_account(t.user, relationship)
+        albums.append(to_json_album(t, account))
     resp = {"page": page, "page_size": count, "totalItems": q.total, "items": albums, "totalPages": q.pages}
     return jsonify(resp)

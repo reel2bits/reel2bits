@@ -164,6 +164,7 @@ def accounts():
 
 
 @bp_api_v1_accounts.route("/api/v1/accounts/<string:username>", methods=["GET"])
+@require_oauth(None)
 def account_get(username):
     """
     Returns Account
@@ -182,7 +183,11 @@ def account_get(username):
     if len(user.actor) != 1:
         abort(404)
 
-    return jsonify(to_json_account(user))
+    relationship = False
+    if current_token.user:
+        relationship = to_json_relationship(current_token.user, user)
+    account = to_json_account(user, relationship)
+    return jsonify(account)
 
 
 @bp_api_v1_accounts.route("/api/v1/accounts/verify_credentials", methods=["GET"])
@@ -391,6 +396,7 @@ def accounts_update_credentials():
 
 
 @bp_api_v1_accounts.route("/api/v1/accounts/<int:user_id>/statuses", methods=["GET"])
+@require_oauth(None)
 def user_statuses(user_id):
     """
     User statuses.
@@ -442,7 +448,11 @@ def user_statuses(user_id):
     tracks = []
     for t in q.items:
         if t.Sound:
-            tracks.append(to_json_track(t.Sound, to_json_account(t.Sound.user)))
+            relationship = False
+            if current_token.user:
+                relationship = to_json_relationship(current_token.user, t.Sound.user)
+            account = to_json_account(t.Sound.user, relationship)
+            tracks.append(to_json_track(t.Sound, account))
         else:
             print(t.Activity)
     resp = {"page": page, "page_size": count, "totalItems": q.total, "items": tracks, "totalPages": q.pages}
