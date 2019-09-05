@@ -4,7 +4,7 @@ from flask_security.utils import hash_password
 from flask_security import confirmable as FSConfirmable
 from app_oauth import authorization, require_oauth
 from authlib.flask.oauth2 import current_token
-from datas_helpers import to_json_track, to_json_account
+from datas_helpers import to_json_track, to_json_account, to_json_relationship
 from utils import forbidden_username, add_user_log
 from tasks import send_update_profile
 import re
@@ -505,4 +505,16 @@ def relationships():
         schema:
             $ref: '#/definitions/Relationship'
     """
+    ids = request.args.getlist("id")
+    of_user = current_token.user
+
+    rels = []
+    for id in ids:
+        against_user = User.query.filter(User.id == id).first()
+        if not against_user:
+            if len(ids) > 1:
+                next
+            else:
+                return jsonify([])
+        rels.append(to_json_relationship(of_user, against_user))
     return jsonify([])
