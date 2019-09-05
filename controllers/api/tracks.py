@@ -6,7 +6,7 @@ from models import db, Sound, User, Album
 import json
 from utils import add_user_log, get_hashed_filename
 from flask_uploads import UploadSet, AUDIO
-from datas_helpers import to_json_track, to_json_account
+from datas_helpers import to_json_track, to_json_account, to_json_relationship
 from os.path import splitext
 
 
@@ -141,7 +141,11 @@ def show(username, soundslug):
         else:
             return jsonify({"error": "forbidden"}), 403
 
-    return jsonify(to_json_track(sound, to_json_account(sound.user)))
+    relationship = False
+    if current_token.user:
+        relationship = to_json_relationship(current_token.user, sound.user)
+    account = to_json_account(sound.user, relationship)
+    return jsonify(to_json_track(sound, account))
 
 
 @bp_api_tracks.route("/api/tracks/<string:username>/<string:soundslug>", methods=["PATCH"])
@@ -211,7 +215,11 @@ def edit(username, soundslug):
 
     db.session.commit()
 
-    return jsonify(to_json_track(sound, to_json_account(sound.user)))
+    relationship = False
+    if current_token.user:
+        relationship = to_json_relationship(current_token.user, sound.user)
+    account = to_json_account(sound.user, relationship)
+    return jsonify(to_json_track(sound, account))
 
 
 @bp_api_tracks.route("/api/tracks/<string:username>/<string:soundslug>", methods=["DELETE"])
