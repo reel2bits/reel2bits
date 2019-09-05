@@ -3,8 +3,33 @@ import json
 from models import licences as track_licenses
 
 
-def to_json_account(user):
-    return dict(
+def to_json_relationship(of_user, against_user):
+    """
+    user relationship against_user
+    of_user is the user "point of view"
+    following = is of_user following against_user ?
+    followed_by = is against_user following of_user ?
+    etc.
+    """
+    obj = dict(
+        id=against_user.id,
+        following=of_user.actor[0].is_following(against_user.actor[0]),
+        followed_by=against_user.actor[0].is_following(of_user.actor[0]),
+        blocking=False,  # TODO handle that
+        muting=False,  # TODO maybe handle that
+        muting_notifications=False,
+        requested=False,  # TODO handle that
+        domain_blocking=False,
+        showing_reblogs=True,
+        endorsed=False  # not managed
+    )
+    return obj
+
+
+def to_json_account(user, relationship=False):
+    if not relationship:
+        print("!!!! WARNING no relationship passed to to_json_account !!!!")
+    obj = dict(
         id=user.id,
         username=user.name,
         acct=user.name,
@@ -34,6 +59,9 @@ def to_json_account(user):
         pleroma={"is_admin": user.is_admin()},
         reel2bits={"albums_count": user.albums.count(), "lang": user.locale},
     )
+    if relationship:
+        obj.pleroma["relationship"] = relationship
+    return obj
 
 
 def to_json_track(track, account):

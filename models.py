@@ -568,6 +568,12 @@ class Actor(db.Model):
             db.session.delete(rel)
             db.session.commit()
 
+    def is_followed_by(self, target):
+        pass
+
+    def is_following(self, target):
+        pass
+
     def to_dict(self):
         return {
             "@context": ap.DEFAULT_CTX,
