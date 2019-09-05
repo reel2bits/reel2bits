@@ -27,8 +27,6 @@ def to_json_relationship(of_user, against_user):
 
 
 def to_json_account(user, relationship=False):
-    if not relationship:
-        print("!!!! WARNING no relationship passed to to_json_account !!!!")
     obj = dict(
         id=user.id,
         username=user.name,
