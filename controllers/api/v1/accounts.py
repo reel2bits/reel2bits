@@ -447,3 +447,62 @@ def user_statuses(user_id):
             print(t.Activity)
     resp = {"page": page, "page_size": count, "totalItems": q.total, "items": tracks, "totalPages": q.pages}
     return jsonify(resp)
+
+
+@bp_api_v1_accounts.route("/api/v1/relationships", methods=["GET"])
+@require_oauth("read")
+def relationships():
+    """
+    Relationship of the user to the given accounts in regards to following, blocking, muting, etc.
+    ---
+    tags:
+        - Accounts
+    definitions:
+      Token:
+        type: object
+        properties:
+            id:
+                type: string
+                nullable: false
+            following:
+                type: boolean
+                nullable: false
+            followed_by:
+                type: boolean
+                nullable: false
+            blocking:
+                type: boolean
+                nullable: false
+            muting:
+                type: boolean
+                nullable: false
+            muting_notifications:
+                type: boolean
+                nullable: false
+            requested:
+                type: boolean
+                nullable: false
+            domain_blocking:
+                type: boolean
+                nullable: false
+            showing_reblogs:
+                type: boolean
+                nullable: false
+            endorsed:
+                type: boolean
+                nullable: false
+    parameters:
+        - name: id
+          in: query
+          type: array
+          required: true
+          items:
+            type: integer
+          description: Array of account IDs
+    responses:
+      200:
+        description: Returns array of Relationship
+        schema:
+            $ref: '#/definitions/Relationship'
+    """
+    return jsonify([])
