@@ -21,7 +21,7 @@ def to_json_relationship(of_user, against_user):
         requested=False,  # TODO handle that
         domain_blocking=False,
         showing_reblogs=True,
-        endorsed=False  # not managed
+        endorsed=False,  # not managed
     )
     return obj
 
