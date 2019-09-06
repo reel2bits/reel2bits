@@ -542,10 +542,8 @@ def follow(id):
     parameters:
         - name: id
           in: query
-          type: array
+          type: integer
           required: true
-          items:
-            type: integer
           description: User ID to follow
     responses:
       200:
@@ -566,11 +564,9 @@ def unfollow(id):
         - Accounts
     parameters:
         - name: id
-          in: query
-          type: array
+          in: path
+          type: integer
           required: true
-          items:
-            type: integer
           description: User ID to follow
     responses:
       200:
