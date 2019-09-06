@@ -531,9 +531,9 @@ def relationships():
     return jsonify(rels)
 
 
-@bp_api_v1_accounts.route("/api/v1/accounts/<int:id>/follow", methods=["POST"])
+@bp_api_v1_accounts.route("/api/v1/accounts/<int:user_id>/follow", methods=["POST"])
 @require_oauth("write")
-def follow(id):
+def follow(user_id):
     """
     Follow an account.
     ---
@@ -555,10 +555,6 @@ def follow(id):
     if not current_user:
         abort(400)
 
-    user_id = request.args.get("id")
-    if not user_id:
-        abort(400)
-
     user = User.query.filter(User.id == user_id).first()
     if not user:
         abort(404)
@@ -575,9 +571,9 @@ def follow(id):
         abort(501)
 
 
-@bp_api_v1_accounts.route("/api/v1/accounts/<int:id>/unfollow", methods=["POST"])
+@bp_api_v1_accounts.route("/api/v1/accounts/<int:user_id>/unfollow", methods=["POST"])
 @require_oauth("write")
-def unfollow(id):
+def unfollow(user_id):
     """
     Unfollow an account.
     ---
@@ -597,10 +593,6 @@ def unfollow(id):
     """
     current_user = current_token.user
     if not current_user:
-        abort(400)
-
-    user_id = request.args.get("id")
-    if not user_id:
         abort(400)
 
     user = User.query.filter(User.id == user_id).first()
