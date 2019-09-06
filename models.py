@@ -96,6 +96,8 @@ class User(db.Model, UserMixin):
 
     slug = db.Column(db.String(255), unique=True, nullable=True)
 
+    local = db.Column(db.Boolean(), default=True)
+
     roles = db.relationship("Role", secondary=roles_users, backref=db.backref("users", lazy="dynamic"))
     apitokens = db.relationship("Apitoken", backref="user", lazy="dynamic", cascade="delete")
 

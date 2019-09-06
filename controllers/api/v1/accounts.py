@@ -551,7 +551,28 @@ def follow(id):
         schema:
             $ref: '#/definitions/Relationship'
     """
-    return jsonify([]), 500
+    current_user = current_token.user
+    if not current_user:
+        abort(400)
+
+    user_id = request.args.get("id")
+    if not user_id:
+        abort(400)
+
+    user = User.query.filter(User.id == user_id).first()
+    if not user:
+        abort(404)
+
+    actor_me = current_user.actor[0]
+    actor_them = user.actor[0]
+
+    if user.local:
+        actor_me.follow(None, actor_them)
+        return to_json_relationship(current_user, user)
+    else:
+        # We need to initiate a follow request
+        # FIXME TODO
+        abort(501)
 
 
 @bp_api_v1_accounts.route("/api/v1/accounts/<int:id>/unfollow", methods=["POST"])
@@ -574,4 +595,25 @@ def unfollow(id):
         schema:
             $ref: '#/definitions/Relationship'
     """
-    return jsonify([]), 500
+    current_user = current_token.user
+    if not current_user:
+        abort(400)
+
+    user_id = request.args.get("id")
+    if not user_id:
+        abort(400)
+
+    user = User.query.filter(User.id == user_id).first()
+    if not user:
+        abort(404)
+
+    actor_me = current_user.actor[0]
+    actor_them = user.actor[0]
+
+    if user.local:
+        actor_me.unfollow(None, actor_them)
+        return to_json_relationship(current_user, user)
+    else:
+        # We need to initiate a follow request
+        # FIXME TODO
+        abort(501)
