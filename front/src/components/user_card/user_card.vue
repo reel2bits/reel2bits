@@ -17,7 +17,15 @@
             </b-link> <b-button v-if="!user.following" type="button" variant="primary"
                                 size="sm" :disabled="followRequestInProgress" @click="followUser"
             >
-              Follow
+              <template v-if="followRequestInProgress">
+                Follow in progress
+              </template>
+              <template v-else-if="followRequestSent">
+                Follow sent
+              </template>
+              <template v-else>
+                Follow
+              </template>
             </b-button>
             <b-button v-else-if="followRequestInProgress" type="button" variant="primary"
                       size="sm" disabled @click="unfollowUser"
