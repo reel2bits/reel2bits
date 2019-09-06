@@ -531,7 +531,7 @@ def relationships():
     return jsonify(rels)
 
 
-@bp_api_v1_accounts.route("/api/v1/accounts/<integer:id>/follow", methods=["POST"])
+@bp_api_v1_accounts.route("/api/v1/accounts/<int:id>/follow", methods=["POST"])
 @require_oauth("write")
 def follow(id):
     """
@@ -556,7 +556,7 @@ def follow(id):
     return jsonify([]), 500
 
 
-@bp_api_v1_accounts.route("/api/v1/accounts/<integer:id>/unfollow", methods=["POST"])
+@bp_api_v1_accounts.route("/api/v1/accounts/<int:id>/unfollow", methods=["POST"])
 @require_oauth("write")
 def unfollow(id):
     """
