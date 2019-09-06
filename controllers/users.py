@@ -33,9 +33,8 @@ def profile(name):
             Sound.user_id == user.id, Sound.private.is_(False), Sound.transcode_state == Sound.TRANSCODE_DONE
         )
 
-    # FIXME better SQL for counting thoses relations
-    followings = len(user.actor[0].followings)
-    followers = len(user.actor[0].followers)
+    followings = user.actor[0].followings.count()
+    followers = user.actor[0].followers.count()
 
     return render_template(
         "users/profile.jinja2", pcfg=pcfg, user=user, sounds=sounds, followings=followings, followers=followers

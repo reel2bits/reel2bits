@@ -13,8 +13,8 @@ def to_json_relationship(of_user, against_user):
     """
     obj = dict(
         id=against_user.id,
-        following=of_user.actor[0].is_following(against_user.actor[0]),
-        followed_by=against_user.actor[0].is_following(of_user.actor[0]),
+        following=True if of_user.actor[0].is_following(against_user.actor[0]) else False,
+        followed_by=True if against_user.actor[0].is_following(of_user.actor[0]) else False,
         blocking=False,  # TODO handle that
         muting=False,  # TODO maybe handle that
         muting_notifications=False,
@@ -34,8 +34,8 @@ def to_json_account(user, relationship=False):
         display_name=user.display_name,
         locked=False,
         created_at=user.created_at,
-        followers_count=len(user.actor[0].followers),
-        following_count=len(user.actor[0].followings),
+        followers_count=user.actor[0].followers.count(),
+        following_count=user.actor[0].followings.count(),
         statuses_count=user.sounds.count(),
         note=user.actor[0].summary,
         url=user.actor[0].url,
