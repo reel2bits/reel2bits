@@ -162,7 +162,7 @@
 
     <div v-if="track" class="col-md-4 d-flex flex-column">
       <!-- Profile Card -->
-      <UserCard :account="track.account" />
+      <UserCard :user="track.account" />
       <!-- Footer -->
       <Footer />
     </div>

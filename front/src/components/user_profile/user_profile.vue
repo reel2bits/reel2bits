@@ -31,7 +31,7 @@
           </b-tabs>
         </div>
         <div class="col-md-4">
-          <UserCard :account="user" />
+          <UserCard :user="user" />
           <Footer />
         </div>
       </div>
