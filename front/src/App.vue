@@ -68,7 +68,7 @@
     <!-- content -->
     <div class="container">
       <transition name="fade">
-        <router-view @updateLogoSpinDuration="updateLogoSpinDuration" />
+        <router-view :key="$route.fullPath" @updateLogoSpinDuration="updateLogoSpinDuration" />
       </transition>
     </div>
   </div>
