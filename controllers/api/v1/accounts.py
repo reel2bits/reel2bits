@@ -459,7 +459,8 @@ def user_statuses(user_id):
     return jsonify(resp)
 
 
-@bp_api_v1_accounts.route("/api/v1/relationships", methods=["GET"])
+@bp_api_v1_accounts.route("/api/v1/accounts/relationships", methods=["GET"])
+@bp_api_v1_accounts.route("/api/v1/accounts/relationships/", methods=["GET"])
 @require_oauth("read")
 def relationships():
     """
@@ -527,4 +528,4 @@ def relationships():
             else:
                 return jsonify([])
         rels.append(to_json_relationship(of_user, against_user))
-    return jsonify([])
+    return jsonify(rels)
