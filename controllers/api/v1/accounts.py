@@ -564,7 +564,7 @@ def follow(user_id):
 
     if user.local:
         actor_me.follow(None, actor_them)
-        return to_json_relationship(current_user, user)
+        return jsonify([to_json_relationship(current_user, user)])
     else:
         # We need to initiate a follow request
         # FIXME TODO
@@ -603,8 +603,8 @@ def unfollow(user_id):
     actor_them = user.actor[0]
 
     if user.local:
-        actor_me.unfollow(None, actor_them)
-        return to_json_relationship(current_user, user)
+        actor_me.unfollow(actor_them)
+        return jsonify([to_json_relationship(current_user, user)])
     else:
         # We need to initiate a follow request
         # FIXME TODO

@@ -14,8 +14,11 @@
           <p class="h3 font-weight-normal m-0">
             <b-link :to="{ name: 'user-profile', params: { name: user.screen_name } }" class="text-decoration-none text-body">
               @{{ user.screen_name }}
-            </b-link> <b-button v-if="!user.following" type="button" variant="primary"
-                                size="sm" :disabled="followRequestInProgress" @click="followUser"
+            </b-link>
+          </p>
+          <div v-if="isOtherUser && loggedIn">
+            <b-button v-if="!user.following" type="button" variant="primary"
+                      size="sm" :disabled="followRequestInProgress" @click="followUser"
             >
               <template v-if="followRequestInProgress">
                 Follow in progress
@@ -30,14 +33,14 @@
             <b-button v-else-if="followRequestInProgress" type="button" variant="primary"
                       size="sm" disabled @click="unfollowUser"
             >
-              Follow in progress
+              Change in progress
             </b-button>
             <b-button v-else type="button" variant="primary"
                       size="sm" @click="unfollowUser"
             >
               Unfollow
             </b-button>
-          </p>
+          </div>
           <p class="text-muted m-0">
             <template v-if="user.follows_you && loggedIn && isOtherUser">
               Follows you
@@ -101,7 +104,6 @@ const UserCard = {
       this.followRequestInProgress = true
       requestUnfollow(this.user, store).then(() => {
         this.followRequestInProgress = false
-        store.commit('removeStatus', { timeline: 'friends', userId: this.user.id })
       })
     }
   }
