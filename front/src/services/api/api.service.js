@@ -24,6 +24,8 @@ const MASTODON_USER_NOTIFICATIONS_URL = '/api/v1/notifications'
 const MASTODON_USER_TIMELINE_URL = id => `/api/v1/accounts/${id}/statuses`
 const MASTODON_PROFILE_UPDATE_URL = '/api/v1/accounts/update_credentials'
 const MASTODON_USER_RELATIONSHIPS_URL = '/api/v1/accounts/relationships'
+const MASTODON_FOLLOW_URL = id => `/api/v1/accounts/${id}/follow`
+const MASTODON_UNFOLLOW_URL = id => `/api/v1/accounts/${id}/unfollow`
 
 const REEL2BITS_LICENSES = '/api/reel2bits/licenses'
 const REEL2BITS_ALBUMS = (username) => `/api/albums/${username}`
@@ -432,6 +434,22 @@ const resetPasswordToken = ({ token, password, passwordConfirm }) => {
   })
 }
 
+const followUser = ({ id, credentials }) => {
+  let url = MASTODON_FOLLOW_URL(id)
+  return fetch(url, {
+    headers: authHeaders(credentials),
+    method: 'POST'
+  }).then((data) => data.json())
+}
+
+const unfollowUser = ({ id, credentials }) => {
+  let url = MASTODON_UNFOLLOW_URL(id)
+  return fetch(url, {
+    headers: authHeaders(credentials),
+    method: 'POST'
+  }).then((data) => data.json())
+}
+
 const apiService = {
   verifyCredentials,
   register,
@@ -451,7 +469,9 @@ const apiService = {
   updateUserSettings,
   changePassword,
   resetPassword,
-  resetPasswordToken
+  resetPasswordToken,
+  followUser,
+  unfollowUser
 }
 
 export default apiService
