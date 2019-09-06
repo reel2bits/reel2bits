@@ -53,6 +53,9 @@ const UserCard = {
     isOtherUser () {
       return this.user.id !== this.$store.state.users.currentUser.id
     }
+  },
+  created () {
+    this.$store.dispatch('fetchUserRelationship', this.account.id)
   }
 }
 

@@ -51,6 +51,18 @@ export const mutations = {
   clearCurrentUser (state) {
     state.currentUser = false
     state.lastLoginName = false
+  },
+  updateUserRelationship (state, relationships) {
+    relationships.forEach(relationship => {
+      const user = state.usersObject[relationship.id]
+      if (user) {
+        user.follows_you = relationship.followed_by
+        user.following = relationship.following
+        user.muted = relationship.muting
+        user.blocking = relationship.blocking
+        user.subscribed = relationship.subscribing
+      }
+    })
   }
 }
 
@@ -88,6 +100,12 @@ const users = {
           store.commit('addNewUsers', [user])
           return user
         })
+    },
+    fetchUserRelationship (store, id) {
+      if (store.state.currentUser) {
+        store.rootState.api.backendInteractor.fetchUserRelationship({ id })
+          .then((relationships) => store.commit('updateUserRelationship', relationships))
+      }
     },
     loginUser (store, accessToken) {
       return new Promise((resolve, reject) => {

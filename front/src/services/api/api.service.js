@@ -23,6 +23,7 @@ const MASTODON_DIRECT_MESSAGES_TIMELINE_URL = '/api/v1/timelines/direct'
 const MASTODON_USER_NOTIFICATIONS_URL = '/api/v1/notifications'
 const MASTODON_USER_TIMELINE_URL = id => `/api/v1/accounts/${id}/statuses`
 const MASTODON_PROFILE_UPDATE_URL = '/api/v1/accounts/update_credentials'
+const MASTODON_USER_RELATIONSHIPS_URL = '/api/v1/accounts/relationships'
 
 const REEL2BITS_LICENSES = '/api/reel2bits/licenses'
 const REEL2BITS_ALBUMS = (username) => `/api/albums/${username}`
@@ -196,6 +197,20 @@ const fetchUser = ({ id, store }) => {
   let credentials = store.getters.getToken()
   return promisedRequest({ url, credentials }, store)
     .then((data) => parseUser(data))
+}
+
+const fetchUserRelationship = ({ id, credentials }) => {
+  let url = `${MASTODON_USER_RELATIONSHIPS_URL}/?id=${id}`
+  return fetch(url, { headers: authHeaders(credentials) })
+    .then((response) => {
+      return new Promise((resolve, reject) => response.json()
+        .then((json) => {
+          if (!response.ok) {
+            return reject(new StatusCodeError(response.status, json, { url }, response))
+          }
+          return resolve(json)
+        }))
+    })
 }
 
 const updateUserSettings = ({ settings, credentials }) => {
@@ -421,6 +436,7 @@ const apiService = {
   verifyCredentials,
   register,
   fetchUser,
+  fetchUserRelationship,
   trackUpload,
   trackDelete,
   trackEdit,
