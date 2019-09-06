@@ -47,6 +47,8 @@ export default (store) => {
     { name: 'oauth-callback', path: '/oauth-callback', component: OAuthCallback, props: (route) => ({ code: route.query.code }) },
     { name: 'external-user-profile', path: '/users/:id', component: UserProfile },
     { name: 'user-profile', path: '/(users/)?:name', component: UserProfile },
+    { name: 'user-profile-tracks', path: '/(users/)?:name/tracks', component: UserProfile },
+    { name: 'user-profile-albums', path: '/(users/)?:name/albums', component: UserProfile },
     { name: 'user-settings', path: '/account/settings', component: UserSettings, beforeEnter: validateAuthenticatedRoute },
     // Tracks
     { name: 'tracks-upload', path: '/tracks/upload', component: TracksUpload, beforeEnter: validateAuthenticatedRoute },

@@ -6,7 +6,7 @@
     <div v-if="user">
       <div class="row">
         <div class="col-md-8">
-          <b-tabs content="mt-3">
+          <b-tabs v-model="tabIndex" content="mt-3">
             <b-tab title="Tracks">
               <Timeline
                 key="{{ userId }}user"
@@ -54,7 +54,9 @@ export default {
   data () {
     return {
       error: false,
-      userId: null
+      userId: null,
+      tabIndex: 0,
+      tabs: ['user-profile-tracks', 'user-profile-albums']
     }
   },
   computed: {
@@ -86,6 +88,10 @@ export default {
   created () {
     const routeParams = this.$route.params
     this.load(routeParams.name || routeParams.id)
+  },
+  mounted () {
+    console.log(this.$route.name)
+    this.tabIndex = this.tabs.findIndex(tab => tab === this.$route.name)
   },
   destroyed () {
     this.cleanUp()

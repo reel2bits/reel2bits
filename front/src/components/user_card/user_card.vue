@@ -53,16 +53,40 @@
       </p>
       <ul class="nav nav-fill">
         <li class="nav-item border-right">
-          <a class="nav-link px-2" href="#"><p class="h3 font-weight-normal m-0">{{ user.statuses_count }}</p><p class="m-0">Tracks</p></a>
+          <router-link :to="{ name: 'user-profile-tracks', params: { name: user.screen_name } }">
+            <p class="h3 font-weight-normal m-0">
+              {{ user.statuses_count }}
+            </p><p class="m-0">
+              Tracks
+            </p>
+          </router-link>
         </li>
         <li class="nav-item border-right">
-          <a class="nav-link px-2" href="#"><p class="h3 font-weight-normal m-0">{{ user.reel2bits.albums_count }}</p><p class="m-0">Albums</p></a>
+          <router-link :to="{ name: 'user-profile-albums', params: { name: user.screen_name } }">
+            <p class="h3 font-weight-normal m-0">
+              {{ user.reel2bits.albums_count }}
+            </p><p class="m-0">
+              Albums
+            </p>
+          </router-link>
         </li>
         <li class="nav-item border-right">
-          <a class="nav-link px-2" href="#"><p class="h3 font-weight-normal m-0">{{ user.followers_count }}</p><p class="m-0">Followers</p></a>
+          <router-link :to="{}">
+            <p class="h3 font-weight-normal m-0">
+              {{ user.followers_count }}
+            </p><p class="m-0">
+              Followers
+            </p>
+          </router-link>
         </li>
         <li class="nav-item">
-          <a class="nav-link px-2" href="#"><p class="h3 font-weight-normal m-0">{{ user.friends_count }}</p><p class="m-0">Following</p></a>
+          <router-link :to="{}">
+            <p class="h3 font-weight-normal m-0">
+              {{ user.friends_count }}
+            </p><p class="m-0">
+              Following
+            </p>
+          </router-link>
         </li>
       </ul>
     </div>
