@@ -469,7 +469,7 @@ def relationships():
     tags:
         - Accounts
     definitions:
-      Token:
+      Relationship:
         type: object
         properties:
             id:
@@ -529,3 +529,53 @@ def relationships():
                 return jsonify([])
         rels.append(to_json_relationship(of_user, against_user))
     return jsonify(rels)
+
+
+@bp_api_v1_accounts.route("/api/v1/accounts/<integer:id>/follow", methods=["POST"])
+@require_oauth("write")
+def follow(id):
+    """
+    Follow an account.
+    ---
+    tags:
+        - Accounts
+    parameters:
+        - name: id
+          in: query
+          type: array
+          required: true
+          items:
+            type: integer
+          description: User ID to follow
+    responses:
+      200:
+        description: Returns Relationship
+        schema:
+            $ref: '#/definitions/Relationship'
+    """
+    return jsonify([]), 500
+
+
+@bp_api_v1_accounts.route("/api/v1/accounts/<integer:id>/unfollow", methods=["POST"])
+@require_oauth("write")
+def unfollow(id):
+    """
+    Unfollow an account.
+    ---
+    tags:
+        - Accounts
+    parameters:
+        - name: id
+          in: query
+          type: array
+          required: true
+          items:
+            type: integer
+          description: User ID to follow
+    responses:
+      200:
+        description: Returns Relationship
+        schema:
+            $ref: '#/definitions/Relationship'
+    """
+    return jsonify([]), 500
