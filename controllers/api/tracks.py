@@ -93,20 +93,20 @@ def upload():
     return jsonify({"error": json.dumps(form.errors)}), 400
 
 
-@bp_api_tracks.route("/api/tracks/<string:username>/<string:soundslug>", methods=["GET"])
+@bp_api_tracks.route("/api/tracks/<int:user_id>/<string:soundslug>", methods=["GET"])
 @require_oauth(None)
-def show(username, soundslug):
+def show(user_id, soundslug):
     """
     Get track details.
     ---
     tags:
         - Tracks
     parameters:
-        - name: username
+        - name: user_id
           in: path
-          type: string
+          type: integer
           required: true
-          description: User username
+          description: User ID
         - name: soundslug
           in: path
           type: string
@@ -120,18 +120,21 @@ def show(username, soundslug):
     current_user = current_token.user
 
     # Get the associated User from url fetch
-    track_user = User.query.filter(User.name == username).first()
+    track_user = User.query.filter(User.id == user_id).first()
     if not track_user:
         return jsonify({"error": "User not found"}), 404
 
-    if current_user and track_user.id == current_user.id:
+    if current_user and (track_user.id == current_user.id):
+        print("user")
         sound = Sound.query.filter(Sound.slug == soundslug, Sound.user_id == track_user.id).first()
     else:
+        print("no user")
         sound = Sound.query.filter(
             Sound.slug == soundslug, Sound.user_id == track_user.id, Sound.transcode_state == Sound.TRANSCODE_DONE
         ).first()
 
     if not sound:
+        print("mmmh")
         return jsonify({"error": "not found"}), 404
 
     if sound.private:

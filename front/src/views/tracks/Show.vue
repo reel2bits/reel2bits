@@ -196,7 +196,8 @@ export default {
     isOwner: false,
     wavesurfer: null,
     playerTimeCur: '00:00',
-    playerTimeTot: '00:00'
+    playerTimeTot: '00:00',
+    userId: null
   }),
   computed: {
     ...mapState({
@@ -229,6 +230,8 @@ export default {
     }
   },
   created () {
+    const user = this.$store.getters.findUser(this.userName)
+    this.userId = user.id
     this.fetchTrack()
       .then((v) => {
         if (!this.trackError && this.track) {
@@ -294,7 +297,7 @@ export default {
   methods: {
     async fetchTrack () {
       console.log('fetching track...')
-      await this.$store.state.api.backendInteractor.trackFetch({ user: this.userName, trackId: this.trackId })
+      await this.$store.state.api.backendInteractor.trackFetch({ userId: this.userId, trackId: this.trackId })
         .then((status) => {
           this.track = status
           this.processing_done = this.track.processing.done
@@ -309,13 +312,13 @@ export default {
     async editTrack () {
       if (!this.isOwner) { return }
       console.log('want to edit track')
-      this.$router.push({ name: 'tracks-edit', params: { username: this.track.account.screen_name, trackId: this.track.slug } })
+      this.$router.push({ name: 'tracks-edit', params: { userId: this.track.account.id, trackId: this.track.slug } })
     },
     async deleteTrack () {
       if (!this.isOwner) { return }
       console.log('deleting track')
       try {
-        await this.$store.state.api.backendInteractor.trackDelete({ user: this.userName, trackId: this.trackId })
+        await this.$store.state.api.backendInteractor.trackDelete({ userId: this.track.account.id, trackId: this.trackId })
       } catch (e) {
         console.log('an error occured')
         console.log(e)
