@@ -36,7 +36,10 @@ def tracks(user_id):
             content=track.description,
             content_type="text",
             url=f"https://{current_app.config['AP_DOMAIN']}/{user.name}/{track.slug}",
-            links=[{"href": url_transcode, "type": "audio/mpeg", "length": int(track.sound_infos.first().duration), "rel": "self"}],
+            links=[
+                {"href": url_transcode, "type": "audio/mpeg", "rel": "enclosure"},
+                {"href": f"https://{current_app.config['AP_DOMAIN']}/{user.name}/{track.slug}", "rel": "alternate"},
+            ],
             updated=track.updated,
             author={"name": user.name, "uri": f"https://{current_app.config['AP_DOMAIN']}/{user.name}"},
             published=track.uploaded,
@@ -76,7 +79,10 @@ def album(user_id, album_id):
             content=track.description,
             content_type="text",
             url=f"https://{current_app.config['AP_DOMAIN']}/{user.name}/{track.slug}",
-            links=[{"href": url_transcode, "type": "audio/mpeg", "length": int(track.sound_infos.first().duration), "rel": "self"}],
+            links=[
+                {"href": url_transcode, "type": "audio/mpeg", "rel": "enclosure"},
+                {"href": f"https://{current_app.config['AP_DOMAIN']}/{user.name}/{track.slug}", "rel": "alternate"},
+            ],
             updated=track.updated,
             author={"name": user.name, "uri": f"https://{current_app.config['AP_DOMAIN']}/{user.name}"},
             published=track.uploaded,
