@@ -196,10 +196,9 @@ const trackEdit = ({ userId, trackId, track, credentials }) => {
   }).then((data) => parseTrack(data))
 }
 
-const fetchUser = ({ id, store }) => {
+const fetchUser = ({ id, credentials }) => {
   let url = `${MASTODON_USER_URL}/${id}`
-  let credentials = store.getters.getToken()
-  return promisedRequest({ url, credentials }, store)
+  return promisedRequest({ url, credentials })
     .then((data) => parseUser(data))
 }
 

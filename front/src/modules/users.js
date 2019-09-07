@@ -109,7 +109,7 @@ const users = {
   actions: {
     fetchUser (store, id) {
       console.debug('fetchUser ' + id)
-      return apiService.fetchUser({ id, store })
+      return store.rootState.api.backendInteractor.fetchUser({ id })
         .then((user) => {
           store.commit('addNewUsers', [user])
           return user
