@@ -13,6 +13,7 @@ def tracks(user_id):
         abort(404)
 
     q = Sound.query.filter(Sound.user_id == user.id, Sound.private.is_(False))
+    q = q.filter(Sound.transcode_state == Sound.TRANSCODE_DONE)
     q = q.order_by(Sound.uploaded.desc())
 
     feed_url = request.url
@@ -66,7 +67,7 @@ def album(user_id, album_id):
         author={"name": user.name, "uri": f"https://{current_app.config['AP_DOMAIN']}/{user.name}"},
     )
 
-    for track in album.sounds:
+    for track in album.sounds.filter(Sound.transcode_state == Sound.TRANSCODE_DONE):
         url_transcode = url_for("get_uploads_stuff", thing="sounds", stuff=track.path_sound(orig=False), _external=True)
         feed.add(
             id=track.flake_id,
