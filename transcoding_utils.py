@@ -22,7 +22,7 @@ def get_basic_infos(fname):
 
     accepted_types = ['Wave', 'MPEG Audio', 'FLAC', 'Ogg']
     if mt not in accepted_types:
-        return None, mt
+        return mt
 
     print("- File is type {0}".format(mt))
 
@@ -188,8 +188,8 @@ def work_metadatas(sound_id, force=False):
     fname = os.path.join(current_app.config["UPLOADED_SOUNDS_DEST"], sound.user.slug, sound.filename)
     basic_infos = None
     if not _infos.done_basic:
-        basic_infos, mt = get_basic_infos(fname)
-        if not basic_infos:
+        basic_infos = get_basic_infos(fname)
+        if type(basic_infos) != dict:
             # cannot process further
             print(f"- MIME: '{mt}' is not supported")
             add_log("global", "ERROR", f"Unsupported audio format: {mt}")
