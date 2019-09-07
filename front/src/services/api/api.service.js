@@ -157,8 +157,8 @@ const trackUpload = (trackInfo, store) => {
     })
 }
 
-const trackFetch = ({ user, trackId, credentials }) => {
-  let url = TRACKS_FETCH_URL(user, trackId)
+const trackFetch = ({ userId, trackId, credentials }) => {
+  let url = TRACKS_FETCH_URL(userId, trackId)
 
   return fetch(url, { headers: authHeaders(credentials) })
     .then((data) => {
@@ -171,8 +171,8 @@ const trackFetch = ({ user, trackId, credentials }) => {
     .then((data) => parseTrack(data))
 }
 
-const trackDelete = ({ user, trackId, credentials }) => {
-  let url = TRACKS_DELETE_URL(user, trackId)
+const trackDelete = ({ userId, trackId, credentials }) => {
+  let url = TRACKS_DELETE_URL(userId, trackId)
 
   return fetch(url, {
     headers: authHeaders(credentials),
@@ -187,9 +187,9 @@ const trackDelete = ({ user, trackId, credentials }) => {
     .then((data) => data.json())
 }
 
-const trackEdit = ({ username, trackId, track, credentials }) => {
+const trackEdit = ({ userId, trackId, track, credentials }) => {
   return promisedRequest({
-    url: TRACKS_EDIT_URL(username, trackId),
+    url: TRACKS_EDIT_URL(userId, trackId),
     method: 'PATCH',
     payload: track,
     credentials: credentials

@@ -16,16 +16,16 @@ const backendInteractorService = credentials => {
     return apiService.fetchUserAlbums({ username, short, credentials })
   }
 
-  const trackFetch = ({ user, trackId }) => {
-    return apiService.trackFetch({ user, trackId, credentials })
+  const trackFetch = ({ userId, trackId }) => {
+    return apiService.trackFetch({ userId, trackId, credentials })
   }
 
-  const trackDelete = ({ user, trackId }) => {
-    return apiService.trackDelete({ user, trackId, credentials })
+  const trackDelete = ({ userId, trackId }) => {
+    return apiService.trackDelete({ userId, trackId, credentials })
   }
 
-  const trackEdit = ({ username, trackId, track }) => {
-    return apiService.trackEdit({ username, trackId, track, credentials })
+  const trackEdit = ({ userId, trackId, track }) => {
+    return apiService.trackEdit({ userId, trackId, track, credentials })
   }
 
   const updateUserSettings = ({ settings }) => {

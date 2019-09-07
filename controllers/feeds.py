@@ -1,5 +1,5 @@
 from werkzeug.contrib.atom import AtomFeed
-from flask import Blueprint, request, url_for, abort
+from flask import Blueprint, request, url_for, abort, current_app, g
 from models import User, Sound, Album
 
 bp_feeds = Blueprint("bp_feeds", __name__)
@@ -15,7 +15,17 @@ def tracks(user_id):
     q = Sound.query.filter(Sound.user_id == user.id, Sound.private.is_(False))
     q = q.order_by(Sound.uploaded.desc())
 
-    feed = AtomFeed(f"{user.name} tracks", feed_url=request.url, url=request.url_root)
+    feed_url = request.url
+    url = f"https://{current_app.config['AP_DOMAIN']}/{user.name}"
+    feed = AtomFeed(
+        f"{user.name} tracks",
+        feed_url=feed_url,
+        url=url,
+        subtitle=f"Tracks of {user.name}",
+        logo=None or f"https://{current_app.config['AP_DOMAIN']}/static/userpic_placeholder.png",
+        generator=('reel2bits', f"https://{current_app.config['AP_DOMAIN']}", g.cfg['REEL2BITS_VERSION']),
+        author={'name': user.name, 'uri': f"https://{current_app.config['AP_DOMAIN']}/{user.name}"}
+    )
 
     for track in q:
         url_transcode = url_for("get_uploads_stuff", thing="sounds", stuff=track.path_sound(orig=False), _external=True)
@@ -24,9 +34,10 @@ def tracks(user_id):
             title_type="text",
             content=track.description,
             content_type="text",
-            url=url_transcode,
+            url=f"https://{current_app.config['AP_DOMAIN']}/{user.name}/{track.slug}",
+            links=[{'href': url_transcode, 'type': 'audio/mpeg', 'length': track.sound_infos.first().duration}],
             updated=track.updated,
-            author=user.name,
+            author={'name': user.name, 'uri': f"https://{current_app.config['AP_DOMAIN']}/{user.name}"},
             published=track.uploaded,
             rights=track.licence_info()["name"],
         )
@@ -43,19 +54,31 @@ def album(user_id, album_id):
     if not album:
         abort(404)
 
-    feed = AtomFeed(f"{user.name} - {album.title}", feed_url=request.url, url=request.url_root)
+    feed_url = request.url
+    url = f"https://{current_app.config['AP_DOMAIN']}/{user.name}"
+    feed = AtomFeed(
+        f"{album.title} by {user.name}",
+        feed_url=feed_url,
+        url=url,
+        subtitle=f"Tracks for album '{album.title}' by {user.name}",
+        logo=None or f"https://{current_app.config['AP_DOMAIN']}/static/artwork_placeholder.png",
+        generator=('reel2bits', f"https://{current_app.config['AP_DOMAIN']}", g.cfg['REEL2BITS_VERSION']),
+        author={'name': user.name, 'uri': f"https://{current_app.config['AP_DOMAIN']}/{user.name}"}
+    )
 
     for track in album.sounds:
         url_transcode = url_for("get_uploads_stuff", thing="sounds", stuff=track.path_sound(orig=False), _external=True)
         feed.add(
+            id=track.flake_id,
             title=track.title,
             title_type="text",
             content=track.description,
             content_type="text",
-            url=url_transcode,
+            url=f"https://{current_app.config['AP_DOMAIN']}/{user.name}/{track.slug}",
+            links=[{'href': url_transcode, 'type': 'audio/mpeg', 'length': track.sound_infos.first().duration}],
             updated=track.updated,
-            author=user.name,
+            author={'name': user.name, 'uri': f"https://{current_app.config['AP_DOMAIN']}/{user.name}"},
             published=track.uploaded,
-            rights=track.licence_info()["name"],
+            rights=track.licence_info()["name"]
         )
     return feed.get_response()
