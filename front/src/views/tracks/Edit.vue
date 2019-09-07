@@ -154,7 +154,7 @@ export default {
         this.licenceChoices = []
       })
     // Fetch user albums
-    this.$store.state.api.backendInteractor.fetchUserAlbums({ username: this.$store.state.users.currentUser.screen_name, short: true })
+    this.$store.state.api.backendInteractor.fetchUserAlbums({ userId: this.$store.state.users.currentUser.userId, short: true })
       .then((albums) => {
         let noAlbum = [
           { value: '__None', text: 'No album' }

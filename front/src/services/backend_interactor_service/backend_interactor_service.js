@@ -12,8 +12,8 @@ const backendInteractorService = credentials => {
     return apiService.fetchTimeline({ timeline, credentials, since, until, userId, tag, withMuted, page })
   }
 
-  const fetchUserAlbums = ({ username, short = false }) => {
-    return apiService.fetchUserAlbums({ username, short, credentials })
+  const fetchUserAlbums = ({ userId, short = false }) => {
+    return apiService.fetchUserAlbums({ userId, short, credentials })
   }
 
   const trackFetch = ({ userId, trackId }) => {

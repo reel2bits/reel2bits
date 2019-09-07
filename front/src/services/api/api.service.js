@@ -239,8 +239,8 @@ const fetchLicenses = () => {
     .then((data) => data.json())
 }
 
-const fetchUserAlbums = ({ username, short = false, credentials }) => {
-  let url = REEL2BITS_ALBUMS(username)
+const fetchUserAlbums = ({ userId, short = false, credentials }) => {
+  let url = REEL2BITS_ALBUMS(userId)
 
   const params = []
   params.push(['short', short])
@@ -279,8 +279,8 @@ const albumNew = (albumInfo, store) => {
     })
 }
 
-const albumFetch = (user, albumId, store) => {
-  let url = ALBUMS_FETCH_URL(user, albumId)
+const albumFetch = (userId, albumId, store) => {
+  let url = ALBUMS_FETCH_URL(userId, albumId)
   let credentials = store.getters.getToken()
 
   return fetch(url, { headers: authHeaders(credentials) })
