@@ -261,6 +261,7 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
 
         app.register_blueprint(bp_search)
 
+        # ActivityPub
         from controllers.api.v1.well_known import bp_wellknown
 
         app.register_blueprint(bp_wellknown)
@@ -271,6 +272,12 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
 
         from controllers.api.v1.activitypub import bp_ap
 
+        # Feeds
+        from controllers.feeds import bp_feeds
+
+        app.register_blueprint(bp_feeds)
+
+        # API
         app.register_blueprint(bp_ap)
 
         from controllers.api.v1.auth import bp_api_v1_auth
@@ -331,7 +338,7 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
 
     @app.errorhandler(404)
     def page_not_found(msg):
-        excluded = ["/api", "/.well-known"]
+        excluded = ["/api", "/.well-known", "/feeds"]
         if any([request.path.startswith(m) for m in excluded]):
             return jsonify({"error": "page not found"}), 404
 

@@ -311,6 +311,7 @@ RESTRICTED_NICKNAMES = [
     "account",
     "uploads",
     "static",
+    "feeds",
 ]
 
 
