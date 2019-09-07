@@ -297,7 +297,8 @@ export default {
   methods: {
     async fetchTrack () {
       console.log('fetching track...')
-      await this.$store.state.api.backendInteractor.trackFetch({ userId: this.userId, trackId: this.trackId })
+      // || quick fix before we fully implement id or username thing
+      await this.$store.state.api.backendInteractor.trackFetch({ userId: this.userId || this.userName, trackId: this.trackId })
         .then((status) => {
           this.track = status
           this.processing_done = this.track.processing.done
