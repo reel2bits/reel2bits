@@ -231,7 +231,9 @@ export default {
   },
   created () {
     const user = this.$store.getters.findUser(this.userName)
-    this.userId = user.id
+    if (user) {
+      this.userId = user.id
+    } // else, oops
     this.fetchTrack()
       .then((v) => {
         if (!this.trackError && this.track) {
