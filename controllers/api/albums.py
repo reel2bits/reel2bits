@@ -48,20 +48,20 @@ def new():
     return jsonify({"error": json.dumps(form.errors)}), 400
 
 
-@bp_api_albums.route("/api/albums/<string:username>/<string:albumslug>", methods=["GET"])
+@bp_api_albums.route("/api/albums/<int:user_id>/<string:albumslug>", methods=["GET"])
 @require_oauth(None)
-def get(username, albumslug):
+def get(user_id, albumslug):
     """
     Get album details.
     ---
     tags:
         - Albums
     parameters:
-        - name: username
+        - name: user_id
           in: path
-          type: string
+          type: integer
           required: true
-          description: User username
+          description: User ID
         - name: albumslug
           in: path
           type: string
@@ -75,7 +75,7 @@ def get(username, albumslug):
     current_user = current_token.user
 
     # Get the associated User from url fetch
-    album_user = User.query.filter(User.name == username).first()
+    album_user = User.query.filter(User.id == user_id).first()
     if not album_user:
         print("User not found")
         return jsonify({"error": "User not found"}), 404
@@ -103,8 +103,7 @@ def get(username, albumslug):
         "slug": album.slug,
         "user_id": album.user_id,
         "user": album.user.name,
-        "sounds": album.sounds.all(),
-        "timeline": album.timeline,
+        "sounds": [a.flake_id for a in album.sounds.all()]
     }
 
     return jsonify(album_obj)
@@ -154,20 +153,20 @@ def delete(username, albumslug):
     return jsonify({}), 200
 
 
-@bp_api_albums.route("/api/albums/<string:username>", methods=["GET"])
+@bp_api_albums.route("/api/albums/<int:user_id>", methods=["GET"])
 @require_oauth(None)
-def list(username):
+def list(user_id):
     """
     Get album list.
     ---
     tags:
         - Albums
     parameters:
-        - name: username
+        - name: user_id
           in: path
-          type: string
+          type: integer
           required: true
-          description: User username
+          description: User ID
         - name: short
           in: query
           type: boolean
@@ -185,7 +184,7 @@ def list(username):
 
     q = current_user.albums
 
-    if current_user.name != username:
+    if current_user.id != user_id:
         q = q.filter(Album.private.is_(False))
 
     q = q.order_by(Album.created.desc())

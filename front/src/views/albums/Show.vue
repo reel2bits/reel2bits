@@ -23,7 +23,8 @@ export default {
     album: null,
     errors: null,
     processing_done: null,
-    isOwner: false
+    isOwner: false,
+    userId: null
   }),
   computed: {
     ...mapState({
@@ -40,12 +41,14 @@ export default {
     }
   },
   created () {
+    const user = this.$store.getters.findUser(this.userName)
+    this.userId = user.id
     this.fetchAlbum()
   },
   methods: {
     async fetchAlbum () {
       try {
-        let data = await apiService.albumFetch(this.userName, this.albumId, this.$store)
+        let data = await apiService.albumFetch(this.userId, this.albumId, this.$store)
         this.album = data
         this.isOwner = (this.album.user === this.$store.state.users.currentUser.screen_name)
       } catch (e) {
