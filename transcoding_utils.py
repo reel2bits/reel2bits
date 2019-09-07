@@ -22,7 +22,7 @@ def get_basic_infos(fname):
 
     accepted_types = ['Wave', 'MPEG Audio', 'FLAC', 'Ogg']
     if mt not in accepted_types:
-        return None
+        return None, mt
 
     print("- File is type {0}".format(mt))
 
