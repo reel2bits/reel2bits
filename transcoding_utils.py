@@ -191,8 +191,8 @@ def work_metadatas(sound_id, force=False):
         basic_infos = get_basic_infos(fname)
         if type(basic_infos) != dict:
             # cannot process further
-            print(f"- MIME: '{mt}' is not supported")
-            add_log("global", "ERROR", f"Unsupported audio format: {mt}")
+            print(f"- MIME: '{basic_infos}' is not supported")
+            add_log("global", "ERROR", f"Unsupported audio format: {basic_infos}")
             return False
 
     if not _infos.done_basic or force:
@@ -257,3 +257,4 @@ def work_metadatas(sound_id, force=False):
         "info",
         "Metadatas gathering finished for: {0} -- {1}".format(sound.id, sound.title),
     )
+    return True
