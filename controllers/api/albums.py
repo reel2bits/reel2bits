@@ -103,7 +103,7 @@ def get(user_id, albumslug):
         "slug": album.slug,
         "user_id": album.user_id,
         "user": album.user.name,
-        "sounds": [a.flake_id for a in album.sounds.all()]
+        "sounds": [a.flake_id for a in album.sounds.all()],
     }
 
     return jsonify(album_obj)
