@@ -21,8 +21,10 @@ Reel2bits is a soundcloud-like self-hosted application. You can upload audio fil
 
 ActivityPub federation is still a work in progress, everything else works.
 
-## Versions requirement
+## Versions/packages requirement
  - Python >= 3.6 (all under 3.6 are not supported)
+ - libmediainfo
+ - Pydub dependencies: https://github.com/jiaaro/pydub#dependencies
 
 ## Installation
     Install PostgreSQL first for the database. MySQL or SQLITE3 are unsupported as we use PostgreSQL specific extensions.
@@ -31,7 +33,6 @@ ActivityPub federation is still a work in progress, everything else works.
     cd reel2bits
     pip3 install --requirement requirements.txt
     python3 setup.py install
-    # Install Pydub dependencies: https://github.com/jiaaro/pydub#dependencies
     cp config.py.sample config.py
     $EDITOR config.py
     export FLASK_ENV=<development or production>
