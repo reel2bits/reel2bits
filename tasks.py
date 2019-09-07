@@ -82,16 +82,29 @@ def upload_workflow(self, sound_id):
         print("- Cant find sound ID {id} in database".format(id=sound_id))
         return
 
+    errors = None
+
     print("METADATAS started")
-    work_metadatas(sound_id)
+    metadatas = work_metadatas(sound_id)
     print("METADATAS finished")
 
-    print("TRANSCODE started")
-    work_transcode(sound_id)
-    print("TRANSCODE finished")
+    if not metadatas:
+        # cannot process further
+        errors = True
+        sound.transcode_state = Sound.TRANSCODE_ERROR
+        db.session.commit()
+        print("UPLOAD WORKFLOW had errors")
+        add_log("global", "ERROR", f"Error processing track {sound.id}")
+        add_user_log(sound.id, sound.user.id, "sounds", "error", "An error occured while processing your track")
+        return
+
+    if metadatas:
+        print("TRANSCODE started")
+        work_transcode(sound_id)
+        print("TRANSCODE finished")
 
     # Federate if public and AP enabled
-    if current_app.config["AP_ENABLED"]:
+    if current_app.config["AP_ENABLED"] and not errors:
         if not sound.private:
             print("UPLOAD WORKFLOW federating sound")
             # Federate only if sound is public
