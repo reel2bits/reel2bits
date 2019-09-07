@@ -102,15 +102,15 @@ export default {
       const user = this.$store.getters.findUser(userNameOrId)
       if (user) {
         this.userId = user.id
-        console.warn('load::user::nothing to do')
+        console.warn('we already know the user')
       } else {
         this.$store.dispatch('fetchUser', userNameOrId)
           .then(({ id }) => {
             this.userId = id
-            console.warn('load::!user::fetchUser::id::nothing to do')
+            console.warn('fetched by ID: ' + id)
           })
           .catch((reason) => {
-            console.warn('load::!user::fetchUser::!id')
+            console.warn('cannot fetch user: ' + reason)
             const errorMessage = get(reason, 'error.error')
             if (errorMessage) {
               this.error = errorMessage

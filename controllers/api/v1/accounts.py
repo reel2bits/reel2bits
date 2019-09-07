@@ -163,9 +163,9 @@ def accounts():
     return jsonify({**token, "created_at": tok.issued_at}), 200
 
 
-@bp_api_v1_accounts.route("/api/v1/accounts/<string:username>", methods=["GET"])
+@bp_api_v1_accounts.route("/api/v1/accounts/<string:username_or_id>", methods=["GET"])
 @require_oauth(None)
-def account_get(username):
+def account_get(username_or_id):
     """
     Returns Account
     ---
@@ -177,7 +177,13 @@ def account_get(username):
         schema:
             $ref: '#/definitions/Account'
     """
-    user = User.query.filter(User.name == username).first()
+    if username_or_id.isdigit():
+        # an int is DB ID
+        user = User.query.filter(User.id == int(username_or_id)).first()
+    else:
+        # a string is Local User
+        user = User.query.filter(User.name == username_or_id, User.local.is_(True)).first()
+
     if not user:
         abort(404)
     if len(user.actor) != 1:
