@@ -2,7 +2,6 @@ from flask import current_app
 from little_boxes.activitypub import ActivityType
 from little_boxes import activitypub as ap
 from typing import Dict, Any
-import sqlalchemy
 
 ObjectType = Dict[str, Any]
 
@@ -89,10 +88,10 @@ def clean_activity(activity: ObjectType) -> Dict[str, Any]:
 
 
 def build_ordered_collection(items, actor_id, page, limit=50, switch_side=False):
-    if type(items) == sqlalchemy.orm.dynamic.AppenderBaseQuery:
-        total_items = items.count()
-    else:
+    try:
         total_items = len(items)
+    except TypeError:
+        total_items = items.count()
 
     if total_items <= 0:
         return {
