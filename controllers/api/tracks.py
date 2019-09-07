@@ -93,9 +93,9 @@ def upload():
     return jsonify({"error": json.dumps(form.errors)}), 400
 
 
-@bp_api_tracks.route("/api/tracks/<int:user_id>/<string:soundslug>", methods=["GET"])
+@bp_api_tracks.route("/api/tracks/<string:username_or_id>/<string:soundslug>", methods=["GET"])
 @require_oauth(None)
-def show(user_id, soundslug):
+def show(username_or_id, soundslug):
     """
     Get track details.
     ---
@@ -120,7 +120,10 @@ def show(user_id, soundslug):
     current_user = current_token.user
 
     # Get the associated User from url fetch
-    track_user = User.query.filter(User.id == user_id).first()
+    if username_or_id.isdigit():
+        track_user = User.query.filter(User.id == username_or_id).first()
+    else:
+        track_user = User.query.filter(User.name == username_or_id, User.local.is_(True)).first()
     if not track_user:
         return jsonify({"error": "User not found"}), 404
 
