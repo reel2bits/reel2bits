@@ -5,18 +5,24 @@ import os
 import wave
 import time
 
-import magic
 import mutagen
+from pymediainfo import MediaInfo
 
 from models import db, SoundInfo, Sound
-from utils import get_waveform, create_png_waveform, duration_song_human, add_user_log, generate_audio_dat_file
+from utils import get_waveform, create_png_waveform, duration_song_human, add_user_log, generate_audio_dat_file, add_log
 from pydub import AudioSegment
 from os.path import splitext
 from flask import current_app
 
 
 def get_basic_infos(fname):
-    mt = magic.from_file(fname, mime=True)
+    mi = MediaInfo.parse(fname)
+    mig = mi.tracks[0]
+    mt = mig.format
+
+    accepted_types = ['Wave', 'MPEG Audio', 'FLAC', 'Ogg']
+    if mt not in accepted_types:
+        return None
 
     print("- File is type {0}".format(mt))
 
@@ -35,7 +41,7 @@ def get_basic_infos(fname):
     }
 
     # WAV
-    if mt == "audio/x-wav":
+    if mt == "Wave":
         with contextlib.closing(wave.open(fname, "r")) as f:
             frames = f.getnframes()
             rate = f.getframerate()
@@ -49,7 +55,7 @@ def get_basic_infos(fname):
             infos["type"] = "WAV"
         infos["type_human"] = "WAV"
     # MP3
-    elif mt == "audio/mpeg":
+    elif mt == "MPEG Audio":
         muta = mutagen.File(fname)
         if muta is None:
             print("! ERROR mutagen is null")
@@ -68,7 +74,7 @@ def get_basic_infos(fname):
         infos["type"] = "MP3"
         infos["type_human"] = "Mpeg 3"
     # OGG
-    elif mt == "audio/ogg":
+    elif mt == "Ogg":
         muta = mutagen.File(fname)
         if muta is None:
             print("! ERROR mutagen is null")
@@ -80,7 +86,7 @@ def get_basic_infos(fname):
         infos["type"] = "OGG"
         infos["type_human"] = "Ogg Vorbis"
     # FLAC
-    elif mt == "audio/x-flac" or mt == "audio/flac":
+    elif mt == "FLAC":
         muta = mutagen.File(fname)
         if muta is None:
             print("! ERROR mutagen is null")
@@ -157,6 +163,7 @@ def work_transcode(sound_id):
 
 
 def work_metadatas(sound_id, force=False):
+    # force is unused for now
     sound = Sound.query.get(sound_id)
     if not sound:
         print("- Cant find sound ID %(id)s in database".format(id=sound_id))
@@ -179,10 +186,17 @@ def work_metadatas(sound_id, force=False):
     # Generate Basic infos
 
     fname = os.path.join(current_app.config["UPLOADED_SOUNDS_DEST"], sound.user.slug, sound.filename)
+    basic_infos = None
+    if not _infos.done_basic:
+        basic_infos, mt = get_basic_infos(fname)
+        if not basic_infos:
+            # cannot process further
+            print(f"- MIME: '{mt}' is not supported")
+            add_log("global", "ERROR", f"Unsupported audio format: {mt}")
+            return False
 
     if not _infos.done_basic or force:
         print("- WORKING BASIC on {0}, {1}".format(sound.id, sound.filename))
-        basic_infos = get_basic_infos(fname)
         print("- Our file got basic infos: {0}".format(basic_infos))
         _infos.duration = basic_infos["duration"]
         _infos.channels = basic_infos["channels"]
