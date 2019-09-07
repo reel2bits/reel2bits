@@ -23,8 +23,8 @@ def tracks(user_id):
         url=url,
         subtitle=f"Tracks of {user.name}",
         logo=None or f"https://{current_app.config['AP_DOMAIN']}/static/userpic_placeholder.png",
-        generator=('reel2bits', f"https://{current_app.config['AP_DOMAIN']}", g.cfg['REEL2BITS_VERSION']),
-        author={'name': user.name, 'uri': f"https://{current_app.config['AP_DOMAIN']}/{user.name}"}
+        generator=("reel2bits", f"https://{current_app.config['AP_DOMAIN']}", g.cfg["REEL2BITS_VERSION"]),
+        author={"name": user.name, "uri": f"https://{current_app.config['AP_DOMAIN']}/{user.name}"},
     )
 
     for track in q:
@@ -35,9 +35,9 @@ def tracks(user_id):
             content=track.description,
             content_type="text",
             url=f"https://{current_app.config['AP_DOMAIN']}/{user.name}/{track.slug}",
-            links=[{'href': url_transcode, 'type': 'audio/mpeg', 'length': track.sound_infos.first().duration}],
+            links=[{"href": url_transcode, "type": "audio/mpeg", "length": track.sound_infos.first().duration}],
             updated=track.updated,
-            author={'name': user.name, 'uri': f"https://{current_app.config['AP_DOMAIN']}/{user.name}"},
+            author={"name": user.name, "uri": f"https://{current_app.config['AP_DOMAIN']}/{user.name}"},
             published=track.uploaded,
             rights=track.licence_info()["name"],
         )
@@ -62,8 +62,8 @@ def album(user_id, album_id):
         url=url,
         subtitle=f"Tracks for album '{album.title}' by {user.name}",
         logo=None or f"https://{current_app.config['AP_DOMAIN']}/static/artwork_placeholder.png",
-        generator=('reel2bits', f"https://{current_app.config['AP_DOMAIN']}", g.cfg['REEL2BITS_VERSION']),
-        author={'name': user.name, 'uri': f"https://{current_app.config['AP_DOMAIN']}/{user.name}"}
+        generator=("reel2bits", f"https://{current_app.config['AP_DOMAIN']}", g.cfg["REEL2BITS_VERSION"]),
+        author={"name": user.name, "uri": f"https://{current_app.config['AP_DOMAIN']}/{user.name}"},
     )
 
     for track in album.sounds:
@@ -75,10 +75,10 @@ def album(user_id, album_id):
             content=track.description,
             content_type="text",
             url=f"https://{current_app.config['AP_DOMAIN']}/{user.name}/{track.slug}",
-            links=[{'href': url_transcode, 'type': 'audio/mpeg', 'length': track.sound_infos.first().duration}],
+            links=[{"href": url_transcode, "type": "audio/mpeg", "length": track.sound_infos.first().duration}],
             updated=track.updated,
-            author={'name': user.name, 'uri': f"https://{current_app.config['AP_DOMAIN']}/{user.name}"},
+            author={"name": user.name, "uri": f"https://{current_app.config['AP_DOMAIN']}/{user.name}"},
             published=track.uploaded,
-            rights=track.licence_info()["name"]
+            rights=track.licence_info()["name"],
         )
     return feed.get_response()
