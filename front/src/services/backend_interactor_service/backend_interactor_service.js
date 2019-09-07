@@ -36,16 +36,16 @@ const backendInteractorService = credentials => {
     return apiService.fetchConversation({ id, credentials })
   }
 
-  const fetchFriends = ({ id, maxId, sinceId, limit }) => {
-    return apiService.fetchFriends({ id, maxId, sinceId, limit, credentials })
+  const fetchFriends = ({ id, page, limit }) => {
+    return apiService.fetchFriends({ id, page, limit, credentials })
   }
 
   const exportFriends = ({ id }) => {
     return apiService.exportFriends({ id, credentials })
   }
 
-  const fetchFollowers = ({ id, maxId, sinceId, limit }) => {
-    return apiService.fetchFollowers({ id, maxId, sinceId, limit, credentials })
+  const fetchFollowers = ({ id, page, limit }) => {
+    return apiService.fetchFollowers({ id, page, limit, credentials })
   }
 
   const fetchUser = ({ id }) => {

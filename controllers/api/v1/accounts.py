@@ -609,3 +609,111 @@ def unfollow(user_id):
         # We need to initiate a follow request
         # FIXME TODO
         abort(501)
+
+
+@bp_api_v1_accounts.route("/api/v1/accounts/<int:user_id>/followers", methods=["GET"])
+@require_oauth(None)
+def followers(user_id):
+    """
+    Accounts which follow the given account.
+    ---
+    tags:
+        - Accounts
+    parameters:
+        - name: id
+          in: path
+          type: integer
+          required: true
+          description: User ID to follow
+        - name: count
+          in: query
+          type: integer
+          required: true
+          description: count per page
+        - name: page
+          in: query
+          type: integer
+          description: page number
+    responses:
+      200:
+        description: Returns paginated array of Account
+        schema:
+            $ref: '#/definitions/Account'
+    """
+    user = User.query.filter(User.id == user_id).first()
+    if not user:
+        abort(404)
+
+    count = int(request.args.get("count", 20))
+    page = int(request.args.get("page", 1))
+
+    q = user.actor[0].followers
+    q = q.paginate(page=page, per_page=count)
+
+    followers = []
+    for t in q.items:
+        # Note: the items are Follower(actor, target)
+        # Where target is `user` since we are asking his followers
+        # And actor = the user following `user`
+        relationship = False
+        if current_token.user:
+            relationship = to_json_relationship(current_token.user, t.actor.user)
+        account = to_json_account(t.actor.user, relationship)
+        followers.append(account)
+
+    resp = {"page": page, "page_size": count, "totalItems": q.total, "items": followers, "totalPages": q.pages}
+    return jsonify(resp)
+
+
+@bp_api_v1_accounts.route("/api/v1/accounts/<int:user_id>/following", methods=["GET"])
+@require_oauth(None)
+def following(user_id):
+    """
+    Accounts followed by the given account.
+    ---
+    tags:
+        - Accounts
+    parameters:
+        - name: id
+          in: path
+          type: integer
+          required: true
+          description: User ID to follow
+        - name: count
+          in: query
+          type: integer
+          required: true
+          description: count per page
+        - name: page
+          in: query
+          type: integer
+          description: page number
+    responses:
+      200:
+        description: Returns paginated array of Account
+        schema:
+            $ref: '#/definitions/Account'
+    """
+    user = User.query.filter(User.id == user_id).first()
+    if not user:
+        abort(404)
+
+    count = int(request.args.get("count", 20))
+    page = int(request.args.get("page", 1))
+
+    q = user.actor[0].followings
+    q = q.paginate(page=page, per_page=count)
+
+    followings = []
+    for t in q.items:
+        # Note: the items are Follower(actor, target)
+        # Where actor is `user` since we are asking his followers
+        # And target = the user following `user`
+        relationship = False
+        if current_token.user:
+            relationship = to_json_relationship(current_token.user, t.target.user)
+        account = to_json_account(t.target.user, relationship)
+        followings.append(account)
+
+    resp = {"page": page, "page_size": count, "totalItems": q.total, "items": followings, "totalPages": q.pages}
+    return jsonify(resp)

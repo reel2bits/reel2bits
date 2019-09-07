@@ -26,6 +26,8 @@ const MASTODON_PROFILE_UPDATE_URL = '/api/v1/accounts/update_credentials'
 const MASTODON_USER_RELATIONSHIPS_URL = '/api/v1/accounts/relationships'
 const MASTODON_FOLLOW_URL = id => `/api/v1/accounts/${id}/follow`
 const MASTODON_UNFOLLOW_URL = id => `/api/v1/accounts/${id}/unfollow`
+const MASTODON_FOLLOWING_URL = id => `/api/v1/accounts/${id}/following`
+const MASTODON_FOLLOWERS_URL = id => `/api/v1/accounts/${id}/followers`
 
 const REEL2BITS_LICENSES = '/api/reel2bits/licenses'
 const REEL2BITS_ALBUMS = (username) => `/api/albums/${username}`
@@ -450,6 +452,38 @@ const unfollowUser = ({ id, credentials }) => {
   }).then((data) => data.json())
 }
 
+const fetchFriends = ({ id, page = 1, limit = 20, credentials }) => {
+  let url = MASTODON_FOLLOWING_URL(id)
+  const args = [
+    page && `page=${page}`,
+    limit && `limit=${limit}`
+  ].filter(_ => _).join('&')
+
+  url = url + (args ? '?' + args : '')
+  return fetch(url, { headers: authHeaders(credentials) })
+    .then((data) => data.json())
+    .then((data) => {
+      data.items = data.items.map(parseUser)
+      return data
+    })
+}
+
+const fetchFollowers = ({ id, page = 1, limit = 20, credentials }) => {
+  let url = MASTODON_FOLLOWERS_URL(id)
+  const args = [
+    page && `page=${page}`,
+    limit && `limit=${limit}`
+  ].filter(_ => _).join('&')
+
+  url += args ? '?' + args : ''
+  return fetch(url, { headers: authHeaders(credentials) })
+    .then((data) => data.json())
+    .then((data) => {
+      data.items = data.items.map(parseUser)
+      return data
+    })
+}
+
 const apiService = {
   verifyCredentials,
   register,
@@ -471,7 +505,9 @@ const apiService = {
   resetPassword,
   resetPasswordToken,
   followUser,
-  unfollowUser
+  unfollowUser,
+  fetchFriends,
+  fetchFollowers
 }
 
 export default apiService

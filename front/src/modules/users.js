@@ -63,6 +63,20 @@ export const mutations = {
         user.subscribed = relationship.subscribing
       }
     })
+  },
+  // Because frontend doesn't have a reason to keep these stuff in memory
+  // outside of viewing someones user profile.
+  clearFriends (state, userId) {
+    const user = state.usersObject[userId]
+    if (user) {
+      vue.set(user, 'friendIds', [])
+    }
+  },
+  clearFollowers (state, userId) {
+    const user = state.usersObject[userId]
+    if (user) {
+      vue.set(user, 'followerIds', [])
+    }
   }
 }
 

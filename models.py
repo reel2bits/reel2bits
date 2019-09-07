@@ -77,9 +77,9 @@ class PasswordResetToken(db.Model):
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(255), unique=True, nullable=False, info={"label": "Email"})
-    name = db.Column(db.String(255), unique=True, nullable=False, info={"label": "Username"})
-    password = db.Column(db.String(255), nullable=False, info={"label": "Password"})
+    email = db.Column(db.String(255), unique=True, nullable=True, info={"label": "Email"})
+    name = db.Column(db.String(255), nullable=False, info={"label": "Username"})
+    password = db.Column(db.String(255), nullable=True, info={"label": "Password"})
     active = db.Column(db.Boolean())
     confirmed_at = db.Column(db.DateTime())
 
@@ -94,7 +94,8 @@ class User(db.Model, UserMixin):
 
     timezone = db.Column(db.String(255), nullable=False, default="UTC")  # Managed and fed by pytz
 
-    slug = db.Column(db.String(255), unique=True, nullable=True)
+    # should be removed since User.name is URL friendly
+    slug = db.Column(db.String(255), nullable=True)
 
     local = db.Column(db.Boolean(), default=True)
 
