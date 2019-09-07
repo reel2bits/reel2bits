@@ -20,7 +20,7 @@ def get_basic_infos(fname):
     mig = mi.tracks[0]
     mt = mig.format
 
-    accepted_types = ['Wave', 'MPEG Audio', 'FLAC', 'Ogg']
+    accepted_types = ["Wave", "MPEG Audio", "FLAC", "Ogg"]
     if mt not in accepted_types:
         return mt
 
