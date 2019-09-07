@@ -95,7 +95,7 @@
 
 <script>
 import { requestFollow, requestUnfollow } from '../../services/follow_manipulate/follow_manipulate.js'
-const UserCard = {
+const UserCardList = {
   props: [
     'user'
   ],
@@ -133,5 +133,5 @@ const UserCard = {
   }
 }
 
-export default UserCard
+export default UserCardList
 </script>
