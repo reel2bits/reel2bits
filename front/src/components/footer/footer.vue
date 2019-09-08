@@ -5,17 +5,21 @@
         {{ url }}
       </div>
       <div class="col-md-4">
-        About
+        <translate translate-context="Footer/*/Link/About">
+          About
+        </translate>
       </div>
     </div>
     <div class="row justify-content-around">
       <div class="col-md-4">
         <router-link to="/about">
-          About
+          <translate translate-context="Footer/*/Link/AboutThisInstance">
+            About this instance
+          </translate>
         </router-link>
       </div>
       <div class="col-md-4">
-        <a :href="sourceUrl" target="_blank">Source code</a>
+        <a :href="sourceUrl" target="_blank"><translate translate-context="Footer/*/Link/SourceCode">Source code</translate></a>
       </div>
     </div>
   </footer>
