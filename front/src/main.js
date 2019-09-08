@@ -31,10 +31,10 @@ let availableLanguages = (function () {
   })
   return l
 })()
-console.log(availableLanguages)
 Vue.use(GetTextPlugin, {
   availableLanguages: availableLanguages,
   defaultLanguage: 'en_US',
+  muteLanguages: ['en_US'], // Ignore 'translations not found' for en_US since it's our base language
   // cf https://github.com/Polyconseil/vue-gettext#configuration
   // not recommended but this is fixing weird bugs with translation nodes
   // not being updated when in v-if/v-else clauses
