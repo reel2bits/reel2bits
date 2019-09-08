@@ -1,5 +1,5 @@
 import { parseUser, parseTrack, parseAlbum } from '../entity_normalizer/entity_normalizer.service.js'
-import { StatusCodeError } from '../errors/errors'
+import { RegistrationError, StatusCodeError } from '../errors/errors'
 import { map, reduce } from 'lodash'
 
 const MASTODON_LOGIN_URL = '/api/v1/accounts/verify_credentials'
@@ -107,12 +107,11 @@ const register = (userInfo, store) => {
       ...rest
     })
   })
-    .then((response) => [response.ok, response])
-    .then(([ok, response]) => {
-      if (ok) {
+    .then((response) => {
+      if (response.ok) {
         return response.json()
       } else {
-        return response.json().then((error) => { throw new Error(error.error) })
+        return response.json().then((error) => { throw new RegistrationError(error) })
       }
     })
 }
