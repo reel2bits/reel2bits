@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: front 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-08 20:31+0200\n"
-"PO-Revision-Date: 2019-09-08 20:33+0200\n"
+"POT-Creation-Date: 2019-09-08 20:39+0200\n"
+"PO-Revision-Date: 2019-09-08 20:40+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: fr_FR\n"
@@ -23,6 +23,16 @@ msgstr ""
 msgctxt "Header/*/Image/Avatar alt"
 msgid "%{username} avatar"
 msgstr "avatar de %{username}"
+
+#: front/src/components/footer/footer.vue:7
+msgctxt "Footer/*/Link/About"
+msgid "About"
+msgstr "À propos"
+
+#: front/src/components/footer/footer.vue:13
+msgctxt "Footer/*/Link/AboutThisInstance"
+msgid "About this instance"
+msgstr "À propos de cette instance"
 
 #: front/src/App.vue:108
 msgctxt "Header/*/DropDown/Create"
@@ -93,3 +103,8 @@ msgstr "Chercher"
 msgctxt "Header/*/DropDown/User/Settings"
 msgid "Settings"
 msgstr "Paramètres"
+
+#: front/src/components/footer/footer.vue:17
+msgctxt "Footer/*/Link/SourceCode"
+msgid "Source code"
+msgstr "Code source"
