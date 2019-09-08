@@ -117,6 +117,7 @@ export default {
       immediate: true,
       handler (newValue) {
         console.log('Switching interface language to', newValue)
+        console.log('Available languages:', this.$language.available)
         import(`./translations/${newValue}.json`).then((response) => {
           Vue.$translations[newValue] = response.default[newValue]
         }).finally(() => {

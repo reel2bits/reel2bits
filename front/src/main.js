@@ -31,6 +31,7 @@ let availableLanguages = (function () {
   })
   return l
 })()
+console.log(availableLanguages)
 Vue.use(GetTextPlugin, {
   availableLanguages: availableLanguages,
   defaultLanguage: 'en_US',
@@ -46,7 +47,7 @@ Vue.use(GetTextPlugin, {
     }
   },
   translations: {},
-  silent: true
+  silent: false
 })
 
 Vue.use(Vuex)
