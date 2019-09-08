@@ -126,6 +126,7 @@
 <script>
 import { validationMixin } from 'vuelidate'
 import { required, maxLength } from 'vuelidate/lib/validators'
+import locales from '../../locales.js'
 
 export default {
   mixins: [validationMixin],
@@ -149,10 +150,7 @@ export default {
   computed: {
     currentUser () { return this.$store.state.users.currentUser },
     availableLangs () {
-      return [
-        { value: 'en', text: 'English' },
-        { value: 'fr', text: 'French' }
-      ]
+      return locales.locales.map(e => { return { value: e.code, text: e.label } })
     },
     bioPlaceholder () {
       return 'quack quack i\'m a cat'.replace(/\s*\n\s*/g, ' \n')
@@ -173,6 +171,7 @@ export default {
             this.$store.commit('addNewUsers', [user])
             this.$store.commit('setCurrentUser', user)
             this.saveOk = true
+            this.$store.dispatch('setOption', { name: 'interfaceLanguage', value: this.user.lang })
           })
           .catch((e) => {
             console.log('Cannot save settings: ' + e)

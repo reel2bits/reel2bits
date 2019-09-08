@@ -2,8 +2,6 @@
 
 import { set, delete as del } from 'vue'
 
-const browserLocale = (window.navigator.language || 'en').split('-')[0]
-
 const defaultState = {
   colors: {},
   hideMutedPosts: undefined, // instance default
@@ -31,7 +29,8 @@ const defaultState = {
   webPushNotifications: false,
   muteWords: [],
   highlight: {},
-  interfaceLanguage: browserLocale,
+  interfaceLanguage: 'en_US',
+  momentLocale: 'en',
   hideScopeNotice: false,
   scopeCopy: undefined, // instance default
   subjectLineBehavior: undefined, // instance default

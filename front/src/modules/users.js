@@ -134,6 +134,8 @@ const users = {
               store.commit('setCurrentUser', user)
               store.commit('addNewUsers', [user])
 
+              store.dispatch('setOption', { name: 'interfaceLanguage', value: user.reel2bits.lang })
+
               // TODO: getNotificationPermission()
               // Set our new backend interactor
               store.commit('setBackendInteractor', backendInteractorService(accessToken))

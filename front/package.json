@@ -4,13 +4,15 @@
   "private": true,
   "scripts": {
     "dev": "node build/dev-server.js",
-    "build": "node build/build.js",
+    "build": "scripts/i18n-compile.sh && node build/build.js",
     "lint": "eslint --ext .js,.vue src",
     "lint-fix": "eslint --fix --ext .js,.vue src",
     "e2e": "node test/e2e/runner.js",
     "unit": "karma start test/unit/karma.conf.js --single-run",
     "unit:watch": "karma start test/unit/karma.conf.js --single-run=false",
-    "test": "npm run unit && npm run e2e"
+    "test": "npm run unit && npm run e2e",
+    "i18n-extract": "scripts/i18n-extract.sh",
+    "i18n-compile": "scripts/i18n-compile.sh"
   },
   "engines": {
     "node": ">= 4.0.0",
@@ -33,6 +35,7 @@
     "phoenix": "^1.4.10",
     "vue": "^2.6.10",
     "vue-axios": "^2.1.4",
+    "vue-gettext": "^2.1.5",
     "vue-i18n": "^8.14.0",
     "vue-router": "^3.1.3",
     "vue-string-filter": "^1.3.0",
@@ -84,7 +87,8 @@
     "sinon-chai": "^3.3.0",
     "vue-loader": "^14.0.0",
     "vue-template-compiler": "^2.6.10",
-    "webpack-hot-middleware": "^2.25.0"
+    "webpack-hot-middleware": "^2.25.0",
+    "easygettext": "^2.6.3"
   },
   "eslintConfig": {
     "root": true,
