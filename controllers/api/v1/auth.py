@@ -144,5 +144,5 @@ def oauth_revoke():
         200:
             description: ???
     """
-    # input: client_id, client_secret
+    # This endpoint wants basic auth, and it doesn't even works
     return authorization.create_endpoint_response("revocation")
