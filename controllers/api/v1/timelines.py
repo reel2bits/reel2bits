@@ -3,7 +3,7 @@ from models import db, Sound, Activity, Album, User
 from app_oauth import require_oauth
 from datas_helpers import to_json_track, to_json_account, to_json_album, to_json_relationship
 from authlib.flask.oauth2 import current_token
-
+import authlib
 
 bp_api_v1_timelines = Blueprint("bp_api_v1_timelines", __name__)
 
@@ -39,7 +39,6 @@ def home():
 
 
 @bp_api_v1_timelines.route("/api/v1/timelines/public", methods=["GET"])
-@require_oauth(None)
 def public():
     """
     Public or TWKN statuses.
@@ -70,6 +69,11 @@ def public():
     count = int(request.args.get("count", 20))
     page = int(request.args.get("page", 1))
 
+    try:
+        current_token = require_oauth.acquire_token(None)
+    except authlib.oauth2.rfc6749.errors.MissingAuthorizationError:
+        current_token = None
+
     q = db.session.query(Activity, Sound).filter(
         Activity.type == "Create", Activity.payload[("object", "type")].astext == "Audio"
     )
@@ -89,7 +93,7 @@ def public():
     for t in q.items:
         if t.Sound:
             relationship = False
-            if current_token.user:
+            if current_token and current_token.user:
                 relationship = to_json_relationship(current_token.user, t.Sound.user)
             account = to_json_account(t.Sound.user, relationship)
             tracks.append(to_json_track(t.Sound, account))
@@ -144,7 +148,6 @@ def drafts():
 
 
 @bp_api_v1_timelines.route("/api/v1/timelines/albums", methods=["GET"])
-@require_oauth(None)
 def albums():
     """
     User albums timeline.
@@ -169,7 +172,14 @@ def albums():
         200:
             description: Returns array of Status
     """
-    tok_user = current_token.user
+    current_user = None
+    try:
+        current_token = require_oauth.acquire_token(None)
+    except authlib.oauth2.rfc6749.errors.MissingAuthorizationError:
+        current_token = None
+    if current_token:
+        current_user = current_token.user
+
     count = int(request.args.get("count", 20))
     page = int(request.args.get("page", 1))
     user = request.args.get("user", None)
@@ -183,22 +193,22 @@ def albums():
     q = Album.query.order_by(Album.created.desc())
 
     only_public = True
-    if tok_user:
-        if user.id == tok_user.id:
+    if current_user:
+        if user.id == current_user.id:
             only_public = False
 
     if only_public:
         q = q.filter(Album.user_id == user.id, Album.private.is_(False))
     else:
-        q = q.filter(Album.user_id == tok_user.id)
+        q = q.filter(Album.user_id == current_user.id)
 
     q = q.paginate(page=page, per_page=count)
 
     albums = []
     for t in q.items:
         relationship = False
-        if current_token.user:
-            relationship = to_json_relationship(current_token.user, t.user)
+        if current_user:
+            relationship = to_json_relationship(current_user, t.user)
         account = to_json_account(t.user, relationship)
         albums.append(to_json_album(t, account))
     resp = {"page": page, "page_size": count, "totalItems": q.total, "items": albums, "totalPages": q.pages}
