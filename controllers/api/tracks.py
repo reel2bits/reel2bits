@@ -178,7 +178,7 @@ def edit(username, soundslug):
           description: Track slug
     responses:
         200:
-            description: Returns nothing.
+            description: Returns a Status with extra reel2bits params.
     """
     current_user = current_token.user
     if not current_user:
@@ -252,7 +252,7 @@ def delete(username, soundslug):
           description: Track slug
     responses:
         200:
-            description: Returns nothing.
+            description: Returns track name.
     """
     current_user = current_token.user
     if not current_user:

@@ -28,6 +28,18 @@ const backendInteractorService = credentials => {
     return apiService.trackEdit({ userId, trackId, track, credentials })
   }
 
+  const albumFetch = ({ userId, albumId }) => {
+    return apiService.albumFetch({ userId, albumId, credentials })
+  }
+
+  const albumDelete = ({ userId, albumId }) => {
+    return apiService.albumDelete({ userId, albumId, credentials })
+  }
+
+  const albumEdit = ({ userId, albumId, album }) => {
+    return apiService.albumEdit({ userId, albumId, album, credentials })
+  }
+
   const updateUserSettings = ({ settings }) => {
     return apiService.updateUserSettings({ settings, credentials })
   }
@@ -186,6 +198,9 @@ const backendInteractorService = credentials => {
     trackFetch,
     trackDelete,
     trackEdit,
+    albumFetch,
+    albumDelete,
+    albumEdit,
     fetchConversation,
     fetchFriends,
     exportFriends,

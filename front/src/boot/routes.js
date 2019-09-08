@@ -13,6 +13,7 @@ import TracksShow from '../views/tracks/Show.vue'
 import TracksEdit from '../views/tracks/Edit.vue'
 import AlbumsNew from '../views/albums/New.vue'
 import AlbumsShow from '../views/albums/Show.vue'
+import AlbumsEdit from '../views/albums/Edit.vue'
 import AccountLogs from '../views/account/Logs.vue'
 import About from '../views/About.vue'
 import NotFound from '../views/NotFound.vue'
@@ -59,11 +60,12 @@ export default (store) => {
     { name: 'user-settings', path: '/account/settings', component: UserSettings, beforeEnter: validateAuthenticatedRoute },
     // Tracks
     { name: 'tracks-upload', path: '/tracks/upload', component: TracksUpload, beforeEnter: validateAuthenticatedRoute },
-    { name: 'tracks-show', path: '/:username/:trackId', component: TracksShow },
-    { name: 'tracks-edit', path: '/:username/:trackId/edit', component: TracksEdit, beforeEnter: validateAuthenticatedRoute },
+    { name: 'tracks-show', path: '/:username/track/:trackId', component: TracksShow },
+    { name: 'tracks-edit', path: '/:username/track/:trackId/edit', component: TracksEdit, beforeEnter: validateAuthenticatedRoute },
     // Albums
     { name: 'albums-new', path: '/albums/new', component: AlbumsNew, beforeEnter: validateAuthenticatedRoute },
-    { name: 'albums-show', path: '/albums/:username/:albumId', component: AlbumsShow },
+    { name: 'albums-show', path: '/:username/album/:albumId', component: AlbumsShow },
+    { name: 'albums-edit', path: '/:username/album/:albumId/edit', component: AlbumsEdit, beforeEnter: validateAuthenticatedRoute },
     // Account
     { name: 'account-logs', path: '/account/logs', component: AccountLogs, beforeEnter: validateAuthenticatedRoute },
     // Always last

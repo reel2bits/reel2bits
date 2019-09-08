@@ -131,7 +131,7 @@ export const parseUser = (data) => {
   return output
 }
 
-export const parseTrack = (data) => {
+export const parseStatus = (data) => {
   const output = {}
 
   output.id = String(data.id)
@@ -174,26 +174,8 @@ export const parseTrack = (data) => {
   }
   if (output.type === 'album') {
     output.tracks_count = data.reel2bits.tracks_count
+    output.tracks = data.reel2bits.tracks.map(parseUser)
   }
-  return output
-}
-
-export const parseAlbum = (data) => {
-  const output = {}
-
-  output.id = String(data.id)
-  output.title = data.title
-  output.created = data.created
-  output.updated = data.updated
-  output.description = data.description
-  output.private = data.private
-  output.slug = data.slug
-  output.user_id = data.user_id
-  output.user = data.user
-  output.sounds = data.sounds
-  output.flake_id = data.flake_id
-  output.timeline = data.timeline
-
   return output
 }
 
@@ -210,15 +192,15 @@ export const parseNotification = (data) => {
     output.seen = data.pleroma.is_seen
     output.status = output.type === 'follow'
       ? null
-      : parseTrack(data.status)
+      : parseStatus(data.status)
     output.action = output.status // TODO: Refactor, this is unneeded
     output.from_profile = parseUser(data.account)
   } else {
-    const parsedNotice = parseTrack(data.notice)
+    const parsedNotice = parseStatus(data.notice)
     output.type = data.ntype
     output.seen = Boolean(data.is_seen)
     output.status = output.type === 'like'
-      ? parseTrack(data.notice.favorited_status)
+      ? parseStatus(data.notice.favorited_status)
       : parsedNotice
     output.action = parsedNotice
     output.from_profile = parseUser(data.from_profile)
