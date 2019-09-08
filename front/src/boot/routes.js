@@ -47,7 +47,10 @@ export default (store) => {
     { name: 'password-reset', path: '/password-reset', component: PasswordReset },
     { name: 'password-reset-token', path: '/password-reset/:token', component: PasswordResetToken },
     { name: 'oauth-callback', path: '/oauth-callback', component: OAuthCallback, props: (route) => ({ code: route.query.code }) },
+    // External user profile (remote)
     { name: 'external-user-profile', path: '/users/:id', component: UserProfile },
+    // TODO add other external routes
+    // Internal user profile (local)
     { name: 'user-profile', path: '/(users/)?:name', component: UserProfile },
     { name: 'user-profile-tracks', path: '/(users/)?:name/tracks', component: UserProfile },
     { name: 'user-profile-albums', path: '/(users/)?:name/albums', component: UserProfile },
