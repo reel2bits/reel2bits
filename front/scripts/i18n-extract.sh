@@ -1,4 +1,5 @@
 #!/bin/bash -eux
+# Script imported from: https://dev.funkwhale.audio/funkwhale/funkwhale/
 locales=$(tail -n +2 src/locales.js | sed -e 's/export default //' | jq '.locales[].code' | xargs echo)
 locales_dir="locales"
 sources=$(find src -name '*.vue' -o -name '*.html' 2> /dev/null)
@@ -16,6 +17,7 @@ xgettext --language=JavaScript --keyword=npgettext:1c,2,3 \
     --no-wrap
 
 # Fix broken files path/lines in pot
+# TODO: detect sed/gsed properly
 gsed -e 's|#: src/|#: front/src/|' -i $locales_dir/app.pot
 
 # Generate .po files for each available language.
