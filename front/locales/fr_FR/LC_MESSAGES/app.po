@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: front 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-08 20:39+0200\n"
-"PO-Revision-Date: 2019-09-08 20:40+0200\n"
+"POT-Creation-Date: 2019-09-08 20:50+0200\n"
+"PO-Revision-Date: 2019-09-08 20:51+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: fr_FR\n"
@@ -29,15 +29,30 @@ msgctxt "Footer/*/Link/About"
 msgid "About"
 msgstr "À propos"
 
-#: front/src/components/footer/footer.vue:13
+#: front/src/components/footer/footer.vue:15
 msgctxt "Footer/*/Link/AboutThisInstance"
 msgid "About this instance"
 msgstr "À propos de cette instance"
+
+#: front/src/views/About.vue:20
+msgctxt "Content/About/Headline/BackendVersion"
+msgid "Backend version: %{ backendVersion }"
+msgstr "Version du back-end : %{ backendVersion }"
 
 #: front/src/App.vue:108
 msgctxt "Header/*/DropDown/Create"
 msgid "Create"
 msgstr "Créer"
+
+#: front/src/views/About.vue:7
+msgctxt "Content/About/Headline/Description"
+msgid "Description"
+msgstr "Description"
+
+#: front/src/views/About.vue:17
+msgctxt "Content/About/Headline/FrontendVersion"
+msgid "Frontend version: %{ frontVersion }"
+msgstr "Version du front-end : %{ frontVersion }"
 
 #: front/src/App.vue:111
 msgctxt "Header/*/Image/Avatar title"
@@ -104,7 +119,22 @@ msgctxt "Header/*/DropDown/User/Settings"
 msgid "Settings"
 msgstr "Paramètres"
 
-#: front/src/components/footer/footer.vue:17
+#: front/src/components/footer/footer.vue:21
 msgctxt "Footer/*/Link/SourceCode"
 msgid "Source code"
 msgstr "Code source"
+
+#: front/src/views/About.vue:23
+msgctxt "Content/About/Link/Prefix"
+msgid "Source:"
+msgstr "Code source : "
+
+#: front/src/views/About.vue:14
+msgctxt "Content/About/Headline/VersAndSources"
+msgid "Versions and sources"
+msgstr "Versions et sources"
+
+#: front/src/views/About.vue:3
+msgctxt "Content/About/Headline/Title"
+msgid "Welcome on instance: %{ instanceName }"
+msgstr "Bienvenu sur l’instance : %{ instanceName }"
