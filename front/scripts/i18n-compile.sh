@@ -1,4 +1,5 @@
 #!/bin/bash -eux
+# Script imported from https://dev.funkwhale.audio/funkwhale/funkwhale/
 locales=$(tail -n +2 src/locales.js | sed -e 's/export default //' | jq '.locales[].code' | grep -v 'en_US' | xargs echo)
 mkdir -p src/translations
 
