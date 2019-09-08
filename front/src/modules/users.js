@@ -1,6 +1,5 @@
 import { each, merge } from 'lodash'
 import apiService from '../services/api/api.service.js'
-import { humanizeErrors } from './errors'
 import vue from 'vue'
 import backendInteractorService from '../services/backend_interactor_service/backend_interactor_service.js'
 
@@ -170,17 +169,9 @@ const users = {
         store.commit('setToken', data.access_token)
         store.dispatch('loginUser', data.access_token)
       } catch (e) {
-        let errors = JSON.parse(e.message)
-        // replace ap_id with username
-        if (typeof errors === 'object') {
-          if (errors.ap_id) {
-            errors.username = errors.ap_id
-            delete errors.ap_id
-          }
-          errors = humanizeErrors(errors)
-        }
+        let errors = e.message
         store.commit('signUpFailure', errors)
-        throw Error(errors)
+        throw e
       }
     },
     logout (store) {
