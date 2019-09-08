@@ -2,6 +2,7 @@ import { each, merge } from 'lodash'
 import apiService from '../services/api/api.service.js'
 import vue from 'vue'
 import backendInteractorService from '../services/backend_interactor_service/backend_interactor_service.js'
+import oauthApi from '../backend/oauth/oauth.js'
 
 // Function from https://git.pleroma.social/pleroma/pleroma-fe/blob/develop/src/modules/users.js
 export const mergeOrAdd = (arr, obj, item) => {
@@ -175,13 +176,30 @@ const users = {
       }
     },
     logout (store) {
-      store.commit('clearCurrentUser')
-      store.commit('clearToken')
-      store.dispatch('stopFetching', 'friends')
-      store.commit('setBackendInteractor', backendInteractorService(store.getters.getToken()))
-      store.dispatch('stopFetching', 'notifications')
-      store.commit('clearNotifications')
-      store.commit('resetStatuses')
+      const { oauth } = store.rootState
+
+      const data = {
+        ...oauth,
+        commit: store.commit
+      }
+
+      return oauthApi.getOrCreateApp(data)
+        .then((app) => {
+          const params = {
+            app,
+            token: oauth.userToken
+          }
+
+          return oauthApi.revokeToken(params)
+        })
+        .then(() => {
+          store.commit('clearCurrentUser')
+          store.commit('clearToken')
+          store.commit('setBackendInteractor', backendInteractorService(store.getters.getToken()))
+          store.dispatch('stopFetching', 'notifications')
+          store.commit('clearNotifications')
+          store.commit('resetStatuses')
+        })
     }
   }
 }
