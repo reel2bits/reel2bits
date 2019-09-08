@@ -56,3 +56,19 @@ Frontend:
 ```
 npm run lint
 ```
+
+## Various tips
+- Authlib doesn't handle JSON, do crimes like in `controllers/api/v1/auth.py#oauth_token()`
+- Authlib revoke token wants basic auth, no idea what to give, so it doesn't works
+- Authlib doesn't handle optional bearer auth, use this snippet instead of `@require_oauth(None)`:
+
+```python
+current_user = None
+try:
+    current_token = require_oauth.acquire_token(None)
+except authlib.oauth2.rfc6749.errors.MissingAuthorizationError:
+    current_token = None
+if current_token:
+    current_user = current_token.user
+# current_user is now the actual authed user or None
+```

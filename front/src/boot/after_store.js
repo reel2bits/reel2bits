@@ -51,6 +51,7 @@ const checkOAuthToken = async ({ store }) => {
 }
 
 const getAppSecret = async ({ store }) => {
+  console.log('getAppSecret')
   const { state, commit } = store
   const { oauth } = state
   return getOrCreateApp({ ...oauth, commit })

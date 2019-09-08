@@ -8,6 +8,8 @@ from datas_helpers import to_json_track, to_json_account, to_json_relationship
 from utils import forbidden_username, add_user_log
 from tasks import send_update_profile
 import re
+import authlib
+
 
 bp_api_v1_accounts = Blueprint("bp_api_v1_accounts", __name__)
 
@@ -164,7 +166,6 @@ def accounts():
 
 
 @bp_api_v1_accounts.route("/api/v1/accounts/<string:username_or_id>", methods=["GET"])
-@require_oauth(None)
 def account_get(username_or_id):
     """
     Returns Account
@@ -177,6 +178,14 @@ def account_get(username_or_id):
         schema:
             $ref: '#/definitions/Account'
     """
+    current_user = None
+    try:
+        current_token = require_oauth.acquire_token(None)
+    except authlib.oauth2.rfc6749.errors.MissingAuthorizationError:
+        current_token = None
+    if current_token:
+        current_user = current_token.user
+
     if username_or_id.isdigit():
         # an int is DB ID
         user = User.query.filter(User.id == int(username_or_id)).first()
@@ -190,8 +199,8 @@ def account_get(username_or_id):
         abort(404)
 
     relationship = False
-    if current_token.user:
-        relationship = to_json_relationship(current_token.user, user)
+    if current_user:
+        relationship = to_json_relationship(current_user, user)
     account = to_json_account(user, relationship)
     return jsonify(account)
 
@@ -402,7 +411,6 @@ def accounts_update_credentials():
 
 
 @bp_api_v1_accounts.route("/api/v1/accounts/<int:user_id>/statuses", methods=["GET"])
-@require_oauth(None)
 def user_statuses(user_id):
     """
     User statuses.
@@ -432,6 +440,14 @@ def user_statuses(user_id):
     count = int(request.args.get("count", 20))
     page = int(request.args.get("page", 1))
 
+    current_user = None
+    try:
+        current_token = require_oauth.acquire_token(None)
+    except authlib.oauth2.rfc6749.errors.MissingAuthorizationError:
+        current_token = None
+    if current_token:
+        current_user = current_token.user
+
     # Get associated user
     user = User.query.filter(User.id == user_id).first()
     if not user:
@@ -455,8 +471,8 @@ def user_statuses(user_id):
     for t in q.items:
         if t.Sound:
             relationship = False
-            if current_token.user:
-                relationship = to_json_relationship(current_token.user, t.Sound.user)
+            if current_user:
+                relationship = to_json_relationship(current_user, t.Sound.user)
             account = to_json_account(t.Sound.user, relationship)
             tracks.append(to_json_track(t.Sound, account))
         else:
@@ -618,7 +634,6 @@ def unfollow(user_id):
 
 
 @bp_api_v1_accounts.route("/api/v1/accounts/<int:user_id>/followers", methods=["GET"])
-@require_oauth(None)
 def followers(user_id):
     """
     Accounts which follow the given account.
@@ -650,6 +665,14 @@ def followers(user_id):
     if not user:
         abort(404)
 
+    current_user = None
+    try:
+        current_token = require_oauth.acquire_token(None)
+    except authlib.oauth2.rfc6749.errors.MissingAuthorizationError:
+        current_token = None
+    if current_token:
+        current_user = current_token.user
+
     count = int(request.args.get("count", 20))
     page = int(request.args.get("page", 1))
 
@@ -662,8 +685,8 @@ def followers(user_id):
         # Where target is `user` since we are asking his followers
         # And actor = the user following `user`
         relationship = False
-        if current_token.user:
-            relationship = to_json_relationship(current_token.user, t.actor.user)
+        if current_user:
+            relationship = to_json_relationship(current_user, t.actor.user)
         account = to_json_account(t.actor.user, relationship)
         followers.append(account)
 
@@ -672,7 +695,6 @@ def followers(user_id):
 
 
 @bp_api_v1_accounts.route("/api/v1/accounts/<int:user_id>/following", methods=["GET"])
-@require_oauth(None)
 def following(user_id):
     """
     Accounts followed by the given account.
@@ -704,6 +726,14 @@ def following(user_id):
     if not user:
         abort(404)
 
+    current_user = None
+    try:
+        current_token = require_oauth.acquire_token(None)
+    except authlib.oauth2.rfc6749.errors.MissingAuthorizationError:
+        current_token = None
+    if current_token:
+        current_user = current_token.user
+
     count = int(request.args.get("count", 20))
     page = int(request.args.get("page", 1))
 
@@ -716,8 +746,8 @@ def following(user_id):
         # Where actor is `user` since we are asking his followers
         # And target = the user following `user`
         relationship = False
-        if current_token.user:
-            relationship = to_json_relationship(current_token.user, t.target.user)
+        if current_user:
+            relationship = to_json_relationship(current_user, t.target.user)
         account = to_json_account(t.target.user, relationship)
         followings.append(account)
 
