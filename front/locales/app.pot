@@ -1,0 +1,93 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the front package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: front 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-09-08 18:02+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: front/src/App.vue:101
+msgctxt "Header/*/Image/Avatar alt"
+msgid "%{username} avatar"
+msgstr ""
+
+#: front/src/App.vue:108
+msgctxt "Header/*/DropDown/Create"
+msgid "Create"
+msgstr ""
+
+#: front/src/App.vue:111
+msgctxt "Header/*/Image/Avatar title"
+msgid "go to my profile"
+msgstr ""
+
+#: front/src/App.vue:56
+msgctxt "Header/*/DropDown/User/Login"
+msgid "Login"
+msgstr ""
+
+#: front/src/App.vue:50
+msgctxt "Header/*/DropDown/User/Logout"
+msgid "Logout"
+msgstr ""
+
+#: front/src/App.vue:48
+msgctxt "Header/*/DropDown/User/Logs"
+msgid "Logs"
+msgstr ""
+
+#: front/src/App.vue:46
+msgctxt "Header/*/DropDown/User/MyProfile"
+msgid "My Profile"
+msgstr ""
+
+#: front/src/App.vue:110
+msgctxt "Header/*/DropDown/Create/NewAlbum title"
+msgid "new album"
+msgstr ""
+
+#: front/src/App.vue:31
+msgctxt "Header/*/DropDown/Create/NewAlbum text"
+msgid "New Album"
+msgstr ""
+
+#: front/src/App.vue:109
+msgctxt "Header/*/DropDown/Create/NewTrack title"
+msgid "new track"
+msgstr ""
+
+#: front/src/App.vue:26
+msgctxt "Header/*/DropDown/Create/NewTrack text"
+msgid "New Track"
+msgstr ""
+
+#: front/src/App.vue:60
+msgctxt "Header/*/DropDown/User/Register"
+msgid "Register"
+msgstr ""
+
+#: front/src/App.vue:107
+msgctxt "Header/*/Input/Search ARIA"
+msgid "Search"
+msgstr ""
+
+#: front/src/App.vue:106
+msgctxt "Header/*/Input/Search placeholder"
+msgid "Search"
+msgstr ""
+
+#: front/src/App.vue:47
+msgctxt "Header/*/DropDown/User/Settings"
+msgid "Settings"
+msgstr ""

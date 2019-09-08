@@ -15,30 +15,44 @@ import albumsModule from './modules/albums.js'
 import oauthModule from './modules/oauth.js'
 import authFlowModule from './modules/auth_flow.js'
 
-import VueI18n from 'vue-i18n'
+import GetTextPlugin from 'vue-gettext'
+import locales from './locales.js'
 
 import createPersistedState from './lib/persisted_state.js'
 
 import afterStoreSetup from './boot/after_store.js'
 
-import messages from './i18n/messages.js'
-
 Vue.config.productionTip = false
 
-const currentLocale = (window.navigator.language || 'en').split('-')[0]
+let availableLanguages = (function () {
+  let l = {}
+  locales.locales.forEach(c => {
+    l[c.code] = c.label
+  })
+  return l
+})()
+Vue.use(GetTextPlugin, {
+  availableLanguages: availableLanguages,
+  defaultLanguage: 'en_US',
+  // cf https://github.com/Polyconseil/vue-gettext#configuration
+  // not recommended but this is fixing weird bugs with translation nodes
+  // not being updated when in v-if/v-else clauses
+  autoAddKeyAttributes: true,
+  languageVmMixin: {
+    computed: {
+      currentKebabCase: function () {
+        return this.current.toLowerCase().replace('_', '-')
+      }
+    }
+  },
+  translations: {},
+  silent: true
+})
 
 Vue.use(Vuex)
 Vue.use(VueRouter)
-Vue.use(VueI18n)
 Vue.use(BootstrapVue)
 Vue.use(VueStringFilter)
-
-const i18n = new VueI18n({
-  // By default, use the browser locale, we will update it if neccessary
-  locale: currentLocale,
-  fallbackLocale: 'en',
-  messages
-})
 
 const persistedStateOptions = {
   paths: [
@@ -52,11 +66,6 @@ const persistedStateOptions = {
   const persistedState = await createPersistedState(persistedStateOptions)
   const store = new Vuex.Store({
     modules: {
-      i18n: {
-        getters: {
-          i18n: () => i18n
-        }
-      },
       interface: interfaceModule,
       instance: instanceModule,
       statuses: statusesModule,
@@ -72,7 +81,7 @@ const persistedStateOptions = {
     strict: false
   })
 
-  afterStoreSetup({ store, i18n })
+  afterStoreSetup({ store })
 })()
 
 // These are inlined by webpack's DefinePlugin
