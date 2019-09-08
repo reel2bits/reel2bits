@@ -1,4 +1,4 @@
-import { parseUser, parseTrack, parseAlbum } from '../entity_normalizer/entity_normalizer.service.js'
+import { parseUser, parseStatus } from '../entity_normalizer/entity_normalizer.service.js'
 import { RegistrationError, StatusCodeError } from '../errors/errors'
 import { map, reduce } from 'lodash'
 
@@ -13,6 +13,7 @@ const TRACKS_DELETE_URL = (username, id) => `/api/tracks/${username}/${id}`
 
 const ALBUMS_NEW_URL = '/api/albums'
 const ALBUMS_FETCH_URL = (username, id) => `/api/albums/${username}/${id}`
+const ALBUMS_EDIT_URL = (username, id) => `/api/albums/${username}/${id}`
 const ALBUMS_DELETE_URL = (username, id) => `/api/albums/${username}/${id}`
 
 const ACCOUNT_LOGS_URL = (username, currentPage, perPage) => `/api/users/${username}/logs?page=${currentPage}&page_size=${perPage}`
@@ -167,7 +168,7 @@ const trackFetch = ({ userId, trackId, credentials }) => {
       throw new Error('Error fetching track', data)
     })
     .then((data) => data.json())
-    .then((data) => parseTrack(data))
+    .then((data) => parseStatus(data))
 }
 
 const trackDelete = ({ userId, trackId, credentials }) => {
@@ -192,7 +193,7 @@ const trackEdit = ({ userId, trackId, track, credentials }) => {
     method: 'PATCH',
     payload: track,
     credentials: credentials
-  }).then((data) => parseTrack(data))
+  }).then((data) => parseStatus(data))
 }
 
 const fetchUser = ({ id, credentials }) => {
@@ -277,9 +278,8 @@ const albumNew = (albumInfo, store) => {
     })
 }
 
-const albumFetch = (userId, albumId, store) => {
+const albumFetch = ({ userId, albumId, credentials }) => {
   let url = ALBUMS_FETCH_URL(userId, albumId)
-  let credentials = store.getters.getToken()
 
   return fetch(url, { headers: authHeaders(credentials) })
     .then((data) => {
@@ -289,17 +289,31 @@ const albumFetch = (userId, albumId, store) => {
       throw new Error('Error fetching album', data)
     })
     .then((data) => data.json())
-    .then((data) => parseAlbum(data))
+    .then((data) => parseStatus(data))
 }
 
-const albumDelete = (user, trackId, store) => {
-  let url = ALBUMS_DELETE_URL(user, trackId)
-  let credentials = store.getters.getToken()
+const albumDelete = ({ userId, albumId, credentials }) => {
+  let url = ALBUMS_DELETE_URL(userId, albumId)
 
   return fetch(url, {
     headers: authHeaders(credentials),
     method: 'DELETE'
   })
+    .then((data) => {
+      if (data.ok) {
+        return data
+      }
+      throw new Error('Error deleting album', data)
+    })
+}
+
+const albumEdit = ({ userId, albumId, album, credentials }) => {
+  return promisedRequest({
+    url: ALBUMS_EDIT_URL(userId, albumId),
+    method: 'PATCH',
+    payload: album,
+    credentials: credentials
+  }).then((data) => parseStatus(data))
 }
 
 const fetchUserLogs = (user, currentPage, perPage, store) => {
@@ -387,7 +401,7 @@ const fetchTimeline = ({
     })
     .then((data) => data.json())
     .then((data) => {
-      data.items = data.items.map(parseTrack)
+      data.items = data.items.map(parseStatus)
       return data
     })
 }
@@ -494,6 +508,7 @@ const apiService = {
   albumNew,
   albumDelete,
   albumFetch,
+  albumEdit,
   fetchUserLogs,
   fetchTimeline,
   fetchLicenses,

@@ -1,28 +1,70 @@
 <template>
-  <div>
-    <h4>Show album</h4>
-    <div v-if="isOwner">
-      <a href="#" @click.prevent="editAlbum">edit</a> | <a href="#" @click.prevent="deleteAlbum">delete</a>
+  <div v-if="albumError || !album" class="row justify-content-md-center">
+    <div class="col-md-6">
+      <b-alert v-if="albumError" variant="danger" show>
+        {{ albumError }}
+      </b-alert>
+    </div>
+  </div>
+  <div v-else class="row">
+    <div class="col-md-8">
+      <b-alert v-if="deleteError" variant="danger" show
+               dismissible
+               @dismissed="deleteError=null"
+      >
+        {{ deleteError }}
+      </b-alert>
+
+      <h4>Show album</h4>
+      <div class="btn-group" role="group" aria-label="Albums actions">
+        <div v-if="isOwner">
+          <b-button variant="link" class="text-decoration-none"
+                    @click.prevent="editAlbum"
+          >
+            <i class="fa fa-pencil" aria-hidden="true" /> Edit
+          </b-button>
+          <b-button v-b-modal.modal-delete variant="link"
+                    class="text-decoration-none"
+          >
+            <i class="fa fa-times" aria-hidden="true" /> Delete
+          </b-button>
+          <b-modal id="modal-delete" title="Deleting album" @ok="deleteAlbum">
+            <p class="my-4">
+              Are you sure you want to delete '{{ album.title }}' ?
+            </p>
+          </b-modal>
+        </div>
+      </div>
+
+      <div>
+        Album: {{ album }}
+      </div>
     </div>
 
-    <div v-if="errors">
-      {{ errors }}
-    </div>
-    <div>
-      Album to show: {{ album }}
+    <div v-if="album" class="col-md-4 d-flex flex-column">
+      <!-- Profile Card -->
+      <UserCard :user="album.account" />
+      <!-- Footer -->
+      <Footer />
     </div>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
-import apiService from '../../services/api/api.service.js'
+import moment from 'moment'
+import UserCard from '../../components/user_card/user_card.vue'
+import Footer from '../../components/footer/footer.vue'
 
 export default {
+  components: {
+    UserCard,
+    Footer
+  },
   data: () => ({
     album: null,
-    errors: null,
-    processing_done: null,
+    albumError: null,
+    deleteError: null,
     isOwner: false,
     userId: null
   }),
@@ -36,35 +78,43 @@ export default {
     userName () {
       return this.$route.params.username
     },
-    processingDone () {
-      return (this.processing_done && this.album)
+    publishedAgo () {
+      return moment(this.album.uploaded_on).fromNow()
     }
   },
   created () {
     const user = this.$store.getters.findUser(this.userName)
-    this.userId = user.id
+    if (user) {
+      this.userId = user.id
+    } // else, oops
     this.fetchAlbum()
   },
   methods: {
     async fetchAlbum () {
-      try {
-        let data = await apiService.albumFetch(this.userId, this.albumId, this.$store)
-        this.album = data
-        this.isOwner = (this.album.user === this.$store.state.users.currentUser.screen_name)
-      } catch (e) {
-        this.errors = e.message
-      }
+      // || quick fix before we fully implement id or username thing
+      await this.$store.state.api.backendInteractor.albumFetch({ userId: this.userId || this.userName, albumId: this.albumId })
+        .then((data) => {
+          this.album = data
+          this.isOwner = (this.album.account.screen_name === this.$store.state.users.currentUser.screen_name)
+        })
     },
     async editAlbum () {
+      if (!this.isOwner) { return }
       console.log('want to edit album')
+      this.$router.push({ name: 'albums-edit', params: { userId: this.album.account.id, albumId: this.album.slug } })
     },
     async deleteAlbum () {
-      console.log('want to delete album')
-      if (confirm('Are you sure ?')) {
-        apiService.albumDelete(this.userName, this.albumId, this.$store)
-          .then(this.$router.push({ name: 'user-profile', params: { name: this.$store.state.users.currentUser.screen_name } })
-          )
+      if (!this.isOwner) { return }
+      console.log('deleting album')
+      try {
+        await this.$store.state.api.backendInteractor.albumDelete({ userId: this.album.account.id, albumId: this.albumId })
+      } catch (e) {
+        console.log('an error occured')
+        console.log(e)
+        this.deleteError = 'an error occured while deleting the album.'
+        return
       }
+      this.$router.push({ name: 'user-profile', params: { name: this.$store.state.users.currentUser.screen_name } })
     }
   }
 }

@@ -35,7 +35,7 @@ def tracks(user_id):
             title_type="text",
             content=track.description,
             content_type="text",
-            url=f"https://{current_app.config['AP_DOMAIN']}/{user.name}/{track.slug}",
+            url=f"https://{current_app.config['AP_DOMAIN']}/{user.name}/track/{track.slug}",
             links=[{"href": url_transcode, "type": "audio/mpeg", "rel": "enclosure"}],
             updated=track.updated,
             author={"name": user.name, "uri": f"https://{current_app.config['AP_DOMAIN']}/{user.name}"},
@@ -56,7 +56,7 @@ def album(user_id, album_id):
         abort(404)
 
     feed_url = request.url
-    url = f"https://{current_app.config['AP_DOMAIN']}/{user.name}"
+    url = f"https://{current_app.config['AP_DOMAIN']}/{user.name}/album/{album.title}"
     feed = AtomFeed(
         f"{album.title} by {user.name}",
         feed_url=feed_url,
@@ -75,7 +75,7 @@ def album(user_id, album_id):
             title_type="text",
             content=track.description,
             content_type="text",
-            url=f"https://{current_app.config['AP_DOMAIN']}/{user.name}/{track.slug}",
+            url=f"https://{current_app.config['AP_DOMAIN']}/{user.name}/track/{track.slug}",
             links=[{"href": url_transcode, "type": "audio/mpeg", "rel": "enclosure"}],
             updated=track.updated,
             author={"name": user.name, "uri": f"https://{current_app.config['AP_DOMAIN']}/{user.name}"},

@@ -9,7 +9,7 @@ bp_api_v1_timelines = Blueprint("bp_api_v1_timelines", __name__)
 
 
 @bp_api_v1_timelines.route("/api/v1/timelines/home", methods=["GET"])
-@require_oauth(None)
+@require_oauth("read")
 def home():
     """
     User friends statuses.

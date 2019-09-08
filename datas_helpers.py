@@ -11,6 +11,8 @@ def to_json_relationship(of_user, against_user):
     followed_by = is against_user following of_user ?
     etc.
     """
+    if not of_user:
+        return None
     obj = dict(
         id=against_user.id,
         following=True if of_user.actor[0].is_following(against_user.actor[0]) else False,
@@ -166,6 +168,7 @@ def to_json_album(album, account):
             "private": album.private,
             "uploaded_elapsed": album.elapsed(),
             "tracks_count": album.sounds.count(),
+            "tracks": [to_json_track(t, account) for t in album.sounds],
         },
     }
     return obj
