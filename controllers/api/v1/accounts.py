@@ -191,7 +191,7 @@ def account_get(username_or_id):
         abort(404)
 
     relationship = False
-    if current_token.user:
+    if current_token and current_token.user:
         relationship = to_json_relationship(current_token.user, user)
     account = to_json_account(user, relationship)
     return jsonify(account)
@@ -456,7 +456,7 @@ def user_statuses(user_id):
     for t in q.items:
         if t.Sound:
             relationship = False
-            if current_token.user:
+            if current_token and current_token.user:
                 relationship = to_json_relationship(current_token.user, t.Sound.user)
             account = to_json_account(t.Sound.user, relationship)
             tracks.append(to_json_track(t.Sound, account))
@@ -663,7 +663,7 @@ def followers(user_id):
         # Where target is `user` since we are asking his followers
         # And actor = the user following `user`
         relationship = False
-        if current_token.user:
+        if current_token and current_token.user:
             relationship = to_json_relationship(current_token.user, t.actor.user)
         account = to_json_account(t.actor.user, relationship)
         followers.append(account)
@@ -717,7 +717,7 @@ def following(user_id):
         # Where actor is `user` since we are asking his followers
         # And target = the user following `user`
         relationship = False
-        if current_token.user:
+        if current_token and current_token.user:
             relationship = to_json_relationship(current_token.user, t.target.user)
         account = to_json_account(t.target.user, relationship)
         followings.append(account)

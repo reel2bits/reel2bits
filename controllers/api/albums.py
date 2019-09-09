@@ -73,7 +73,10 @@ def get(username_or_id, albumslug):
             description: Returns album object.
     """
     # Get logged in user from bearer token, or None if not logged in
-    current_user = current_token.user
+    if current_token:
+        current_user = current_token.user
+    else:
+        current_user = None
 
     # Get the associated User from url fetch
     if username_or_id.isdigit():
@@ -206,7 +209,7 @@ def edit(username, albumslug):
     db.session.commit()
 
     relationship = False
-    if current_token.user:
+    if current_token and current_token.user:
         relationship = to_json_relationship(current_token.user, album.user)
     account = to_json_account(album.user, relationship)
     return jsonify(to_json_album(album, account))
@@ -235,7 +238,10 @@ def list(user_id):
             description: Returns list of Albums.
     """
     # Get logged in user from bearer token, or None if not logged in
-    current_user = current_token.user
+    if current_token:
+        current_user = current_token.user
+    else:
+        current_user = None
 
     short_objects = request.args.get("short", False)
     count = int(request.args.get("count", 20))

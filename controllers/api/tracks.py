@@ -117,7 +117,10 @@ def show(username_or_id, soundslug):
             description: Returns track details.
     """
     # Get logged in user from bearer token, or None if not logged in
-    current_user = current_token.user
+    if current_token:
+        current_user = current_token.user
+    else:
+        current_user = None
 
     # Get the associated User from url fetch
     if username_or_id.isdigit():
@@ -148,7 +151,7 @@ def show(username_or_id, soundslug):
             return jsonify({"error": "forbidden"}), 403
 
     relationship = False
-    if current_token.user:
+    if current_token and current_token.user:
         relationship = to_json_relationship(current_token.user, sound.user)
     account = to_json_account(sound.user, relationship)
     return jsonify(to_json_track(sound, account))
@@ -222,7 +225,7 @@ def edit(username, soundslug):
     db.session.commit()
 
     relationship = False
-    if current_token.user:
+    if current_token and current_token.user:
         relationship = to_json_relationship(current_token.user, sound.user)
     account = to_json_account(sound.user, relationship)
     return jsonify(to_json_track(sound, account))
