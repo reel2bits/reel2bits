@@ -3,7 +3,9 @@
     <div class="col-md-8">
       <div class="row">
         <div class="col-md-12">
-          <h3>User followings</h3>
+          <h3 v-translate translate-context="Content/UserFollowings/Headline">
+            User followings
+          </h3>
         </div>
       </div>
       <div class="row">
@@ -83,7 +85,8 @@ export default {
             if (errorMessage) {
               this.error = errorMessage
             } else {
-              this.error = 'Error loading user: ' + errorMessage
+              let msg = this.$pgettext('Content/UserFollowings/Error', 'Error loading user: %{errorMsg}')
+              this.error = this.$gettextInterpolate(msg, { errorMsg: errorMessage })
             }
           })
       }
@@ -100,7 +103,8 @@ export default {
           this.usersLoaded = true
         })
         .catch((e) => {
-          console.log('cannot fetch user followings: ' + e.message)
+          let msg = this.$pgettext('Content/UserFollowings/Error', 'Error loading user followings: %{errorMsg}')
+          this.error = this.$gettextInterpolate(msg, { errorMsg: e.message })
           this.usersError = e
           this.usersLoaded = false
         })
