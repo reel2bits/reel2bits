@@ -8,7 +8,6 @@ from utils import add_user_log, get_hashed_filename
 from flask_uploads import UploadSet, AUDIO
 from datas_helpers import to_json_track, to_json_account, to_json_relationship
 from os.path import splitext
-import authlib
 
 
 bp_api_tracks = Blueprint("bp_api_tracks", __name__)
@@ -95,6 +94,7 @@ def upload():
 
 
 @bp_api_tracks.route("/api/tracks/<string:username_or_id>/<string:soundslug>", methods=["GET"])
+@require_oauth(optional=True)
 def show(username_or_id, soundslug):
     """
     Get track details.
@@ -117,13 +117,7 @@ def show(username_or_id, soundslug):
             description: Returns track details.
     """
     # Get logged in user from bearer token, or None if not logged in
-    current_user = None
-    try:
-        current_token = require_oauth.acquire_token(None)
-    except authlib.oauth2.rfc6749.errors.MissingAuthorizationError:
-        current_token = None
-    if current_token:
-        current_user = current_token.user
+    current_user = current_token.user
 
     # Get the associated User from url fetch
     if username_or_id.isdigit():
@@ -154,8 +148,8 @@ def show(username_or_id, soundslug):
             return jsonify({"error": "forbidden"}), 403
 
     relationship = False
-    if current_user:
-        relationship = to_json_relationship(current_user, sound.user)
+    if current_token.user:
+        relationship = to_json_relationship(current_token.user, sound.user)
     account = to_json_account(sound.user, relationship)
     return jsonify(to_json_track(sound, account))
 
