@@ -272,7 +272,7 @@ will pull all the strings from source files and put them in a PO files.
 
 You can then inspect the PO files to ensure everything is fine (but don't commit them, it's not needed).
 
-Contributing to the API
+Contributing to the Backend API
 -----------------------
 
 Project structure
@@ -347,9 +347,29 @@ painless as possible.
 
     The back-end test suite coverage is still pretty low
 
+Linters & format
+^^^^^^^^^^^^^^^^
+
+We use black and flake8::
+
+    flake8 .
+    black .
+
+Various notes
+^^^^^^^^^^^^^
+
+- Authlib doesn't handle JSON, do crimes like in controllers/api/v1/auth.py#oauth_token()
+- Authlib revoke token wants basic auth, no idea what to give, so it doesn't works
+- Authlib does handle optional bearer auth, uses: @require_oauth(optional=True)
+
 
 Contributing to the front-end
 -----------------------------
+
+Backend proxy
+^^^^^^^^^^^^^
+
+The frontend will automatically proxy the backend configured in ``config/local.json``.
 
 Running tests
 ^^^^^^^^^^^^^
@@ -362,3 +382,14 @@ To run the front-end test suite, use the following command::
 .. note::
 
     The front-end test suite coverage is still pretty low
+
+Linters & format
+^^^^^^^^^^^^^^^^
+
+Check::
+
+    npm run lint
+
+Lazy autofix (check if nothing gots wrong)::
+
+    npm run lint-fix
