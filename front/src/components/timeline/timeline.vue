@@ -6,15 +6,17 @@
       </b-alert>
     </div>
   </div>
-  <div v-else>
+  <div v-else class="timeline">
     <div class="row">
-      <div v-if="tracks.length > 0" class="col-md-8">
-        <div v-for="status in tracks" :key="status.id" :status="status">
+      <div v-if="tracks.length > 0" class="col-md-12">
+        <div v-for="status in tracks" :key="status.id" :status="status"
+             class="status"
+        >
           <Track v-if="status.type==='track'" :key="status.id" :track="status" />
           <Album v-if="status.type==='album'" :key="status.id" :album="status" />
         </div>
       </div>
-      <div v-else class="col-md-8">
+      <div v-else class="col-md-12">
         <div v-if="timelineLoaded">
           <translate translate-context="Content/Timeline/*/Empty">
             Nothing to show
@@ -32,6 +34,20 @@
     </div>
   </div>
 </template>
+
+<style scoped lang="scss">
+@import "../../_variables.scss";
+
+div.timeline {
+  margin-top: 0.5em;
+}
+
+div.status {
+  margin-bottom: 0.5em;
+  padding-bottom: 0.5em;
+  border-bottom: 0.1em dotted $blue;
+}
+</style>
 
 <script>
 import Track from '../track/track.vue'
