@@ -95,7 +95,7 @@
 
           <b-form-group
             id="ig-password2"
-            :label="labels.passwordConfirmLabel"
+            :label="labels.passwordNewConfirmLabel"
             label-for="password2"
           >
             <b-form-input
@@ -166,14 +166,14 @@ export default {
       return {
         langLabel: this.$pgettext('Content/UserSettings/Input.Label/Lang', 'Language:'),
         passwordLabel: this.$pgettext('Content/UserSettings/Input.Label/Password', 'Current password:'),
-        passwordNewLabel: this.$pgettext('Content/UserSettings/Input.Label/PasswordConfirm', 'New password:'),
-        passwordConfirmLabel: this.$pgettext('Content/UserSettings/Input.Label/PasswordConfirm', 'Confirm new password:'),
+        passwordNewLabel: this.$pgettext('Content/UserSettings/Input.Label/PasswordNew', 'New password:'),
+        passwordNewConfirmLabel: this.$pgettext('Content/UserSettings/Input.Label/PasswordNewConfirm', 'Confirm new password:'),
         fullnameLabel: this.$pgettext('Content/UserSettings/Input.Label/Fullname', 'Display name:'),
         fullnamePlaceholder: this.$pgettext('Content/UserSettings/Input.Placeholder/Fullname', 'your display name'),
         bioLabel: this.$pgettext('Content/UserSettings/Input.Label/Bio', 'Bio (optional):'),
         bioPlaceholder: this.$pgettext('Content/UserSettings/Input.Placeholder/Bio', "quack quack I'm a cat").replace(/\s*\n\s*/g, ' \n'),
-        userSettingsTab: this.$pgettext('', 'User settings'),
-        securityTab: this.$pgettext('', 'Security')
+        userSettingsTab: this.$pgettext('Content/UserSettings/Tabs/Label', 'User settings'),
+        securityTab: this.$pgettext('Content/UserSettings/Tabs/Label', 'Security')
       }
     }
   },
