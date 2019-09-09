@@ -4,7 +4,6 @@
       <TimelineTabs active="publicAndExternal" />
 
       <Timeline
-        title="The Whole Known Network"
         :timeline-name="'publicAndExternal'"
       />
     </div>

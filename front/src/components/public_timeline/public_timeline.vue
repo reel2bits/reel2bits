@@ -4,7 +4,6 @@
       <TimelineTabs active="public" />
 
       <Timeline
-        title="Public Timeline"
         timeline-name="public"
       />
     </div>

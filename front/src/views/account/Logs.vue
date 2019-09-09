@@ -1,7 +1,9 @@
 <template>
   <div class="row justify-content-md-center">
     <div class="col-md-12">
-      <h4>{{ currentUser.screen_name }}'s logs</h4>
+      <h4 v-translate translate-context="Content/Logs(user)/Headline" translate-params="{username: currentUser.screen_name}">
+        %{ username }'s logs
+      </h4>
       <b-table show-empty :items="items" :fields="fields"
                :current-page="currentPage" :per-page="0"
       />
@@ -22,23 +24,23 @@ export default {
     fields: [
       {
         key: 'date',
-        label: 'Date'
+        label: this.$pgettext('Content/Logs(user)/Table/Heading', 'Date')
       },
       {
         key: 'category',
-        label: 'Category'
+        label: this.$pgettext('Content/Logs(user)/Table/Heading', 'Category')
       },
       {
         key: 'level',
-        label: 'Level'
+        label: this.$pgettext('Content/Logs(user)/Table/Heading', 'Level')
       },
       {
         key: 'itemId',
-        label: 'Item ID'
+        label: this.$pgettext('Content/Logs(user)/Table/Heading', 'Item ID')
       },
       {
         key: 'message',
-        label: 'Message'
+        label: this.$pgettext('Content/Logs(user)/Table/Heading', 'Message')
       }
     ],
     currentPage: 0,

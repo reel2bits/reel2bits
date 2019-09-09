@@ -7,21 +7,21 @@
       <div class="row">
         <div class="col-md-8">
           <b-tabs v-model="tabIndex" content="mt-3">
-            <b-tab title="Tracks">
+            <b-tab :title="labels.tracksTab">
               <Timeline
                 key="{{ userId }}user"
                 timeline-name="user"
                 :user-id="userId"
               />
             </b-tab>
-            <b-tab title="Albums">
+            <b-tab :title="labels.albumsTab">
               <Timeline
                 key="{{ userId }}albums"
                 timeline-name="albums"
                 :user-id="userId"
               />
             </b-tab>
-            <b-tab v-if="isUs" title="Drafts">
+            <b-tab v-if="isUs" :title="labels.draftsTab">
               <Timeline
                 key="{{ userId }}drafts"
                 timeline-name="drafts"
@@ -69,6 +69,13 @@ export default {
     isUs () {
       return this.userId && this.$store.state.users.currentUser.id &&
         this.userId === this.$store.state.users.currentUser.id
+    },
+    labels () {
+      return {
+        tracksTab: this.$pgettext('Content/UserProfile/Tab', 'Tracks'),
+        albumsTab: this.$pgettext('Content/UserProfile/Tab', 'Albums'),
+        draftsTab: this.$pgettext('Content/UserProfile/Tab', 'Drafts')
+      }
     }
   },
   watch: {
@@ -115,7 +122,8 @@ export default {
             if (errorMessage) {
               this.error = errorMessage
             } else {
-              this.error = 'Error loading user: ' + errorMessage
+              let msg = this.$pgettext('Content/UserProfile/Error', 'Error loading user: %{errorMsg}')
+              this.error = this.$gettextInterpolate(msg, { errorMsg: errorMessage })
             }
           })
       }

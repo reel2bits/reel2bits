@@ -4,7 +4,6 @@
       <TimelineTabs active="friends" />
 
       <Timeline
-        title="Timeline"
         timeline-name="friends"
       />
     </div>

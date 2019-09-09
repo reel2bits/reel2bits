@@ -2,11 +2,13 @@
   <div class="row justify-content-md-center">
     <div class="col-md-3">
       <b-form class="password-reset-form" @submit.prevent="submit">
-        <h1>Reset password</h1>
+        <h1 v-translate translate-context="Content/PasswordResetToken/Headline/Reset password">
+          Reset password
+        </h1>
 
         <b-form-group
           id="ig-password"
-          label="Password:"
+          :label="labels.passwordLabel"
           label-for="password"
         >
           <b-form-input
@@ -14,14 +16,14 @@
             ref="password"
             v-model="user.password"
             type="password"
-            placeholder="Enter password"
+            :placeholder="labels.passwordPlaceholder"
             :disabled="isPending"
           />
         </b-form-group>
 
         <b-form-group
           id="ig-password-confirm"
-          label="Confirm password:"
+          :label="labels.passwordConfirmLabel"
           label-for="password-confirm"
         >
           <b-form-input
@@ -29,13 +31,15 @@
             ref="password-confirm"
             v-model="user.passwordConfirm"
             type="password"
-            placeholder="Enter password confirmation"
+            :placeholder="labels.passwordConfirmPlaceholder"
             :disabled="isPending"
           />
         </b-form-group>
 
         <b-button type="submit" variant="primary" :disabled="isPending">
-          Change
+          <translate translate-context="Content/PasswordResetToken/Button/Change password">
+            Change password
+          </translate>
         </b-button>
       </b-form>
 
@@ -46,7 +50,9 @@
         {{ error }}
       </b-alert>
       <b-alert v-if="success" variant="success" show>
-        Password have been changed.
+        <translate translate-context="Content/PasswordResetToken/Alert/Password changed">
+          Password have been changed.
+        </translate>
       </b-alert>
     </div>
   </div>
@@ -69,7 +75,15 @@ const passwordResetToken = {
   computed: {
     ...mapState({
       signedIn: (state) => !!state.users.currentUser
-    })
+    }),
+    labels () {
+      return {
+        passwordLabel: this.$pgettext('Content/PasswordResetToken/Input.Label/Password', 'Password:'),
+        passwordPlaceholder: this.$pgettext('Content/PasswordResetToken/Input.Placeholder/Password', 'Enter password'),
+        passwordConfirmLabel: this.$pgettext('Content/PasswordResetToken/Input.Label/PasswordConfirm', 'Confirm password:'),
+        passwordConfirmPlaceholder: this.$pgettext('Content/PasswordResetToken/Input.Placeholder/PasswordConfirm', 'Enter password again')
+      }
+    }
   },
   created () {
     if (this.signedIn) {
@@ -97,7 +111,7 @@ const passwordResetToken = {
             this.success = true
             this.error = null
           } else if (status === 404 || status === 400 || status === 500) {
-            this.error = 'Cannot reset password'
+            this.error = this.$pgettext('Content/PasswordResetToken/Errors/Cannot reset', 'Cannot reset password')
             this.$nextTick(() => {
               this.$refs.token.focus()
             })
@@ -108,7 +122,7 @@ const passwordResetToken = {
           this.user.email = ''
           this.user.password = ''
           this.user.passwordConfirm = ''
-          this.error = 'Cannot reset password'
+          this.error = this.$pgettext('Content/PasswordResetToken/Errors/Cannot reset', 'Cannot reset password')
         })
     }
   }

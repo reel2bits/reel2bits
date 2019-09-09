@@ -2,52 +2,54 @@
   <div class="row justify-content-md-center">
     <div class="col-md-6">
       <b-tabs content="mt-3">
-        <b-tab title="User settings">
+        <b-tab :title="labels.userSettingsTab">
           <b-alert v-if="saveError" variant="danger" show>
-            <span>Error saving settings.</span>
+            <span v-translate translate-context="Content/UserSettings/Alert/Error saving">Error saving settings.</span>
           </b-alert>
 
           <b-alert v-if="saveOk" variant="success" :show="5"
                    dismissible fade
                    @dismissed="saveOk=false"
           >
-            <span>Settings saved.</span>
+            <span v-translate translate-context="Content/UserSettings/Alert/Success saving">Settings saved.</span>
           </b-alert>
 
           <b-form class="edit-track-form" @submit.prevent="save(user)">
             <b-form-group
               id="ig-fullname"
               :class="{ 'form-group--error': $v.user.fullname.$error }"
-              label="Display name:"
+              :label="labels.fullnameLabel"
               label-for="fullname"
             >
               <b-form-input
                 id="fullname"
                 v-model.trim="$v.user.fullname.$model"
-                placeholder="display name"
+                :placeholder="labels.fullnamePlaceholder"
                 :state="$v.user.fullname.$dirty ? !$v.user.fullname.$error : null"
                 aria-describedby="fullname-live-feedback"
               />
               <b-form-invalid-feedback id="fullname-live-feedback">
-                Display name is required
+                <translate translate-context="Content/UserSettings/Feedback/DisplayName/Required">
+                  Display name is required
+                </translate>
               </b-form-invalid-feedback>
             </b-form-group>
-            ba
+
             <b-form-group
               id="ig-bio"
-              label="Bio (optional):"
+              :label="labels.bioLabel"
               label-for="bio"
             >
               <b-form-textarea
                 id="bio"
                 v-model="user.bio"
-                :placeholder="bioPlaceholder"
+                :placeholder="labels.bioPlaceholder"
               />
             </b-form-group>
 
             <b-form-group
               id="ig-lang"
-              label="Lang:"
+              :label="labels.langLabel"
               label-for="lang"
             >
               <b-form-select
@@ -60,14 +62,16 @@
             <br>
 
             <b-button type="submit" variant="primary">
-              Save
+              <translate translate-context="Content/UserSettings/Button/Save">
+                Save
+              </translate>
             </b-button>
           </b-form>
         </b-tab>
-        <b-tab title="Security">
+        <b-tab :title="labels.securityTab">
           <b-form-group
             id="ig-password0"
-            label="Current password:"
+            :label="labels.passwordLabel"
             label-for="password0"
           >
             <b-form-input
@@ -79,7 +83,7 @@
 
           <b-form-group
             id="ig-password1"
-            label="New password:"
+            :label="labels.passwordNewLabel"
             label-for="password1"
           >
             <b-form-input
@@ -91,7 +95,7 @@
 
           <b-form-group
             id="ig-password2"
-            label="Confirm new password:"
+            :label="labels.passwordNewConfirmLabel"
             label-for="password2"
           >
             <b-form-input
@@ -105,14 +109,20 @@
             variant="primary"
             @click="changePassword"
           >
-            Change password
+            <translate translate-context="Content/UserSettings/Button/Change password">
+              Change password
+            </translate>
           </b-button>
 
           <p v-if="changedPassword">
-            Password changed
+            <translate translate-context="Content/UserSettings/Alert/Password changed">
+              Password changed
+            </translate>
           </p>
           <p v-else-if="changePasswordError !== false">
-            Error changing password
+            <translate translate-context="Content/UserSettings/Alert/Password change error">
+              Error changing password
+            </translate>
           </p>
           <p v-if="changePasswordError">
             {{ changePasswordError }}
@@ -126,6 +136,7 @@
 <script>
 import { validationMixin } from 'vuelidate'
 import { required, maxLength } from 'vuelidate/lib/validators'
+import locales from '../../locales.js'
 
 export default {
   mixins: [validationMixin],
@@ -149,13 +160,21 @@ export default {
   computed: {
     currentUser () { return this.$store.state.users.currentUser },
     availableLangs () {
-      return [
-        { value: 'en', text: 'English' },
-        { value: 'fr', text: 'French' }
-      ]
+      return locales.locales.map(e => { return { value: e.code, text: e.label } })
     },
-    bioPlaceholder () {
-      return 'quack quack i\'m a cat'.replace(/\s*\n\s*/g, ' \n')
+    labels () {
+      return {
+        langLabel: this.$pgettext('Content/UserSettings/Input.Label/Lang', 'Language:'),
+        passwordLabel: this.$pgettext('Content/UserSettings/Input.Label/Password', 'Current password:'),
+        passwordNewLabel: this.$pgettext('Content/UserSettings/Input.Label/PasswordNew', 'New password:'),
+        passwordNewConfirmLabel: this.$pgettext('Content/UserSettings/Input.Label/PasswordNewConfirm', 'Confirm new password:'),
+        fullnameLabel: this.$pgettext('Content/UserSettings/Input.Label/Fullname', 'Display name:'),
+        fullnamePlaceholder: this.$pgettext('Content/UserSettings/Input.Placeholder/Fullname', 'your display name'),
+        bioLabel: this.$pgettext('Content/UserSettings/Input.Label/Bio', 'Bio (optional):'),
+        bioPlaceholder: this.$pgettext('Content/UserSettings/Input.Placeholder/Bio', "quack quack I'm a cat").replace(/\s*\n\s*/g, ' \n'),
+        userSettingsTab: this.$pgettext('Content/UserSettings/Tabs/Label', 'User settings'),
+        securityTab: this.$pgettext('Content/UserSettings/Tabs/Label', 'Security')
+      }
     }
   },
   created () {
@@ -173,6 +192,7 @@ export default {
             this.$store.commit('addNewUsers', [user])
             this.$store.commit('setCurrentUser', user)
             this.saveOk = true
+            this.$store.dispatch('setOption', { name: 'interfaceLanguage', value: this.user.lang })
           })
           .catch((e) => {
             console.log('Cannot save settings: ' + e)

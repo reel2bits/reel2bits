@@ -2,10 +2,12 @@
   <div class="row justify-content-md-center">
     <div class="col-md-3">
       <b-form class="password-reset-form" @submit.prevent="submit">
-        <h1>Reset password</h1>
+        <h1 v-translate translate-context="Content/PasswordReset/Headline">
+          Reset password
+        </h1>
         <b-form-group
           id="ig-email"
-          label="Email:"
+          :label="labels.emailLabel"
           label-for="email"
         >
           <b-form-input
@@ -13,13 +15,15 @@
             ref="email"
             v-model="user.email"
             type="text"
-            placeholder="Enter email"
+            :placeholder="labels.emailPlaceholder"
             :disabled="isPending"
           />
         </b-form-group>
 
         <b-button type="submit" variant="primary" :disabled="isPending">
-          Send reset email
+          <translate translate-context="Content/PasswordReset/Button/Send reset email">
+            Send reset email
+          </translate>
         </b-button>
       </b-form>
 
@@ -30,7 +34,9 @@
         {{ error }}
       </b-alert>
       <b-alert v-if="success" variant="success" show>
-        Link generated with success, check your emails.
+        <translate translate-context="Content/PasswordReset/Alert/Link generated, check emails">
+          Link generated with success, check your emails.
+        </translate>
       </b-alert>
     </div>
   </div>
@@ -51,7 +57,13 @@ const passwordReset = {
   computed: {
     ...mapState({
       signedIn: (state) => !!state.users.currentUser
-    })
+    }),
+    labels () {
+      return {
+        emailLabel: this.$pgettext('Content/PasswordReset/Input.Label/Email', 'Email:'),
+        emailPlaceholder: this.$pgettext('Content/PasswordReset/Input.Placeholder/Email', 'your email')
+      }
+    }
   },
   created () {
     if (this.signedIn) {
@@ -71,7 +83,7 @@ const passwordReset = {
             this.success = true
             this.error = null
           } else if (status === 404 || status === 400) {
-            this.error = 'Cannot generate reset link'
+            this.error = this.$pgettext('Content/PasswordReset/Error', 'Cannot generate reset link')
             this.$nextTick(() => {
               this.$refs.email.focus()
             })
@@ -80,7 +92,7 @@ const passwordReset = {
         .catch(() => {
           this.isPending = false
           this.user.email = ''
-          this.error = 'Cannot generate reset link'
+          this.error = this.$pgettext('Content/PasswordReset/Error', 'Cannot generate reset link')
         })
     }
   }

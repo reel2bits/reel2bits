@@ -77,7 +77,7 @@ const getTOS = async ({ store }) => {
   }
 }
 
-const afterStoreSetup = async ({ store, i18n }) => {
+const afterStoreSetup = async ({ store }) => {
   await Promise.all([
     checkOAuthToken({ store }), // check token and try to log user if found
     getAppSecret({ store }), // try to get or create app and token thingy
@@ -99,7 +99,6 @@ const afterStoreSetup = async ({ store, i18n }) => {
   return new Vue({
     router,
     store,
-    i18n,
     el: '#app',
     render: h => h(App)
   })
