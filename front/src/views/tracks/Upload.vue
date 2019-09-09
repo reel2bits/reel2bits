@@ -8,44 +8,46 @@
         <span v-for="error in fetchErrors" :key="error">{{ error }}</span>
       </b-alert>
 
-      <h4>Upload a new track</h4>
+      <h4 v-translate translate-context="Content/TrackUpload/Headline">
+        Upload a new track
+      </h4>
       <b-form class="upload-track-form" enctype="multipart/form-data" @submit.prevent="upload(track)">
         <b-form-group
           id="ig-title"
           :class="{ 'form-group--error': $v.track.title.$error }"
-          label="Title:"
+          :label="labels.titleLabel"
           label-for="title"
-          description="If no title provided, the filename will be used."
+          :description="labels.titleDescription"
         >
           <b-form-input
             id="title"
             v-model.trim="$v.track.title.$model"
             :disabled="isPending"
-            placeholder="title"
+            :placeholder="labels.titlePlaceholder"
             :state="$v.track.title.$dirty ? !$v.track.title.$error : null"
             aria-describedby="title-live-feedback"
           />
           <b-form-invalid-feedback id="title-live-feedback">
-            <span v-if="!$v.track.title.maxLength">Length is limited to 250 characters</span>
+            <span v-if="!$v.track.title.maxLength" v-translate translate-context="Content/TrackUpload/Feedback/Title/LengthLimit">Length is limited to 250 characters</span>
           </b-form-invalid-feedback>
         </b-form-group>
 
         <b-form-group
           id="ig-description"
-          label="Description:"
+          :label="labels.descriptionLabel"
           label-for="description"
         >
           <b-form-textarea
             id="description"
             v-model="track.description"
             :disabled="isPending"
-            :placeholder="descriptionPlaceholder"
+            :placeholder="labels.descriptionPlaceholder"
           />
         </b-form-group>
 
         <b-form-group
           id="ig-file"
-          label="Track file:"
+          :label="labels.fileLabel"
           label-for="file"
         >
           <b-form-file
@@ -59,7 +61,7 @@
 
         <b-form-group
           id="ig-album"
-          label="Album:"
+          :label="labels.albumLabel"
           label-for="album"
         >
           <b-form-select
@@ -72,7 +74,7 @@
 
         <b-form-group
           id="ig-license"
-          label="License:"
+          :label="labels.licenseLabel"
           label-for="license"
         >
           <b-form-select
@@ -86,15 +88,16 @@
         <b-form-group
           id="ig-private"
           label-for="private"
-          description="A private track won't federate. You can use this as your unpublished drafts. Note that you can't replace audio file after upload."
+          :description="labels.privateDescription"
         >
           <b-form-checkbox
             id="private"
             v-model="track.private"
+            v-translate
             name="private"
             value="y"
             unchecked-value=""
-            :disabled="isPending"
+            :disabled="isPending" translate-context="Content/TrackUpload/Input.Label/Private track"
           >
             this track is private
           </b-form-checkbox>
@@ -102,7 +105,9 @@
 
         <br>
 
-        <b-button :disabled="isPending" type="submit" variant="primary">
+        <b-button v-translate :disabled="isPending" type="submit"
+                  variant="primary" translate-context="Content/TrackUpload/Button/Upload"
+        >
           Upload
         </b-button>
 
@@ -149,9 +154,6 @@ export default {
     }
   },
   computed: {
-    descriptionPlaceholder () {
-      return 'Optional, what is this track about ?'
-    },
     acceptedMimeTypes () {
       const exts = ['.mp3', '.ogg', '.oga', '.flac', '.wav']
       const mp3 = ['audio/mpeg3', 'audio/x-mpeg-3']
@@ -168,7 +170,20 @@ export default {
       signedIn: state => !!state.users.currentUser,
       isPending: state => state.tracks.uploadPending,
       serverValidationErrors: state => state.tracks.uploadErrors
-    })
+    }),
+    labels () {
+      return {
+        titleLabel: this.$pgettext('Content/TrackUpload/Input.Label/Email', 'Title:'),
+        titleDescription: this.$pgettext('Content/TrackUpload/Input.Label/Title', 'If no title provided, the filename will be used.'),
+        titlePlaceholder: this.$pgettext('Content/TrackUpload/Input.Placeholder/Title', 'Your track title.'),
+        descriptionLabel: this.$pgettext('Content/TrackUpload/Input.Label/Description', 'Description:'),
+        descriptionPlaceholder: this.$pgettext('Content/TrackUpload/Input.Placeholder/Description', 'Optional, what is this track about ?'),
+        fileLabel: this.$pgettext('Content/TrackUpload/Input.Label/File', 'Track file:'),
+        albumLabel: this.$pgettext('Content/TrackUpload/Input.Label/Album', 'Album:'),
+        licenseLabel: this.$pgettext('Content/TrackUpload/Input.Label/License', 'License:'),
+        privateDescription: this.$pgettext('Content/TrackUpload/Input.Label/Private', 'A private track won\'t federate. You can use this as your unpublished drafts. Note that you can\'t replace audio file after upload.')
+      }
+    }
   },
   created () {
     // Fetch licenses
@@ -178,7 +193,7 @@ export default {
       })
       .catch((e) => {
         console.log('error fetching licenses: ' + e)
-        this.fetchErrors += 'Error fetching licenses'
+        this.fetchErrors += this.$pgettext('Content/TrackUpload/Error', 'Error fetching licenses')
         this.licenceChoices = []
       })
     // Fetch user albums
@@ -192,7 +207,7 @@ export default {
       })
       .catch((e) => {
         console.log('error fetching user albums: ' + e)
-        this.fetchErrors += 'Error fetching albums'
+        this.fetchErrors += this.$pgettext('Content/TrackUpload/Error', 'Error fetching albums')
         this.albumChoices = []
       })
   },
@@ -224,8 +239,9 @@ export default {
         const allowedSize = fileSizeFormatService.fileSizeFormat(
           this.$store.state.instance.trackSizeLimit
         )
+        let errMsg = this.$pgettext('Content/TrackUpload/Error', 'file too big: ')
         this.trackUploadError =
-          'file too big: ' +
+          errMsg +
           filesize.num +
           filesize.unit +
           '/' +
