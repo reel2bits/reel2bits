@@ -51,6 +51,12 @@
   </div>
 </template>
 
+<style scoped lang="scss">
+button.playPause {
+  margin-right: 5px;
+}
+</style>
+
 <script>
 import moment from 'moment'
 import WaveSurfer from 'wavesurfer.js'
