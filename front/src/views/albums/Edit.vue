@@ -8,36 +8,38 @@
         <span v-for="error in fetchErrors" :key="error">{{ error }}</span>
       </b-alert>
 
-      <h4>Edit album</h4>
+      <h4 v-translate translate-context="Content/AlbumEdit/Headline">
+        Edit album
+      </h4>
       <b-form class="edit-album-form" enctype="multipart/form-data" @submit.prevent="edit(album)">
         <b-form-group
           id="ig-title"
           :class="{ 'form-group--error': $v.album.title.$error }"
-          label="Title:"
+          :label="labels.titleLabel"
           label-for="title"
         >
           <b-form-input
             id="title"
             v-model.trim="$v.album.title.$model"
-            placeholder="title"
+            :placeholder="labels.titlePlaceholder"
             :state="$v.album.title.$dirty ? !$v.album.title.$error : null"
             aria-describedby="title-live-feedback"
           />
           <b-form-invalid-feedback id="title-live-feedback">
-            <span v-if="!$v.album.title.required">A title is required</span>
-            <span v-if="!$v.album.title.maxLength">Length is limited to 250 characters</span>
+            <span v-if="!$v.album.title.required" v-translate translate-context="Content/AlbumNew/Feedback/Title/Required">A title is required</span>
+            <span v-if="!$v.album.title.maxLength" v-translate translate-context="Content/AlbumNew/Feedback/Title/LengthLimit">Length is limited to 250 characters</span>
           </b-form-invalid-feedback>
         </b-form-group>
 
         <b-form-group
           id="ig-description"
-          label="Description:"
+          :label="labels.descriptionLabel"
           label-for="description"
         >
           <b-form-textarea
             id="description"
             v-model="album.description"
-            :placeholder="descriptionPlaceholder"
+            :placeholder="labels.descriptionPlaceholder"
           />
         </b-form-group>
 
@@ -45,20 +47,26 @@
           v-if="!alreadyFederated"
           id="private"
           v-model="album.private"
+          v-translate
           name="private"
           value="y"
           unchecked-value=""
+          translate-context="Content/AlbumEdit/Input.Label/Private album"
         >
           this album is private
         </b-form-checkbox>
 
         <br>
 
-        <b-button type="submit" variant="primary">
+        <b-button v-translate type="submit" variant="primary"
+                  translate-context="Content/AlbumEdit/Button/Edit"
+        >
           Edit
         </b-button>
 
-        <b-button variant="warning" :to="{ name: 'albums-show', params: { username: userName, albumId: albumId } }">
+        <b-button v-translate variant="warning" :to="{ name: 'albums-show', params: { username: userName, albumId: albumId } }"
+                  translate-context="Content/AlbumEdit/Link/Cancel"
+        >
           Cancel
         </b-button>
 
@@ -99,9 +107,6 @@ export default {
     }
   },
   computed: {
-    descriptionPlaceholder () {
-      return 'Optional, what is this album about ?'
-    },
     albumId () {
       return this.$route.params.albumId
     },
@@ -110,7 +115,15 @@ export default {
     },
     ...mapState({
       signedIn: state => !!state.users.currentUser
-    })
+    }),
+    labels () {
+      return {
+        titleLabel: this.$pgettext('Content/AlbumNew/Input.Label/Email', 'Title:'),
+        titlePlaceholder: this.$pgettext('Content/AlbumNew/Input.Placeholder/Title', 'Your album title.'),
+        descriptionLabel: this.$pgettext('Content/AlbumNew/Input.Label/Description', 'Description:'),
+        descriptionPlaceholder: this.$pgettext('Content/AlbumNew/Input.Placeholder/Description', 'Optional, what is this album about ?')
+      }
+    }
   },
   async created () {
     this.fetchAlbum()
