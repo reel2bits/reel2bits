@@ -6,7 +6,6 @@ from models import db, Album, User
 import json
 from utils import add_user_log
 from datas_helpers import to_json_relationship, to_json_account, to_json_album
-import authlib
 
 bp_api_albums = Blueprint("bp_api_albums", __name__)
 
@@ -51,6 +50,7 @@ def new():
 
 
 @bp_api_albums.route("/api/albums/<string:username_or_id>/<string:albumslug>", methods=["GET"])
+@require_oauth(optional=True)
 def get(username_or_id, albumslug):
     """
     Get album details.
@@ -73,13 +73,7 @@ def get(username_or_id, albumslug):
             description: Returns album object.
     """
     # Get logged in user from bearer token, or None if not logged in
-    current_user = None
-    try:
-        current_token = require_oauth.acquire_token(None)
-    except authlib.oauth2.rfc6749.errors.MissingAuthorizationError:
-        current_token = None
-    if current_token:
-        current_user = current_token.user
+    current_user = current_token.user
 
     # Get the associated User from url fetch
     if username_or_id.isdigit():
@@ -219,6 +213,7 @@ def edit(username, albumslug):
 
 
 @bp_api_albums.route("/api/albums/<int:user_id>", methods=["GET"])
+@require_oauth(optional=True)
 def list(user_id):
     """
     Get album list.
@@ -240,13 +235,7 @@ def list(user_id):
             description: Returns list of Albums.
     """
     # Get logged in user from bearer token, or None if not logged in
-    current_user = None
-    try:
-        current_token = require_oauth.acquire_token(None)
-    except authlib.oauth2.rfc6749.errors.MissingAuthorizationError:
-        current_token = None
-    if current_token:
-        current_user = current_token.user
+    current_user = current_token.user
 
     short_objects = request.args.get("short", False)
     count = int(request.args.get("count", 20))
