@@ -1,9 +1,6 @@
 <template>
   <div v-if="timelineError" class="row justify-content-md-center">
     <div class="col-md-8">
-      <p v-if="title" class="h3">
-        {{ title }}
-      </p>
       <b-alert v-if="timelineError" variant="danger" show>
         {{ timelineError }}
       </b-alert>
@@ -45,7 +42,6 @@ const Timeline = {
   },
   props: [
     'timelineName',
-    'title',
     'userId'
   ],
   data: () => ({
@@ -57,7 +53,7 @@ const Timeline = {
   }),
   created () {
     this.currentPage = this.$route.query.page || 1
-    console.log('loading timeline: ' + this.title)
+    console.log('loading timeline: ' + this.timelineName)
     this.fetchTimeline()
   },
   methods: {
