@@ -96,7 +96,6 @@ export default {
         usernamePlaceholder: this.$pgettext('Content/Login/Input.Placeholder/Username', 'Enter username'),
         passwordLabel: this.$pgettext('Content/Login/Input.Label/Password', 'Password:'),
         passwordPlaceholder: this.$pgettext('Content/Login/Input.Placeholder/Password', 'Enter password')
-
       }
     }
   },
