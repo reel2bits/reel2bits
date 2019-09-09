@@ -3,7 +3,7 @@
     <div class="card-body py-3 px-3">
       <div class="d-flex mb-2">
         <div class="d-flex rounded-circle mr-2" style="width:96px; height:96px; overflow:hidden">
-          <img :src="user.profile_image_url" alt="user avatar" style="height:96px;">
+          <img :src="user.profile_image_url" :alt="userAvatarAlt" style="height:96px;">
         </div>
         <div class="align-self-center">
           <h2 class="h2 m-0">
@@ -21,29 +21,41 @@
                       size="sm" :disabled="followRequestInProgress" @click="followUser"
             >
               <template v-if="followRequestInProgress">
-                Follow in progress
+                <translate translate-context="Content/UserCard/Button/Follow/in progress">
+                  Follow in progress
+                </translate>
               </template>
               <template v-else-if="followRequestSent">
-                Follow sent
+                <translate translate-context="Content/UserCard/Button/Follow/sent">
+                  Follow sent
+                </translate>
               </template>
               <template v-else>
-                Follow
+                <translate translate-context="Content/UserCard/Button/Follow">
+                  Follow
+                </translate>
               </template>
             </b-button>
             <b-button v-else-if="followRequestInProgress" type="button" variant="primary"
                       size="sm" disabled @click="unfollowUser"
             >
-              Change in progress
+              <translate translate-context="Content/UserCard/Button/Follow/change in progress">
+                Change in progress
+              </translate>
             </b-button>
             <b-button v-else type="button" variant="primary"
                       size="sm" @click="unfollowUser"
             >
-              Unfollow
+              <translate translate-context="Content/UserCard/Button/Unfollow">
+                Unfollow
+              </translate>
             </b-button>
           </div>
           <p class="text-muted m-0">
             <template v-if="user.follows_you && loggedIn && isOtherUser">
-              Follows you
+              <translate translate-context="Content/UserCard/Text/Follows you">
+                Follows you
+              </translate>
             </template>
           </p>
         </div>
@@ -57,7 +69,9 @@
             <p class="h3 font-weight-normal m-0">
               {{ user.statuses_count }}
             </p><p class="m-0">
-              Tracks
+              <translate translate-context="Content/UserCard/Text/Tracks (number of)">
+                Tracks
+              </translate>
             </p>
           </router-link>
         </li>
@@ -66,7 +80,9 @@
             <p class="h3 font-weight-normal m-0">
               {{ user.reel2bits.albums_count }}
             </p><p class="m-0">
-              Albums
+              <translate translate-context="Content/UserCard/Text/Albums (number of)">
+                Albums
+              </translate>
             </p>
           </router-link>
         </li>
@@ -75,7 +91,9 @@
             <p class="h3 font-weight-normal m-0">
               {{ user.followers_count }}
             </p><p class="m-0">
-              Followers
+              <translate translate-context="Content/UserCard/Text/Followers (number of)">
+                Followers
+              </translate>
             </p>
           </router-link>
         </li>
@@ -84,7 +102,9 @@
             <p class="h3 font-weight-normal m-0">
               {{ user.friends_count }}
             </p><p class="m-0">
-              Following
+              <translate translate-context="Content/UserCard/Text/Following (number of)">
+                Following
+              </translate>
             </p>
           </router-link>
         </li>
@@ -109,6 +129,10 @@ const UserCard = {
     },
     loggedIn () {
       return this.$store.state.users.currentUser
+    },
+    userAvatarAlt () {
+      let msg = this.$pgettext('Content/UserCard/Image/Avatar alt', '%{username} avatar')
+      return this.$gettextInterpolate(msg, { username: this.user.screen_name })
     }
   },
   created () {
