@@ -89,7 +89,7 @@ def public():
     for t in q.items:
         if t.Sound:
             relationship = False
-            if current_token.user:
+            if current_token and current_token.user:
                 relationship = to_json_relationship(current_token.user, t.Sound.user)
             account = to_json_account(t.Sound.user, relationship)
             tracks.append(to_json_track(t.Sound, account))
@@ -198,7 +198,7 @@ def albums():
     albums = []
     for t in q.items:
         relationship = False
-        if current_token.user:
+        if current_token and current_token.user:
             relationship = to_json_relationship(current_token.user, t.user)
         account = to_json_account(t.user, relationship)
         albums.append(to_json_album(t, account))
