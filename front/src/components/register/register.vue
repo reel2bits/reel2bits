@@ -1,7 +1,7 @@
 <template>
   <div class="row justify-content-md-center">
     <div class="col-md-4">
-      <h4 v-translate>
+      <h4 v-translate translate-context="Content/Register/Headline/Registering">
         Registering
       </h4>
 
