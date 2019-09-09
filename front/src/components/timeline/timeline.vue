@@ -16,7 +16,9 @@
       </div>
       <div v-else class="col-md-8">
         <div v-if="timelineLoaded">
-          Nothing to show
+          <translate translate-context="Content/Timeline/*/Empty">
+            Nothing to show
+          </translate>
         </div>
       </div>
     </div>
