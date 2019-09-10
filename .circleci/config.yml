@@ -271,7 +271,7 @@ jobs:
   build-develop-doc:
     <<: *defaults
     docker:
-      - image: circleci/python:3.8-rc-buster-node
+      - image: circleci/python:3.7-buster-node
         environment:
           BUILD_PATH: ../docs-build
     <<: *build_and_sync_doc
@@ -294,19 +294,12 @@ workflows:
           requires:
             - install
             - install-python3.6
-      - install-python3.8:
-          requires:
-            - install
-            - install-python3.6
       - test-python3.6:
           requires:
             - install-python3.6
       - test-python3.7:
           requires:
             - install-python3.7
-      - test-python3.8:
-          requires:
-            - install-python3.8
       - front-lint-lts:
           requires:
             - install
