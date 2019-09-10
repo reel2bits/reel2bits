@@ -277,7 +277,14 @@ workflows:
   version: 2
   build-develop-doc:
     jobs:
+      - install
+      - install-python3.8:
+          requires:
+            - install
       - build-develop-doc:
+          requires:
+            - install
+            - install-python3.8
           filters:
             branches:
               only: frontv2
