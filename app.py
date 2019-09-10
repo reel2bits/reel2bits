@@ -163,9 +163,7 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
     config_oauth(app)
 
     # Setup Flask-Security
-    security = Security(  # noqa: F841
-        app, user_datastore
-    )
+    security = Security(app, user_datastore)  # noqa: F841
 
     @FlaskSecuritySignals.password_reset.connect_via(app)
     @FlaskSecuritySignals.password_changed.connect_via(app)
