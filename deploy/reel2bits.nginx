@@ -1,11 +1,65 @@
 server {
-        listen 80;
-        listen [::]:80;
+    listen 80;
+    listen [::]:80;
+    # update this to match your instance name
+    server_name reel2bits.test;
+    # useful for Let's Encrypt
+    location /.well-known/acme-challenge/ { allow all; }
+    location / { return 301 https://$host$request_uri; }
+}
+
+server {
+        listen 443 ssl;
+        listen [::]:443 ssl;
 
         server_name reel2bits.test;
 
+        # TLS
+        # Feel free to use your own configuration for SSL here or simply remove the
+        # lines and move the configuration to the previous server block if you
+        # don't want to run reel2bits behind https (this is not recommended)
+        # have a look here for let's encrypt configuration:
+        # https://certbot.eff.org/all-instructions/#debian-9-stretch-nginx
+        ssl_protocols TLSv1.2;
+        ssl_ciphers HIGH:!MEDIUM:!LOW:!aNULL:!NULL:!SHA;
+        ssl_prefer_server_ciphers on;
+        ssl_session_cache shared:SSL:10m;
+        ssl_certificate     /etc/letsencrypt/live/reel2bits.test/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/reel2bits.test/privkey.pem;
+        # HSTS
+        add_header Strict-Transport-Security "max-age=31536000";
+
+
         access_log /var/log/nginx/reel2bits.access.log;
         error_log /var/log/nginx/reel2bits.error.log error;
+
+        # compression settings
+        gzip on;
+        gzip_comp_level    5;
+        gzip_min_length    256;
+        gzip_proxied       any;
+        gzip_vary          on;
+
+        gzip_types
+                application/javascript
+                application/vnd.geo+json
+                application/vnd.ms-fontobject
+                application/x-font-ttf
+                application/x-web-app-manifest+json
+                font/opentype
+                image/bmp
+                image/svg+xml
+                image/x-icon
+                text/cache-manifest
+                text/css
+                text/plain
+                text/vcard
+                text/vnd.rim.location.xloc
+                text/vtt
+                text/x-component
+                text/x-cross-domain-policy;
+
+        # end of compression settings
 
         client_max_body_size 1G;
 

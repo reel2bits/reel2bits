@@ -1,6 +1,7 @@
 [Unit]
 Description=reel2bits-web
 After=network.target
+PartOf=reel2bits.target
 
 [Service]
 Type=simple
