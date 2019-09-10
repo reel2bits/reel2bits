@@ -29,16 +29,15 @@ aliases:
           sudo apt-get install -y libsox-dev libsox-fmt-all libtag1-dev libmagic-dev libffi-dev libgd-dev libmad0-dev libsndfile1-dev libid3tag0-dev libmediainfo-dev
 
   - &install_audiowaveform
-      steps:
-        - *attach_workspace
-        - run:
-            command: ./tests/install_audiowaveform.sh
-        - *persist_to_workspace
+      run:
+        name: Install audiowaveform
+        command: ./tests/install_audiowaveform.sh
 
   - &install_python_dependencies
       steps:
         - *attach_workspace
         - *install_system_dependencies
+        - *install_audiowaveform
         - run: python -V | tee /tmp/.python-version
         - restore_cache:
             keys:
@@ -175,13 +174,13 @@ aliases:
         - run:
             name: Install dependencies
             command: |
+              python3 -m venv venv
               . venv/bin/activate
               pip install sphinx-guillotina-theme sphinx
         - run:
             name: Build docs
             command: |
               . venv/bin/activate
-              export BUILD_PATH="../docs-build"
               cd docs && ./build_docs.sh
         - deploy:
             name: deploy
@@ -195,29 +194,18 @@ jobs:
   install-python3.6:
     <<: *defaults
     <<: *install_python_dependencies
-    <<: *install_audiowaveform
 
   install-python3.7:
     <<: *defaults
     docker:
       - image: circleci/python:3.7-buster-node
     <<: *install_python_dependencies
-    <<: *install_audiowaveform
 
   install-python3.8:
     <<: *defaults
     docker:
       - image: circleci/python:3.8-rc-buster-node
     <<: *install_python_dependencies
-    <<: *install_audiowaveform
-
-
-  install-python3.8-light:
-    <<: *defaults
-    docker:
-      - image: circleci/python:3.8-rc-buster-node
-    <<: *install_python_dependencies
-
 
   test-python3.6:
     <<: *defaults
@@ -283,20 +271,15 @@ jobs:
     <<: *defaults
     docker:
       - image: circleci/python:3.8-rc-buster-node
+        environment:
+          BUILD_PATH: ../docs-build
     <<: *build_and_sync_doc
 
 workflows:
   version: 2
   build-docs:
     jobs:
-      - install
-      - install-python3.8-light:
-          requires:
-            - install
       - build-develop-doc:
-          requires:
-            - install
-            - install-python3.8-light
           filters:
             branches:
               only: frontv2
