@@ -20,7 +20,7 @@ from flasgger import Swagger
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from models import db, Config, user_datastore, Role, create_actor
-from utils import InvalidUsage, is_admin, duration_elapsed_human, duration_song_human, add_user_log
+from utils.various import InvalidUsage, is_admin, add_user_log
 
 import texttable
 
@@ -95,8 +95,6 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
     app.jinja_env.add_extension("jinja2.ext.with_")
     app.jinja_env.add_extension("jinja2.ext.do")
     app.jinja_env.globals.update(is_admin=is_admin)
-    app.jinja_env.globals.update(duration_elapsed_human=duration_elapsed_human)
-    app.jinja_env.globals.update(duration_song_human=duration_song_human)
 
     if HAS_SENTRY:
         sentry_sdk.init(

@@ -11,7 +11,7 @@ revision = "7eb56606e9d6"
 down_revision = "a8e2274a18d3"
 
 from models import db, Sound  # noqa: E402
-from flake_id import gen_flakeid  # noqa: E402
+from utils.flake_id import gen_flakeid  # noqa: E402
 from uuid import UUID  # noqa: E402
 
 

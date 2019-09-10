@@ -4,7 +4,7 @@ from authlib.flask.oauth2 import current_token
 from forms import AlbumForm
 from models import db, Album, User
 import json
-from utils import add_user_log
+from utils.various import add_user_log
 from datas_helpers import to_json_relationship, to_json_account, to_json_album
 
 bp_api_albums = Blueprint("bp_api_albums", __name__)

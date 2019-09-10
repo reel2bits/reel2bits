@@ -4,7 +4,7 @@ from flask_security import login_required, current_user
 
 from forms import AlbumForm
 from models import db, User, Album, Sound
-from utils import InvalidUsage, add_user_log
+from utils.various import InvalidUsage, add_user_log
 
 bp_albums = Blueprint("bp_albums", __name__)
 
