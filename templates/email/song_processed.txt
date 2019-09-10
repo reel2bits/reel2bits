@@ -2,4 +2,4 @@ Hello {{ sound.user.name }}!
 
 Your track "{{ sound.title }}" have been processed and is now available.
 
-Direct link to the track: {{ url_for("bp_sound.show", username=sound.user.name, soundslug=sound.slug) }}
+Direct link to the track: {{ track_url }}
