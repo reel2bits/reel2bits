@@ -362,6 +362,26 @@ Various notes
 - Authlib revoke token wants basic auth, no idea what to give, so it doesn't works
 - Authlib does handle optional bearer auth, uses: @require_oauth(optional=True)
 
+Translations notes
+^^^^^^^^^^^^^^^^^^
+
+While there is still some in the backend, and that is going to change.
+
+Parse translation strings::
+
+    pybabel extract -F babel.cfg -k gettext -o messages.pot .
+
+create document::
+
+    pybabel init -i messages.pot -d translations -l de
+
+update document::
+
+    pybabel update -i messages.pot -d translations
+
+compile documents::
+
+    pybabel compile -d translations
 
 Contributing to the front-end
 -----------------------------
