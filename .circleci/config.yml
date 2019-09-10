@@ -32,7 +32,6 @@ aliases:
       steps:
         - *attach_workspace
         - run:
-            name: Install audiowaveform
             command: ./tests/install_audiowaveform.sh
         - *persist_to_workspace
 
