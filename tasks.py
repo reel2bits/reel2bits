@@ -18,7 +18,6 @@ from little_boxes.errors import NotAnActivityError
 from little_boxes.key import Key
 from models import Activity, Actor
 from activitypub.vars import HEADERS, Box
-from controllers.sound import bp_sound
 import smtplib
 from utils import add_log, add_user_log
 
@@ -114,15 +113,15 @@ def upload_workflow(self, sound_id):
             sound.activity_id = federate_new_sound(sound)
             db.session.commit()
 
-    app.register_blueprint(bp_sound)
+    track_url = f"https://{current_app.config['AP_DOMAIN']}/{sound.user.name}/track/{sound.slug}"
 
     msg = Message(
         subject="Song processing finished",
         recipients=[sound.user.email],
         sender=current_app.config["MAIL_DEFAULT_SENDER"],
     )
-    msg.body = render_template("email/song_processed.txt", sound=sound)
-    msg.html = render_template("email/song_processed.html", sound=sound)
+    msg.body = render_template("email/song_processed.txt", sound=sound, track_url=track_url)
+    msg.html = render_template("email/song_processed.html", sound=sound, track_url=track_url)
     err = None
     try:
         mail.send(msg)

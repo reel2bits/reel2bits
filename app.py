@@ -241,25 +241,9 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
 
         app.register_blueprint(bp_main)
 
-        from controllers.users import bp_users
-
-        app.register_blueprint(bp_users)
-
         from controllers.admin import bp_admin
 
         app.register_blueprint(bp_admin)
-
-        from controllers.sound import bp_sound
-
-        app.register_blueprint(bp_sound)
-
-        from controllers.albums import bp_albums
-
-        app.register_blueprint(bp_albums)
-
-        from controllers.search import bp_search
-
-        app.register_blueprint(bp_search)
 
         # ActivityPub
         from controllers.api.v1.well_known import bp_wellknown
