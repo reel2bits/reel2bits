@@ -273,6 +273,8 @@ jobs:
       - image: circleci/python:3.8-rc-buster-node
         environment:
           BUILD_PATH: ../docs-build
+    steps:
+      - checkout
     <<: *build_and_sync_doc
 
 workflows:
