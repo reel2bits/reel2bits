@@ -189,5 +189,6 @@ def copy_legacy_redirects(app, docname):
 
 def setup(app):
     import sphinx_guillotina_theme
+
     sphinx_guillotina_theme.setup(app)
     app.connect("build-finished", copy_legacy_redirects)
