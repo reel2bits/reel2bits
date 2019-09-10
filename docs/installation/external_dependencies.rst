@@ -71,6 +71,6 @@ This should be enough to have your redis server set up.
 audiowaveform tool
 ------------------
 
-We needs the `audiowaveform tool <https://github.com/bbc/audiowaveform>` which is used to precompute the audio waveforms used by the players.
+We needs the `audiowaveform tool <https://github.com/bbc/audiowaveform>`_ which is used to precompute the audio waveforms used by the players.
 
-The best way to install it is to `follow the official documentation <https://github.com/bbc/audiowaveform#installation>` which already mention how to install on Ubuntu or build from sources.
+The best way to install it is to `follow the official documentation <https://github.com/bbc/audiowaveform#installation>`_ which already mention how to install on Ubuntu or build from sources.
