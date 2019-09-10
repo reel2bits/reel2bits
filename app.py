@@ -19,7 +19,6 @@ from cachetools import cached, TTLCache
 from flasgger import Swagger
 from werkzeug.middleware.proxy_fix import ProxyFix
 
-from forms import ExtendedRegisterForm
 from models import db, Config, user_datastore, Role, create_actor
 from utils import InvalidUsage, is_admin, duration_elapsed_human, duration_song_human, add_user_log
 
@@ -167,7 +166,7 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
 
     # Setup Flask-Security
     security = Security(  # noqa: F841
-        app, user_datastore, register_form=ExtendedRegisterForm, confirm_register_form=ExtendedRegisterForm
+        app, user_datastore
     )
 
     @FlaskSecuritySignals.password_reset.connect_via(app)
