@@ -159,6 +159,33 @@ aliases:
               else
                 echo "Not frontv2, no deployment"
               fi
+
+  - &build_and_sync_doc
+      steps:
+        - *attach_workspace
+        - add_ssh_keys:
+            fingerprints:
+              - "66:80:b8:db:44:06:34:e1:f0:ac:35:b2:a0:80:98:bd"
+        - run:
+            name: Install rsync
+            command: |
+              sudo apt-get update
+              sudo apt-get install -y rsync graphviz
+        - run:
+            name: Install dependencies
+            command: |
+              . venv/bin/activate
+              pip install sphinx-guillotina-theme sphinx
+        - run:
+            name: Build docs
+            command: |
+              . venv/bin/activate
+              export BUILD_PATH="../docs-build"
+              cd docs && ./build_docs.sh
+        - deploy:
+            name: deploy
+            command: |
+              rsync -avc -e "ssh -o StrictHostKeyChecking=no -p 22" --delete docs-build/ docs-develop.reel2bits.org@cadance.licorn.eu:/
 jobs:
   install:
     <<: *defaults
@@ -240,8 +267,20 @@ jobs:
       - image: circleci/node:10.16.3-buster-browsers
     <<: *sync_front
 
+  build-develop-doc:
+    <<: *defaults
+    docker:
+      - image: circleci/python:3.8-rc-buster-node
+    <<: *build_and_sync_doc
+
 workflows:
   version: 2
+  build-develop-doc:
+    jobs:
+      - build-develop-doc:
+          filters:
+            branches:
+              only: frontv2
   build-and-test:
     jobs:
       - install

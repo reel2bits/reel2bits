@@ -273,7 +273,7 @@ will pull all the strings from source files and put them in a PO files.
 You can then inspect the PO files to ensure everything is fine (but don't commit them, it's not needed).
 
 Contributing to the Backend API
------------------------
+-------------------------------
 
 Project structure
 ^^^^^^^^^^^^^^^^^
