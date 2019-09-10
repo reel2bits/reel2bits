@@ -9,7 +9,14 @@ import mutagen
 from pymediainfo import MediaInfo
 
 from models import db, SoundInfo, Sound
-from utils.various import get_waveform, create_png_waveform, duration_human, add_user_log, generate_audio_dat_file, add_log
+from utils.various import (
+    get_waveform,
+    create_png_waveform,
+    duration_human,
+    add_user_log,
+    generate_audio_dat_file,
+    add_log,
+)
 from pydub import AudioSegment
 from os.path import splitext
 from flask import current_app

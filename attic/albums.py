@@ -1,10 +1,8 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, Response, json
-from flask_babelex import gettext
-from flask_security import login_required, current_user
+from flask import Blueprint, request, Response, json
+from flask_security import current_user
 
-from forms import AlbumForm
 from models import db, User, Album, Sound
-from utils.various import InvalidUsage, add_user_log
+from utils.various import InvalidUsage
 
 bp_albums = Blueprint("bp_albums", __name__)
 
