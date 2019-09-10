@@ -4,7 +4,7 @@ from flask_security import login_required
 
 from forms import ConfigForm
 from models import db, Logging, Config
-from utils import is_admin
+from utils.various import is_admin
 
 bp_admin = Blueprint("bp_admin", __name__)
 

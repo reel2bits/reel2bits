@@ -22,7 +22,7 @@ from little_boxes import activitypub as ap
 from urllib.parse import urlparse
 from authlib.flask.oauth2.sqla import OAuth2ClientMixin, OAuth2AuthorizationCodeMixin, OAuth2TokenMixin
 import time
-from flake_id import gen_flakeid
+from utils.flake_id import gen_flakeid
 import uuid
 
 db = SQLAlchemy()

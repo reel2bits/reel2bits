@@ -9,14 +9,7 @@ import string
 from flask import current_app
 from flask_security import current_user
 
-from models import db, Role, Logging, Config, UserLogging
-
-
-def gcfg():
-    _config = Config.query.one()
-    if not _config:
-        return {"app_name": "ree2bits"}
-    return {"app_name": _config.app_name}
+from models import db, Role, Logging, UserLogging
 
 
 class InvalidUsage(Exception):
@@ -69,32 +62,7 @@ def add_user_log(item, user, category, level, message):
     db.session.commit()
 
 
-def duration_elapsed_human(seconds):
-    print(seconds)
-    seconds = round(seconds)
-    minutes, seconds = divmod(seconds, 60)
-    hours, minutes = divmod(minutes, 60)
-    days, hours = divmod(hours, 24)
-    years, days = divmod(days, 365.242199)
-
-    minutes = int(minutes)
-    hours = int(hours)
-    days = int(days)
-    years = int(years)
-
-    if years > 0:
-        return "%d y" % years
-    elif days > 0:
-        return "%d d" % days
-    elif hours > 0:
-        return "%d h" % hours + "s" * (hours != 1)
-    elif minutes > 0:
-        return "%d mn" % minutes + "s" * (minutes != 1)
-    else:
-        return "right now"
-
-
-def duration_song_human(seconds):
+def duration_human(seconds):
     if seconds is None:
         return "error"
     seconds = float(seconds)

@@ -5,7 +5,7 @@ from flask_security import confirmable as FSConfirmable
 from app_oauth import authorization, require_oauth
 from authlib.flask.oauth2 import current_token
 from datas_helpers import to_json_track, to_json_account, to_json_relationship
-from utils import forbidden_username, add_user_log
+from utils.various import forbidden_username, add_user_log
 from tasks import send_update_profile
 import re
 

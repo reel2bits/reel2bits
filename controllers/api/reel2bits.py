@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request, abort, current_app, render_template
 from models import db, licences, User, PasswordResetToken
-from utils import add_user_log, generate_random_token, add_log
+from utils.various import add_user_log, generate_random_token, add_log
 from app_oauth import require_oauth
 from authlib.flask.oauth2 import current_token
 from flask_security.utils import hash_password, verify_password

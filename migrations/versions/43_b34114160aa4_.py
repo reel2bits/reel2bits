@@ -11,7 +11,7 @@ revision = "b34114160aa4"
 down_revision = "8b4238e4e1a3"
 
 from models import db, Album  # noqa: E402
-from flake_id import gen_flakeid  # noqa: E402
+from utils.flake_id import gen_flakeid  # noqa: E402
 from uuid import UUID  # noqa: E40
 
 

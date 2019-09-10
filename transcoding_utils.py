@@ -9,7 +9,7 @@ import mutagen
 from pymediainfo import MediaInfo
 
 from models import db, SoundInfo, Sound
-from utils import get_waveform, create_png_waveform, duration_song_human, add_user_log, generate_audio_dat_file, add_log
+from utils.various import get_waveform, create_png_waveform, duration_human, add_user_log, generate_audio_dat_file, add_log
 from pydub import AudioSegment
 from os.path import splitext
 from flask import current_app
@@ -146,7 +146,7 @@ def work_transcode(sound_id):
     print("From: {0}".format(fname))
     print("Transcoded: {0}.mp3".format(_file))
     elapsed = time.time() - _start
-    print("Transcoding done: ({0}) {1}".format(elapsed, duration_song_human(elapsed)))
+    print("Transcoding done: ({0}) {1}".format(elapsed, duration_human(elapsed)))
 
     sound.transcode_state = Sound.TRANSCODE_DONE
 

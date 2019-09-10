@@ -19,7 +19,7 @@ from little_boxes.key import Key
 from models import Activity, Actor
 from activitypub.vars import HEADERS, Box
 import smtplib
-from utils import add_log, add_user_log
+from utils.various import add_log, add_user_log
 
 # TRANSCODING
 

@@ -4,7 +4,7 @@ from authlib.flask.oauth2 import current_token
 from forms import SoundUploadForm
 from models import db, Sound, User, Album
 import json
-from utils import add_user_log, get_hashed_filename
+from utils.various import add_user_log, get_hashed_filename
 from flask_uploads import UploadSet, AUDIO
 from datas_helpers import to_json_track, to_json_account, to_json_relationship
 from os.path import splitext
