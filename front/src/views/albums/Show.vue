@@ -64,11 +64,17 @@
           <draggable tag="ul" :list="tracksList" class="list-group"
                      handle=".handle"
           >
-            <li v-for="element in tracksList" :key="element.title" class="list-group-item">
-              <i class="fa fa-align-justify handle" />
-              <i v-if="currentTrack.id == element.id" class="fa fa-play" />
-              <span class="text" @click.prevent="loadWavesurferById(element.id, true)">{{ element.title }}</span>
-              <span class="text-right">{{ element.length }}</span>
+            <li v-for="element in tracksList" :key="element.title" class="list-group-item tracks-list">
+              <span class="actions">
+                <i class="fa fa-align-justify handle" />
+                <i v-if="currentTrack.id == element.id" class="fa fa-play" />
+              </span>
+              <span class="text" @click.prevent="loadWavesurferById(element.id, true)">
+                {{ element.title }}
+              </span>
+              <span class="pull-right">
+                {{ element.length.toFixed(2) }}
+              </span>
             </li>
           </draggable>
         </div>
@@ -87,6 +93,13 @@
 <style scoped lang="scss">
 button.playPause {
   margin-right: 5px;
+}
+li.tracks-list span.actions {
+  width: 3em;
+  float: left;
+}
+li.tracks-list span.actions i.fa-play {
+  padding-left: 5px;
 }
 </style>
 
