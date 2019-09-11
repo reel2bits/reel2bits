@@ -304,9 +304,9 @@ def reorder(username, albumslug):
 
     pos = 0
     for track in request.json:
-        dbt = Sound.query.filter(Sound.flake_id == track['id'], Sound.album_id == album.id).first()
+        dbt = Sound.query.filter(Sound.flake_id == track["id"], Sound.album_id == album.id).first()
         if not dbt:
-            return jsonify({'error': 'Not found'}), 404
+            return jsonify({"error": "Not found"}), 404
         dbt.album_order = pos
         pos += 1
     db.session.commit()
