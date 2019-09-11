@@ -15,24 +15,28 @@
         {{ deleteError }}
       </b-alert>
 
-      <h4>{{ album.title }}</h4>
-      <div class="btn-group" role="group" aria-label="Albums actions">
-        <div v-if="isOwner">
-          <b-button variant="link" class="text-decoration-none"
-                    @click.prevent="editAlbum"
-          >
-            <i class="fa fa-pencil" aria-hidden="true" /> Edit
-          </b-button>
-          <b-button v-b-modal.modal-delete variant="link"
-                    class="text-decoration-none"
-          >
-            <i class="fa fa-times" aria-hidden="true" /> Delete
-          </b-button>
-          <b-modal id="modal-delete" title="Deleting album" @ok="deleteAlbum">
-            <p class="my-4">
-              Are you sure you want to delete '{{ album.title }}' ?
-            </p>
-          </b-modal>
+      <div class="row">
+        <div class="col-sm-9">
+          <h4>{{ album.title }}</h4>
+        </div>
+        <div class="col-sm-3 btn-group" role="group" aria-label="Albums actions">
+          <div v-if="isOwner">
+            <b-button variant="link" class="text-decoration-none"
+                      @click.prevent="editAlbum"
+            >
+              <i class="fa fa-pencil" aria-hidden="true" /> Edit
+            </b-button>
+            <b-button v-b-modal.modal-delete variant="link"
+                      class="text-decoration-none"
+            >
+              <i class="fa fa-times" aria-hidden="true" /> Delete
+            </b-button>
+            <b-modal id="modal-delete" title="Deleting album" @ok="deleteAlbum">
+              <p class="my-4">
+                Are you sure you want to delete '{{ album.title }}' ?
+              </p>
+            </b-modal>
+          </div>
         </div>
       </div>
 
