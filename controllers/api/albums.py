@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, request
 from app_oauth import require_oauth
 from authlib.flask.oauth2 import current_token
 from forms import AlbumForm
-from models import db, Album, User
+from models import db, Album, User, Sound
 import json
 from utils.various import add_user_log
 from datas_helpers import to_json_relationship, to_json_account, to_json_album
@@ -276,3 +276,43 @@ def list(user_id):
             "short": short_objects,
         }
         return jsonify(resp)
+
+
+@bp_api_albums.route("/api/albums/<string:username>/<string:albumslug>/reorder", methods=["PATCH"])
+@require_oauth("write")
+def reorder(username, albumslug):
+    """
+    Edit album tracks order.
+    ---
+    tags:
+        - Albums
+    security:
+        - OAuth2:
+            - write
+    responses:
+        200:
+            description: Returns a Status with extra reel2bits params.
+    """
+    current_user = current_token.user
+    if not current_user:
+        return jsonify({"error": "Unauthorized"}), 403
+
+    # Get the album
+    album = Album.query.filter(Album.user_id == current_user.id, Album.slug == albumslug).first()
+    if not album:
+        return jsonify({"error": "Not found"}), 404
+
+    pos = 0
+    for track in request.json:
+        dbt = Sound.query.filter(Sound.flake_id == track['id'], Sound.album_id == album.id).first()
+        if not dbt:
+            return jsonify({'error': 'Not found'}), 404
+        dbt.album_order = pos
+        pos += 1
+    db.session.commit()
+
+    relationship = to_json_relationship(current_user, album.user)
+    account = to_json_account(album.user, relationship)
+    resp = to_json_album(album, account)
+
+    return jsonify(resp)

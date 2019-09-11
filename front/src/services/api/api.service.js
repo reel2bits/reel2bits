@@ -14,6 +14,7 @@ const TRACKS_DELETE_URL = (username, id) => `/api/tracks/${username}/${id}`
 const ALBUMS_NEW_URL = '/api/albums'
 const ALBUMS_FETCH_URL = (username, id) => `/api/albums/${username}/${id}`
 const ALBUMS_EDIT_URL = (username, id) => `/api/albums/${username}/${id}`
+const ALBUM_REORDER_URL = (username, id) => `/api/albums/${username}/${id}/reorder`
 const ALBUMS_DELETE_URL = (username, id) => `/api/albums/${username}/${id}`
 
 const ACCOUNT_LOGS_URL = (username, currentPage, perPage) => `/api/users/${username}/logs?page=${currentPage}&page_size=${perPage}`
@@ -192,6 +193,15 @@ const trackEdit = ({ userId, trackId, track, credentials }) => {
     url: TRACKS_EDIT_URL(userId, trackId),
     method: 'PATCH',
     payload: track,
+    credentials: credentials
+  }).then((data) => parseStatus(data))
+}
+
+const albumReorder = ({ userId, albumId, tracksOrder, credentials }) => {
+  return promisedRequest({
+    url: ALBUM_REORDER_URL(userId, albumId),
+    method: 'PATCH',
+    payload: tracksOrder,
     credentials: credentials
   }).then((data) => parseStatus(data))
 }
@@ -509,6 +519,7 @@ const apiService = {
   albumDelete,
   albumFetch,
   albumEdit,
+  albumReorder,
   fetchUserLogs,
   fetchTimeline,
   fetchLicenses,

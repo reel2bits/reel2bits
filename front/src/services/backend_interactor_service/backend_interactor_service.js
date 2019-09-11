@@ -40,6 +40,10 @@ const backendInteractorService = credentials => {
     return apiService.albumEdit({ userId, albumId, album, credentials })
   }
 
+  const albumReorder = ({ userId, albumId, tracksOrder }) => {
+    return apiService.albumReorder({ userId, albumId, tracksOrder, credentials })
+  }
+
   const updateUserSettings = ({ settings }) => {
     return apiService.updateUserSettings({ settings, credentials })
   }
@@ -201,6 +205,7 @@ const backendInteractorService = credentials => {
     albumFetch,
     albumDelete,
     albumEdit,
+    albumReorder,
     fetchConversation,
     fetchFriends,
     exportFriends,

@@ -78,7 +78,7 @@
 
       <div>
         <draggable tag="ul" :list="tracksList" class="list-group"
-                   handle=".handle"
+                   handle=".handle" @update="tracksListReordered"
         >
           <li v-for="element in tracksList" :key="element.title" class="list-group-item tracks-list">
             <span class="actions">
@@ -176,13 +176,14 @@ export default {
     } // else, oops
     this.fetchAlbum()
       .then((album) => {
+        // Get the first track and set initial tracks list
+        // Reorder by album_order
+        this.album.tracks.sort((a, b) => { return a.album_order - b.album_order })
         // Build the reordering list
         this.tracksList = this.album.tracks.map(p => { return { id: p.id, title: p.title, length: p.metadatas.duration } })
-        // Get the first track
-        // Reorder
-        this.album.tracks.sort((a, b) => { return a.album_order - b.album_order })
         // Get the first
         this.currentTrack = this.album.tracks[0]
+        console.log(`elected ${this.currentTrack.album_order} as first item`)
         // Create the wavesurfer player and init
         this.$nextTick(() => {
           let opts = {
@@ -301,6 +302,11 @@ export default {
       if (track) {
         this.loadWavesurfer(track, autoplay)
       } // else oops
+    },
+    tracksListReordered: function (event) {
+      console.log('tracks list have been reordered', this.tracksList)
+      this.$store.state.api.backendInteractor.albumReorder({ userId: this.userId || this.userName, albumId: this.albumId, tracksOrder: this.tracksList })
+      // Todo, can we cancel the reorder if fail ?
     }
   }
 }
