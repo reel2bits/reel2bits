@@ -171,7 +171,7 @@ export default {
         this.licenceChoices = []
       })
     // Fetch user albums
-    this.$store.state.api.backendInteractor.fetchUserAlbums({ userId: this.$store.state.users.currentUser.userId, short: true })
+    this.$store.state.api.backendInteractor.fetchUserAlbums({ userId: this.$store.state.users.currentUser.id, short: true })
       .then((albums) => {
         let noAlbum = [
           { value: '__None', text: 'No album' }
@@ -189,7 +189,7 @@ export default {
   methods: {
     async fetchTrack () {
       console.log('fetching track...')
-      await this.$store.state.api.backendInteractor.trackFetch({ user: this.userName, trackId: this.trackId })
+      await this.$store.state.api.backendInteractor.trackFetch({ userId: this.userName, trackId: this.trackId })
         .then((track) => {
           this.track.title = track.title
           this.track.description = unescape(track.description)
