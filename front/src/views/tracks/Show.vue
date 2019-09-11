@@ -69,9 +69,7 @@
                   </translate>
                 </b-button>
                 <b-modal id="modal-delete" :title="labels.deleteModalTitle" @ok="deleteTrack">
-                  <p v-translate class="my-4" translate-context="Content/TrackShow/Modal/Delete/Content"
-                     translate-params="{title: track.title}"
-                  >
+                  <p v-translate="{title: track.title}" class="my-4" translate-context="Content/TrackShow/Modal/Delete/Content">
                     Are you sure you want to delete '%{ title }' ?
                   </p>
                 </b-modal>
