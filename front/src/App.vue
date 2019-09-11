@@ -17,18 +17,18 @@
           <div>
             <span v-if="currentUser">
 
-              <b-dropdown id="userDropdown" :text="labels.create"
+              <b-dropdown id="userDropdown" :button-content="labels.create"
                           right
                           variant="primary"
               >
                 <b-dropdown-item>
                   <router-link :to="{ name: 'tracks-upload' }"
-                               :text="labels.createTrack"
+                               :button-content="labels.createTrack"
                   ><translate translate-context="Header/*/DropDown/Create/NewTrack text">New Track</translate></router-link>
                 </b-dropdown-item>
                 <b-dropdown-item>
                   <router-link :to="{ name: 'albums-new' }"
-                               :text="labels.createAlbum"
+                               :button-content="labels.createAlbum"
                   ><translate translate-context="Header/*/DropDown/Create/NewAlbum text">New Album</translate></router-link>
                 </b-dropdown-item>
               </b-dropdown>
@@ -39,7 +39,7 @@
                      :title="labels.myAvatarTitle"
                 >
               </router-link>
-              <b-dropdown id="userDropdown" :text="atUsername"
+              <b-dropdown id="userDropdown" :button-content="atUsername"
                           right
                           variant="link"
                           toggle-class="px-0 text-decoration-none"
