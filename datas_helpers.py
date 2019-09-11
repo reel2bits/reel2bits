@@ -107,6 +107,7 @@ def to_json_track(track, account):
             "private": track.private,
             "uploaded_elapsed": track.elapsed(),
             "album_id": (track.album.id if track.album else None),
+            "album_order": (track.album_order if track.album else None),
             "processing": {
                 "basic": (si.done_basic if si else None),
                 "transcode_state": track.transcode_state,

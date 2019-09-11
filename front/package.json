@@ -39,6 +39,7 @@
     "vue-i18n": "^8.14.0",
     "vue-router": "^3.1.3",
     "vue-string-filter": "^1.3.0",
+    "vuedraggable": "^2.23.0",
     "vuelidate": "^0.7.4",
     "vuex": "^3.0.1",
     "wavesurfer.js": "^3.0.0"
@@ -62,6 +63,7 @@
     "babel-preset-stage-2": "^6.0.0",
     "babel-register": "^6.0.0",
     "chai": "^4.2.0",
+    "easygettext": "^2.6.3",
     "eslint": "^5.16.0",
     "eslint-friendly-formatter": "^4.0.1",
     "eslint-loader": "^3.0.0",
@@ -87,8 +89,7 @@
     "sinon-chai": "^3.3.0",
     "vue-loader": "^14.0.0",
     "vue-template-compiler": "^2.6.10",
-    "webpack-hot-middleware": "^2.25.0",
-    "easygettext": "^2.6.3"
+    "webpack-hot-middleware": "^2.25.0"
   },
   "eslintConfig": {
     "root": true,

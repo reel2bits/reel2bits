@@ -146,6 +146,7 @@ export const parseStatus = (data) => {
   output.uploaded_on = data.created_at
   output.uploaded_elapsed = data.uploaded_elapsed
   output.album_id = data.reel2bits.album_id
+  output.album_order = data.reel2bits.album_order
   output.favorited = data.favorited
   output.reblogged = data.reblogged
   output.comments = 0 // FIXME TODO
