@@ -174,7 +174,7 @@ export const parseStatus = (data) => {
   }
   if (output.type === 'album') {
     output.tracks_count = data.reel2bits.tracks_count
-    output.tracks = data.reel2bits.tracks.map(parseUser)
+    output.tracks = data.reel2bits.tracks.map(parseStatus)
   }
   return output
 }
