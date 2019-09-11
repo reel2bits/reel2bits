@@ -15,73 +15,84 @@
         {{ deleteError }}
       </b-alert>
 
-      <div class="row">
-        <div class="col-sm-9">
-          <h4>{{ album.title }}</h4>
-        </div>
-        <div class="col-sm-3 btn-group" role="group" aria-label="Albums actions">
-          <div v-if="isOwner">
-            <b-button variant="link" class="text-decoration-none"
-                      @click.prevent="editAlbum"
+      <h4>{{ album.title }}</h4>
+
+      <div class="d-flex my-4">
+        <img :src="album.picture_url" class="d-flex mr-3"
+             style="width:112px; height:112px;"
+        >
+        <div class="flex-fill">
+          <div v-if="currentTrack" class="d-flex">
+            <h1 class="flex-fill h5" :title="currentTrack.title">
+              <b-link :to="{ name: 'tracks-show', params: { username: album.account.screen_name, trackId: currentTrack.slug } }">
+                {{ currentTrack.title | truncate(45) }}
+              </b-link>
+            </h1>
+            <div class="d-flex" :title="currentTrack.uploaded_on">
+              {{ publishedAgo }}
+            </div>
+          </div>
+
+          <div v-if="currentTrack" class="d-flex my-2">
+            <b-button v-if="!isPlaying" class="playPause" variant="primary"
+                      @click.prevent="togglePlay"
             >
-              <i class="fa fa-pencil" aria-hidden="true" /> Edit
+              <i class="fa fa-play" aria-hidden="true" />
             </b-button>
-            <b-button v-b-modal.modal-delete variant="link"
-                      class="text-decoration-none"
-            >
-              <i class="fa fa-times" aria-hidden="true" /> Delete
+            <b-button v-if="isPlaying" class="playPause" @click.prevent="togglePlay">
+              <i class="fa fa-pause" aria-hidden="true" />
             </b-button>
-            <b-modal id="modal-delete" title="Deleting album" @ok="deleteAlbum">
-              <p class="my-4">
-                Are you sure you want to delete '{{ album.title }}' ?
-              </p>
-            </b-modal>
+            <div id="waveform" class="flex-fill" />
+          </div>
+
+          <div class="pt-0 d-flex">
+            <div class="btn-group" role="group" :aria-label="labels.ariaAlbumActions">
+              <div v-if="isOwner">
+                <b-button variant="link" class="text-decoration-none"
+                          @click.prevent="editAlbum"
+                >
+                  <i class="fa fa-pencil" aria-hidden="true" /> <translate translate-context="Content/AlbumShow/Button">
+                    Edit
+                  </translate>
+                </b-button>
+                <b-button v-b-modal.modal-delete variant="link"
+                          class="text-decoration-none"
+                >
+                  <i class="fa fa-times" aria-hidden="true" /> <translate translate-context="Content/AlbumShow/Button">
+                    Delete
+                  </translate>
+                </b-button>
+                <b-modal id="modal-delete" :title="labels.deleteModalTitle" @ok="deleteAlbum">
+                  <p v-translate="{title: album.title}" class="my-4" translate-context="Content/AlbumShow/Modal/Delete/Content">
+                    Are you sure you want to delete '%{ title }' ?
+                  </p>
+                </b-modal>
+              </div>
+            </div>
+            <div class="ml-auto align-self-end">
+              <span class="text-secondary">{{ playerTimeCur }}</span> <span class="text-muted">{{ playerTimeTot }}</span>
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="flex-fill">
-        <div v-if="currentTrack" class="d-flex">
-          <h1 class="flex-fill h5" :title="currentTrack.title">
-            <b-link :to="{ name: 'tracks-show', params: { username: album.account.screen_name, trackId: currentTrack.slug } }">
-              {{ currentTrack.title | truncate(45) }}
-            </b-link>
-          </h1>
-          <div class="d-flex" :title="currentTrack.uploaded_on">
-            {{ publishedAgo }}
-          </div>
-        </div>
-
-        <div v-if="currentTrack" class="d-flex my-2">
-          <b-button v-if="!isPlaying" class="playPause" variant="primary"
-                    @click.prevent="togglePlay"
-          >
-            <i class="fa fa-play" aria-hidden="true" />
-          </b-button>
-          <b-button v-if="isPlaying" class="playPause" @click.prevent="togglePlay">
-            <i class="fa fa-pause" aria-hidden="true" />
-          </b-button>
-          <div id="waveform" class="flex-fill" />
-        </div>
-
-        <div>
-          <draggable tag="ul" :list="tracksList" class="list-group"
-                     handle=".handle"
-          >
-            <li v-for="element in tracksList" :key="element.title" class="list-group-item tracks-list">
-              <span class="actions">
-                <i class="fa fa-align-justify handle" />
-                <i v-if="currentTrack.id == element.id" class="fa fa-play" />
-              </span>
-              <span class="text" @click.prevent="loadWavesurferById(element.id, true)">
-                {{ element.title }}
-              </span>
-              <span class="pull-right">
-                {{ element.length.toFixed(2) }}
-              </span>
-            </li>
-          </draggable>
-        </div>
+      <div>
+        <draggable tag="ul" :list="tracksList" class="list-group"
+                   handle=".handle"
+        >
+          <li v-for="element in tracksList" :key="element.title" class="list-group-item tracks-list">
+            <span class="actions">
+              <i class="fa fa-align-justify handle" />
+              <i v-if="currentTrack.id == element.id" class="fa fa-play" />
+            </span>
+            <span class="text" @click.prevent="loadWavesurferById(element.id, true)">
+              {{ element.title }}
+            </span>
+            <span class="pull-right">
+              {{ element.length.toFixed(2) }}
+            </span>
+          </li>
+        </draggable>
       </div>
     </div>
 
@@ -150,6 +161,12 @@ export default {
     isPlaying () {
       if (!this.wavesurfer) return false
       return this.wavesurfer.isPlaying()
+    },
+    labels () {
+      return {
+        ariaAlbumActions: this.$pgettext('Content/TrackAlbum/Aria/Album actions', 'Album actions'),
+        deleteModalTitle: this.$pgettext('Content/TrackAlbum/Modal/Delete/Title', 'Deleting album')
+      }
     }
   },
   created () {
@@ -267,6 +284,10 @@ export default {
       } else {
         this.wavesurfer.load(track.media_transcoded)
       }
+
+      // Workaround because of wavesurfer issue which can't fire event or do anything unless
+      // you hit play, when using pre-processed waveform...
+      this.playerTimeTot = moment.utc(this.currentTrack.metadatas.duration * 1000).format('mm:ss')
 
       // If autoplay, play
       if (autoplay) {
