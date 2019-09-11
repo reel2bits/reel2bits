@@ -78,11 +78,12 @@
 
       <div>
         <draggable tag="ul" :list="tracksList" class="list-group"
-                   handle=".handle" @update="tracksListReordered"
+                   handle=".handle" :disabled="!isOwner"
+                   @update="tracksListReordered"
         >
           <li v-for="element in tracksList" :key="element.title" class="list-group-item tracks-list">
             <span class="actions">
-              <i class="fa fa-align-justify handle" />
+              <i v-if="isOwner" class="fa fa-align-justify handle" />
               <i v-if="currentTrack.id == element.id" class="fa fa-play" />
             </span>
             <span class="text" @click.prevent="loadWavesurferById(element.id, true)">
@@ -304,6 +305,7 @@ export default {
       } // else oops
     },
     tracksListReordered: function (event) {
+      if (!this.isOwner) { return false }
       console.log('tracks list have been reordered', this.tracksList)
       this.$store.state.api.backendInteractor.albumReorder({ userId: this.userId || this.userName, albumId: this.albumId, tracksOrder: this.tracksList })
       // Todo, can we cancel the reorder if fail ?
