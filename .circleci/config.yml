@@ -131,6 +131,11 @@ aliases:
       steps:
         - *attach_workspace
         - run:
+            name: Install rsync
+            command: |
+              sudo apt-get update
+              sudo apt-get install -y rsync
+        - run:
             name: Front build
             command: |
               cd front
@@ -139,14 +144,12 @@ aliases:
             name: Create archive of build
             command: |
               cd front
-              zip -r front-dist.zip dist/
-        - store_artifacts:
-            path: ./front/front-dist.zip
-            destination: front-build
+              zip -r "front-dist-${CIRCLE_BRANCH}-${CIRCLE_TAG}.zip" dist/
         - persist_to_workspace:
             root: ~/projects/
             paths:
               - ./reel2bits/front/dist
+              - ./reel2bits/front/front-dist-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_TAG }}.zip
 
   - &sync_front
       steps:
@@ -154,19 +157,24 @@ aliases:
         - add_ssh_keys:
             fingerprints:
               - "8b:e8:75:22:8a:21:35:5a:50:1c:da:75:2f:11:6c:2b"
+              - "66:7c:0f:97:42:b2:eb:fe:53:3c:0a:db:a5:5c:7a:27"
         - run:
             name: Install rsync
             command: |
               sudo apt-get update
               sudo apt-get install -y rsync
         - deploy:
-            name: deploy
+            name: deploy front
             command: |
               if [ "${CIRCLE_BRANCH}" = "frontv2" ]; then
                 rsync -avc -e "ssh -o StrictHostKeyChecking=no -p 23" --delete front/dist/ r2bdev@videaudio.cadance.licorn.eu:/
               else
                 echo "Not frontv2, no deployment"
               fi
+        - deploy:
+            name: sync artifacts
+            command: |
+              rsync -avc -e "ssh -o StrictHostKeyChecking=no -p 22" front/front-dist-${CIRCLE_BRANCH}-${CIRCLE_TAG}.zip assets.reel2bits.org@cadance.licorn.eu:/
 
   - &build_and_sync_doc
       steps:
