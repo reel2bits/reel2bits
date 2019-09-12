@@ -169,6 +169,38 @@ You can then create your first user account:
 
     If you don't create an user, the first one to register from the web interface will be administrator !
 
+.. front-installation:
+
+Front installation
+------------------
+
+You also needs to either get a frontend prebuild or build it yourself.
+
+Pre-build
+^^^^^^^^^
+
+Unfortunately for now this part isn't possible to be described without a lengthy how to because CircleCI doesn't allows to retrieve the artifacts of a specific job.
+
+The API or URLs only use the IDs which are not known unless the job is done...
+
+.. important::
+
+    Any update to the frontend files needs either a restart of the `reel2bits-web` service, or wait until the file cache expires.
+
+Build it yourself
+^^^^^^^^^^^^^^^^^
+
+Makes sure you have nodejs installed then:
+
+.. code-block:: shell
+
+    sudo -u reel2bits -H bash
+    cd reel2bits/front
+    yarn
+    npm run build
+
+That's it.
+
 Systemd unit file
 ------------------
 
