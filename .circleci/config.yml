@@ -169,8 +169,16 @@ aliases:
             name: zip and sync artifacts
             command: |
               cd front
-              zip -r "front-dist-${CIRCLE_BRANCH}-${CIRCLE_TAG}.zip" dist/
-              rsync -avc -e "ssh -o StrictHostKeyChecking=no -p 22" front-dist-${CIRCLE_BRANCH}-${CIRCLE_TAG}.zip assets.reel2bits.org@cadance.licorn.eu:/
+              if [ "${CIRCLE_BRANCH}" = "frontv2" ]; then
+                export NAME="front-dist-${CIRCLE_BRANCH}"
+                zip -r "${NAME}.zip" dist/
+                rsync -avc -e "ssh -o StrictHostKeyChecking=no -p 22" ${NAME}.zip assets.reel2bits.org@cadance.licorn.eu:/
+              fi
+              if [ ! -z "${CIRCLE_TAG}" ]; then
+                export NAME="front-dist-${CIRCLE_TAG}"
+                zip -r "${NAME}.zip" dist/
+                rsync -avc -e "ssh -o StrictHostKeyChecking=no -p 22" ${NAME}.zip assets.reel2bits.org@cadance.licorn.eu:/
+              fi
 
   - &build_and_sync_doc
       steps:
