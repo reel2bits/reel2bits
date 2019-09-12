@@ -135,8 +135,12 @@ aliases:
             command: |
               cd front
               npm run build
+        - run:
+            name: Create archive of build
+            command: |
+              zip -r front-dist.zip dist/
         - store_artifacts:
-            path: ./front/dist
+            path: ./front/front-dist.zip
             destination: front-build
         - persist_to_workspace:
             root: ~/projects/
