@@ -1,5 +1,5 @@
 <template>
-  <div v-if="timelineError" class="row justify-content-md-center">
+  <div v-if="timelineError" class="row justify-content-md-center timeline">
     <div class="col-md-8">
       <b-alert v-if="timelineError" variant="danger" show>
         {{ timelineError }}
