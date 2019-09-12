@@ -77,8 +77,10 @@
       </div>
 
       <div>
-        <draggable tag="ul" :list="tracksList" class="list-group"
+        <draggable ref="draggable" tag="ul" :list="tracksList"
+                   class="list-group"
                    handle=".handle" :disabled="!isOwner"
+                   @start="trackListReorderStart"
                    @update="tracksListReordered"
         >
           <li v-for="element in tracksList" :key="element.title" class="list-group-item tracks-list">
@@ -142,6 +144,7 @@ export default {
     userId: null,
     wavesurfer: null,
     tracksList: [],
+    currentOrder: [],
     currentTrack: null,
     playerTimeCur: '00:00',
     playerTimeTot: '00:00'
@@ -174,7 +177,14 @@ export default {
     const user = this.$store.getters.findUser(this.userName)
     if (user) {
       this.userId = user.id
-    } // else, oops
+    } else {
+      this.$bvToast.toast(this.$pgettext('Content/TrackAlbum/Toast/Error/Message', 'Not found'), {
+        title: this.$pgettext('Content/TrackAlbum/Toast/Error/Title', 'User'),
+        autoHideDelay: 5000,
+        appendToast: false,
+        variant: 'danger'
+      })
+    }
     this.fetchAlbum()
       .then((album) => {
         // Get the first track and set initial tracks list
@@ -302,12 +312,31 @@ export default {
       let track = this.album.tracks.find(t => t.id === trackId)
       if (track) {
         this.loadWavesurfer(track, autoplay)
-      } // else oops
+      } else {
+        this.$bvToast.toast(null, {
+          title: this.$pgettext('Content/TrackAlbum/Toast/Error/Title', 'Cannot find track.'),
+          autoHideDelay: 5000,
+          appendToast: false,
+          variant: 'danger'
+        })
+      }
     },
-    tracksListReordered: function (event) {
+    trackListReorderStart () {
+      this.currentOrder = this.$refs.draggable._sortable.toArray()
+    },
+    tracksListReordered: function (event, originalEvent) {
       if (!this.isOwner) { return false }
       console.log('tracks list have been reordered', this.tracksList)
       this.$store.state.api.backendInteractor.albumReorder({ userId: this.userId || this.userName, albumId: this.albumId, tracksOrder: this.tracksList })
+        .catch((evt) => {
+          this.$bvToast.toast(this.$pgettext('Content/TrackAlbum/Toast/Error/Message', 'Failed'), {
+            title: this.$pgettext('Content/TrackAlbum/Toast/Error/Title', 'Track reordering'),
+            autoHideDelay: 5000,
+            appendToast: false,
+            variant: 'danger'
+          })
+          this.$refs.draggable._sortable.sort(this.currentOrder)
+        })
       // Todo, can we cancel the reorder if fail ?
     }
   }
