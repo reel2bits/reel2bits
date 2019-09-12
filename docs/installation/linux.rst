@@ -60,7 +60,7 @@ Locate the latest release `from the release page <https://github.com/rhaamo/reel
 Still under your ``reel2bits`` user:
 
 .. code-block:: shell
-    
+
     # if release:
     git checkout -b v0.5 https://github.com/rhaamo/reel2bits/
     # Or master
@@ -179,9 +179,25 @@ You also needs to either get a frontend prebuild or build it yourself.
 Pre-build
 ^^^^^^^^^
 
-Unfortunately for now this part isn't possible to be described without a lengthy how to because CircleCI doesn't allows to retrieve the artifacts of a specific job.
+- The URL for a stable release will be `https://assets.reel2bits.org/front-dist-master-v0.5.zip`.
+- The URL for master will be `https://assets.reel2bits.org/front-dist-master-.zip`.
 
-The API or URLs only use the IDs which are not known unless the job is done...
+You can always go to https://assets.reel2bits.org/ to check the available archives, and test the link before downloading it.
+
+Get the archive and extract:
+
+.. code-block:: shell
+
+    sudo -u reel2bits -H bash
+    cd
+    wget <the URL defined earlier>
+    # use the stable or master name you got earlier too
+    unzip "front-dist-master-v0.5.zip" -d extract
+    # beware with this command, take care
+    rm -rf "reel2bits/front/dist/*"
+    cp -r extract/dist/* reel2bits/front/dist/
+    # same with this one
+    rm -rf "extract"
 
 .. important::
 
