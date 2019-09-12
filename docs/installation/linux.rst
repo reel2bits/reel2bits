@@ -169,7 +169,7 @@ You can then create your first user account:
 
     If you don't create an user, the first one to register from the web interface will be administrator !
 
-.. front-installation:
+.. _front-installation:
 
 Front installation
 ------------------
