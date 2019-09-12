@@ -55,6 +55,8 @@ Then apply databases migrations:
     source /home/reel2bits/virtualenv/bin/activate
     flask db upgrade
 
+You have to update the front-end too, see :ref:`front-installation <front-installation>`.
+
 Exit and restart services:
 
 .. parsed-literal::
