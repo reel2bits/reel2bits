@@ -135,6 +135,9 @@ aliases:
             command: |
               cd front
               npm run build
+        - store_artifacts:
+            path: ./reel2bits/front/dist
+            destination: front-build
         - persist_to_workspace:
             root: ~/projects/
             paths:
