@@ -54,6 +54,10 @@ $input-btn-padding-y-sm: .11rem;
 $input-border-color: $shade-50;
 $card-border-color:  $shade-25;
 
+// Toasts
+// Default is 0.85 (from 0 to 1 which is 0 to 100%)
+$b-toast-background-opacity: alpha(rgba(#fff, .95));
+
 //Customizing grid
 
 $grid-breakpoints: (
