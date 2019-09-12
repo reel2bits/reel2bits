@@ -138,6 +138,7 @@ aliases:
         - run:
             name: Create archive of build
             command: |
+              cd front
               zip -r front-dist.zip dist/
         - store_artifacts:
             path: ./front/front-dist.zip
