@@ -140,16 +140,10 @@ aliases:
             command: |
               cd front
               npm run build
-        - run:
-            name: Create archive of build
-            command: |
-              cd front
-              zip -r "front-dist-${CIRCLE_BRANCH}-${CIRCLE_TAG}.zip" dist/
         - persist_to_workspace:
             root: ~/projects/
             paths:
               - ./reel2bits/front/dist
-              - ./reel2bits/front/front-dist-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_TAG }}.zip
 
   - &sync_front
       steps:
@@ -172,9 +166,11 @@ aliases:
                 echo "Not frontv2, no deployment"
               fi
         - deploy:
-            name: sync artifacts
+            name: zip and sync artifacts
             command: |
-              rsync -avc -e "ssh -o StrictHostKeyChecking=no -p 22" front/front-dist-${CIRCLE_BRANCH}-${CIRCLE_TAG}.zip assets.reel2bits.org@cadance.licorn.eu:/
+              cd front
+              zip -r "front-dist-${CIRCLE_BRANCH}-${CIRCLE_TAG}.zip" dist/
+              rsync -avc -e "ssh -o StrictHostKeyChecking=no -p 22" front-dist-${CIRCLE_BRANCH}-${CIRCLE_TAG}.zip assets.reel2bits.org@cadance.licorn.eu:/
 
   - &build_and_sync_doc
       steps:
