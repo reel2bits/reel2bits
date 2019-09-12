@@ -67,6 +67,13 @@
 
     <!-- content -->
     <div class="container">
+      <b-alert v-if="severeBackendError" variant="danger" show>
+        <i class="fa fa-warning" />
+        <translate translate-context="*/*/Content/Alert">
+          The backend cannot be reached properly, some functions might not work.
+        </translate>
+      </b-alert>
+
       <transition name="fade">
         <router-view :key="$route.fullPath" @updateLogoSpinDuration="updateLogoSpinDuration" />
       </transition>
@@ -110,6 +117,12 @@ export default {
         createAlbum: this.$pgettext('Header/*/DropDown/Create/NewAlbum title', 'new album'),
         myAvatarTitle: this.$pgettext('Header/*/Image/Avatar title', 'go to my profile')
       }
+    },
+    severeBackendError () {
+      if (!this.$store.state.instance.backendVersion) {
+        return true
+      }
+      return false
     }
   },
   watch: {
