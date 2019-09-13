@@ -83,7 +83,7 @@
                    @start="trackListReorderStart"
                    @update="tracksListReordered"
         >
-          <li v-for="element in tracksList" :key="element.title" class="list-group-item tracks-list">
+          <li v-for="element in tracksList" :key="element.id" class="list-group-item tracks-list">
             <span class="actions">
               <i v-if="isOwner" class="fa fa-align-justify handle" />
               <i v-if="currentTrack.id == element.id" class="fa fa-play" />

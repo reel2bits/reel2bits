@@ -48,7 +48,7 @@
                    class="list-group album-tracks-list"
                    handle=".handle" disabled="true"
         >
-          <li v-for="element in tracksList" :key="element.title" class="list-group-item tracks-list">
+          <li v-for="element in tracksList" :key="element.id" class="list-group-item tracks-list">
             <span class="actions">
               <i v-if="currentTrack.id == element.id" class="fa fa-play" />
             </span>

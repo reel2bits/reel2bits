@@ -6,29 +6,39 @@
     <div v-if="user">
       <div class="row">
         <div class="col-md-8">
-          <b-tabs v-model="tabIndex" content="mt-3">
-            <b-tab :title="labels.tracksTab">
-              <Timeline
-                key="{{ userId }}user"
-                timeline-name="user"
-                :user-id="userId"
-              />
-            </b-tab>
-            <b-tab :title="labels.albumsTab">
-              <Timeline
-                key="{{ userId }}albums"
-                timeline-name="albums"
-                :user-id="userId"
-              />
-            </b-tab>
-            <b-tab v-if="isUs" :title="labels.draftsTab">
-              <Timeline
-                key="{{ userId }}drafts"
-                timeline-name="drafts"
-                :user-id="userId"
-              />
-            </b-tab>
-          </b-tabs>
+          <b-nav tabs>
+            <b-nav-item :active="isTimelineTracks" :to="{ name: 'user-profile-tracks' }">
+              <translate translate-context="Content/UserProfile/Tab/Text">
+                Tracks
+              </translate>
+            </b-nav-item>
+            <b-nav-item :active="isTimelineAlbums" :to="{ name: 'user-profile-albums' }">
+              <translate translate-context="Content/UserProfile/Tab/Text">
+                Albums
+              </translate>
+            </b-nav-item>
+            <b-nav-item v-if="isUs" :active="isTimelineDrafts" :to="{ name: 'user-profile-drafts' }">
+              <translate translate-context="Content/UserProfile/Tab/Text">
+                Drafts
+              </translate>
+            </b-nav-item>
+          </b-nav>
+
+          <Timeline v-if="isTimelineTracks"
+                    key="{{ userId }}user"
+                    timeline-name="user"
+                    :user-id="userId"
+          />
+          <Timeline v-else-if="isTimelineAlbums"
+                    key="{{ userId }}albums"
+                    timeline-name="albums"
+                    :user-id="userId"
+          />
+          <Timeline v-else-if="isTimelineDrafts"
+                    key="{{ userId }}drafts"
+                    timeline-name="drafts"
+                    :user-id="userId"
+          />
         </div>
         <div class="col-md-4">
           <UserCard :user="user" />
@@ -54,9 +64,7 @@ export default {
   data () {
     return {
       error: false,
-      userId: null,
-      tabIndex: 0,
-      tabs: ['user-profile-tracks', 'user-profile-albums']
+      userId: null
     }
   },
   computed: {
@@ -70,12 +78,14 @@ export default {
       return this.userId && this.$store.state.users.currentUser.id &&
         this.userId === this.$store.state.users.currentUser.id
     },
-    labels () {
-      return {
-        tracksTab: this.$pgettext('Content/UserProfile/Tab', 'Tracks'),
-        albumsTab: this.$pgettext('Content/UserProfile/Tab', 'Albums'),
-        draftsTab: this.$pgettext('Content/UserProfile/Tab', 'Drafts')
-      }
+    isTimelineTracks () {
+      return this.$route.name === 'user-profile-tracks'
+    },
+    isTimelineAlbums () {
+      return this.$route.name === 'user-profile-albums'
+    },
+    isTimelineDrafts () {
+      return this.$route.name === 'user-profile-drafts'
     }
   },
   watch: {
@@ -95,10 +105,6 @@ export default {
   created () {
     const routeParams = this.$route.params
     this.load(routeParams.name || routeParams.id)
-  },
-  mounted () {
-    console.log(this.$route.name)
-    this.tabIndex = this.tabs.findIndex(tab => tab === this.$route.name)
   },
   destroyed () {
     this.cleanUp()

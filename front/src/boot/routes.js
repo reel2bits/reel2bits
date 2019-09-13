@@ -55,6 +55,7 @@ export default (store) => {
     { name: 'user-profile', path: '/(users/)?:name', component: UserProfile },
     { name: 'user-profile-tracks', path: '/(users/)?:name/tracks', component: UserProfile },
     { name: 'user-profile-albums', path: '/(users/)?:name/albums', component: UserProfile },
+    { name: 'user-profile-drafts', path: '/(users/)?:name/drafts', component: UserProfile },
     { name: 'user-profile-followers', path: '/(users/)?:name/followers', component: UserFollowers },
     { name: 'user-profile-followings', path: '/(users/)?:name/followings', component: UserFollowings },
     { name: 'user-settings', path: '/account/settings', component: UserSettings, beforeEnter: validateAuthenticatedRoute },
