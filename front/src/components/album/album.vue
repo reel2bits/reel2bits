@@ -1,7 +1,9 @@
 <template>
   <div class="row">
     <div class="col-md-12">
-      <h4>{{ album.title }}</h4>
+      <b-link :to="{ name: 'albums-show', params: { username: album.account.screen_name, albumId: album.slug } }">
+        <h4>{{ album.title }}</h4>
+      </b-link>
 
       <div class="d-flex my-4">
         <img :src="album.picture_url" class="d-flex mr-3"
