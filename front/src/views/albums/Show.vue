@@ -311,6 +311,7 @@ export default {
       // Find track
       let track = this.album.tracks.find(t => t.id === trackId)
       if (track) {
+        console.log(track)
         this.loadWavesurfer(track, autoplay)
       } else {
         this.$bvToast.toast(null, {
@@ -328,6 +329,14 @@ export default {
       if (!this.isOwner) { return false }
       console.log('tracks list have been reordered', this.tracksList)
       this.$store.state.api.backendInteractor.albumReorder({ userId: this.userId || this.userName, albumId: this.albumId, tracksOrder: this.tracksList })
+        .then(() => {
+          this.$bvToast.toast(this.$pgettext('Content/TrackAlbum/Toast/Error/Message', 'Success'), {
+            title: this.$pgettext('Content/TrackAlbum/Toast/Error/Title', 'Track reordering'),
+            autoHideDelay: 5000,
+            appendToast: false,
+            variant: 'success'
+          })
+        })
         .catch((evt) => {
           this.$bvToast.toast(this.$pgettext('Content/TrackAlbum/Toast/Error/Message', 'Failed'), {
             title: this.$pgettext('Content/TrackAlbum/Toast/Error/Title', 'Track reordering'),
@@ -337,7 +346,6 @@ export default {
           })
           this.$refs.draggable._sortable.sort(this.currentOrder)
         })
-      // Todo, can we cancel the reorder if fail ?
     }
   }
 }
