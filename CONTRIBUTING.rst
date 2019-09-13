@@ -12,6 +12,24 @@ This document will guide you through common operations such as:
 - Writing unit tests to validate your work
 - Submit your work
 
+Quick summary of the various stacks / libraries we use
+------------------------------------------------------
+
+Backend:
+
+- Flask
+- SQLAlchemy
+- Gettext
+- Celery
+- ActivityPub (through little-boxes library)
+- PostgreSQL
+
+Frontend
+
+- VueJS
+- Bootstrap-vue
+- Gettext
+
 A quick path to contribute on the front-end
 -------------------------------------------
 
