@@ -143,6 +143,12 @@ export default {
         .catch((e) => {
           console.log('cannot fetch album:' + e.message)
           this.albumError = e
+          this.$bvToast.toast(this.$pgettext('Content/AlbumsEdit/Toast/Error/Message', 'Cannot fetch album'), {
+            title: this.$pgettext('Content/AlbumsEdit/Toast/Error/Title', 'Album'),
+            autoHideDelay: 5000,
+            appendToast: false,
+            variant: 'danger'
+          })
         })
     },
     async edit () {
@@ -158,6 +164,12 @@ export default {
             })
         } catch (error) {
           console.warn('Edit failed: ' + error)
+          this.$bvToast.toast(this.$pgettext('Content/AlbumsEdit/Toast/Error/Message', 'Edit failed'), {
+            title: this.$pgettext('Content/AlbumsEdit/Toast/Error/Title', 'Album'),
+            autoHideDelay: 10000,
+            appendToast: false,
+            variant: 'danger'
+          })
         }
       } else {
         console.log('form is invalid', this.$v.$invalid)

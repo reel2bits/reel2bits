@@ -97,6 +97,12 @@ const Timeline = {
           console.log('cannot fetch timeline: ' + e.message)
           this.timelineError = e
           this.timelineLoaded = false
+          this.$bvToast.toast(this.$pgettext('Content/Timeline/Toast/Error/Message', 'Cannot load timeline'), {
+            title: this.$pgettext('Content/Timeline/Toast/Error/Title', 'Timeline'),
+            autoHideDelay: 5000,
+            appendToast: false,
+            variant: 'danger'
+          })
         })
     }
   }

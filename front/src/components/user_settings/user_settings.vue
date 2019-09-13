@@ -193,10 +193,22 @@ export default {
             this.$store.commit('setCurrentUser', user)
             this.saveOk = true
             this.$store.dispatch('setOption', { name: 'interfaceLanguage', value: this.user.lang })
+            this.$bvToast.toast(this.$pgettext('Content/UserSettings/Toast/Error/Message', 'Saved !'), {
+              title: this.$pgettext('Content/UserSettings/Toast/Error/Title', 'Settings'),
+              autoHideDelay: 5000,
+              appendToast: false,
+              variant: 'success'
+            })
           })
           .catch((e) => {
             console.log('Cannot save settings: ' + e)
             this.saveError = true
+            this.$bvToast.toast(this.$pgettext('Content/UserSettings/Toast/Error/Message', 'Error saving settings'), {
+              title: this.$pgettext('Content/UserSettings/Toast/Error/Title', 'Settings'),
+              autoHideDelay: 5000,
+              appendToast: false,
+              variant: 'danger'
+            })
           })
       }
     },
@@ -209,12 +221,24 @@ export default {
       this.$store.state.api.backendInteractor.changePassword(params)
         .then((res) => {
           if (res.status === 'success') {
+            this.$bvToast.toast(this.$pgettext('Content/UserSettings/Toast/Error/Message', 'Password changed !'), {
+              title: this.$pgettext('Content/UserSettings/Toast/Error/Title', 'Password'),
+              autoHideDelay: 5000,
+              appendToast: false,
+              variant: 'success'
+            })
             this.changedPassword = true
             this.changePasswordError = false
             this.logout()
           } else {
             this.changedPassword = false
             this.changePasswordError = res.error
+            this.$bvToast.toast(this.$pgettext('Content/UserSettings/Toast/Error/Message', 'Error changing password'), {
+              title: this.$pgettext('Content/UserSettings/Toast/Error/Title', 'Password'),
+              autoHideDelay: 5000,
+              appendToast: false,
+              variant: 'danger'
+            })
           }
         })
     },

@@ -77,6 +77,12 @@ export default {
         this.totalItems = data.totalItems
       } catch (e) {
         this.errors = e.message
+        this.$bvToast.toast(this.$pgettext('Content/Logs(user)/Toast/Error/Message', 'Error fetching user logs'), {
+          title: this.$pgettext('Content/Logs(user)/Toast/Error/Title', 'Logs'),
+          autoHideDelay: 5000,
+          appendToast: false,
+          variant: 'danger'
+        })
       }
     }
   }

@@ -228,6 +228,12 @@ export default {
           this.$router.push({ name: 'profile' })
         } catch (error) {
           console.warn('Registration failed: ' + error)
+          this.$bvToast.toast(this.$pgettext('Content/Register/Toast/Error/Message', 'An error occured'), {
+            title: this.$pgettext('Content/Register/Toast/Error/Title', 'Registration'),
+            autoHideDelay: 10000,
+            appendToast: false,
+            variant: 'danger'
+          })
         }
       }
     }

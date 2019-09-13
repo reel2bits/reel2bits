@@ -84,6 +84,12 @@ const passwordReset = {
             this.error = null
           } else if (status === 404 || status === 400) {
             this.error = this.$pgettext('Content/PasswordReset/Error', 'Cannot generate reset link')
+            this.$bvToast.toast(this.$pgettext('Content/PasswordReset/Toast/Error/Message', 'Cannot generate reset link'), {
+              title: this.$pgettext('Content/PasswordReset/Toast/Error/Title', 'Password Reset'),
+              autoHideDelay: 5000,
+              appendToast: false,
+              variant: 'danger'
+            })
             this.$nextTick(() => {
               this.$refs.email.focus()
             })
@@ -93,6 +99,12 @@ const passwordReset = {
           this.isPending = false
           this.user.email = ''
           this.error = this.$pgettext('Content/PasswordReset/Error', 'Cannot generate reset link')
+          this.$bvToast.toast(this.$pgettext('Content/PasswordReset/Toast/Error/Message', 'Cannot generate reset link'), {
+            title: this.$pgettext('Content/PasswordReset/Toast/Error/Title', 'Password Reset'),
+            autoHideDelay: 5000,
+            appendToast: false,
+            variant: 'danger'
+          })
         })
     }
   }

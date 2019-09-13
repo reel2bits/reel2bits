@@ -112,6 +112,12 @@ const passwordResetToken = {
             this.error = null
           } else if (status === 404 || status === 400 || status === 500) {
             this.error = this.$pgettext('Content/PasswordResetToken/Errors/Cannot reset', 'Cannot reset password')
+            this.$bvToast.toast(this.$pgettext('Content/PasswordResetToken/Toast/Error/Message', 'Cannot reset password'), {
+              title: this.$pgettext('Content/PasswordResetToken/Toast/Error/Title', 'Password Reset'),
+              autoHideDelay: 5000,
+              appendToast: false,
+              variant: 'danger'
+            })
             this.$nextTick(() => {
               this.$refs.token.focus()
             })
@@ -123,6 +129,12 @@ const passwordResetToken = {
           this.user.password = ''
           this.user.passwordConfirm = ''
           this.error = this.$pgettext('Content/PasswordResetToken/Errors/Cannot reset', 'Cannot reset password')
+          this.$bvToast.toast(this.$pgettext('Content/PasswordResetToken/Toast/Error/Message', 'Cannot reset password'), {
+            title: this.$pgettext('Content/PasswordResetToken/Toast/Error/Title', 'Password Reset'),
+            autoHideDelay: 5000,
+            appendToast: false,
+            variant: 'danger'
+          })
         })
     }
   }

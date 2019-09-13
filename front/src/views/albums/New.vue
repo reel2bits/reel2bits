@@ -113,11 +113,17 @@ export default {
 
       if (!this.$v.$invalid) {
         try {
-          console.debug('album create: uploading')
+          console.debug('album create: saving')
           await this.albumNew(this.album)
           this.$router.push({ name: 'albums-show', params: { username: this.$store.state.users.currentUser.screen_name, albumId: this.$store.state.albums.albumSlug } })
         } catch (error) {
-          console.warn('Upload failed: ' + error)
+          console.warn('Save failed: ' + error)
+          this.$bvToast.toast(this.$pgettext('Content/AlbumsNew/Toast/Error/Message', 'Cannot save album'), {
+            title: this.$pgettext('Content/AlbumsNew/Toast/Error/Title', 'Album'),
+            autoHideDelay: 10000,
+            appendToast: false,
+            variant: 'danger'
+          })
         }
       } else {
         console.log('form is invalid', this.$v.$invalid)

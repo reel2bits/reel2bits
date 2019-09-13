@@ -195,6 +195,12 @@ export default {
         console.log('error fetching licenses: ' + e)
         this.fetchErrors += this.$pgettext('Content/TrackUpload/Error', 'Error fetching licenses')
         this.licenceChoices = []
+        this.$bvToast.toast(this.$pgettext('Content/TracksUpload/Toast/Error/Message', 'Cannot fetch known licenses'), {
+          title: this.$pgettext('Content/TracksUpload/Toast/Error/Title', 'Tracks'),
+          autoHideDelay: 10000,
+          appendToast: false,
+          variant: 'danger'
+        })
       })
     // Fetch user albums
     this.$store.state.api.backendInteractor.fetchUserAlbums({ userId: this.$store.state.users.currentUser.id, short: true })
@@ -209,6 +215,12 @@ export default {
         console.log('error fetching user albums: ' + e)
         this.fetchErrors += this.$pgettext('Content/TrackUpload/Error', 'Error fetching albums')
         this.albumChoices = []
+        this.$bvToast.toast(this.$pgettext('Content/TracksUpload/Toast/Error/Message', 'Cannot fetch user albums'), {
+          title: this.$pgettext('Content/TracksUpload/Toast/Error/Title', 'Tracks'),
+          autoHideDelay: 10000,
+          appendToast: false,
+          variant: 'danger'
+        })
       })
   },
   methods: {
@@ -223,6 +235,12 @@ export default {
           this.$router.push({ name: 'tracks-show', params: { username: this.$store.state.users.currentUser.screen_name, trackId: this.$store.state.tracks.uploadSlug } })
         } catch (error) {
           console.warn('Upload failed: ' + error)
+          this.$bvToast.toast(this.$pgettext('Content/TracksUpload/Toast/Error/Message', 'Upload failed'), {
+            title: this.$pgettext('Content/TracksUpload/Toast/Error/Title', 'Tracks'),
+            autoHideDelay: 10000,
+            appendToast: false,
+            variant: 'danger'
+          })
         }
       } else {
         console.log('form is invalid', this.$v.$invalid)

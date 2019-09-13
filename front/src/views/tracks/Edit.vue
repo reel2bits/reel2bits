@@ -169,6 +169,12 @@ export default {
         console.log('error fetching licenses: ' + e)
         this.fetchErrors += this.$pgettext('Content/TrackUpload/Error', 'Error fetching licenses')
         this.licenceChoices = []
+        this.$bvToast.toast(this.$pgettext('Content/TracksEdit/Toast/Error/Message', 'Cannot fetch known licenses'), {
+          title: this.$pgettext('Content/TracksEdit/Toast/Error/Title', 'Tracks'),
+          autoHideDelay: 10000,
+          appendToast: false,
+          variant: 'danger'
+        })
       })
     // Fetch user albums
     this.$store.state.api.backendInteractor.fetchUserAlbums({ userId: this.$store.state.users.currentUser.id, short: true })
@@ -183,6 +189,12 @@ export default {
         console.log('error fetching user albums: ' + e)
         this.fetchErrors += this.$pgettext('Content/TrackUpload/Error', 'Error fetching albums')
         this.albumChoices = []
+        this.$bvToast.toast(this.$pgettext('Content/TracksEdit/Toast/Error/Message', 'Cannot fetch user albums'), {
+          title: this.$pgettext('Content/TracksEdit/Toast/Error/Title', 'Tracks'),
+          autoHideDelay: 10000,
+          appendToast: false,
+          variant: 'danger'
+        })
       })
     this.fetchTrack()
   },
@@ -203,6 +215,12 @@ export default {
         .catch((e) => {
           console.log('cannot fetch track:' + e.message)
           this.trackError = e
+          this.$bvToast.toast(this.$pgettext('Content/TracksEdit/Toast/Error/Message', 'Cannot fetch track'), {
+            title: this.$pgettext('Content/TracksEdit/Toast/Error/Title', 'Tracks'),
+            autoHideDelay: 10000,
+            appendToast: false,
+            variant: 'danger'
+          })
         })
     },
     async edit () {
@@ -218,6 +236,12 @@ export default {
             })
         } catch (error) {
           console.warn('Edit failed: ' + error)
+          this.$bvToast.toast(this.$pgettext('Content/TracksEdit/Toast/Error/Message', 'Edit failed'), {
+            title: this.$pgettext('Content/TracksEdit/Toast/Error/Title', 'Tracks'),
+            autoHideDelay: 10000,
+            appendToast: false,
+            variant: 'danger'
+          })
         }
       } else {
         console.log('form is invalid', this.$v.$invalid)

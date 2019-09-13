@@ -87,6 +87,12 @@ export default {
             } else {
               let msg = this.$pgettext('Content/UserFollowers/Error', 'Error loading user: %{errorMsg}')
               this.error = this.$gettextInterpolate(msg, { errorMsg: errorMessage })
+              this.$bvToast.toast(this.$pgettext('Content/UserFollowers/Toast/Error/Message', 'Cannot fetch user'), {
+                title: this.$pgettext('Content/UserFollowers/Toast/Error/Title', 'Followers'),
+                autoHideDelay: 5000,
+                appendToast: false,
+                variant: 'danger'
+              })
             }
           })
       }
@@ -108,6 +114,12 @@ export default {
           this.error = this.$gettextInterpolate(msg, { errorMsg: e.message })
           this.usersError = e
           this.usersLoaded = false
+          this.$bvToast.toast(this.$pgettext('Content/UserFollowers/Toast/Error/Message', 'Cannot load followers list'), {
+            title: this.$pgettext('Content/UserFollowers/Toast/Error/Title', 'Followers'),
+            autoHideDelay: 5000,
+            appendToast: false,
+            variant: 'danger'
+          })
         })
     },
     onPageChanged (page) {

@@ -125,6 +125,12 @@ export default {
               let msg = this.$pgettext('Content/UserProfile/Error', 'Error loading user: %{errorMsg}')
               this.error = this.$gettextInterpolate(msg, { errorMsg: errorMessage })
             }
+            this.$bvToast.toast(this.$pgettext('Content/UserProfile/Toast/Error/Message', 'Cannot fetch user'), {
+              title: this.$pgettext('Content/UserProfile/Toast/Error/Title', 'User Profile'),
+              autoHideDelay: 5000,
+              appendToast: false,
+              variant: 'danger'
+            })
           })
       }
     },
