@@ -172,8 +172,7 @@ const users = {
         store.commit('setToken', data.access_token)
         store.dispatch('loginUser', data.access_token)
       } catch (e) {
-        let errors = e.message
-        store.commit('signUpFailure', errors)
+        store.commit('signUpFailure', e.errors)
         throw e
       }
     },
