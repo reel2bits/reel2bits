@@ -67,7 +67,7 @@ const passwordReset = {
   },
   created () {
     if (this.signedIn) {
-      this.$router.push({ name: 'root' })
+      this.$router.push({ name: 'home' })
     }
   },
   methods: {

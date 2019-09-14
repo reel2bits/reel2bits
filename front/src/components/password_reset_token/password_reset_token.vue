@@ -87,7 +87,7 @@ const passwordResetToken = {
   },
   created () {
     if (this.signedIn) {
-      this.$router.push({ name: 'root' })
+      this.$router.push({ name: 'home' })
     }
     this.user.token = (this.$route.params.token || '')
     this.$nextTick(() => {
