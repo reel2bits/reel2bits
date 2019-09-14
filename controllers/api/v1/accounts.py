@@ -62,7 +62,7 @@ def accounts():
         else:
             errors["bearer"] = ["API Bearer Authorization format issue"]
     else:
-        current_app.logging.info("/api/v1/accounts: no Authorization bearer given")
+        current_app.logger.info("/api/v1/accounts: no Authorization bearer given")
 
     if not request.json:
         abort(400)
