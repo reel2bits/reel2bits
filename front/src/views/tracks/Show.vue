@@ -111,27 +111,29 @@
       <!-- Tabs -->
       <div>
         <ul class="nav mt-5 pb-2">
+          <!-- disabled for now
           <li class="nav-item pr-3">
             <a class="nav-link" href="#">
-              <translate translate-context="Content/TrackShow/Track federation tab title" translate-params="{count: track.comments}">
+              <translate translate-context="Content/TrackShow/Track federation tab title" :translate-params="{count: track.comments}">
                 %{ count } Comments
               </translate>
             </a>
           </li>
           <li class="nav-item px-3 border-left">
             <a class="nav-link" href="#">
-              <translate translate-context="Content/TrackShow/Track federation tab title" translate-params="{count: track.favorited}">
+              <translate translate-context="Content/TrackShow/Track federation tab title" :translate-params="{count: track.favorited}">
                 %{ count } Likes
               </translate>
             </a>
           </li>
           <li class="nav-item px-3 border-left">
             <a class="nav-link" href="#">
-              <translate translate-context="Content/TrackShow/Track federation tab title" translate-params="{count: track.reblogged}">
+              <translate translate-context="Content/TrackShow/Track federation tab title" :translate-params="{count: track.reblogged}">
                 %{ count } Reposts
               </translate>
             </a>
           </li>
+          -->
           <li class="nav-item px-3 border-left">
             <a v-translate translate-context="Content/TrackShow/Track metadatas tab title" class="nav-link active"
                href="#"
