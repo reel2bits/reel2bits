@@ -169,8 +169,6 @@ def albums():
         200:
             description: Returns array of Status
     """
-    tok_user = current_token.user
-
     count = int(request.args.get("count", 20))
     page = int(request.args.get("page", 1))
     user = request.args.get("user", None)
@@ -184,14 +182,14 @@ def albums():
     q = Album.query.order_by(Album.created.desc())
 
     only_public = True
-    if tok_user:
-        if user.id == tok_user.id:
+    if current_token and current_token.user:
+        if user.id == current_token.user.id:
             only_public = False
 
     if only_public:
         q = q.filter(Album.user_id == user.id, Album.private.is_(False))
     else:
-        q = q.filter(Album.user_id == tok_user.id)
+        q = q.filter(Album.user_id == current_token.user.id)
 
     q = q.paginate(page=page, per_page=count)
 
