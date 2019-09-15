@@ -1,5 +1,5 @@
 import apiService from '../services/api/api.service.js'
-import { humanizeErrors } from './errors'
+import { humanizeErrors } from '../services/errors/errors'
 
 export const mutations = {
   createPending (state) {

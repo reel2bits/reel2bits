@@ -1,44 +1,33 @@
 <template>
-  <div>
-    <ul class="nav mt-5 pb-2">
-      <li class="nav-item pr-3">
-        <router-link :to="{ name: 'friends' }"
-                     text="Your feed"
-                     class="nav-link active"
-        >
-          Your feed
-        </router-link>
-      </li>
-      <li class="nav-item px-3 border-left">
-        <router-link :to="{ name: 'public-timeline' }"
-                     text="Public"
-                     class="nav-link"
-        >
-          This instance
-        </router-link>
-      </li>
-      <li class="nav-item px-3 border-left">
-        <router-link :to="{ name: 'public-external-timeline' }"
-                     text="The Whole Known Network"
-                     class="nav-link"
-        >
-          The Whole Known Network
-        </router-link>
-      </li>
-    </ul>
+  <div class="row">
+    <div class="col-md-8">
+      <TimelineTabs active="friends" />
 
-    <Timeline
-      title="Timeline"
-      timeline-name="friends"
-    />
+      <Timeline
+        timeline-name="friends"
+      />
+    </div>
+    <div class="col-md-4">
+      <UserCard v-if="currentUser" :user="currentUser" />
+      <Footer />
+    </div>
   </div>
 </template>
 
 <script>
+import TimelineTabs from '../timeline_tabs/timeline_tabs.vue'
 import Timeline from '../timeline/timeline.vue'
+import UserCard from '../../components/user_card/user_card.vue'
+import Footer from '../footer/footer.vue'
 const FriendsTimeline = {
   components: {
-    Timeline
+    TimelineTabs,
+    Timeline,
+    UserCard,
+    Footer
+  },
+  computed: {
+    currentUser () { return this.$store.state.users.currentUser }
   }
 }
 

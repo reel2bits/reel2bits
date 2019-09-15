@@ -116,10 +116,22 @@ export const parseUser = (data) => {
     output.reel2bits.lang = data.reel2bits.lang || 'en'
   }
 
+  if (data.pleroma) {
+    const relationship = data.pleroma.relationship
+    if (relationship) {
+      output.follows_you = relationship.followed_by
+      output.requested = relationship.requested
+      output.following = relationship.following
+      output.statusnet_blocking = relationship.blocking
+      output.muted = relationship.muting
+      output.subscribed = relationship.subscribing
+    }
+  }
+
   return output
 }
 
-export const parseTrack = (data) => {
+export const parseStatus = (data) => {
   const output = {}
 
   output.id = String(data.id)
@@ -134,50 +146,37 @@ export const parseTrack = (data) => {
   output.uploaded_on = data.created_at
   output.uploaded_elapsed = data.uploaded_elapsed
   output.album_id = data.reel2bits.album_id
+  output.album_order = data.reel2bits.album_order
   output.favorited = data.favorited
   output.reblogged = data.reblogged
   output.comments = 0 // FIXME TODO
 
-  output.type = data.reblog ? 'retweet' : 'status'
+  output.type = (data.reel2bits.type || 'status')
 
   output.slug = data.reel2bits.slug
 
-  output.processing = {}
-  output.processing.basic = data.reel2bits.processing.basic
-  output.processing.transcode_state = data.reel2bits.processing.transcode_state
-  output.processing.transcode_needed = data.reel2bits.processing.transcode_needed
-  output.processing.done = data.reel2bits.processing.done
+  if (output.type === 'track') {
+    output.processing = {}
+    output.processing.basic = data.reel2bits.processing.basic
+    output.processing.transcode_state = data.reel2bits.processing.transcode_state
+    output.processing.transcode_needed = data.reel2bits.processing.transcode_needed
+    output.processing.done = data.reel2bits.processing.done
 
-  output.metadatas = {}
-  output.metadatas.licence = data.reel2bits.metadatas.licence
-  output.metadatas.duration = data.reel2bits.metadatas.duration
-  output.metadatas.type = data.reel2bits.metadatas.type
-  output.metadatas.codec = data.reel2bits.metadatas.codec
-  output.metadatas.format = data.reel2bits.metadatas.format
-  output.metadatas.channels = data.reel2bits.metadatas.channels
-  output.metadatas.rate = data.reel2bits.metadatas.rate
-  output.metadatas.bitrate = data.reel2bits.metadatas.bitrate
-  output.metadatas.bitrate_mode = data.reel2bits.metadatas.bitrate_mode
-
-  return output
-}
-
-export const parseAlbum = (data) => {
-  const output = {}
-
-  output.id = String(data.id)
-  output.title = data.title
-  output.created = data.created
-  output.updated = data.updated
-  output.description = data.description
-  output.private = data.private
-  output.slug = data.slug
-  output.user_id = data.user_id
-  output.user = data.user
-  output.sounds = data.sounds
-  output.flake_id = data.flake_id
-  output.timeline = data.timeline
-
+    output.metadatas = {}
+    output.metadatas.licence = data.reel2bits.metadatas.licence
+    output.metadatas.duration = data.reel2bits.metadatas.duration
+    output.metadatas.type = data.reel2bits.metadatas.type
+    output.metadatas.codec = data.reel2bits.metadatas.codec
+    output.metadatas.format = data.reel2bits.metadatas.format
+    output.metadatas.channels = data.reel2bits.metadatas.channels
+    output.metadatas.rate = data.reel2bits.metadatas.rate
+    output.metadatas.bitrate = data.reel2bits.metadatas.bitrate
+    output.metadatas.bitrate_mode = data.reel2bits.metadatas.bitrate_mode
+  }
+  if (output.type === 'album') {
+    output.tracks_count = data.reel2bits.tracks_count
+    output.tracks = data.reel2bits.tracks.map(parseStatus)
+  }
   return output
 }
 
@@ -194,15 +193,15 @@ export const parseNotification = (data) => {
     output.seen = data.pleroma.is_seen
     output.status = output.type === 'follow'
       ? null
-      : parseTrack(data.status)
+      : parseStatus(data.status)
     output.action = output.status // TODO: Refactor, this is unneeded
     output.from_profile = parseUser(data.account)
   } else {
-    const parsedNotice = parseTrack(data.notice)
+    const parsedNotice = parseStatus(data.notice)
     output.type = data.ntype
     output.seen = Boolean(data.is_seen)
     output.status = output.type === 'like'
-      ? parseTrack(data.notice.favorited_status)
+      ? parseStatus(data.notice.favorited_status)
       : parsedNotice
     output.action = parsedNotice
     output.from_profile = parseUser(data.from_profile)

@@ -11,7 +11,7 @@ setup(
     author_email="dashie@sigpipe.me",
     install_requires=[
         "Flask==1.1.1",
-        "SQLAlchemy==1.3.6",
+        "SQLAlchemy==1.3.8",
         "WTForms==2.2.1",
         "WTForms-Alchemy==0.16.9",
         "SQLAlchemy-Searchable==1.1.0",
@@ -29,10 +29,10 @@ setup(
         "texttable==1.6.1",
         "python-slugify==3.0.3",
         "python-magic==0.4.15",
-        "redis==3.3.5",
+        "redis==3.3.8",
         "celery==4.3.0",
         "flask-accept==0.0.6",
     ],
     setup_requires=["pytest-runner"],
-    tests_require=["pytest==5.0.1", "pytest-cov==2.7.1", "jsonschema==3.0.2"],
+    tests_require=["pytest==5.1.2", "pytest-cov==2.7.1", "jsonschema==3.0.2"],
 )

@@ -39,30 +39,38 @@
             <div id="waveform" class="flex-fill" />
           </div>
           <div v-else-if="processingDone" class="alert alert-dark">
-            Track not yet available.
+            <translate translate-context="Content/TrackShow/Alert/Not available">
+              Track not yet available.
+            </translate>
           </div>
 
           <div class="pt-0 d-flex">
-            <div class="btn-group" role="group" aria-label="Track actions">
+            <div class="btn-group" role="group" :aria-label="labels.ariaTrackActions">
               <b-button :href="track.media_orig" variant="link"
                         class="text-decoration-none pl-0"
               >
-                <i class="fa fa-cloud-download" aria-hidden="true" /> Download
+                <i class="fa fa-cloud-download" aria-hidden="true" /> <translate translate-context="Content/TrackShow/Button">
+                  Download
+                </translate>
               </b-button>
               <div v-if="isOwner">
                 <b-button variant="link" class="text-decoration-none"
                           @click.prevent="editTrack"
                 >
-                  <i class="fa fa-pencil" aria-hidden="true" /> Edit
+                  <i class="fa fa-pencil" aria-hidden="true" /> <translate translate-context="Content/TrackShow/Button">
+                    Edit
+                  </translate>
                 </b-button>
                 <b-button v-b-modal.modal-delete variant="link"
                           class="text-decoration-none"
                 >
-                  <i class="fa fa-times" aria-hidden="true" /> Delete
+                  <i class="fa fa-times" aria-hidden="true" /> <translate translate-context="Content/TrackShow/Button">
+                    Delete
+                  </translate>
                 </b-button>
-                <b-modal id="modal-delete" title="Deleting track" @ok="deleteTrack">
-                  <p class="my-4">
-                    Are you sure you want to delete '{{ track.title }}' ?
+                <b-modal id="modal-delete" :title="labels.deleteModalTitle" @ok="deleteTrack">
+                  <p v-translate="{title: track.title}" class="my-4" translate-context="Content/TrackShow/Modal/Delete/Content">
+                    Are you sure you want to delete '%{ title }' ?
                   </p>
                 </b-modal>
               </div>
@@ -84,39 +92,65 @@
           </p>
         </blockquote>
         <p v-if="track.metadatas.licence.link">
-          Licence: <a :href="track.metadatas.licence.link">{{ track.metadatas.licence.name }}</a>
+          <translate translate-context="Content/TrackShow/Track infos">
+            Licence:
+          </translate><a :href="track.metadatas.licence.link">{{ track.metadatas.licence.name }}</a>
         </p>
         <p v-else>
-          Licence: {{ track.metadatas.licence.name }}
+          <translate translate-context="Content/TrackShow/Track infos">
+            Licence:
+          </translate>{{ track.metadatas.licence.name }}
         </p>
         <p>
-          Download links: <a :href="track.media_orig">original</a><span v-if="track.processing.transcode_needed">, <a :href="track.media_transcoded">transcoded mp3</a></span>.
+          <translate translate-context="Content/TrackShow/Track infos">
+            Download links:
+          </translate><a :href="track.media_orig"><translate translate-context="Content/TrackShow/Track infos dls">original</translate></a><span v-if="track.processing.transcode_needed">, <a :href="track.media_transcoded"><translate translate-context="Content/TrackShow/Track infos dls">transcoded mp3</translate></a></span>.
         </p>
       </div>
 
       <!-- Tabs -->
       <div>
         <ul class="nav mt-5 pb-2">
+          <!-- disabled for now
           <li class="nav-item pr-3">
-            <a class="nav-link" href="#">{{ track.comments }} Comments</a>
+            <a class="nav-link" href="#">
+              <translate translate-context="Content/TrackShow/Track federation tab title" :translate-params="{count: track.comments}">
+                %{ count } Comments
+              </translate>
+            </a>
           </li>
           <li class="nav-item px-3 border-left">
-            <a class="nav-link" href="#">{{ track.favorited }} Likes</a>
+            <a class="nav-link" href="#">
+              <translate translate-context="Content/TrackShow/Track federation tab title" :translate-params="{count: track.favorited}">
+                %{ count } Likes
+              </translate>
+            </a>
           </li>
           <li class="nav-item px-3 border-left">
-            <a class="nav-link" href="#">{{ track.reblogged }} Reposts</a>
+            <a class="nav-link" href="#">
+              <translate translate-context="Content/TrackShow/Track federation tab title" :translate-params="{count: track.reblogged}">
+                %{ count } Reposts
+              </translate>
+            </a>
           </li>
+          -->
           <li class="nav-item px-3 border-left">
-            <a class="nav-link active" href="#">Metadatas</a>
+            <a v-translate translate-context="Content/TrackShow/Track metadatas tab title" class="nav-link active"
+               href="#"
+            >Metadatas</a>
           </li>
         </ul>
         <div class="border-top border-bottom py-4 my-4">
-          <h4>Metadatas of the original file</h4>
+          <h4 v-translate translate-context="Content/TrackShow/Track metadatas headline">
+            Metadatas of the original file
+          </h4>
           <table class="table table-sm my-0">
             <tbody>
               <tr>
                 <th scope="row" class="col-md-2 border-0 font-weight-normal">
-                  Type
+                  <translate translate-context="Content/TrackShow/Track metadata">
+                    Type
+                  </translate>
                 </th>
                 <td class="border-0 font-weight-bold">
                   {{ track.metadatas.type }}
@@ -124,7 +158,9 @@
               </tr>
               <tr v-if="track.metadatas.codec">
                 <th scope="row" class="border-0 font-weight-normal">
-                  Codec
+                  <translate translate-context="Content/TrackShow/Track metadata">
+                    Codec
+                  </translate>
                 </th>
                 <td class="border-0 font-weight-bold">
                   {{ track.metadatas.codec }}
@@ -132,7 +168,9 @@
               </tr>
               <tr>
                 <th scope="row" class="border-0 font-weight-normal">
-                  Channels
+                  <translate translate-context="Content/TrackShow/Track metadata">
+                    Channels
+                  </translate>
                 </th>
                 <td class="border-0 font-weight-bold">
                   {{ track.metadatas.channels }}
@@ -140,7 +178,9 @@
               </tr>
               <tr>
                 <th scope="row" class="border-0 font-weight-normal">
-                  Sample rate
+                  <translate translate-context="Content/TrackShow/Track metadata">
+                    Sample rate
+                  </translate>
                 </th>
                 <td class="border-0 font-weight-bold">
                   {{ track.metadatas.rate }}
@@ -148,7 +188,9 @@
               </tr>
               <tr v-if="track.metadatas.bitrate && track.metadatas.bitrate_mode">
                 <th scope="row" class="border-0 font-weight-normal">
-                  Bit rate
+                  <translate translate-context="Content/TrackShow/Track metadata">
+                    Bit rate
+                  </translate>
                 </th>
                 <td class="border-0 font-weight-bold">
                   {{ track.metadatas.bitrate }} {{ track.metadatas.bitrate_mode }}
@@ -162,7 +204,7 @@
 
     <div v-if="track" class="col-md-4 d-flex flex-column">
       <!-- Profile Card -->
-      <UserCard :account="track.account" />
+      <UserCard :user="track.account" />
       <!-- Footer -->
       <Footer />
     </div>
@@ -196,7 +238,8 @@ export default {
     isOwner: false,
     wavesurfer: null,
     playerTimeCur: '00:00',
-    playerTimeTot: '00:00'
+    playerTimeTot: '00:00',
+    userId: null
   }),
   computed: {
     ...mapState({
@@ -226,9 +269,19 @@ export default {
       } else {
         return '0'
       }
+    },
+    labels () {
+      return {
+        ariaTrackActions: this.$pgettext('Content/TrackShow/Aria/Track actions', 'Track actions'),
+        deleteModalTitle: this.$pgettext('Content/TrackShow/Modal/Delete/Title', 'Deleting track')
+      }
     }
   },
   created () {
+    const user = this.$store.getters.findUser(this.userName)
+    if (user) {
+      this.userId = user.id
+    } // else, oops
     this.fetchTrack()
       .then((v) => {
         if (!this.trackError && this.track) {
@@ -294,7 +347,8 @@ export default {
   methods: {
     async fetchTrack () {
       console.log('fetching track...')
-      await this.$store.state.api.backendInteractor.trackFetch({ user: this.userName, trackId: this.trackId })
+      // || quick fix before we fully implement id or username thing
+      await this.$store.state.api.backendInteractor.trackFetch({ userId: this.userId || this.userName, trackId: this.trackId })
         .then((status) => {
           this.track = status
           this.processing_done = this.track.processing.done
@@ -309,17 +363,17 @@ export default {
     async editTrack () {
       if (!this.isOwner) { return }
       console.log('want to edit track')
-      this.$router.push({ name: 'tracks-edit', params: { username: this.track.account.screen_name, trackId: this.track.slug } })
+      this.$router.push({ name: 'tracks-edit', params: { userId: this.track.account.id, trackId: this.track.slug } })
     },
     async deleteTrack () {
       if (!this.isOwner) { return }
       console.log('deleting track')
       try {
-        await this.$store.state.api.backendInteractor.trackDelete({ user: this.userName, trackId: this.trackId })
+        await this.$store.state.api.backendInteractor.trackDelete({ userId: this.track.account.id, trackId: this.trackId })
       } catch (e) {
         console.log('an error occured')
         console.log(e)
-        this.deleteError = 'an error occured while deleting the track.'
+        this.deleteError = this.$pgettext('Content/TrackShow/Error', 'an error occured while deleting the track.')
         return
       }
       this.$router.push({ name: 'user-profile', params: { name: this.$store.state.users.currentUser.screen_name } })

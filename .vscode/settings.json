@@ -30,5 +30,6 @@
      "vetur.format.defaultFormatter.js": "vscode-typescript",
      "vetur.format.defaultFormatter.html": "js-beautify-html",
     "javascript.format.insertSpaceBeforeFunctionParenthesis": true,
-    "python.pythonPath": "/usr/local/bin/python3"
+    "python.pythonPath": "/usr/local/bin/python3",
+    "restructuredtext.confPath": "${workspaceFolder}/docs"
 }

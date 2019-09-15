@@ -1,6 +1,6 @@
-import { parseUser, parseTrack, parseAlbum } from '../entity_normalizer/entity_normalizer.service.js'
-import { StatusCodeError } from '../errors/errors'
-import { map } from 'lodash'
+import { parseUser, parseStatus } from '../entity_normalizer/entity_normalizer.service.js'
+import { RegistrationError, StatusCodeError } from '../errors/errors'
+import { map, reduce } from 'lodash'
 
 const MASTODON_LOGIN_URL = '/api/v1/accounts/verify_credentials'
 const MASTODON_REGISTRATION_URL = '/api/v1/accounts'
@@ -13,6 +13,8 @@ const TRACKS_DELETE_URL = (username, id) => `/api/tracks/${username}/${id}`
 
 const ALBUMS_NEW_URL = '/api/albums'
 const ALBUMS_FETCH_URL = (username, id) => `/api/albums/${username}/${id}`
+const ALBUMS_EDIT_URL = (username, id) => `/api/albums/${username}/${id}`
+const ALBUM_REORDER_URL = (username, id) => `/api/albums/${username}/${id}/reorder`
 const ALBUMS_DELETE_URL = (username, id) => `/api/albums/${username}/${id}`
 
 const ACCOUNT_LOGS_URL = (username, currentPage, perPage) => `/api/users/${username}/logs?page=${currentPage}&page_size=${perPage}`
@@ -23,9 +25,19 @@ const MASTODON_DIRECT_MESSAGES_TIMELINE_URL = '/api/v1/timelines/direct'
 const MASTODON_USER_NOTIFICATIONS_URL = '/api/v1/notifications'
 const MASTODON_USER_TIMELINE_URL = id => `/api/v1/accounts/${id}/statuses`
 const MASTODON_PROFILE_UPDATE_URL = '/api/v1/accounts/update_credentials'
+const MASTODON_USER_RELATIONSHIPS_URL = '/api/v1/accounts/relationships'
+const MASTODON_FOLLOW_URL = id => `/api/v1/accounts/${id}/follow`
+const MASTODON_UNFOLLOW_URL = id => `/api/v1/accounts/${id}/unfollow`
+const MASTODON_FOLLOWING_URL = id => `/api/v1/accounts/${id}/following`
+const MASTODON_FOLLOWERS_URL = id => `/api/v1/accounts/${id}/followers`
 
 const REEL2BITS_LICENSES = '/api/reel2bits/licenses'
 const REEL2BITS_ALBUMS = (username) => `/api/albums/${username}`
+const CHANGE_PASSWORD_URL = '/api/reel2bits/change_password'
+const RESET_PASSWORD_URL = '/api/reel2bits/reset_password'
+const RESET_PASSWORD_URL_TOKEN = (token) => `${RESET_PASSWORD_URL}/${token}`
+const REEL2BITS_DRAFTS_TIMELINE = '/api/v1/timelines/drafts'
+const REEL2BITS_ALBUMS_TIMELINE = '/api/v1/timelines/albums'
 
 const oldfetch = window.fetch
 
@@ -97,12 +109,11 @@ const register = (userInfo, store) => {
       ...rest
     })
   })
-    .then((response) => [response.ok, response])
-    .then(([ok, response]) => {
-      if (ok) {
+    .then((response) => {
+      if (response.ok) {
         return response.json()
       } else {
-        return response.json().then((error) => { throw new Error(error.error) })
+        return response.json().then((error) => { throw new RegistrationError(error) })
       }
     })
 }
@@ -147,8 +158,8 @@ const trackUpload = (trackInfo, store) => {
     })
 }
 
-const trackFetch = ({ user, trackId, credentials }) => {
-  let url = TRACKS_FETCH_URL(user, trackId)
+const trackFetch = ({ userId, trackId, credentials }) => {
+  let url = TRACKS_FETCH_URL(userId, trackId)
 
   return fetch(url, { headers: authHeaders(credentials) })
     .then((data) => {
@@ -158,11 +169,11 @@ const trackFetch = ({ user, trackId, credentials }) => {
       throw new Error('Error fetching track', data)
     })
     .then((data) => data.json())
-    .then((data) => parseTrack(data))
+    .then((data) => parseStatus(data))
 }
 
-const trackDelete = ({ user, trackId, credentials }) => {
-  let url = TRACKS_DELETE_URL(user, trackId)
+const trackDelete = ({ userId, trackId, credentials }) => {
+  let url = TRACKS_DELETE_URL(userId, trackId)
 
   return fetch(url, {
     headers: authHeaders(credentials),
@@ -177,20 +188,42 @@ const trackDelete = ({ user, trackId, credentials }) => {
     .then((data) => data.json())
 }
 
-const trackEdit = ({ username, trackId, track, credentials }) => {
+const trackEdit = ({ userId, trackId, track, credentials }) => {
   return promisedRequest({
-    url: TRACKS_EDIT_URL(username, trackId),
+    url: TRACKS_EDIT_URL(userId, trackId),
     method: 'PATCH',
     payload: track,
     credentials: credentials
-  }).then((data) => parseTrack(data))
+  }).then((data) => parseStatus(data))
 }
 
-const fetchUser = ({ id, store }) => {
+const albumReorder = ({ userId, albumId, tracksOrder, credentials }) => {
+  return promisedRequest({
+    url: ALBUM_REORDER_URL(userId, albumId),
+    method: 'PATCH',
+    payload: tracksOrder,
+    credentials: credentials
+  }).then((data) => parseStatus(data))
+}
+
+const fetchUser = ({ id, credentials }) => {
   let url = `${MASTODON_USER_URL}/${id}`
-  let credentials = store.getters.getToken()
-  return promisedRequest({ url, credentials }, store)
+  return promisedRequest({ url, credentials })
     .then((data) => parseUser(data))
+}
+
+const fetchUserRelationship = ({ id, credentials }) => {
+  let url = `${MASTODON_USER_RELATIONSHIPS_URL}/?id=${id}`
+  return fetch(url, { headers: authHeaders(credentials) })
+    .then((response) => {
+      return new Promise((resolve, reject) => response.json()
+        .then((json) => {
+          if (!response.ok) {
+            return reject(new StatusCodeError(response.status, json, { url }, response))
+          }
+          return resolve(json)
+        }))
+    })
 }
 
 const updateUserSettings = ({ settings, credentials }) => {
@@ -215,8 +248,8 @@ const fetchLicenses = () => {
     .then((data) => data.json())
 }
 
-const fetchUserAlbums = ({ username, short = false, credentials }) => {
-  let url = REEL2BITS_ALBUMS(username)
+const fetchUserAlbums = ({ userId, short = false, credentials }) => {
+  let url = REEL2BITS_ALBUMS(userId)
 
   const params = []
   params.push(['short', short])
@@ -255,9 +288,8 @@ const albumNew = (albumInfo, store) => {
     })
 }
 
-const albumFetch = (user, albumId, store) => {
-  let url = ALBUMS_FETCH_URL(user, albumId)
-  let credentials = store.getters.getToken()
+const albumFetch = ({ userId, albumId, credentials }) => {
+  let url = ALBUMS_FETCH_URL(userId, albumId)
 
   return fetch(url, { headers: authHeaders(credentials) })
     .then((data) => {
@@ -267,17 +299,31 @@ const albumFetch = (user, albumId, store) => {
       throw new Error('Error fetching album', data)
     })
     .then((data) => data.json())
-    .then((data) => parseAlbum(data))
+    .then((data) => parseStatus(data))
 }
 
-const albumDelete = (user, trackId, store) => {
-  let url = ALBUMS_DELETE_URL(user, trackId)
-  let credentials = store.getters.getToken()
+const albumDelete = ({ userId, albumId, credentials }) => {
+  let url = ALBUMS_DELETE_URL(userId, albumId)
 
   return fetch(url, {
     headers: authHeaders(credentials),
     method: 'DELETE'
   })
+    .then((data) => {
+      if (data.ok) {
+        return data
+      }
+      throw new Error('Error deleting album', data)
+    })
+}
+
+const albumEdit = ({ userId, albumId, album, credentials }) => {
+  return promisedRequest({
+    url: ALBUMS_EDIT_URL(userId, albumId),
+    method: 'PATCH',
+    payload: album,
+    credentials: credentials
+  }).then((data) => parseStatus(data))
 }
 
 const fetchUserLogs = (user, currentPage, perPage, store) => {
@@ -310,7 +356,9 @@ const fetchTimeline = ({
     dms: MASTODON_DIRECT_MESSAGES_TIMELINE_URL,
     notifications: MASTODON_USER_NOTIFICATIONS_URL,
     'publicAndExternal': MASTODON_PUBLIC_TIMELINE,
-    user: MASTODON_USER_TIMELINE_URL
+    user: MASTODON_USER_TIMELINE_URL,
+    drafts: REEL2BITS_DRAFTS_TIMELINE,
+    albums: REEL2BITS_ALBUMS_TIMELINE
   }
   const params = []
 
@@ -318,6 +366,10 @@ const fetchTimeline = ({
 
   if (timeline === 'user' || timeline === 'media') {
     url = url(userId)
+  }
+
+  if (timeline === 'albums') {
+    params.push(['user', userId])
   }
 
   if (since) {
@@ -359,7 +411,97 @@ const fetchTimeline = ({
     })
     .then((data) => data.json())
     .then((data) => {
-      data.items = data.items.map(parseTrack)
+      data.items = data.items.map(parseStatus)
+      return data
+    })
+}
+
+const changePassword = ({ credentials, password, newPassword, newPasswordConfirmation }) => {
+  const form = new FormData()
+
+  form.append('password', password)
+  form.append('new_password', newPassword)
+  form.append('new_password_confirmation', newPasswordConfirmation)
+
+  return fetch(CHANGE_PASSWORD_URL, {
+    body: form,
+    method: 'POST',
+    headers: authHeaders(credentials)
+  })
+    .then((response) => response.json())
+}
+
+const resetPassword = ({ email }) => {
+  const params = { email }
+  const query = reduce(params, (acc, v, k) => {
+    const encoded = `${k}=${encodeURIComponent(v)}`
+    return `${acc}&${encoded}`
+  }, '')
+  const url = `${RESET_PASSWORD_URL}?${query}`
+  return fetch(url, {
+    method: 'POST'
+  })
+}
+
+const resetPasswordToken = ({ token, password, passwordConfirm }) => {
+  const url = RESET_PASSWORD_URL_TOKEN(token)
+  return fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      token: token,
+      new_password: password,
+      new_password_confirmation: passwordConfirm
+    })
+  })
+}
+
+const followUser = ({ id, credentials }) => {
+  let url = MASTODON_FOLLOW_URL(id)
+  return fetch(url, {
+    headers: authHeaders(credentials),
+    method: 'POST'
+  }).then((data) => data.json())
+}
+
+const unfollowUser = ({ id, credentials }) => {
+  let url = MASTODON_UNFOLLOW_URL(id)
+  return fetch(url, {
+    headers: authHeaders(credentials),
+    method: 'POST'
+  }).then((data) => data.json())
+}
+
+const fetchFriends = ({ id, page = 1, limit = 20, credentials }) => {
+  let url = MASTODON_FOLLOWING_URL(id)
+  const args = [
+    page && `page=${page}`,
+    limit && `limit=${limit}`
+  ].filter(_ => _).join('&')
+
+  url = url + (args ? '?' + args : '')
+  return fetch(url, { headers: authHeaders(credentials) })
+    .then((data) => data.json())
+    .then((data) => {
+      data.items = data.items.map(parseUser)
+      return data
+    })
+}
+
+const fetchFollowers = ({ id, page = 1, limit = 20, credentials }) => {
+  let url = MASTODON_FOLLOWERS_URL(id)
+  const args = [
+    page && `page=${page}`,
+    limit && `limit=${limit}`
+  ].filter(_ => _).join('&')
+
+  url += args ? '?' + args : ''
+  return fetch(url, { headers: authHeaders(credentials) })
+    .then((data) => data.json())
+    .then((data) => {
+      data.items = data.items.map(parseUser)
       return data
     })
 }
@@ -368,6 +510,7 @@ const apiService = {
   verifyCredentials,
   register,
   fetchUser,
+  fetchUserRelationship,
   trackUpload,
   trackDelete,
   trackEdit,
@@ -375,11 +518,20 @@ const apiService = {
   albumNew,
   albumDelete,
   albumFetch,
+  albumEdit,
+  albumReorder,
   fetchUserLogs,
   fetchTimeline,
   fetchLicenses,
   fetchUserAlbums,
-  updateUserSettings
+  updateUserSettings,
+  changePassword,
+  resetPassword,
+  resetPasswordToken,
+  followUser,
+  unfollowUser,
+  fetchFriends,
+  fetchFollowers
 }
 
 export default apiService

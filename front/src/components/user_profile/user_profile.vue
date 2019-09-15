@@ -6,20 +6,42 @@
     <div v-if="user">
       <div class="row">
         <div class="col-md-8">
-          <b-tabs content="mt-3">
-            <b-tab title="Tracks">
-              <Timeline
-                :key="userId"
-                timeline-name="user"
-                :user-id="userId"
-              />
-            </b-tab>
-            <b-tab title="Albums" />
-            <b-tab v-if="isUs" title="Drafts" />
-          </b-tabs>
+          <b-nav tabs>
+            <b-nav-item :active="isTimelineTracks" :to="{ name: 'user-profile-tracks' }">
+              <translate translate-context="Content/UserProfile/Tab/Text">
+                Tracks
+              </translate>
+            </b-nav-item>
+            <b-nav-item :active="isTimelineAlbums" :to="{ name: 'user-profile-albums' }">
+              <translate translate-context="Content/UserProfile/Tab/Text">
+                Albums
+              </translate>
+            </b-nav-item>
+            <b-nav-item v-if="isUs" :active="isTimelineDrafts" :to="{ name: 'user-profile-drafts' }">
+              <translate translate-context="Content/UserProfile/Tab/Text">
+                Drafts
+              </translate>
+            </b-nav-item>
+          </b-nav>
+
+          <Timeline v-if="isTimelineTracks"
+                    key="{{ userId }}user"
+                    timeline-name="user"
+                    :user-id="userId"
+          />
+          <Timeline v-else-if="isTimelineAlbums"
+                    key="{{ userId }}albums"
+                    timeline-name="albums"
+                    :user-id="userId"
+          />
+          <Timeline v-else-if="isTimelineDrafts"
+                    key="{{ userId }}drafts"
+                    timeline-name="drafts"
+                    :user-id="userId"
+          />
         </div>
         <div class="col-md-4">
-          <UserCard :account="user" />
+          <UserCard :user="user" />
           <Footer />
         </div>
       </div>
@@ -55,6 +77,15 @@ export default {
     isUs () {
       return this.userId && this.$store.state.users.currentUser.id &&
         this.userId === this.$store.state.users.currentUser.id
+    },
+    isTimelineTracks () {
+      return this.$route.name === 'user-profile-tracks'
+    },
+    isTimelineAlbums () {
+      return this.$route.name === 'user-profile-albums'
+    },
+    isTimelineDrafts () {
+      return this.$route.name === 'user-profile-drafts'
     }
   },
   watch: {
@@ -84,21 +115,28 @@ export default {
       const user = this.$store.getters.findUser(userNameOrId)
       if (user) {
         this.userId = user.id
-        console.warn('load::user::nothing to do')
+        console.warn('we already know the user')
       } else {
         this.$store.dispatch('fetchUser', userNameOrId)
           .then(({ id }) => {
             this.userId = id
-            console.warn('load::!user::fetchUser::id::nothing to do')
+            console.warn('fetched by ID: ' + id)
           })
           .catch((reason) => {
-            console.warn('load::!user::fetchUser::!id')
+            console.warn('cannot fetch user: ' + reason)
             const errorMessage = get(reason, 'error.error')
             if (errorMessage) {
               this.error = errorMessage
             } else {
-              this.error = 'Error loading user: ' + errorMessage
+              let msg = this.$pgettext('Content/UserProfile/Error', 'Error loading user: %{errorMsg}')
+              this.error = this.$gettextInterpolate(msg, { errorMsg: errorMessage })
             }
+            this.$bvToast.toast(this.$pgettext('Content/UserProfile/Toast/Error/Message', 'Cannot fetch user'), {
+              title: this.$pgettext('Content/UserProfile/Toast/Error/Title', 'User Profile'),
+              autoHideDelay: 5000,
+              appendToast: false,
+              variant: 'danger'
+            })
           })
       }
     },

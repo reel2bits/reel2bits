@@ -1,0 +1,76 @@
+//Reel2Bits Colour Plate
+
+$brand-1: #313DF2;
+$brand-2: #D100B7;
+
+$shade-0:    #fff;
+$shade-25:   #E7EDF7;
+$shade-50:   #C8D1F4;
+$shade-75:   #0E4F5F;
+$shade-100:  #06161A;
+
+//Redifining Bootstrap colours
+
+$blue:    $brand-1;
+$pink:    $brand-2;
+
+$white:    $shade-0;
+$gray-100: $shade-0;
+$gray-200: $shade-25;
+$gray-300: $shade-25;
+$gray-400: $shade-25;
+$gray-500: $shade-50;
+$gray-600: $shade-50;
+$gray-700: $shade-75;
+$gray-800: $shade-75;
+$gray-900: $shade-100;
+$black:    $shade-100;
+
+$primary:       $brand-1;
+$secondary:     $brand-2;
+$light:         $shade-0;
+$dark:          $shade-100;
+
+//Redifining Bootstrap typography
+
+@import url('https://fonts.googleapis.com/css?family=Lato:400,900&display=swap');
+$font-family-base:  'Lato', sans-serif;
+$font-size-base:    0.875rem;
+$font-weight-bold:  900;
+$line-height-base:  1.3;
+$h1-font-size:      $font-size-base * 2.29;
+$h2-font-size:      $font-size-base * 1.71;
+$h3-font-size:      $font-size-base * 1.43;
+$headings-font-weight: 900;
+
+//Redifining Bootstrap sizing and spacing
+
+$navbar-brand-padding-y:  0;
+$navbar-padding-y: 0;
+$input-btn-padding-x: 1rem;
+$input-btn-padding-y: .62rem;
+$input-btn-padding-y-sm: .11rem;
+
+$input-border-color: $shade-50;
+$card-border-color:  $shade-25;
+
+// Toasts
+// Default is 0.85 (from 0 to 1 which is 0 to 100%)
+$b-toast-background-opacity: alpha(rgba(#fff, .95));
+
+//Customizing grid
+
+$grid-breakpoints: (
+  xs: 0,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1270px
+);
+$container-max-widths: (
+  sm: 540px,
+  md: 720px,
+  lg: 960px,
+  xl: 1200px
+);
+$grid-gutter-width: 24px;

@@ -11,6 +11,20 @@ from flask_babelex import gettext
 bp_ap = Blueprint("bp_ap", __name__)
 
 
+@bp_ap.route("/user/<string:name>", methods=["GET"])
+def user_actor_json(name):
+    user = User.query.filter(User.name == name).first()
+    if not user:
+        return Response("", status=404)
+    actors = user.actor
+    if len(actors) <= 0:
+        return Response("", status=500)
+
+    response = jsonify(actors[0].to_dict())
+    response.mimetype = "application/activity+json; charset=utf-8"
+    return response
+
+
 @bp_ap.route("/user/<string:name>/inbox", methods=["GET", "POST"])
 def user_inbox(name):
     be = activitypub.get_backend()

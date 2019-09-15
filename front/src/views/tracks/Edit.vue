@@ -8,42 +8,44 @@
         <span v-for="error in fetchErrors" :key="error">{{ error }}</span>
       </b-alert>
 
-      <h4>Edit track</h4>
+      <h4 v-translate translate-context="Content/TrackEdit/Headline">
+        Edit track
+      </h4>
       <b-form class="edit-track-form" enctype="multipart/form-data" @submit.prevent="edit(track)">
         <b-form-group
           id="ig-title"
           :class="{ 'form-group--error': $v.track.title.$error }"
-          label="Title:"
+          :label="labels.titleLabel"
           label-for="title"
-          description="If no title provided, the filename will be used."
+          :description="labels.titleDescription"
         >
           <b-form-input
             id="title"
             v-model.trim="$v.track.title.$model"
-            placeholder="title"
+            :placeholder="labels.titlePlaceholder"
             :state="$v.track.title.$dirty ? !$v.track.title.$error : null"
             aria-describedby="title-live-feedback"
           />
           <b-form-invalid-feedback id="title-live-feedback">
-            <span v-if="!$v.track.title.maxLength">Length is limited to 250 characters</span>
+            <span v-if="!$v.track.title.maxLength" v-translate translate-context="Content/TrackEdit/Feedback/Title/LengthLimit">Length is limited to 250 characters</span>
           </b-form-invalid-feedback>
         </b-form-group>
 
         <b-form-group
           id="ig-description"
-          label="Description:"
+          :label="labels.descriptionLabel"
           label-for="description"
         >
           <b-form-textarea
             id="description"
             v-model="track.description"
-            :placeholder="descriptionPlaceholder"
+            :placeholder="labels.descriptionPlaceholder"
           />
         </b-form-group>
 
         <b-form-group
           id="ig-album"
-          label="Album:"
+          :label="labels.albumLabel"
           label-for="album"
         >
           <b-form-select
@@ -55,7 +57,7 @@
 
         <b-form-group
           id="ig-license"
-          label="License:"
+          :label="labels.licenseLabel"
           label-for="license"
         >
           <b-form-select
@@ -69,20 +71,26 @@
           v-if="!alreadyFederated"
           id="private"
           v-model="track.private"
+          v-translate
           name="private"
           value="y"
           unchecked-value=""
+          translate-context="Content/TrackEdit/Input.Label/Private track"
         >
           this track is private
         </b-form-checkbox>
 
         <br>
 
-        <b-button type="submit" variant="primary">
+        <b-button v-translate type="submit" variant="primary"
+                  translate-context="Content/TrackEdit/Button/Edit"
+        >
           Edit
         </b-button>
 
-        <b-button variant="warning" :to="{ name: 'tracks-show', params: { username: userName, trackId: trackId } }">
+        <b-button v-translate variant="warning" :to="{ name: 'tracks-show', params: { username: userName, trackId: trackId } }"
+                  translate-context="Content/TrackEdit/Button/Cancel"
+        >
           Cancel
         </b-button>
 
@@ -129,9 +137,6 @@ export default {
     }
   },
   computed: {
-    descriptionPlaceholder () {
-      return 'Optional, what is this track about ?'
-    },
     trackId () {
       return this.$route.params.trackId
     },
@@ -140,7 +145,19 @@ export default {
     },
     ...mapState({
       signedIn: state => !!state.users.currentUser
-    })
+    }),
+    labels () {
+      return {
+        titleLabel: this.$pgettext('Content/TrackUpload/Input.Label/Email', 'Title:'),
+        titleDescription: this.$pgettext('Content/TrackUpload/Input.Label/Title', 'If no title provided, the filename will be used.'),
+        titlePlaceholder: this.$pgettext('Content/TrackUpload/Input.Placeholder/Title', 'Your track title.'),
+        descriptionLabel: this.$pgettext('Content/TrackUpload/Input.Label/Description', 'Description:'),
+        descriptionPlaceholder: this.$pgettext('Content/TrackUpload/Input.Placeholder/Description', 'Optional, what is this track about ?'),
+        albumLabel: this.$pgettext('Content/TrackUpload/Input.Label/Album', 'Album:'),
+        licenseLabel: this.$pgettext('Content/TrackUpload/Input.Label/License', 'License:'),
+        privateDescription: this.$pgettext('Content/TrackUpload/Input.Label/Private', 'A private track won\'t federate. You can use this as your unpublished drafts. Note that you can\'t replace audio file after upload.')
+      }
+    }
   },
   async created () {
     // Fetch licenses
@@ -150,11 +167,17 @@ export default {
       })
       .catch((e) => {
         console.log('error fetching licenses: ' + e)
-        this.fetchErrors += 'Error fetching licenses'
+        this.fetchErrors += this.$pgettext('Content/TrackUpload/Error', 'Error fetching licenses')
         this.licenceChoices = []
+        this.$bvToast.toast(this.$pgettext('Content/TracksEdit/Toast/Error/Message', 'Cannot fetch known licenses'), {
+          title: this.$pgettext('Content/TracksEdit/Toast/Error/Title', 'Tracks'),
+          autoHideDelay: 10000,
+          appendToast: false,
+          variant: 'danger'
+        })
       })
     // Fetch user albums
-    this.$store.state.api.backendInteractor.fetchUserAlbums({ username: this.$store.state.users.currentUser.screen_name, short: true })
+    this.$store.state.api.backendInteractor.fetchUserAlbums({ userId: this.$store.state.users.currentUser.id, short: true })
       .then((albums) => {
         let noAlbum = [
           { value: '__None', text: 'No album' }
@@ -164,15 +187,21 @@ export default {
       })
       .catch((e) => {
         console.log('error fetching user albums: ' + e)
-        this.fetchErrors += 'Error fetching albums'
+        this.fetchErrors += this.$pgettext('Content/TrackUpload/Error', 'Error fetching albums')
         this.albumChoices = []
+        this.$bvToast.toast(this.$pgettext('Content/TracksEdit/Toast/Error/Message', 'Cannot fetch user albums'), {
+          title: this.$pgettext('Content/TracksEdit/Toast/Error/Title', 'Tracks'),
+          autoHideDelay: 10000,
+          appendToast: false,
+          variant: 'danger'
+        })
       })
     this.fetchTrack()
   },
   methods: {
     async fetchTrack () {
       console.log('fetching track...')
-      await this.$store.state.api.backendInteractor.trackFetch({ user: this.userName, trackId: this.trackId })
+      await this.$store.state.api.backendInteractor.trackFetch({ userId: this.userName, trackId: this.trackId })
         .then((track) => {
           this.track.title = track.title
           this.track.description = unescape(track.description)
@@ -186,6 +215,12 @@ export default {
         .catch((e) => {
           console.log('cannot fetch track:' + e.message)
           this.trackError = e
+          this.$bvToast.toast(this.$pgettext('Content/TracksEdit/Toast/Error/Message', 'Cannot fetch track'), {
+            title: this.$pgettext('Content/TracksEdit/Toast/Error/Title', 'Tracks'),
+            autoHideDelay: 10000,
+            appendToast: false,
+            variant: 'danger'
+          })
         })
     },
     async edit () {
@@ -201,6 +236,12 @@ export default {
             })
         } catch (error) {
           console.warn('Edit failed: ' + error)
+          this.$bvToast.toast(this.$pgettext('Content/TracksEdit/Toast/Error/Message', 'Edit failed'), {
+            title: this.$pgettext('Content/TracksEdit/Toast/Error/Title', 'Tracks'),
+            autoHideDelay: 10000,
+            appendToast: false,
+            variant: 'danger'
+          })
         }
       } else {
         console.log('form is invalid', this.$v.$invalid)

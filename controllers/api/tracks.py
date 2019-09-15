@@ -4,9 +4,9 @@ from authlib.flask.oauth2 import current_token
 from forms import SoundUploadForm
 from models import db, Sound, User, Album
 import json
-from utils import add_user_log, get_hashed_filename
+from utils.various import add_user_log, get_hashed_filename
 from flask_uploads import UploadSet, AUDIO
-from datas_helpers import to_json_statuses, to_json_account
+from datas_helpers import to_json_track, to_json_account, to_json_relationship
 from os.path import splitext
 
 
@@ -93,20 +93,20 @@ def upload():
     return jsonify({"error": json.dumps(form.errors)}), 400
 
 
-@bp_api_tracks.route("/api/tracks/<string:username>/<string:soundslug>", methods=["GET"])
-@require_oauth(None)
-def show(username, soundslug):
+@bp_api_tracks.route("/api/tracks/<string:username_or_id>/<string:soundslug>", methods=["GET"])
+@require_oauth(optional=True)
+def show(username_or_id, soundslug):
     """
     Get track details.
     ---
     tags:
         - Tracks
     parameters:
-        - name: username
+        - name: user_id
           in: path
-          type: string
+          type: integer
           required: true
-          description: User username
+          description: User ID
         - name: soundslug
           in: path
           type: string
@@ -117,21 +117,30 @@ def show(username, soundslug):
             description: Returns track details.
     """
     # Get logged in user from bearer token, or None if not logged in
-    current_user = current_token.user
+    if current_token:
+        current_user = current_token.user
+    else:
+        current_user = None
 
     # Get the associated User from url fetch
-    track_user = User.query.filter(User.name == username).first()
+    if username_or_id.isdigit():
+        track_user = User.query.filter(User.id == username_or_id).first()
+    else:
+        track_user = User.query.filter(User.name == username_or_id, User.local.is_(True)).first()
     if not track_user:
         return jsonify({"error": "User not found"}), 404
 
-    if current_user and track_user.id == current_user.id:
+    if current_user and (track_user.id == current_user.id):
+        print("user")
         sound = Sound.query.filter(Sound.slug == soundslug, Sound.user_id == track_user.id).first()
     else:
+        print("no user")
         sound = Sound.query.filter(
             Sound.slug == soundslug, Sound.user_id == track_user.id, Sound.transcode_state == Sound.TRANSCODE_DONE
         ).first()
 
     if not sound:
+        print("mmmh")
         return jsonify({"error": "not found"}), 404
 
     if sound.private:
@@ -141,7 +150,11 @@ def show(username, soundslug):
         else:
             return jsonify({"error": "forbidden"}), 403
 
-    return jsonify(to_json_statuses(sound, to_json_account(sound.user)))
+    relationship = False
+    if current_token and current_token.user:
+        relationship = to_json_relationship(current_token.user, sound.user)
+    account = to_json_account(sound.user, relationship)
+    return jsonify(to_json_track(sound, account))
 
 
 @bp_api_tracks.route("/api/tracks/<string:username>/<string:soundslug>", methods=["PATCH"])
@@ -168,7 +181,7 @@ def edit(username, soundslug):
           description: Track slug
     responses:
         200:
-            description: Returns nothing.
+            description: Returns a Status with extra reel2bits params.
     """
     current_user = current_token.user
     if not current_user:
@@ -211,7 +224,11 @@ def edit(username, soundslug):
 
     db.session.commit()
 
-    return jsonify(to_json_statuses(sound, to_json_account(sound.user)))
+    relationship = False
+    if current_token and current_token.user:
+        relationship = to_json_relationship(current_token.user, sound.user)
+    account = to_json_account(sound.user, relationship)
+    return jsonify(to_json_track(sound, account))
 
 
 @bp_api_tracks.route("/api/tracks/<string:username>/<string:soundslug>", methods=["DELETE"])
@@ -238,7 +255,7 @@ def delete(username, soundslug):
           description: Track slug
     responses:
         200:
-            description: Returns nothing.
+            description: Returns track name.
     """
     current_user = current_token.user
     if not current_user:

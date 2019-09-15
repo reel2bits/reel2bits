@@ -12,20 +12,36 @@ const backendInteractorService = credentials => {
     return apiService.fetchTimeline({ timeline, credentials, since, until, userId, tag, withMuted, page })
   }
 
-  const fetchUserAlbums = ({ username, short = false }) => {
-    return apiService.fetchUserAlbums({ username, short, credentials })
+  const fetchUserAlbums = ({ userId, short = false }) => {
+    return apiService.fetchUserAlbums({ userId, short, credentials })
   }
 
-  const trackFetch = ({ user, trackId }) => {
-    return apiService.trackFetch({ user, trackId, credentials })
+  const trackFetch = ({ userId, trackId }) => {
+    return apiService.trackFetch({ userId, trackId, credentials })
   }
 
-  const trackDelete = ({ user, trackId }) => {
-    return apiService.trackDelete({ user, trackId, credentials })
+  const trackDelete = ({ userId, trackId }) => {
+    return apiService.trackDelete({ userId, trackId, credentials })
   }
 
-  const trackEdit = ({ username, trackId, track }) => {
-    return apiService.trackEdit({ username, trackId, track, credentials })
+  const trackEdit = ({ userId, trackId, track }) => {
+    return apiService.trackEdit({ userId, trackId, track, credentials })
+  }
+
+  const albumFetch = ({ userId, albumId }) => {
+    return apiService.albumFetch({ userId, albumId, credentials })
+  }
+
+  const albumDelete = ({ userId, albumId }) => {
+    return apiService.albumDelete({ userId, albumId, credentials })
+  }
+
+  const albumEdit = ({ userId, albumId, album }) => {
+    return apiService.albumEdit({ userId, albumId, album, credentials })
+  }
+
+  const albumReorder = ({ userId, albumId, tracksOrder }) => {
+    return apiService.albumReorder({ userId, albumId, tracksOrder, credentials })
   }
 
   const updateUserSettings = ({ settings }) => {
@@ -36,16 +52,16 @@ const backendInteractorService = credentials => {
     return apiService.fetchConversation({ id, credentials })
   }
 
-  const fetchFriends = ({ id, maxId, sinceId, limit }) => {
-    return apiService.fetchFriends({ id, maxId, sinceId, limit, credentials })
+  const fetchFriends = ({ id, page, limit }) => {
+    return apiService.fetchFriends({ id, page, limit, credentials })
   }
 
   const exportFriends = ({ id }) => {
     return apiService.exportFriends({ id, credentials })
   }
 
-  const fetchFollowers = ({ id, maxId, sinceId, limit }) => {
-    return apiService.fetchFollowers({ id, maxId, sinceId, limit, credentials })
+  const fetchFollowers = ({ id, page, limit }) => {
+    return apiService.fetchFollowers({ id, page, limit, credentials })
   }
 
   const fetchUser = ({ id }) => {
@@ -156,6 +172,8 @@ const backendInteractorService = credentials => {
   const deleteAccount = ({ password }) => apiService.deleteAccount({ credentials, password })
   const changePassword = ({ password, newPassword, newPasswordConfirmation }) =>
     apiService.changePassword({ credentials, password, newPassword, newPasswordConfirmation })
+  const resetPassword = ({ email }) => apiService.resetPassword({ email })
+  const resetPasswordToken = ({ token, password, passwordConfirm }) => apiService.resetPasswordToken({ token, password, passwordConfirm })
 
   const fetchSettingsMFA = () => apiService.settingsMFA({ credentials })
   const generateMfaBackupCodes = () => apiService.generateMfaBackupCodes({ credentials })
@@ -184,6 +202,10 @@ const backendInteractorService = credentials => {
     trackFetch,
     trackDelete,
     trackEdit,
+    albumFetch,
+    albumDelete,
+    albumEdit,
+    albumReorder,
     fetchConversation,
     fetchFriends,
     exportFriends,
@@ -247,7 +269,9 @@ const backendInteractorService = credentials => {
     search2,
     searchUsers,
     fetchLicenses,
-    updateUserSettings
+    updateUserSettings,
+    resetPassword,
+    resetPasswordToken
   }
 
   return backendInteractorServiceInstance

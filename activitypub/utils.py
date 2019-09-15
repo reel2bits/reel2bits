@@ -88,7 +88,10 @@ def clean_activity(activity: ObjectType) -> Dict[str, Any]:
 
 
 def build_ordered_collection(items, actor_id, page, limit=50, switch_side=False):
-    total_items = len(items)
+    try:
+        total_items = len(items)
+    except TypeError:
+        total_items = items.count()
 
     if total_items <= 0:
         return {

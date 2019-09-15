@@ -104,11 +104,29 @@ export const getClientToken = ({ clientId, clientSecret }) => {
   }).then((data) => data.json())
 }
 
+const revokeToken = ({ app, token }) => {
+  const url = `/oauth/revoke`
+  const form = new window.FormData()
+
+  form.append('client_id', app.clientId)
+  form.append('client_secret', app.clientSecret)
+  form.append('token', token)
+
+  const auth = window.btoa(token)
+
+  return window.fetch(url, {
+    headers: { 'Authorization': `Basic ${auth}` },
+    method: 'POST',
+    body: form
+  }).then((data) => data.json())
+}
+
 const oauth = {
   login,
   getToken,
   getTokenWithCredentials,
-  getOrCreateApp
+  getOrCreateApp,
+  revokeToken
 }
 
 export default oauth

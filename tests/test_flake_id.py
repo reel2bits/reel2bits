@@ -1,4 +1,4 @@
-from flake_id import gen_flakeid
+from utils.flake_id import gen_flakeid
 import time
 
 

@@ -19,9 +19,8 @@ from cachetools import cached, TTLCache
 from flasgger import Swagger
 from werkzeug.middleware.proxy_fix import ProxyFix
 
-from forms import ExtendedRegisterForm
 from models import db, Config, user_datastore, Role, create_actor
-from utils import InvalidUsage, is_admin, duration_elapsed_human, duration_song_human, add_user_log
+from utils.various import InvalidUsage, is_admin, add_user_log
 
 import texttable
 
@@ -96,8 +95,6 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
     app.jinja_env.add_extension("jinja2.ext.with_")
     app.jinja_env.add_extension("jinja2.ext.do")
     app.jinja_env.globals.update(is_admin=is_admin)
-    app.jinja_env.globals.update(duration_elapsed_human=duration_elapsed_human)
-    app.jinja_env.globals.update(duration_song_human=duration_song_human)
 
     if HAS_SENTRY:
         sentry_sdk.init(
@@ -166,9 +163,7 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
     config_oauth(app)
 
     # Setup Flask-Security
-    security = Security(  # noqa: F841
-        app, user_datastore, register_form=ExtendedRegisterForm, confirm_register_form=ExtendedRegisterForm
-    )
+    security = Security(app, user_datastore)  # noqa: F841
 
     @FlaskSecuritySignals.password_reset.connect_via(app)
     @FlaskSecuritySignals.password_changed.connect_via(app)
@@ -241,26 +236,11 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
 
         app.register_blueprint(bp_main)
 
-        from controllers.users import bp_users
-
-        app.register_blueprint(bp_users)
-
         from controllers.admin import bp_admin
 
         app.register_blueprint(bp_admin)
 
-        from controllers.sound import bp_sound
-
-        app.register_blueprint(bp_sound)
-
-        from controllers.albums import bp_albums
-
-        app.register_blueprint(bp_albums)
-
-        from controllers.search import bp_search
-
-        app.register_blueprint(bp_search)
-
+        # ActivityPub
         from controllers.api.v1.well_known import bp_wellknown
 
         app.register_blueprint(bp_wellknown)
@@ -271,6 +251,12 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
 
         from controllers.api.v1.activitypub import bp_ap
 
+        # Feeds
+        from controllers.feeds import bp_feeds
+
+        app.register_blueprint(bp_feeds)
+
+        # API
         app.register_blueprint(bp_ap)
 
         from controllers.api.v1.auth import bp_api_v1_auth
@@ -331,7 +317,7 @@ def create_app(config_filename="config.py", app_name=None, register_blueprints=T
 
     @app.errorhandler(404)
     def page_not_found(msg):
-        excluded = ["/api", "/.well-known"]
+        excluded = ["/api", "/.well-known", "/feeds"]
         if any([request.path.startswith(m) for m in excluded]):
             return jsonify({"error": "page not found"}), 404
 

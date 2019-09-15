@@ -1,8 +1,8 @@
 import { each, merge } from 'lodash'
 import apiService from '../services/api/api.service.js'
-import { humanizeErrors } from './errors'
 import vue from 'vue'
 import backendInteractorService from '../services/backend_interactor_service/backend_interactor_service.js'
+import oauthApi from '../backend/oauth/oauth.js'
 
 // Function from https://git.pleroma.social/pleroma/pleroma-fe/blob/develop/src/modules/users.js
 export const mergeOrAdd = (arr, obj, item) => {
@@ -51,6 +51,32 @@ export const mutations = {
   clearCurrentUser (state) {
     state.currentUser = false
     state.lastLoginName = false
+  },
+  updateUserRelationship (state, relationships) {
+    relationships.forEach(relationship => {
+      const user = state.usersObject[relationship.id]
+      if (user) {
+        user.follows_you = relationship.followed_by
+        user.following = relationship.following
+        user.muted = relationship.muting
+        user.blocking = relationship.blocking
+        user.subscribed = relationship.subscribing
+      }
+    })
+  },
+  // Because frontend doesn't have a reason to keep these stuff in memory
+  // outside of viewing someones user profile.
+  clearFriends (state, userId) {
+    const user = state.usersObject[userId]
+    if (user) {
+      vue.set(user, 'friendIds', [])
+    }
+  },
+  clearFollowers (state, userId) {
+    const user = state.usersObject[userId]
+    if (user) {
+      vue.set(user, 'followerIds', [])
+    }
   }
 }
 
@@ -83,11 +109,17 @@ const users = {
   actions: {
     fetchUser (store, id) {
       console.debug('fetchUser ' + id)
-      return apiService.fetchUser({ id, store })
+      return store.rootState.api.backendInteractor.fetchUser({ id })
         .then((user) => {
           store.commit('addNewUsers', [user])
           return user
         })
+    },
+    fetchUserRelationship (store, id) {
+      if (store.state.currentUser) {
+        store.rootState.api.backendInteractor.fetchUserRelationship({ id })
+          .then((relationships) => store.commit('updateUserRelationship', relationships))
+      }
     },
     loginUser (store, accessToken) {
       return new Promise((resolve, reject) => {
@@ -101,6 +133,8 @@ const users = {
               user.muteIds = []
               store.commit('setCurrentUser', user)
               store.commit('addNewUsers', [user])
+
+              store.dispatch('setOption', { name: 'interfaceLanguage', value: user.reel2bits.lang })
 
               // TODO: getNotificationPermission()
               // Set our new backend interactor
@@ -138,27 +172,35 @@ const users = {
         store.commit('setToken', data.access_token)
         store.dispatch('loginUser', data.access_token)
       } catch (e) {
-        let errors = JSON.parse(e.message)
-        // replace ap_id with username
-        if (typeof errors === 'object') {
-          if (errors.ap_id) {
-            errors.username = errors.ap_id
-            delete errors.ap_id
-          }
-          errors = humanizeErrors(errors)
-        }
-        store.commit('signUpFailure', errors)
-        throw Error(errors)
+        store.commit('signUpFailure', e.errors)
+        throw e
       }
     },
     logout (store) {
-      store.commit('clearCurrentUser')
-      store.commit('clearToken')
-      store.dispatch('stopFetching', 'friends')
-      store.commit('setBackendInteractor', backendInteractorService(store.getters.getToken()))
-      store.dispatch('stopFetching', 'notifications')
-      store.commit('clearNotifications')
-      store.commit('resetStatuses')
+      const { oauth } = store.rootState
+
+      const data = {
+        ...oauth,
+        commit: store.commit
+      }
+
+      return oauthApi.getOrCreateApp(data)
+        .then((app) => {
+          const params = {
+            app,
+            token: oauth.userToken
+          }
+
+          return oauthApi.revokeToken(params)
+        })
+        .then(() => {
+          store.commit('clearCurrentUser')
+          store.commit('clearToken')
+          store.commit('setBackendInteractor', backendInteractorService(store.getters.getToken()))
+          store.dispatch('stopFetching', 'notifications')
+          store.commit('clearNotifications')
+          store.commit('resetStatuses')
+        })
     }
   }
 }

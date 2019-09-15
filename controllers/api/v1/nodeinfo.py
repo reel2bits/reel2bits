@@ -1,5 +1,5 @@
 from flask import Blueprint, current_app, jsonify, Response, g, abort
-from utils import RESTRICTED_NICKNAMES
+from utils.various import RESTRICTED_NICKNAMES
 from models import db, Config, User, Sound
 
 bp_nodeinfo = Blueprint("bp_nodeinfo", __name__, url_prefix="/nodeinfo")

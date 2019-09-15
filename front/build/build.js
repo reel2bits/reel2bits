@@ -25,9 +25,16 @@ rm('-rf', assetsPath)
 mkdir('-p', assetsPath)
 cp('-R', 'static/*', assetsPath)
 
-webpack(webpackConfig, function (err, stats) {
+webpack(webpackConfig, (err, stats) => {
   spinner.stop()
-  if (err) throw err
+  if (err) {
+    console.error(err.stack || err)
+    if (err.details) {
+      console.error(err.details)
+    }
+    return
+  }
+
   process.stdout.write(stats.toString({
     colors: true,
     modules: false,
@@ -35,4 +42,8 @@ webpack(webpackConfig, function (err, stats) {
     chunks: false,
     chunkModules: false
   }) + '\n')
+
+  if (stats.hasErrors()) {
+    process.exit(1)
+  }
 })

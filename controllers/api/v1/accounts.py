@@ -4,10 +4,11 @@ from flask_security.utils import hash_password
 from flask_security import confirmable as FSConfirmable
 from app_oauth import authorization, require_oauth
 from authlib.flask.oauth2 import current_token
-from datas_helpers import to_json_statuses, to_json_account
-from utils import forbidden_username, add_user_log
+from datas_helpers import to_json_track, to_json_account, to_json_relationship
+from utils.various import forbidden_username, add_user_log
 from tasks import send_update_profile
 import re
+
 
 bp_api_v1_accounts = Blueprint("bp_api_v1_accounts", __name__)
 
@@ -61,7 +62,7 @@ def accounts():
         else:
             errors["bearer"] = ["API Bearer Authorization format issue"]
     else:
-        current_app.logging.info("/api/v1/accounts: no Authorization bearer given")
+        current_app.logger.info("/api/v1/accounts: no Authorization bearer given")
 
     if not request.json:
         abort(400)
@@ -163,8 +164,9 @@ def accounts():
     return jsonify({**token, "created_at": tok.issued_at}), 200
 
 
-@bp_api_v1_accounts.route("/api/v1/accounts/<string:username>", methods=["GET"])
-def account_get(username):
+@bp_api_v1_accounts.route("/api/v1/accounts/<string:username_or_id>", methods=["GET"])
+@require_oauth(optional=True)
+def account_get(username_or_id):
     """
     Returns Account
     ---
@@ -176,13 +178,23 @@ def account_get(username):
         schema:
             $ref: '#/definitions/Account'
     """
-    user = User.query.filter(User.name == username).first()
+    if username_or_id.isdigit():
+        # an int is DB ID
+        user = User.query.filter(User.id == int(username_or_id)).first()
+    else:
+        # a string is Local User
+        user = User.query.filter(User.name == username_or_id, User.local.is_(True)).first()
+
     if not user:
         abort(404)
     if len(user.actor) != 1:
         abort(404)
 
-    return jsonify(to_json_account(user))
+    relationship = False
+    if current_token and current_token.user:
+        relationship = to_json_relationship(current_token.user, user)
+    account = to_json_account(user, relationship)
+    return jsonify(account)
 
 
 @bp_api_v1_accounts.route("/api/v1/accounts/verify_credentials", methods=["GET"])
@@ -391,6 +403,7 @@ def accounts_update_credentials():
 
 
 @bp_api_v1_accounts.route("/api/v1/accounts/<int:user_id>/statuses", methods=["GET"])
+@require_oauth(optional=True)
 def user_statuses(user_id):
     """
     User statuses.
@@ -442,8 +455,272 @@ def user_statuses(user_id):
     tracks = []
     for t in q.items:
         if t.Sound:
-            tracks.append(to_json_statuses(t.Sound, to_json_account(t.Sound.user)))
+            relationship = False
+            if current_token and current_token.user:
+                relationship = to_json_relationship(current_token.user, t.Sound.user)
+            account = to_json_account(t.Sound.user, relationship)
+            tracks.append(to_json_track(t.Sound, account))
         else:
             print(t.Activity)
     resp = {"page": page, "page_size": count, "totalItems": q.total, "items": tracks, "totalPages": q.pages}
+    return jsonify(resp)
+
+
+@bp_api_v1_accounts.route("/api/v1/accounts/relationships", methods=["GET"])
+@bp_api_v1_accounts.route("/api/v1/accounts/relationships/", methods=["GET"])
+@require_oauth("read")
+def relationships():
+    """
+    Relationship of the user to the given accounts in regards to following, blocking, muting, etc.
+    ---
+    tags:
+        - Accounts
+    definitions:
+      Relationship:
+        type: object
+        properties:
+            id:
+                type: string
+                nullable: false
+            following:
+                type: boolean
+                nullable: false
+            followed_by:
+                type: boolean
+                nullable: false
+            blocking:
+                type: boolean
+                nullable: false
+            muting:
+                type: boolean
+                nullable: false
+            muting_notifications:
+                type: boolean
+                nullable: false
+            requested:
+                type: boolean
+                nullable: false
+            domain_blocking:
+                type: boolean
+                nullable: false
+            showing_reblogs:
+                type: boolean
+                nullable: false
+            endorsed:
+                type: boolean
+                nullable: false
+    parameters:
+        - name: id
+          in: query
+          type: array
+          required: true
+          items:
+            type: integer
+          description: Array of account IDs
+    responses:
+      200:
+        description: Returns array of Relationship
+        schema:
+            $ref: '#/definitions/Relationship'
+    """
+    ids = request.args.getlist("id")
+    of_user = current_token.user
+
+    rels = []
+    for id in ids:
+        against_user = User.query.filter(User.id == id).first()
+        if not against_user:
+            if len(ids) > 1:
+                next
+            else:
+                return jsonify([])
+        rels.append(to_json_relationship(of_user, against_user))
+    return jsonify(rels)
+
+
+@bp_api_v1_accounts.route("/api/v1/accounts/<int:user_id>/follow", methods=["POST"])
+@require_oauth("write")
+def follow(user_id):
+    """
+    Follow an account.
+    ---
+    tags:
+        - Accounts
+    parameters:
+        - name: id
+          in: query
+          type: integer
+          required: true
+          description: User ID to follow
+    responses:
+      200:
+        description: Returns Relationship
+        schema:
+            $ref: '#/definitions/Relationship'
+    """
+    current_user = current_token.user
+    if not current_user:
+        abort(400)
+
+    user = User.query.filter(User.id == user_id).first()
+    if not user:
+        abort(404)
+
+    actor_me = current_user.actor[0]
+    actor_them = user.actor[0]
+
+    if user.local:
+        actor_me.follow(None, actor_them)
+        return jsonify([to_json_relationship(current_user, user)])
+    else:
+        # We need to initiate a follow request
+        # FIXME TODO
+        abort(501)
+
+
+@bp_api_v1_accounts.route("/api/v1/accounts/<int:user_id>/unfollow", methods=["POST"])
+@require_oauth("write")
+def unfollow(user_id):
+    """
+    Unfollow an account.
+    ---
+    tags:
+        - Accounts
+    parameters:
+        - name: id
+          in: path
+          type: integer
+          required: true
+          description: User ID to follow
+    responses:
+      200:
+        description: Returns Relationship
+        schema:
+            $ref: '#/definitions/Relationship'
+    """
+    current_user = current_token.user
+    if not current_user:
+        abort(400)
+
+    user = User.query.filter(User.id == user_id).first()
+    if not user:
+        abort(404)
+
+    actor_me = current_user.actor[0]
+    actor_them = user.actor[0]
+
+    if user.local:
+        actor_me.unfollow(actor_them)
+        return jsonify([to_json_relationship(current_user, user)])
+    else:
+        # We need to initiate a follow request
+        # FIXME TODO
+        abort(501)
+
+
+@bp_api_v1_accounts.route("/api/v1/accounts/<int:user_id>/followers", methods=["GET"])
+@require_oauth(optional=True)
+def followers(user_id):
+    """
+    Accounts which follow the given account.
+    ---
+    tags:
+        - Accounts
+    parameters:
+        - name: id
+          in: path
+          type: integer
+          required: true
+          description: User ID to follow
+        - name: count
+          in: query
+          type: integer
+          required: true
+          description: count per page
+        - name: page
+          in: query
+          type: integer
+          description: page number
+    responses:
+      200:
+        description: Returns paginated array of Account
+        schema:
+            $ref: '#/definitions/Account'
+    """
+    user = User.query.filter(User.id == user_id).first()
+    if not user:
+        abort(404)
+
+    count = int(request.args.get("count", 20))
+    page = int(request.args.get("page", 1))
+
+    q = user.actor[0].followers
+    q = q.paginate(page=page, per_page=count)
+
+    followers = []
+    for t in q.items:
+        # Note: the items are Follower(actor, target)
+        # Where target is `user` since we are asking his followers
+        # And actor = the user following `user`
+        relationship = False
+        if current_token and current_token.user:
+            relationship = to_json_relationship(current_token.user, t.actor.user)
+        account = to_json_account(t.actor.user, relationship)
+        followers.append(account)
+
+    resp = {"page": page, "page_size": count, "totalItems": q.total, "items": followers, "totalPages": q.pages}
+    return jsonify(resp)
+
+
+@bp_api_v1_accounts.route("/api/v1/accounts/<int:user_id>/following", methods=["GET"])
+@require_oauth(optional=True)
+def following(user_id):
+    """
+    Accounts followed by the given account.
+    ---
+    tags:
+        - Accounts
+    parameters:
+        - name: id
+          in: path
+          type: integer
+          required: true
+          description: User ID to follow
+        - name: count
+          in: query
+          type: integer
+          required: true
+          description: count per page
+        - name: page
+          in: query
+          type: integer
+          description: page number
+    responses:
+      200:
+        description: Returns paginated array of Account
+        schema:
+            $ref: '#/definitions/Account'
+    """
+    user = User.query.filter(User.id == user_id).first()
+    if not user:
+        abort(404)
+
+    count = int(request.args.get("count", 20))
+    page = int(request.args.get("page", 1))
+
+    q = user.actor[0].followings
+    q = q.paginate(page=page, per_page=count)
+
+    followings = []
+    for t in q.items:
+        # Note: the items are Follower(actor, target)
+        # Where actor is `user` since we are asking his followers
+        # And target = the user following `user`
+        relationship = False
+        if current_token and current_token.user:
+            relationship = to_json_relationship(current_token.user, t.target.user)
+        account = to_json_account(t.target.user, relationship)
+        followings.append(account)
+
+    resp = {"page": page, "page_size": count, "totalItems": q.total, "items": followings, "totalPages": q.pages}
     return jsonify(resp)

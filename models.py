@@ -22,7 +22,7 @@ from little_boxes import activitypub as ap
 from urllib.parse import urlparse
 from authlib.flask.oauth2.sqla import OAuth2ClientMixin, OAuth2AuthorizationCodeMixin, OAuth2TokenMixin
 import time
-from flake_id import gen_flakeid
+from utils.flake_id import gen_flakeid
 import uuid
 
 db = SQLAlchemy()
@@ -61,11 +61,25 @@ class Role(db.Model, RoleMixin):
     __mapper_args__ = {"order_by": name}
 
 
+class PasswordResetToken(db.Model):
+    __tablename__ = "password_reset_token"
+    id = db.Column(db.Integer, primary_key=True)
+    token = db.Column(db.String(255), unique=True, nullable=False)
+    created_at = db.Column(db.DateTime(timezone=False), default=datetime.datetime.utcnow)
+    updated_at = db.Column(
+        db.DateTime(timezone=False), default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow
+    )
+    expires_at = db.Column(db.DateTime(timezone=False), nullable=True)
+    used = db.Column(db.Boolean(), default=False)
+
+    user_id = db.Column(db.Integer(), db.ForeignKey("user.id"), nullable=True)
+
+
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(255), unique=True, nullable=False, info={"label": "Email"})
-    name = db.Column(db.String(255), unique=True, nullable=False, info={"label": "Username"})
-    password = db.Column(db.String(255), nullable=False, info={"label": "Password"})
+    email = db.Column(db.String(255), unique=True, nullable=True, info={"label": "Email"})
+    name = db.Column(db.String(255), nullable=False, info={"label": "Username"})
+    password = db.Column(db.String(255), nullable=True, info={"label": "Password"})
     active = db.Column(db.Boolean())
     confirmed_at = db.Column(db.DateTime())
 
@@ -80,11 +94,15 @@ class User(db.Model, UserMixin):
 
     timezone = db.Column(db.String(255), nullable=False, default="UTC")  # Managed and fed by pytz
 
-    slug = db.Column(db.String(255), unique=True, nullable=True)
+    # should be removed since User.name is URL friendly
+    slug = db.Column(db.String(255), nullable=True)
+
+    local = db.Column(db.Boolean(), default=True)
 
     roles = db.relationship("Role", secondary=roles_users, backref=db.backref("users", lazy="dynamic"))
     apitokens = db.relationship("Apitoken", backref="user", lazy="dynamic", cascade="delete")
 
+    password_reset_tokens = db.relationship("PasswordResetToken", backref="user", lazy="dynamic", cascade="delete")
     user_loggings = db.relationship("UserLogging", backref="user", lazy="dynamic", cascade="delete")
     loggings = db.relationship("Logging", backref="user", lazy="dynamic", cascade="delete")
 
@@ -504,9 +522,9 @@ class Actor(db.Model):
     last_fetch_date = db.Column(db.DateTime(timezone=False), default=datetime.datetime.utcnow)
     manually_approves_followers = db.Column(db.Boolean, nullable=True, server_default=None)
     # Who follows self
-    followers = db.relationship("Follower", backref="followers", primaryjoin=id == Follower.target_id)
+    followers = db.relationship("Follower", backref="followers", primaryjoin=id == Follower.target_id, lazy="dynamic")
     # Who self follows
-    followings = db.relationship("Follower", backref="followings", primaryjoin=id == Follower.actor_id)
+    followings = db.relationship("Follower", backref="followings", primaryjoin=id == Follower.actor_id, lazy="dynamic")
     # Relation on itself, intermediary with actor and target
     # By using an Association Object, which isn't possible except by using
     # two relations. This may be better than only one, and some hackish things
@@ -552,6 +570,14 @@ class Actor(db.Model):
         if rel:
             db.session.delete(rel)
             db.session.commit()
+
+    def is_followed_by(self, target):
+        print(f"is {self.preferred_username} followed by {target.preferred_username} ?")
+        return self.followers.filter(Follower.actor_id == target.id).first()
+
+    def is_following(self, target):
+        print(f"is {self.preferred_username} following {target.preferred_username} ?")
+        return self.followings.filter(Follower.target_id == target.id).first()
 
     def to_dict(self):
         return {
