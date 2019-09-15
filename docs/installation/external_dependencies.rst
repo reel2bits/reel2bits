@@ -55,9 +55,7 @@ for reel2bits to work properly:
 Cache setup (Redis)
 -------------------
 
-reel2bits also requires a cache server:
-
-- To handle asynchronous tasks such as music transcoding or some ActivityPub tasks
+reel2bits also requires a cache server to handle asynchronous tasks such as music transcoding or some ActivityPub tasks.
 
 On Debian-like distributions, a redis package is available, and you can
 install it:
