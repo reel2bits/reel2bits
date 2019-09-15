@@ -1,9 +1,9 @@
-Debian based distribution installation
+Debian-based distribution installation
 ======================================
 
 .. note::
 
-    This guide targets Debian 9 (Stretch), which is the latest Debian, or the latest ubuntu
+    This guide targets Debian 9 (Stretch), which is the latest Debian. It also apply to the latest Ubuntu
 
 External dependencies
 ---------------------
@@ -55,7 +55,7 @@ Log in as the newly created user from now on:
 Download latest reel2bits release
 ---------------------------------
 
-Locate the latest release `from the release page <https://github.com/rhaamo/reel2bits/releases>`_ like ``v0.5``, or if you want to run the unstable ``master`` branch.
+Locate the latest stable release `from the release page <https://github.com/rhaamo/reel2bits/releases>`_ like ``v0.5``, or if you want to run the unstable, use the ``master`` branch.
 
 Still under your ``reel2bits`` user:
 
