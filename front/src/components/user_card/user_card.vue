@@ -1,5 +1,5 @@
 <template>
-  <div class="card my-4">
+  <div class="card mb-4">
     <div class="card-body py-3 px-3">
       <div class="d-flex mb-2">
         <div class="d-flex rounded-circle mr-2" style="width:96px; height:96px; overflow:hidden">
@@ -65,7 +65,7 @@
       </p>
       <ul class="nav nav-fill">
         <li class="nav-item border-right">
-          <router-link :to="{ name: 'user-profile-tracks', params: { name: user.screen_name } }">
+          <router-link :to="{ name: 'user-profile-tracks', params: { name: user.screen_name } }" class="text-decoration-none">
             <p class="h3 font-weight-normal m-0">
               {{ user.statuses_count }}
             </p><p class="m-0">
@@ -76,7 +76,7 @@
           </router-link>
         </li>
         <li class="nav-item border-right">
-          <router-link :to="{ name: 'user-profile-albums', params: { name: user.screen_name } }">
+          <router-link :to="{ name: 'user-profile-albums', params: { name: user.screen_name } }" class="text-decoration-none">
             <p class="h3 font-weight-normal m-0">
               {{ user.reel2bits.albums_count }}
             </p><p class="m-0">
@@ -87,7 +87,7 @@
           </router-link>
         </li>
         <li class="nav-item border-right">
-          <router-link :to="{ name: 'user-profile-followers', params: { name: user.screen_name } }">
+          <router-link :to="{ name: 'user-profile-followers', params: { name: user.screen_name } }" class="text-decoration-none">
             <p class="h3 font-weight-normal m-0">
               {{ user.followers_count }}
             </p><p class="m-0">
@@ -98,7 +98,7 @@
           </router-link>
         </li>
         <li class="nav-item">
-          <router-link :to="{ name: 'user-profile-followings', params: { name: user.screen_name } }">
+          <router-link :to="{ name: 'user-profile-followings', params: { name: user.screen_name } }" class="text-decoration-none">
             <p class="h3 font-weight-normal m-0">
               {{ user.friends_count }}
             </p><p class="m-0">

@@ -22,6 +22,7 @@
                 <b-dropdown id="userDropdown" :text="labels.create"
                             right
                             variant="primary"
+                            toggle-class="mx-2"
                 >
                   <b-dropdown-item>
                     <router-link :to="{ name: 'tracks-upload' }"
@@ -44,7 +45,7 @@
                 <b-dropdown id="userDropdown" :text="atUsername"
                             right
                             variant="link"
-                            toggle-class="px-0 text-decoration-none"
+                            toggle-class="px-0 text-decoration-none text-body mr-3"
                 >
                   <b-dropdown-item><router-link :to="{ name: 'user-profile', params: { name: currentUser.screen_name } }"><translate translate-context="Header/*/DropDown/User/MyProfile">My Profile</translate></router-link></b-dropdown-item>
                   <b-dropdown-item><router-link :to="{ name: 'user-settings' }"><translate translate-context="Header/*/DropDown/User/Settings">Settings</translate></router-link></b-dropdown-item>
