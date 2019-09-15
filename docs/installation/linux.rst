@@ -120,12 +120,12 @@ You can now start to configure reel2bits:
 
     cp config.py.sample config.py
 
-Then edit this file as you wishes.
+Then edit this file as you wish.
 
 Sentry
 ------
 
-If you known, and use Sentry, you can install the python package:
+If you know and use Sentry, you can install the python package:
 
 .. code-block:: shell
 
@@ -174,7 +174,7 @@ You can then create your first user account:
 Front installation
 ------------------
 
-You also needs to either get a frontend prebuild or build it yourself.
+You also need to either get a frontend prebuild or build it yourself.
 
 Pre-build
 ^^^^^^^^^
@@ -206,7 +206,7 @@ Get the archive and extract:
 Build it yourself
 ^^^^^^^^^^^^^^^^^
 
-Makes sure you have nodejs installed then:
+Make sure you have Node.js installed then:
 
 .. code-block:: shell
 
