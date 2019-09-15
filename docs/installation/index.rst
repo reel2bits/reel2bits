@@ -26,7 +26,7 @@ Available installation methods
 -------------------------------
 
 Docker will soon be available to deploy a reel2bits instance.
-Right now you can install it on any Linux distribution.
+For now you can install it on any Linux distribution.
 
 .. toctree::
     :maxdepth: 1
