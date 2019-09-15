@@ -3,31 +3,32 @@
     <!-- Top navigation -->
     <nav class="navbar fixed-top bg-light">
       <div class="container">
-        <div class="w-100 border-bottom align-items-center d-flex justify-content-between">
-          <b-link :to="{ name: 'public-timeline' }" class="navbar-brand">
+        <div class="w-100 border-bottom align-items-center d-flex">
+          <b-link :to="{ name: 'public-timeline' }" class="navbar-brand ml-0">
             <MainLogo :logo_spin_duration="logoSpinDuration" /><h3 class="text-body mx-3 d-inline">
               {{ sitename }}
             </h3>
           </b-link>
-          <div class="col-md-4">
+          <div class="col-md-4 mx-auto justify-content-center">
             <input id="topsearch" class="form-control" type="search"
                    placeholder="Search" aria-label="Search"
             >
           </div>
-          <div>
+          <div class="mr-0">
             <span v-if="currentUser">
 
-              <b-dropdown id="userDropdown" text="Create" 
-                right 
-                variant="primary">
+              <b-dropdown id="userDropdown" text="Create"
+                          right
+                          variant="primary"
+              >
                 <b-dropdown-item>
                   <router-link :to="{ name: 'tracks-upload' }"
-                            text="new track"
+                               text="new track"
                   >New Track</router-link>
                 </b-dropdown-item>
                 <b-dropdown-item>
                   <router-link :to="{ name: 'albums-new' }"
-                            text="new album"
+                               text="new album"
                   >New Album</router-link>
                 </b-dropdown-item>
               </b-dropdown>
@@ -38,10 +39,11 @@
                      title="go to profile"
                 >
               </router-link>
-              <b-dropdown id="userDropdown" :text="atUsername" 
-                right 
-                variant="link" 
-                toggle-class="px-0 text-decoration-none">
+              <b-dropdown id="userDropdown" :text="atUsername"
+                          right
+                          variant="link"
+                          toggle-class="px-0 text-decoration-none"
+              >
                 <b-dropdown-item><router-link :to="{ name: 'user-profile', params: { name: currentUser.screen_name } }">My profile</router-link></b-dropdown-item>
                 <b-dropdown-item><router-link :to="{ name: 'user-settings' }">Settings</router-link></b-dropdown-item>
                 <b-dropdown-item><router-link :to="{ name: 'account-logs' }">Logs</router-link></b-dropdown-item>
