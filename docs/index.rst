@@ -3,7 +3,7 @@
 reel2bits documentation
 =========================
 
-reel2bits is a self-hosted, free and open-source web application dedicated for sharing your own music tracks, albums, or podcasts.
+reel2bits is a self-hosted, free and open-source web application dedicated for sharing music tracks, albums, or podcasts.
 
 .. toctree::
     :maxdepth: 2
