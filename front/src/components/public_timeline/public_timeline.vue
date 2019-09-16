@@ -1,5 +1,5 @@
 <template>
-  <div class="row">
+  <div class="row mt-4">
     <div class="col-md-8">
       <TimelineTabs active="public" />
 
@@ -8,7 +8,7 @@
       />
     </div>
     <div class="col-md-4">
-      <UserCard v-if="currentUser" :user="currentUser" />
+      <UserCard v-if="currentUser" :user="currentUser"/>
       <Footer />
     </div>
   </div>

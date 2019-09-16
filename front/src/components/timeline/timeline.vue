@@ -10,7 +10,7 @@
     <div class="row">
       <div v-if="tracks.length > 0" class="col-md-12">
         <div v-for="status in tracks" :key="status.id" :status="status"
-             class="status"
+             class="mb-3 pt-1 pb-4 border-bottom"
         >
           <Track v-if="status.type==='track'" :key="status.id" :track="status" />
           <Album v-if="status.type==='album'" :key="status.id" :album="status" />

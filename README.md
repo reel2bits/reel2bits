@@ -35,6 +35,33 @@ The Developper documentation is available here: https://docs-develop.reel2bits.o
 
 Refers to https://docs-develop.reel2bits.org/translators.html
 
+## Development notes
+
+Run the backend with:
+
+```bash
+export AUTHLIB_INSECURE_TRANSPORT=1
+export FLASK_ENV=development
+flask run
+```
+
+Setup the frontend with `front/config/local.json`:
+
+```json
+{
+  "target": "http://127.0.0.1:5000/"
+}
+```
+
+And run it with:
+
+```bash
+cd front
+npm run dev
+```
+
+Then you can access the frontend on http://localhost:8081 and backend requests will be proxified properly.
+
 ## Docker
 
 TODO

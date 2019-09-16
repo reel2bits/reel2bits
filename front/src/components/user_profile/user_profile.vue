@@ -4,20 +4,23 @@
       {{ error }}
     </div>
     <div v-if="user">
-      <div class="row">
+      <div class="row mt-4">
         <div class="col-md-8">
-          <b-nav tabs>
-            <b-nav-item :active="isTimelineTracks" :to="{ name: 'user-profile-tracks' }">
+          <b-nav>
+            <b-nav-item :active="isTimelineTracks" :to="{ name: 'user-profile-tracks' }"
+            class="border-right pr-3">
               <translate translate-context="Content/UserProfile/Tab/Text">
                 Tracks
               </translate>
             </b-nav-item>
-            <b-nav-item :active="isTimelineAlbums" :to="{ name: 'user-profile-albums' }">
+            <b-nav-item :active="isTimelineAlbums" :to="{ name: 'user-profile-albums' }"
+            class="border-right px-3">
               <translate translate-context="Content/UserProfile/Tab/Text">
                 Albums
               </translate>
             </b-nav-item>
-            <b-nav-item v-if="isUs" :active="isTimelineDrafts" :to="{ name: 'user-profile-drafts' }">
+            <b-nav-item v-if="isUs" :active="isTimelineDrafts" :to="{ name: 'user-profile-drafts' }"
+            class="px-3">
               <translate translate-context="Content/UserProfile/Tab/Text">
                 Drafts
               </translate>

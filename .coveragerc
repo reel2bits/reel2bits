@@ -1,0 +1,9 @@
+[run]
+omit = 
+    tests/*
+    .eggs/*
+    config.py
+    configtest.py
+    **/*__init__.py
+    venv/*
+    front/*
