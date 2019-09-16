@@ -12,8 +12,8 @@
         <b-link :to="{ name: 'user-profile', params: { name: track.account.screen_name } }" class="text-decoration-none">
           {{ track.account.name }}
         </b-link>
-        <translate translate-context="Content/Track/Single track in timelines, 'XXX uploaded a track'">
-          uploaded a track
+        <translate translate-context="Content/Track/Single track in timelines, part of 'XXX >>uploaded a track<< YYY times ago'" :translate-params="{publishedAgo: publishedAgo}" :title="track.uploaded_on">
+          uploaded a track %{publishedAgo}
         </translate>
       </span>
     </div>
@@ -29,12 +29,9 @@
             <b-link :to="{ name: 'tracks-show', params: { username: track.account.screen_name, trackId: track.slug } }"
                     class="text-body text-decoration-none"
             >
-              {{ track.title | truncate(45) }}
+              {{ track.title | truncate(60) }}
             </b-link>
           </h2>
-          <div class="d-flex" :title="track.uploaded_on">
-            {{ publishedAgo }}
-          </div>
         </div>
         <div v-if="processingDone" class="d-flex my-2">
           <b-button v-if="!isPlaying" class="playPause" variant="primary"
