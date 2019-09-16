@@ -45,7 +45,7 @@ you should now be able to open a postgresql shell:
     sudo -u reel2bits -H psql
 
 Unless you give a superuser access to the database user, you should also
-enable some extensions on your database server. Tose are required
+enable some extensions on your database server. Those are required
 for reel2bits to work properly:
 
 .. code-block:: shell
