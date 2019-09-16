@@ -8,19 +8,22 @@
         <div class="col-md-8">
           <b-nav>
             <b-nav-item :active="isTimelineTracks" :to="{ name: 'user-profile-tracks' }"
-            class="border-right pr-3">
+                        class="border-right pr-3"
+            >
               <translate translate-context="Content/UserProfile/Tab/Text">
                 Tracks
               </translate>
             </b-nav-item>
             <b-nav-item :active="isTimelineAlbums" :to="{ name: 'user-profile-albums' }"
-            class="border-right px-3">
+                        class="border-right px-3"
+            >
               <translate translate-context="Content/UserProfile/Tab/Text">
                 Albums
               </translate>
             </b-nav-item>
             <b-nav-item v-if="isUs" :active="isTimelineDrafts" :to="{ name: 'user-profile-drafts' }"
-            class="px-3">
+                        class="px-3"
+            >
               <translate translate-context="Content/UserProfile/Tab/Text">
                 Drafts
               </translate>

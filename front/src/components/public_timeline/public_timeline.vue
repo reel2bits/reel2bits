@@ -8,7 +8,7 @@
       />
     </div>
     <div class="col-md-4">
-      <UserCard v-if="currentUser" :user="currentUser"/>
+      <UserCard v-if="currentUser" :user="currentUser" />
       <Footer />
     </div>
   </div>

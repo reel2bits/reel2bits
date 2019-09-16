@@ -2,31 +2,33 @@
   <div>
     <div class="flex-fill my-2">
       <b-link :to="{ name: 'user-profile', params: { name: track.account.screen_name } }" class="text-decoration-none">
-        <img :src="track.account.profile_image_url" :alt="userAvatarAlt" 
-        class="rounded-circle mr-1" 
-        width="24" 
-        height="24">
+        <img :src="track.account.profile_image_url" :alt="userAvatarAlt"
+             class="rounded-circle mr-1"
+             width="24"
+             height="24"
+        >
       </b-link>
       <span class="align-middle">
         <b-link :to="{ name: 'user-profile', params: { name: track.account.screen_name } }" class="text-decoration-none">
           {{ track.account.name }}
-          </b-link>
+        </b-link>
         <translate translate-context="Content/Track/Single track in timelines, 'XXX uploaded a track'">
           uploaded a track
         </translate>
-      </span>          
+      </span>
     </div>
     <div class="d-flex my-12">
       <b-link :to="{ name: 'tracks-show', params: { username: track.account.screen_name, trackId: track.slug } }">
         <img :src="track.picture_url" class="d-flex mr-3"
-              style="width:112px; height:112px;"
+             style="width:112px; height:112px;"
         >
       </b-link>
       <div class="flex-fill">
         <div class="d-flex">
           <h2 class="flex-fill h5" :title="track.title">
             <b-link :to="{ name: 'tracks-show', params: { username: track.account.screen_name, trackId: track.slug } }"
-            class="text-body text-decoration-none">
+                    class="text-body text-decoration-none"
+            >
               {{ track.title | truncate(45) }}
             </b-link>
           </h2>
@@ -57,7 +59,7 @@
             </b-button>
           </div>
           <div class="ml-auto align-self-end">
-            <span class="text-secondary px-2" v-if="isPlaying">{{ playerTimeCur }}</span> <span class="text-muted">{{ playerTimeTot }}</span>
+            <span v-if="isPlaying" class="text-secondary px-2">{{ playerTimeCur }}</span> <span class="text-muted">{{ playerTimeTot }}</span>
           </div>
         </div>
       </div>

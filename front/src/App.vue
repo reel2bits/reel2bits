@@ -4,7 +4,7 @@
     <b-navbar toggleable="lg" class="fixed-top bg-light">
       <div class="container">
         <div class="w-100 border-bottom align-items-center d-flex">
-          <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+          <b-navbar-toggle target="nav-collapse" />
           <b-navbar-brand :to="{ name: 'public-timeline' }" class="d-flex mr-auto align-items-center w-50">
             <MainLogo :logo_spin_duration="logoSpinDuration" />
             <h3 class="text-body mx-3">
@@ -14,7 +14,7 @@
           <b-collapse id="nav-collapse" is-nav class="w-100">
             <div class="w-100 justify-content-center">
               <input id="topsearch" class="form-control" type="search"
-                    :placeholder="labels.searchPlaceholder" :aria-label="labels.searchAria"
+                     :placeholder="labels.searchPlaceholder" :aria-label="labels.searchAria"
               >
             </div>
             <div class="ml-auto w-100 justify-content-end text-right">
@@ -26,20 +26,20 @@
                 >
                   <b-dropdown-item>
                     <router-link :to="{ name: 'tracks-upload' }"
-                                :text="labels.createTrack"
+                                 :text="labels.createTrack"
                     ><translate translate-context="Header/*/DropDown/Create/NewTrack text">New Track</translate></router-link>
                   </b-dropdown-item>
                   <b-dropdown-item>
                     <router-link :to="{ name: 'albums-new' }"
-                                :text="labels.createAlbum"
+                                 :text="labels.createAlbum"
                     ><translate translate-context="Header/*/DropDown/Create/NewAlbum text">New Album</translate></router-link>
                   </b-dropdown-item>
                 </b-dropdown>
 
                 <router-link :to="{ name: 'user-profile', params: { name: currentUser.screen_name } }">
                   <img :src="currentUser.profile_image_url" class="rounded-circle mx-2" width="40"
-                      height="40" :alt="usernameAvatar"
-                      :title="labels.myAvatarTitle"
+                       height="40" :alt="usernameAvatar"
+                       :title="labels.myAvatarTitle"
                   >
                 </router-link>
                 <b-dropdown id="userDropdown" :text="atUsername"

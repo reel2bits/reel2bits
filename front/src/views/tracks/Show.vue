@@ -76,7 +76,7 @@
               </div>
             </div>
             <div class="ml-auto align-self-end">
-              <span class="text-secondary px-2" v-if="isPlaying">{{ playerTimeCur }}</span> <span class="text-muted">{{ playerTimeTot }}</span>
+              <span v-if="isPlaying" class="text-secondary px-2">{{ playerTimeCur }}</span> <span class="text-muted">{{ playerTimeTot }}</span>
             </div>
           </div>
         </div>
