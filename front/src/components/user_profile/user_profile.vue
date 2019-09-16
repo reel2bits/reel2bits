@@ -85,7 +85,7 @@ export default {
         this.userId === this.$store.state.users.currentUser.id
     },
     isTimelineTracks () {
-      return this.$route.name === 'user-profile-tracks'
+      return this.$route.name === 'user-profile-tracks' || this.$route.name === 'user-profile'
     },
     isTimelineAlbums () {
       return this.$route.name === 'user-profile-albums'
