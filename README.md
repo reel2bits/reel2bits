@@ -5,7 +5,7 @@
 </h1>
 
 <p align="center">
-  <a href="https://circleci.com/gh/rhaamo/reel2bits"><img src="https://circleci.com/gh/rhaamo/reel2bits.svg?style=svg" alt="Build Status"/></a>
+  <a href="https://circleci.com/gh/reel2bits/reel2bits"><img src="https://circleci.com/gh/reel2bits/reel2bits.svg?style=svg" alt="Build Status"/></a>
   <a href="https://dev.sigpipe.me/dashie/reel2bits/src/branch/master/LICENSE"><img src="https://img.shields.io/badge/license-AGPL3-green.svg"/></a>
   <img src="https://img.shields.io/badge/python-%3E%3D3.6-blue.svg"/>
   <a href="https://github.com/ambv/black"><img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="Code Style: black" /></a>
