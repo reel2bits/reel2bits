@@ -19,7 +19,7 @@
   <a href="https://docs-develop.reel2bits.org">Installation & Documentation</a>
 </p>
 
-Reel2bits is a soundcloud-like self-hosted application. You can upload audio files and they get transcoded, and also compile them into albums.
+Reel2bits is a soundcloud-like self-hosted application. It allows you to upload tracks, transcode them if needed and publish podcasts or albums.
 
 ActivityPub federation is still a work in progress, everything else works.
 
