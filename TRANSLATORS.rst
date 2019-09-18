@@ -4,8 +4,6 @@ Translating reel2bits
 Thank you for reading this! If you want to help translate reel2bits,
 you found the proper place :)
 
-This doc is a placeholder for when we will have our own Weblate instance for translating more easily.
-
 Translation workflow
 --------------------
 
@@ -39,7 +37,7 @@ Requesting a new language
 -------------------------
 
 If you cannot submit a new language yourself, you can request it by opening an issue here:
-https://github.com/rhaamo/reel2bits/issues
+https://github.com/reel2bits/reel2bits/issues
 
 Extracting messages from source
 -------------------------------
@@ -50,10 +48,10 @@ lots of translation work is expected (e.g a few weeks before a new release), or 
 the UI code changes a lot. Otherwise, translators end up translating some obsolete messages,
 or not translationg new messages.
 
-1. `Lock the translations on weblate <https://FIXME/projects/reel2bits/front/#repository>`_ (``Lock`` button in the sidebar). This will prevent translators from working, and help prevent potential conflicts in the source code
-2. `Commit and push changes from weblate <https://FIXME/projects/reel2bits/front/#repository>`_ (``Commit`` and ``Push`` buttons in the sidebar)
+1. `Lock the translations on weblate <https://weblate.sigpipe.me/projects/reel2bits/frontend/#repository>`_ (``Lock`` button in the sidebar). This will prevent translators from working, and help prevent potential conflicts in the source code
+2. `Commit and push changes from weblate <https://weblate.sigpipe.me/projects/reel2bits/frontend/#repository>`_ (``Commit`` and ``Push`` buttons in the sidebar)
 3. Pull ``master`` in your local git repository to ensure you have the latest version of the translations
 4. Create a dedicated branch with ``git checkout -b translations-integration``
 5. Extract the translations with ``cd front && ./scripts/i18n-extract.sh``. This will update all ``po`` files as necessary
 6. Review, commit and push the changes, then open a merge request on the ``master`` branch
-7. When the PR is merged, `Unlock the translations on weblate <https://FIXME/projects/reel2bits/front/#repository>`_ (``Unlock`` button in the sidebar).
+7. When the PR is merged, `Unlock the translations on weblate <https://weblate.sigpipe.me/projects/reel2bits/frontend/#repository>`_ (``Unlock`` button in the sidebar).

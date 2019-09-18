@@ -55,16 +55,16 @@ Log in as the newly created user from now on:
 Download latest reel2bits release
 ---------------------------------
 
-Locate the latest release `from the release page <https://github.com/rhaamo/reel2bits/releases>`_ like ``v0.5``, or if you want to run the unstable ``master`` branch.
+Locate the latest release `from the release page <https://github.com/reel2bits/reel2bits/releases>`_ like ``v0.5``, or if you want to run the unstable ``master`` branch.
 
 Still under your ``reel2bits`` user:
 
 .. code-block:: shell
 
     # if release:
-    git checkout -b v0.5 https://github.com/rhaamo/reel2bits/
+    git checkout -b v0.5 https://github.com/reel2bits/reel2bits/
     # Or master
-    git checkout https://github.com/rhaamo/reel2bits/
+    git checkout https://github.com/reel2bits/reel2bits/
 
 Python dependencies
 --------------------

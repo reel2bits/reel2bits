@@ -24,7 +24,7 @@ match what is described in :doc:`/installation/linux`:
     the virtualenv, as described earlier, otherwise those commands will raise
     errors
 
-Locate the latest release `from the release page <https://github.com/rhaamo/reel2bits/releases>`_ like ``v0.6``, or if you want to run the unstable ``master`` branch.
+Locate the latest release `from the release page <https://github.com/reel2bits/reel2bits/releases>`_ like ``v0.6``, or if you want to run the unstable ``master`` branch.
 
 .. parsed-literal::
 
