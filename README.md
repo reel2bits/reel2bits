@@ -1,12 +1,12 @@
 <h1 align="center">
-  <img src="https://raw.githubusercontent.com/rhaamo/reel2bits/master/assets/logo/Logo@0.5x.png" alt="reel2bits logo">
+  <img src="https://raw.githubusercontent.com/reel2bits/reel2bits/master/assets/logo/Logo@0.5x.png" alt="reel2bits logo">
   <br />
   reel2bits
 </h1>
 
 <p align="center">
   <a href="https://circleci.com/gh/reel2bits/reel2bits"><img src="https://circleci.com/gh/reel2bits/reel2bits.svg?style=svg" alt="Build Status"/></a>
-  <a href="https://dev.sigpipe.me/dashie/reel2bits/src/branch/master/LICENSE"><img src="https://img.shields.io/badge/license-AGPL3-green.svg"/></a>
+  <a href="https://raw.githubusercontent.com/reel2bits/reel2bits/master/LICENSE"><img src="https://img.shields.io/badge/license-AGPL3-green.svg"/></a>
   <img src="https://img.shields.io/badge/python-%3E%3D3.6-blue.svg"/>
   <a href="https://github.com/ambv/black"><img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="Code Style: black" /></a>
 </p>
