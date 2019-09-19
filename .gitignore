@@ -19,3 +19,12 @@ test/unit/coverage/
 test/e2e/reports
 .DS_Store
 /docs-build
+
+# Translations
+*.mo
+
+*~
+
+front/src/translations.json
+front/src/translations/*.json
+front/locales/en_US/LC_MESSAGES/app.po
