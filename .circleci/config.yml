@@ -31,7 +31,7 @@ aliases:
   - &install_audiowaveform
       run:
         name: Install audiowaveform
-        command: ./tests/install_audiowaveform.sh
+        command: ./api/tests/install_audiowaveform.sh
 
   - &install_python_dependencies
       steps:
