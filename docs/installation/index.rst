@@ -33,6 +33,7 @@ For now you can install it on any Linux distribution.
 
     external_dependencies
     linux
+    configuration
     systemd
 
 reel2bits packages are available for the following platforms:

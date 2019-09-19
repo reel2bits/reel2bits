@@ -114,14 +114,7 @@ Finally, install the python dependencies:
 Configuration file
 ------------------
 
-You can now start to configure reel2bits:
-
-.. code-block:: shell
-
-    cd api
-    cp config.py.sample config.py
-
-Then edit this file as you wish.
+Please look at :ref:`the dedicated configuration page <configuration-file>`.
 
 Sentry
 ------
