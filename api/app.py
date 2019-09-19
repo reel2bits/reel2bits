@@ -84,7 +84,7 @@ def make_celery(remoulade):
     return celery  # omnomnom
 
 
-def create_app(config_filename="config.config.Config", app_name=None, register_blueprints=True):
+def create_app(config_filename="config.development.Config", app_name=None, register_blueprints=True):
     # App configuration
     app = Flask(app_name or __name__)
     app_settings = os.getenv('APP_SETTINGS', config_filename)
