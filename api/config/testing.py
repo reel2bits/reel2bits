@@ -14,7 +14,7 @@ class Config(BaseConfig):
     SECURITY_CHANGEABLE = True
     SECURITY_PASSWORD_HASH = "bcrypt"
     SECURITY_PASSWORD_SALT = "dsadsaasd"
-    SQLALCHEMY_DATABASE_URI = "postgresql+psycopg2://dashie@localhost:5432/reel2bits_test"
+    SQLALCHEMY_DATABASE_URI = "postgresql+psycopg2://postgres@localhost:5432/reel2bits_test"
     SECURITY_SEND_REGISTER_EMAIL = False
     SECURITY_SEND_PASSWORD_CHANGE_EMAIL = False
     SECURITY_SEND_PASSWORD_RESET_NOTICE_EMAIL = False
