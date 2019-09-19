@@ -1,0 +1,116 @@
+{
+  "name": "front",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "node build/dev-server.js",
+    "build": "scripts/i18n-compile.sh && node build/build.js",
+    "lint": "eslint --ext .js,.vue src",
+    "lint-fix": "eslint --fix --ext .js,.vue src",
+    "e2e": "node test/e2e/runner.js",
+    "unit": "karma start test/unit/karma.conf.js --single-run",
+    "unit:watch": "karma start test/unit/karma.conf.js --single-run=false",
+    "test": "npm run unit && npm run e2e",
+    "i18n-extract": "scripts/i18n-extract.sh",
+    "i18n-compile": "scripts/i18n-compile.sh"
+  },
+  "engines": {
+    "node": ">= 4.0.0",
+    "npm": ">= 3.0.0"
+  },
+  "dependencies": {
+    "axios": "^0.19.0",
+    "babel-plugin-add-module-exports": "^1.0.2",
+    "babel-plugin-lodash": "^3.2.11",
+    "bootstrap": "^4.3.1",
+    "bootstrap-vue": "^2.0.1",
+    "core-js": "^2.6.5",
+    "karma-mocha-reporter": "^2.2.1",
+    "localforage": "^1.7.3",
+    "lodash": "^4.17.15",
+    "lodash.merge": "^4.6.2",
+    "moment": "^2.24.0",
+    "object-path": "^0.11.4",
+    "opn": "^6.0.0",
+    "phoenix": "^1.4.10",
+    "vue": "^2.6.10",
+    "vue-axios": "^2.1.4",
+    "vue-gettext": "^2.1.5",
+    "vue-router": "^3.1.3",
+    "vue-string-filter": "^1.3.0",
+    "vuedraggable": "^2.23.0",
+    "vuelidate": "^0.7.4",
+    "vuex": "^3.0.1",
+    "wavesurfer.js": "^3.0.0"
+  },
+  "devDependencies": {
+    "@babel/polyfill": "^7.6.0",
+    "@vue/cli-plugin-babel": "^3.11.0",
+    "@vue/cli-plugin-eslint": "^3.11.0",
+    "@vue/cli-service": "^3.11.0",
+    "@vue/eslint-config-standard": "^4.0.0",
+    "@vue/test-utils": "^1.0.0-beta.26",
+    "babel-core": "^6.0.0",
+    "babel-eslint": "^10.0.3",
+    "babel-helper-vue-jsx-merge-props": "^2.0.3",
+    "babel-loader": "^7.0.0",
+    "babel-plugin-syntax-jsx": "^6.18.0",
+    "babel-plugin-transform-runtime": "^6.0.0",
+    "babel-plugin-transform-vue-jsx": "3",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-es2015": "^6.0.0",
+    "babel-preset-stage-2": "^6.0.0",
+    "babel-register": "^6.0.0",
+    "chai": "^4.2.0",
+    "easygettext": "^2.6.3",
+    "eslint": "^5.16.0",
+    "eslint-friendly-formatter": "^4.0.1",
+    "eslint-loader": "^3.0.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-node": "^10.0.0",
+    "eslint-plugin-promise": "^4.0.0",
+    "eslint-plugin-standard": "^4.0.1",
+    "eslint-plugin-vue": "^5.0.0",
+    "eventsource-polyfill": "^0.9.6",
+    "karma": "^4.3.0",
+    "karma-coverage": "^2.0.1",
+    "karma-firefox-launcher": "^1.1.0",
+    "karma-mocha": "^1.2.0",
+    "karma-sinon-chai": "^2.0.2",
+    "karma-sourcemap-loader": "^0.3.7",
+    "karma-spec-reporter": "0.0.32",
+    "karma-webpack": "^4.0.0-rc.3",
+    "mocha": "^6.2.0",
+    "sass": "^1.22.12",
+    "sass-loader": "git://github.com/webpack-contrib/sass-loader",
+    "shelljs": "^0.8.3",
+    "sinon": "^7.4.2",
+    "sinon-chai": "^3.3.0",
+    "vue-loader": "^14.0.0",
+    "vue-template-compiler": "^2.6.10",
+    "webpack-hot-middleware": "^2.25.0"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "@vue/standard"
+    ],
+    "rules": {},
+    "parserOptions": {
+      "parser": "babel-eslint"
+    }
+  },
+  "postcss": {
+    "plugins": {
+      "autoprefixer": {}
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions"
+  ]
+}

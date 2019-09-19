@@ -27,8 +27,15 @@ AP_ENABLED = False
 # ActivityPub support isn't finished and things like update or delete might not work at all
 # Activate federation at your own risks
 
+# Can users registers ?
+REGISTRATION_ENABLED = True
+
 SQLALCHEMY_DATABASE_URI = \
     'postgresql+psycopg2://postgres@localhost/reel2bits'
+
+# Use the default URL if you did no customisation
+# But use the URL of your repository if you did any
+SOURCES_REPOSITORY_URL = "https://github.com/rhaamo/reel2bits/"
 
 # Should users confirm theire email address ?
 SECURITY_CONFIRMABLE = True
@@ -75,3 +82,6 @@ BOOTSTRAP_USE_MINIFIED = True
 BOOTSTRAP_SERVE_LOCAL = True
 BOOTSTRAP_QUERYSTRING_REVVING = True
 BABEL_DEFAULT_TIMEZONE = "UTC"
+
+SECURITY_POST_LOGIN_VIEW = "/home"
+SECURITY_POST_LOGOUT_VIEW = "/home"

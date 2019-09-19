@@ -1,11 +1,11 @@
 import pytz
 import requests
-from flask import Blueprint, render_template, request, redirect, url_for, flash, Response, json, jsonify, current_app
+from flask import Blueprint, render_template, request, redirect, url_for, flash, Response, jsonify, current_app
 from flask_babelex import gettext
 from flask_security import login_required, current_user
 
 from forms import UserProfileForm
-from models import db, User, UserLogging, Sound, Album, Follower, Actor, Activity, create_remote_actor
+from models import db, User, Sound, Album, Follower, Actor, Activity, create_remote_actor
 from utils import add_user_log
 from flask_accept import accept_fallback
 from little_boxes.webfinger import get_actor_url
@@ -14,35 +14,6 @@ from little_boxes import activitypub as ap
 from tasks import post_to_outbox, send_update_profile
 
 bp_users = Blueprint("bp_users", __name__)
-
-
-@bp_users.route("/account/logs", methods=["GET"])
-@login_required
-def logs():
-    level = request.args.get("level")
-    pcfg = {"title": gettext("User Logs")}
-    if level:
-        _logs = (
-            UserLogging.query.filter(UserLogging.level == level.upper(), UserLogging.user_id == current_user.id)
-            .limit(100)
-            .all()
-        )
-    else:
-        _logs = UserLogging.query.filter(UserLogging.user_id == current_user.id).limit(100).all()
-    return render_template("users/user_logs.jinja2", pcfg=pcfg, logs=_logs)
-
-
-@bp_users.route("/account/logs/<int:log_id>/delete", methods=["GET", "DELETE", "PUT"])
-@login_required
-def logs_delete(log_id):
-    log = UserLogging.query.filter(UserLogging.id == log_id, UserLogging.user_id == current_user.id).first()
-    if not log:
-        _datas = {"status": "error", "id": log_id}
-    else:
-        db.session.delete(log)
-        db.session.commit()
-        _datas = {"status": "deleted", "id": log_id}
-    return Response(json.dumps(_datas), mimetype="application/json;charset=utf-8")
 
 
 @bp_users.route("/user/<string:name>", methods=["GET"])

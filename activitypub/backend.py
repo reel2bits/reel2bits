@@ -155,6 +155,7 @@ class Reel2BitsBackend(ap.Backend):
             if not actor:
                 current_app.logger.debug(f"actor {ap_actor.id} not found")
                 actor = create_remote_actor(ap_actor)
+                # TODO FIXME: also create an User with local=False
                 db.session.add(actor)
                 current_app.logger.debug("created one in DB")
             else:

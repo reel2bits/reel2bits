@@ -6,6 +6,21 @@ bp_wellknown = Blueprint("bp_wellknown", __name__, url_prefix="/.well-known")
 
 @bp_wellknown.route("/webfinger", methods=["GET"])
 def webfinger():
+    """
+    ???
+    ---
+    tags:
+        - ActivityPub
+    parameters:
+        - name: resource
+          in: query
+          type: string
+          required: true
+          description: user@host
+    responses:
+        200:
+            description: ???
+    """
     resource = request.args.get("resource")
     if not resource:
         return Response("", status=400, content_type="application/jrd+json; charset=utf-8")
@@ -51,11 +66,21 @@ def webfinger():
 
 @bp_wellknown.route("/nodeinfo", methods=["GET"])
 def nodeinfo():
+    """
+    ???
+    ---
+    tags:
+        - Nodeinfo
+    responses:
+        200:
+            description: ???
+    """
     method = "https"
     domain = current_app.config["AP_DOMAIN"]
     resp = {
         "links": [
-            {"rel": "http://nodeinfo.diaspora.software/ns/schema/2.0", "href": f"{method}://{domain}/nodeinfo/2.0"}
+            {"rel": "http://nodeinfo.diaspora.software/ns/schema/2.0", "href": f"{method}://{domain}/nodeinfo/2.0"},
+            {"rel": "http://nodeinfo.diaspora.software/ns/schema/2.1", "href": f"{method}://{domain}/nodeinfo/2.1"},
         ]
     }
     response = jsonify(resp)

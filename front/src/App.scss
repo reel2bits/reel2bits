@@ -1,0 +1,38 @@
+@import "./_variables.scss";
+
+//Import Required Bootstrap stuff
+
+@import 'node_modules/bootstrap/scss/bootstrap';
+@import 'node_modules/bootstrap-vue/src/index.scss';
+
+//Custom stuff
+
+//compensate navbar
+body {
+    padding-top: 80px;
+}
+
+.playPause {
+    width: 2.5rem;
+    height: 2.5rem;
+    text-align: center;
+    padding-left: 0;
+    padding-right: 0;
+}
+//optically centering play sign
+.fa-play {
+    margin-left: 2px;
+}
+
+.nav .nav-link.active {
+    font-weight: $font-weight-bold;
+    color: $shade-100;
+    border-bottom: 4px $brand-2 solid;
+}
+
+#topsearch::placeholder {
+    color: $brand-1;
+}
+#topsearch:placeholder-shown {
+    text-align: center;
+}

@@ -3,6 +3,7 @@ import os
 
 from flask import current_app
 from flask_security import SQLAlchemyUserDatastore, UserMixin, RoleMixin
+from flask_security.utils import verify_password
 from flask_sqlalchemy import SQLAlchemy
 from slugify import slugify
 from sqlalchemy import UniqueConstraint
@@ -13,17 +14,19 @@ from sqlalchemy.sql import func
 from sqlalchemy_searchable import make_searchable
 from sqlalchemy_utils.types.choice import ChoiceType
 from sqlalchemy_utils.types.url import URLType
-from sqlalchemy_utils.types.json import JSONType
 from little_boxes.key import Key as LittleBoxesKey
 from activitypub.utils import ap_url
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy import text as sa_text
 from little_boxes import activitypub as ap
 from urllib.parse import urlparse
+from authlib.flask.oauth2.sqla import OAuth2ClientMixin, OAuth2AuthorizationCodeMixin, OAuth2TokenMixin
+import time
+from utils.flake_id import gen_flakeid
+import uuid
 
 db = SQLAlchemy()
 make_searchable(db.metadata)
-
 
 # #### Base ####
 
@@ -58,13 +61,32 @@ class Role(db.Model, RoleMixin):
     __mapper_args__ = {"order_by": name}
 
 
+class PasswordResetToken(db.Model):
+    __tablename__ = "password_reset_token"
+    id = db.Column(db.Integer, primary_key=True)
+    token = db.Column(db.String(255), unique=True, nullable=False)
+    created_at = db.Column(db.DateTime(timezone=False), default=datetime.datetime.utcnow)
+    updated_at = db.Column(
+        db.DateTime(timezone=False), default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow
+    )
+    expires_at = db.Column(db.DateTime(timezone=False), nullable=True)
+    used = db.Column(db.Boolean(), default=False)
+
+    user_id = db.Column(db.Integer(), db.ForeignKey("user.id"), nullable=True)
+
+
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(255), unique=True, nullable=False, info={"label": "Email"})
-    name = db.Column(db.String(255), unique=True, nullable=False, info={"label": "Username"})
-    password = db.Column(db.String(255), nullable=False, info={"label": "Password"})
+    email = db.Column(db.String(255), unique=True, nullable=True, info={"label": "Email"})
+    name = db.Column(db.String(255), nullable=False, info={"label": "Username"})
+    password = db.Column(db.String(255), nullable=True, info={"label": "Password"})
     active = db.Column(db.Boolean())
     confirmed_at = db.Column(db.DateTime())
+
+    created_at = db.Column(db.DateTime(timezone=False), default=datetime.datetime.utcnow)
+    updated_at = db.Column(
+        db.DateTime(timezone=False), default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow
+    )
 
     display_name = db.Column(db.String(30), nullable=True, info={"label": "Display name"})
 
@@ -72,11 +94,15 @@ class User(db.Model, UserMixin):
 
     timezone = db.Column(db.String(255), nullable=False, default="UTC")  # Managed and fed by pytz
 
-    slug = db.Column(db.String(255), unique=True, nullable=True)
+    # should be removed since User.name is URL friendly
+    slug = db.Column(db.String(255), nullable=True)
+
+    local = db.Column(db.Boolean(), default=True)
 
     roles = db.relationship("Role", secondary=roles_users, backref=db.backref("users", lazy="dynamic"))
     apitokens = db.relationship("Apitoken", backref="user", lazy="dynamic", cascade="delete")
 
+    password_reset_tokens = db.relationship("PasswordResetToken", backref="user", lazy="dynamic", cascade="delete")
     user_loggings = db.relationship("UserLogging", backref="user", lazy="dynamic", cascade="delete")
     loggings = db.relationship("Logging", backref="user", lazy="dynamic", cascade="delete")
 
@@ -84,6 +110,10 @@ class User(db.Model, UserMixin):
     albums = db.relationship("Album", backref="user", lazy="dynamic", cascade="delete")
 
     __mapper_args__ = {"order_by": name}
+
+    def is_admin(self):
+        admin_role = db.session.query(Role).filter(Role.name == "admin").one()
+        return admin_role in self.roles
 
     def join_roles(self, string):
         return string.join([i.description for i in self.roles])
@@ -112,6 +142,12 @@ class User(db.Model, UserMixin):
         else:
             return self.name
 
+    def get_user_id(self):
+        return self.id
+
+    def check_password(self, password):
+        return verify_password(password, self.password)
+
 
 event.listen(User.name, "set", User.generate_slug, retval=False)
 
@@ -124,6 +160,34 @@ class Apitoken(db.Model):
 
 
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
+
+
+class OAuth2Client(db.Model, OAuth2ClientMixin):
+    __tablename__ = "oauth2_client"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id", ondelete="CASCADE"))
+    user = db.relationship("User")
+
+
+class OAuth2AuthorizationCode(db.Model, OAuth2AuthorizationCodeMixin):
+    __tablename__ = "oauth2_code"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id", ondelete="CASCADE"))
+    user = db.relationship("User")
+
+
+class OAuth2Token(db.Model, OAuth2TokenMixin):
+    __tablename__ = "oauth2_token"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id", ondelete="CASCADE"))
+    user = db.relationship("User")
+
+    def is_refresh_token_expired(self):
+        expires_at = self.issued_at + self.expires_in * 2
+        return expires_at < time.time()
 
 
 # #### Logging ####
@@ -218,6 +282,8 @@ class Sound(db.Model):
     transcode_state = db.Column(db.Integer(), default=0, nullable=False)
     # 0 nothing / default / waiting, 1 processing, 2 done, 3 error
 
+    flake_id = db.Column(UUID(as_uuid=True), unique=False, nullable=True)
+
     user_id = db.Column(db.Integer(), db.ForeignKey("user.id"), nullable=False)
     album_id = db.Column(db.Integer(), db.ForeignKey("album.id"), nullable=True)
     sound_infos = db.relationship("SoundInfo", backref="sound_info", lazy="dynamic", cascade="delete")
@@ -229,7 +295,6 @@ class Sound(db.Model):
     __mapper_args__ = {"order_by": uploaded.desc()}
 
     def elapsed(self):
-        print("db: {0}, now: {1}".format(self.uploaded, datetime.datetime.utcnow()))
         el = datetime.datetime.utcnow() - self.uploaded
         return el.total_seconds()
 
@@ -277,6 +342,8 @@ class Album(db.Model):
 
     user_id = db.Column(db.Integer(), db.ForeignKey("user.id"), nullable=False)
     sounds = db.relationship("Sound", backref="album", lazy="dynamic")
+
+    flake_id = db.Column(UUID(as_uuid=True), unique=False, nullable=True)
 
     timeline = db.relationship("Timeline", uselist=False, back_populates="album")
 
@@ -361,12 +428,26 @@ def make_sound_slug(mapper, connection, target):
     connection.execute(Sound.__table__.update().where(Sound.__table__.c.id == target.id).values(slug=slug))
 
 
+@event.listens_for(Sound, "after_insert")
+def generate_sound_flakeid(mapper, connection, target):
+    if not target.flake_id:
+        flake_id = uuid.UUID(int=gen_flakeid())
+        connection.execute(Sound.__table__.update().where(Sound.__table__.c.id == target.id).values(flake_id=flake_id))
+
+
 @event.listens_for(Album, "after_update")
 @event.listens_for(Album, "after_insert")
 def make_album_slug(mapper, connection, target):
     title = "{0} {1}".format(target.id, target.title)
     slug = slugify(title[:255])
     connection.execute(Album.__table__.update().where(Album.__table__.c.id == target.id).values(slug=slug))
+
+
+@event.listens_for(Album, "after_insert")
+def generate_album_flakeid(mapper, connection, target):
+    if not target.flake_id:
+        flake_id = uuid.UUID(int=gen_flakeid())
+        connection.execute(Album.__table__.update().where(Album.__table__.c.id == target.id).values(flake_id=flake_id))
 
 
 @event.listens_for(User, "after_update")
@@ -441,9 +522,9 @@ class Actor(db.Model):
     last_fetch_date = db.Column(db.DateTime(timezone=False), default=datetime.datetime.utcnow)
     manually_approves_followers = db.Column(db.Boolean, nullable=True, server_default=None)
     # Who follows self
-    followers = db.relationship("Follower", backref="followers", primaryjoin=id == Follower.target_id)
+    followers = db.relationship("Follower", backref="followers", primaryjoin=id == Follower.target_id, lazy="dynamic")
     # Who self follows
-    followings = db.relationship("Follower", backref="followings", primaryjoin=id == Follower.actor_id)
+    followings = db.relationship("Follower", backref="followings", primaryjoin=id == Follower.actor_id, lazy="dynamic")
     # Relation on itself, intermediary with actor and target
     # By using an Association Object, which isn't possible except by using
     # two relations. This may be better than only one, and some hackish things
@@ -490,6 +571,14 @@ class Actor(db.Model):
             db.session.delete(rel)
             db.session.commit()
 
+    def is_followed_by(self, target):
+        print(f"is {self.preferred_username} followed by {target.preferred_username} ?")
+        return self.followers.filter(Follower.actor_id == target.id).first()
+
+    def is_following(self, target):
+        print(f"is {self.preferred_username} following {target.preferred_username} ?")
+        return self.followings.filter(Follower.target_id == target.id).first()
+
     def to_dict(self):
         return {
             "@context": ap.DEFAULT_CTX,
@@ -517,7 +606,7 @@ class Activity(db.Model):
     url = db.Column(URLType(), unique=True, nullable=True)
     type = db.Column(db.String(100), index=True)
     box = db.Column(db.String(100))
-    payload = db.Column(JSONType())
+    payload = db.Column(JSONB())
     creation_date = db.Column(db.DateTime(timezone=False), default=datetime.datetime.utcnow)
     delivered = db.Column(db.Boolean, default=None, nullable=True)
     delivered_date = db.Column(db.DateTime(timezone=False), nullable=True)

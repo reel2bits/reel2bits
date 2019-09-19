@@ -4,6 +4,8 @@ TESTING = True
 # Disable CSRF tokens in the Forms (only valid for testing purposes!)
 WTF_CSRF_ENABLED = False
 
+REGISTRATION_ENABLED = True
+
 SECRET_KEY = "udf298euf02uf2f02f2uf0"
 SQLALCHEMY_DATABASE_URI = "postgresql+psycopg2://postgres@localhost:5432/reel2bits_test"
 # SQLALCHEMY_DATABASE_URI = 'sqlite:///ahrl.db'
@@ -11,6 +13,8 @@ SQLALCHEMY_DATABASE_URI = "postgresql+psycopg2://postgres@localhost:5432/reel2bi
 SQLALCHEMY_ECHO = False
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 SQLALCHEMY_RECORD_QUERIES = True
+
+SOURCES_REPOSITORY_URL = "https://github.com/rhaamo/reel2bits/"
 
 SECURITY_CONFIRMABLE = False
 SECURITY_REGISTERABLE = True
@@ -56,3 +60,6 @@ AP_DOMAIN = "localhost"
 SERVER_NAME = AP_DOMAIN
 BASE_URL = "https://" + AP_DOMAIN
 AP_ENABLED = True
+
+SECURITY_POST_LOGIN_VIEW = "/home"
+SECURITY_POST_LOGOUT_VIEW = "/home"

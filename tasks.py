@@ -18,7 +18,8 @@ from little_boxes.errors import NotAnActivityError
 from little_boxes.key import Key
 from models import Activity, Actor
 from activitypub.vars import HEADERS, Box
-from controllers.sound import bp_sound
+import smtplib
+from utils.various import add_log, add_user_log
 
 # TRANSCODING
 
@@ -28,6 +29,9 @@ celery = make_celery(app)
 
 
 def federate_new_sound(sound: Sound) -> int:
+    if not current_app.config["AP_ENABLED"]:
+        return None
+
     actor = sound.user.actor[0]
     cc = [actor.followers_url]
     href = url_for("get_uploads_stuff", thing="sounds", stuff=sound.path_sound())
@@ -53,11 +57,17 @@ def federate_new_sound(sound: Sound) -> int:
 
 
 def federate_delete_sound(sound: Sound) -> None:
+    if not current_app.config["AP_ENABLED"]:
+        return
+
     actor = sound.user.actor[0].to_dict()
     # Get activity
     # Create delete
     # Somehow we needs to add /activity here
     # FIXME do that better
+    if not sound.activity:
+        # track never federated
+        return
     delete = ap.Delete(
         actor=actor, object=ap.Tombstone(id=sound.activity.payload["id"] + "/activity").to_dict(embed=True)
     )
@@ -74,32 +84,66 @@ def upload_workflow(self, sound_id):
         print("- Cant find sound ID {id} in database".format(id=sound_id))
         return
 
+    errors = None
+
     print("METADATAS started")
-    work_metadatas(sound_id)
+    metadatas = work_metadatas(sound_id)
     print("METADATAS finished")
 
-    print("TRANSCODE started")
-    work_transcode(sound_id)
-    print("TRANSCODE finished")
+    if not metadatas:
+        # cannot process further
+        errors = True
+        sound.transcode_state = Sound.TRANSCODE_ERROR
+        db.session.commit()
+        print("UPLOAD WORKFLOW had errors")
+        add_log("global", "ERROR", f"Error processing track {sound.id}")
+        add_user_log(sound.id, sound.user.id, "sounds", "error", "An error occured while processing your track")
+        return
 
-    app.register_blueprint(bp_sound)
+    if metadatas:
+        print("TRANSCODE started")
+        work_transcode(sound_id)
+        print("TRANSCODE finished")
+
+    # Federate if public and AP enabled
+    if current_app.config["AP_ENABLED"] and not errors:
+        if not sound.private:
+            print("UPLOAD WORKFLOW federating sound")
+            # Federate only if sound is public
+            sound.activity_id = federate_new_sound(sound)
+            db.session.commit()
+
+    track_url = f"https://{current_app.config['AP_DOMAIN']}/{sound.user.name}/track/{sound.slug}"
 
     msg = Message(
         subject="Song processing finished",
         recipients=[sound.user.email],
         sender=current_app.config["MAIL_DEFAULT_SENDER"],
     )
-    msg.body = render_template("email/song_processed.txt", sound=sound)
-    msg.html = render_template("email/song_processed.html", sound=sound)
-    mail.send(msg)
-
-    # Federate if public
-    if not sound.private:
-        print("UPLOAD WORKFLOW federating sound")
-        if not sound.private:
-            # Federate only if sound is public
-            sound.activity_id = federate_new_sound(sound)
-            db.session.commit()
+    msg.body = render_template("email/song_processed.txt", sound=sound, track_url=track_url)
+    msg.html = render_template("email/song_processed.html", sound=sound, track_url=track_url)
+    err = None
+    try:
+        mail.send(msg)
+    except ConnectionRefusedError as e:
+        # TODO: do something about that maybe
+        print(f"Error sending mail: {e}")
+        err = e
+    except smtplib.SMTPRecipientsRefused as e:
+        print(f"Error sending mail: {e}")
+        err = e
+    except smtplib.SMTPException as e:
+        print(f"Error sending mail: {e}")
+        err = e
+    except smtplib.SMTPAuthenticationError as e:
+        print(f"Error sending mail: {e}")
+        err = e
+    except smtplib.SMTPRecipientsRefused as e:
+        print(f"Error sending mail: {e}")
+        err = e
+    if err:
+        add_log("global", "ERROR", f"Error sending email for track {sound.id}: {err}")
+        add_user_log(sound.id, sound.user.id, "sounds", "error", "An error occured while sending email")
 
     print("UPLOAD WORKFLOW finished")
 
@@ -178,7 +222,7 @@ def process_new_activity(self, iri: str) -> None:
                 should_forward = True
 
         elif activity.has_type(ap.ActivityType.LIKE):
-            base_url = current_app.config["BASE_URL"]
+            base_url = current_app.config["AP_DOMAIN"]
             if not activity.get_object_id().startswith(base_url):
                 # We only want to keep a like if it's a like for a local
                 # activity
@@ -406,6 +450,9 @@ def post_to_outbox(activity: ap.BaseActivity) -> str:
 
 
 def send_update_profile(user: User) -> None:
+    if not current_app.config["AP_ENABLED"]:
+        return  # not federating if not enabled
+
     # FIXME: not sure at all about that
     actor = user.actor[0]
     raw_update = dict(
@@ -417,6 +464,9 @@ def send_update_profile(user: User) -> None:
 
 
 def send_update_sound(sound: Sound) -> None:
+    if not current_app.config["AP_ENABLED"]:
+        return  # not federating if not enabled
+
     # FIXME: not sure at all about that
     # Should not even work
     actor = sound.user.actor[0]

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="96px" height="96px" viewBox="0 0 96 96" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 57.1 (83088) - https://sketch.com -->
+    <title>icon/user</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Track" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Track-(Meta-data)-Copy" transform="translate(-1189.000000, -120.000000)" fill-rule="nonzero">
+            <g id="icon/user" transform="translate(1189.000000, 120.000000)">
+                <rect id="Rectangle" fill="#E7EDF7" x="0" y="0" width="96" height="96"></rect>
+                <g transform="translate(10.000000, 21.000000)" fill="#C8D1F4" id="Combined-Shape">
+                    <path d="M37.5,42.1875 C55.6218434,42.1875 70.3125,56.8781566 70.3125,75 L4.6875,75 C4.6875,56.8781566 19.3781566,42.1875 37.5,42.1875 Z M37.5,0 C47.8553391,0 56.25,8.39466094 56.25,18.75 C56.25,29.1053391 47.8553391,37.5 37.5,37.5 C27.1446609,37.5 18.75,29.1053391 18.75,18.75 C18.75,8.39466094 27.1446609,0 37.5,0 Z"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

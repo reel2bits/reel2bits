@@ -1,23 +1,32 @@
 from helpers import login, logout, register
+import json
 
 
 def test_empty_db(client, session):
     """Start with a blank database."""
 
-    rv = client.get("/")
+    rv = client.get("/home")
     assert rv.status_code == 200
 
 
+# TODO FIXME oauth
 def test_login_logout(client, session):
     """Make sure login and logout works."""
 
-    register(client, "dashie@sigpipe.me", "fluttershy", "UserA")
+    resp = register(client, "dashie@sigpipe.me", "fluttershy", "UserA", "User A")
+    assert resp.status_code == 200
+
+    resp = json.loads(resp.data)
+    assert "created_at" in resp
+    assert "access_token" in resp
 
     rv = login(client, "dashie@sigpipe.me", "fluttershy")
+    rv = client.get("/home")
     assert rv.status_code == 200
     assert b"Logged as UserA" in rv.data
 
     rv = logout(client)
+    rv = client.get("/home")
     assert rv.status_code == 200
     assert b"UserA" not in rv.data
 
@@ -32,28 +41,62 @@ def test_login_logout(client, session):
 
 def test_register_two_identical_users(client, session):
     # Will register
-    register(client, "dashie+imunique@sigpipe.me", "fluttershy", "ImUnique")
-    logout(client)
-    # Try to register another identical
-    resp = client.post(
-        "/register",
-        data=dict(
-            email="dashie+imunique@sigpipe.me", password="fluttershy", password_confirm="fluttershy", name="ImUnique"
-        ),
-        follow_redirects=True,
-    )
-    # should error
-    assert b"Logged as" not in resp.data
-    assert b"dashie+imunique@sigpipe.me is already associated " b"with an account." in resp.data
-    assert b"Username already taken" in resp.data
+    resp = register(client, "dashie+imunique@sigpipe.me", "fluttershy", "ImUnique", "I am unique")
     assert resp.status_code == 200
 
+    resp = json.loads(resp.data)
+    assert "created_at" in resp
+    assert "access_token" in resp
 
+    # Try to register another identical
+    resp = register(client, "dashie+imunique@sigpipe.me", "fluttershy", "ImUnique", "I am unique")
+    assert resp.status_code == 400
+
+    resp = json.loads(resp.data)
+    # should have an error
+    assert "error" in resp
+    assert "ap_id" in resp["error"]
+
+
+def test_register_invalid_username(client, session):
+    # valid
+    resp = register(client, "dashie+lasagna@sigpipe.me", "lasagnas", "garfield", "I am lasagna")
+    assert resp.status_code == 200
+
+    resp = json.loads(resp.data)
+    assert "created_at" in resp
+    assert "access_token" in resp
+
+    # Invalid 1
+    resp = register(client, "dashie+bigpotat@sigpipe.me", "big_potat", "ImUnique", "I am unique")
+    assert resp.status_code == 400
+
+    resp = json.loads(resp.data)
+    # should have an error
+    assert "error" in resp
+    assert "ap_id" in resp["error"]
+
+    # Invalid 2
+    resp = register(client, "dashie+toto@sigpipe.me", "to-to", "ImUnique", "I am unique")
+    assert resp.status_code == 400
+
+    resp = json.loads(resp.data)
+    # should have an error
+    assert "error" in resp
+    assert "ap_id" in resp["error"]
+
+
+# TODO FIXME oauth
 def test_change_password(client, session):
     init_password = "fluttershy"
     new_password = "jortsjortsjorts"
 
-    register(client, "dashie+UserB@sigpipe.me", init_password, "UserB")
+    resp = register(client, "dashie+UserB@sigpipe.me", init_password, "UserB", "User B")
+    assert resp.status_code == 200
+
+    resp = json.loads(resp.data)
+    assert "created_at" in resp
+    assert "access_token" in resp
 
     # Can login with initial password
     rv = login(client, "dashie+UserB@sigpipe.me", init_password)
@@ -74,6 +117,7 @@ def test_change_password(client, session):
 
     # Test login with new password
     resp = login(client, "dashie+UserB@sigpipe.me", new_password)
+    rv = client.get("/home")
     print(resp.data)
     assert b"Logged as UserB" in resp.data
     logout(client)

@@ -19,21 +19,14 @@ aliases:
           - ./reel2bits/
           - ./audiowaveform/
         
-  - &install_steps
-      steps:
-        - checkout
-        - *attach_workspace
-        # TODO: npm/node/front v2
-        - *persist_to_workspace
-
   - &install_system_dependencies
       run:
         name: Install system dependencies
         command: |
           sudo apt-get update
-          sudo apt-get install -y sox libtag1v5 libmagic1 libffi6 ffmpeg postgresql-client-11
-          sudo apt-get install -y cmake build-essential git wget make libboost-all-dev 
-          sudo apt-get install -y libsox-dev libsox-fmt-all libtag1-dev libmagic-dev libffi-dev libgd-dev libmad0-dev libsndfile1-dev libid3tag0-dev 
+          sudo apt-get install -y sox libtag1v5 libmagic1 libffi6 ffmpeg postgresql-client-11 rsync
+          sudo apt-get install -y cmake build-essential git wget make libboost-all-dev
+          sudo apt-get install -y libsox-dev libsox-fmt-all libtag1-dev libmagic-dev libffi-dev libgd-dev libmad0-dev libsndfile1-dev libid3tag0-dev libmediainfo-dev
 
   - &install_audiowaveform
       run:
@@ -58,10 +51,29 @@ aliases:
               pip install --requirement requirements.txt
               pip install black
               pip install flake8
+              touch front/dist/index.html
         - save_cache:
             key: v1-dependencies-{{ checksum "/tmp/.python-version" }}-{{ checksum "requirements.txt" }}
             paths:
               - ./venv
+        - *persist_to_workspace
+
+  - &install_steps
+      steps:
+        - checkout
+        - *attach_workspace
+        - restore_cache:
+            keys:
+              - v1-node-dependencies-{{ checksum "front/yarn.lock" }}
+              - v1-node-dependencies-
+        - run:
+            command: |
+              cd front
+              yarn install --frozen-lockfile
+        - save_cache:
+            key: v1-node-depdencies-{{ checksum "front/yarn.lock" }}
+            paths:
+              - ./front/node_modules/
         - *persist_to_workspace
 
   - &test_steps
@@ -81,6 +93,7 @@ aliases:
               . venv/bin/activate
               cp tests/config_test.py config.py
               mkdir test-reports
+              export AUTHLIB_INSECURE_TRANSPORT=1
               python setup.py test
         - run:
             name: Full migrations
@@ -95,6 +108,105 @@ aliases:
         - store_artifacts:
             path: test-reports
 
+  - &lint_steps_front
+      steps:
+        - *attach_workspace
+        - run:
+            name: Front lint
+            command: |
+              cd front
+              npm run lint
+
+  - &test_steps_front
+      steps:
+        - *attach_workspace
+        - run:
+            name: Front test
+            command: |
+              firefox --version
+              cd front
+              npm run unit
+
+  - &build_front
+      steps:
+        - *attach_workspace
+        - run:
+            name: Install rsync
+            command: |
+              sudo apt-get update
+              sudo apt-get install -y rsync
+        - run:
+            name: Front build
+            command: |
+              cd front
+              npm run build
+        - persist_to_workspace:
+            root: ~/projects/
+            paths:
+              - ./reel2bits/front/dist
+
+  - &sync_front
+      steps:
+        - *attach_workspace
+        - add_ssh_keys:
+            fingerprints:
+              - "8b:e8:75:22:8a:21:35:5a:50:1c:da:75:2f:11:6c:2b"
+              - "66:7c:0f:97:42:b2:eb:fe:53:3c:0a:db:a5:5c:7a:27"
+        - run:
+            name: Install rsync
+            command: |
+              sudo apt-get update
+              sudo apt-get install -y rsync
+        - deploy:
+            name: deploy front
+            command: |
+              if [ "${CIRCLE_BRANCH}" = "master" ]; then
+                rsync -avc -e "ssh -o StrictHostKeyChecking=no -p 23" --delete front/dist/ r2bdev@videaudio.cadance.licorn.eu:/
+              else
+                echo "Not master, no deployment"
+              fi
+        - deploy:
+            name: zip and sync artifacts
+            command: |
+              cd front
+              if [ "${CIRCLE_BRANCH}" = "master" ]; then
+                export NAME="front-dist-${CIRCLE_BRANCH}"
+                zip -r "${NAME}.zip" dist/
+                rsync -avc -e "ssh -o StrictHostKeyChecking=no -p 22" ${NAME}.zip assets.reel2bits.org@cadance.licorn.eu:/
+              fi
+              if [ ! -z "${CIRCLE_TAG}" ]; then
+                export NAME="front-dist-${CIRCLE_TAG}"
+                zip -r "${NAME}.zip" dist/
+                rsync -avc -e "ssh -o StrictHostKeyChecking=no -p 22" ${NAME}.zip assets.reel2bits.org@cadance.licorn.eu:/
+              fi
+
+  - &build_and_sync_doc
+      steps:
+        - checkout
+        - *attach_workspace
+        - add_ssh_keys:
+            fingerprints:
+              - "66:80:b8:db:44:06:34:e1:f0:ac:35:b2:a0:80:98:bd"
+        - run:
+            name: Install rsync
+            command: |
+              sudo apt-get update
+              sudo apt-get install -y rsync graphviz
+        - run:
+            name: Install dependencies
+            command: |
+              python3 -m venv venv
+              . venv/bin/activate
+              pip install sphinx-guillotina-theme sphinx
+        - run:
+            name: Build docs
+            command: |
+              . venv/bin/activate
+              cd docs && ./build_docs.sh
+        - deploy:
+            name: deploy
+            command: |
+              rsync -avc -e "ssh -o StrictHostKeyChecking=no -p 22" --delete docs-build/ docs-develop.reel2bits.org@cadance.licorn.eu:/
 jobs:
   install:
     <<: *defaults
@@ -146,8 +258,52 @@ jobs:
           POSTGRES_DB: reel2bits_test
     <<: *test_steps
 
+  front-lint:
+    <<: *defaults
+    docker:
+      - image: circleci/node:12.9.0-buster-browsers
+    <<: *lint_steps_front
+
+  front-lint-lts:
+    <<: *defaults
+    docker:
+      - image: circleci/node:10.16.3-buster-browsers
+    <<: *lint_steps_front
+
+  front-test-lts:
+    <<: *defaults
+    docker:
+      - image: circleci/node:10.16.3-buster-browsers
+    <<: *test_steps_front
+
+  front-build:
+    <<: *defaults
+    docker:
+      - image: circleci/node:10.16.3-buster-browsers
+    <<: *build_front
+
+  front-sync:
+    <<: *defaults
+    docker:
+      - image: circleci/node:10.16.3-buster-browsers
+    <<: *sync_front
+
+  build-develop-doc:
+    <<: *defaults
+    docker:
+      - image: circleci/python:3.7-buster-node
+        environment:
+          BUILD_PATH: ../docs-build
+    <<: *build_and_sync_doc
+
 workflows:
   version: 2
+  build-docs:
+    jobs:
+      - build-develop-doc:
+          filters:
+            branches:
+              only: master
   build-and-test:
     jobs:
       - install
@@ -158,16 +314,30 @@ workflows:
           requires:
             - install
             - install-python3.6
-      - install-python3.8:
-          requires:
-            - install
-            - install-python3.6
       - test-python3.6:
           requires:
             - install-python3.6
       - test-python3.7:
           requires:
             - install-python3.7
-      - test-python3.8:
+      - front-lint-lts:
           requires:
-            - install-python3.8
+            - install
+      - front-test-lts:
+          requires:
+            - install
+            - front-lint-lts
+      - front-lint:
+          requires:
+            - install
+            - front-lint-lts
+      - front-build:
+          requires:
+            - install
+            - front-lint-lts
+            - front-lint
+      - front-sync:
+          requires:
+            - install
+            - front-lint-lts
+            - front-build

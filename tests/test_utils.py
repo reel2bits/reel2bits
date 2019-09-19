@@ -1,21 +1,8 @@
-from utils import duration_elapsed_human, duration_song_human, get_hashed_filename
+from utils.various import duration_human, get_hashed_filename
 import time
 
 
-def test_duration_elapsed_human():
-    t = [
-        {"duration": 20, "text": "right now"},
-        {"duration": 0, "text": "right now"},
-        {"duration": 200, "text": "3 mns"},
-        {"duration": 36000, "text": "10 hs"},
-        {"duration": 5184000, "text": "60 d"},
-        {"duration": 1324512000, "text": "41 y"},
-    ]
-    for i in t:
-        assert duration_elapsed_human(i["duration"]) == i["text"]
-
-
-def test_duration_song_human():
+def test_duration_human():
     t = [
         {"duration": 20, "text": "20.00 secs"},
         {"duration": 0, "text": "0.00 secs"},
@@ -25,7 +12,7 @@ def test_duration_song_human():
         {"duration": 1839937401, "text": "58 years"},
     ]
     for i in t:
-        assert duration_song_human(i["duration"]) == i["text"]
+        assert duration_human(i["duration"]) == i["text"]
 
 
 def test_get_hashed_filename():
