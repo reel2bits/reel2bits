@@ -103,7 +103,7 @@ Finally, install the python dependencies:
 
     pip install wheel
     pip install waitress
-    pip install -r requirements.txt
+    pip install -r api/requirements.txt
 
 .. warning::
 
@@ -118,6 +118,7 @@ You can now start to configure reel2bits:
 
 .. code-block:: shell
 
+    cd api
     cp config.py.sample config.py
 
 Then edit this file as you wish.
@@ -140,6 +141,7 @@ You should now be able to import the initial database structure:
 
 .. code-block:: shell
 
+    # in the 'api' folder
     flask db upgrade
 
 This will create the required tables and rows.
@@ -153,6 +155,7 @@ Then populate the database with default values (seeds):
 
 .. code-block:: shell
 
+    # in the 'api' folder
     flask seed
 
 
@@ -163,6 +166,7 @@ You can then create your first user account:
 
 .. code-block:: shell
 
+    # in the 'api' folder
     flask createuser
 
 .. warning::

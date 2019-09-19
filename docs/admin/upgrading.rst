@@ -38,7 +38,7 @@ Locate the latest release `from the release page <https://github.com/reel2bits/r
 
     # Update dependencies
     source /home/reel2bits/virtualenv/bin/activate
-    pip install -r requirements.txt
+    pip install -r api/requirements.txt
 
 Then exit your reel2bits user and run as root:
 
@@ -53,6 +53,7 @@ Then apply databases migrations:
     sudo -u reel2bits -H bash
     cd /home/reel2bits/reel2bits/
     source /home/reel2bits/virtualenv/bin/activate
+    cd api
     flask db upgrade
 
 You have to update the front-end too, see :ref:`front-installation <front-installation>`.

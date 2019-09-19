@@ -20,7 +20,7 @@ import os
 import sys
 import datetime
 
-sys.path.insert(0, os.path.abspath("../"))
+sys.path.insert(0, os.path.abspath("../api"))
 
 import version as reel2bits_version  # NOQA
 

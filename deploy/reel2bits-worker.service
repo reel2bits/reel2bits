@@ -6,7 +6,7 @@ PartOf=reel2bits.target
 [Service]
 Type=simple
 User=reel2bits
-WorkingDirectory=/home/reel2bits/reel2bits
+WorkingDirectory=/home/reel2bits/reel2bits/api
 Environment="FLASK_ENV=production"
 # Celery workers handle background tasks (such file imports or federation
 # messaging). The more processes a worker gets, the more tasks
