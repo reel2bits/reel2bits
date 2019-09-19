@@ -105,7 +105,7 @@ Finally, install the python dependencies:
     pip install waitress
     pip install -r requirements.txt
 
-.. important::
+.. warning::
 
     Further commands involving python should always be run after you activated
     the virtualenv, as described earlier, otherwise those commands will raise
@@ -165,7 +165,7 @@ You can then create your first user account:
 
     flask createuser
 
-.. important::
+.. warning::
 
     If you don't create an user, the first one to register from the web interface will be administrator !
 
@@ -199,7 +199,7 @@ Get the archive and extract:
     # same with this one
     rm -rf "extract"
 
-.. important::
+.. warning::
 
     Any update to the frontend files needs either a restart of the `reel2bits-web` service, or wait until the file cache expires.
 

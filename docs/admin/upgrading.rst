@@ -18,7 +18,7 @@ Upgrading the backend
 On non-docker, upgrade involves a few more commands. We assume your setup
 match what is described in :doc:`/installation/linux`:
 
-.. important::
+.. warning::
 
     Further commands involving python should always be run after you activated
     the virtualenv, as described earlier, otherwise those commands will raise
