@@ -5,7 +5,7 @@ setup(
     version="0.1",
     license="AGPL",
     python_requires=">=3.6",
-    long_description=open("README.md").read(),
+    long_description=open("../README.md").read(),
     url="http://dev.sigpipe.me/DashieV3/reel2bits",
     author="Dashie",
     author_email="dashie@sigpipe.me",

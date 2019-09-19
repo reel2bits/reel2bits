@@ -31,7 +31,7 @@ aliases:
   - &install_audiowaveform
       run:
         name: Install audiowaveform
-        command: ./tests/install_audiowaveform.sh
+        command: ./api/tests/install_audiowaveform.sh
 
   - &install_python_dependencies
       steps:
@@ -41,19 +41,19 @@ aliases:
         - run: python -V | tee /tmp/.python-version
         - restore_cache:
             keys:
-              - v1-dependencies-{{ checksum "/tmp/.python-version" }}-{{ checksum "requirements.txt" }}
+              - v1-dependencies-{{ checksum "/tmp/.python-version" }}-{{ checksum "api/requirements.txt" }}
               - v1-dependencies-{{ checksum "/tmp/.python-version" }}-
               - v1-dependencies-
         - run: python3 -m venv venv
         - run:
             command: |
               . venv/bin/activate
-              pip install --requirement requirements.txt
+              pip install --requirement api/requirements.txt
               pip install black
               pip install flake8
               touch front/dist/index.html
         - save_cache:
-            key: v1-dependencies-{{ checksum "/tmp/.python-version" }}-{{ checksum "requirements.txt" }}
+            key: v1-dependencies-{{ checksum "/tmp/.python-version" }}-{{ checksum "api/requirements.txt" }}
             paths:
               - ./venv
         - *persist_to_workspace
@@ -85,12 +85,14 @@ aliases:
             name: Linters
             command: |
               . venv/bin/activate
+              cd api
               black --check .
               flake8 . --count --show-source --statistics
         - run:
             name: Tests
             command: |
               . venv/bin/activate
+              cd api
               cp tests/config_test.py config.py
               mkdir test-reports
               export AUTHLIB_INSECURE_TRANSPORT=1
@@ -101,12 +103,13 @@ aliases:
               psql -U postgres -h localhost -w -c 'CREATE DATABASE reel2bits'
               psql -U postgres -h localhost -w -c 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";' reel2bits
               . venv/bin/activate
+              cd api
               cp config.py.sample config.py
               flask db upgrade
         - store_test_results:
-            path: test-reports
+            path: api/test-reports
         - store_artifacts:
-            path: test-reports
+            path: api/test-reports
 
   - &lint_steps_front
       steps:
