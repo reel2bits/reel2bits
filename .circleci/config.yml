@@ -160,16 +160,16 @@ aliases:
         - deploy:
             name: deploy front
             command: |
-              if [ "${CIRCLE_BRANCH}" = "frontv2" ]; then
+              if [ "${CIRCLE_BRANCH}" = "master" ]; then
                 rsync -avc -e "ssh -o StrictHostKeyChecking=no -p 23" --delete front/dist/ r2bdev@videaudio.cadance.licorn.eu:/
               else
-                echo "Not frontv2, no deployment"
+                echo "Not master, no deployment"
               fi
         - deploy:
             name: zip and sync artifacts
             command: |
               cd front
-              if [ "${CIRCLE_BRANCH}" = "frontv2" ]; then
+              if [ "${CIRCLE_BRANCH}" = "master" ]; then
                 export NAME="front-dist-${CIRCLE_BRANCH}"
                 zip -r "${NAME}.zip" dist/
                 rsync -avc -e "ssh -o StrictHostKeyChecking=no -p 22" ${NAME}.zip assets.reel2bits.org@cadance.licorn.eu:/
@@ -303,7 +303,7 @@ workflows:
       - build-develop-doc:
           filters:
             branches:
-              only: frontv2
+              only: master
   build-and-test:
     jobs:
       - install
