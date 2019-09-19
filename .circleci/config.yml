@@ -93,7 +93,6 @@ aliases:
             command: |
               . venv/bin/activate
               cd api
-              cp tests/config_test.py config.py
               mkdir test-reports
               export AUTHLIB_INSECURE_TRANSPORT=1
               python setup.py test
