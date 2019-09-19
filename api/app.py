@@ -63,7 +63,7 @@ if os.path.isdir(gitpath):
 
 @cached(spa_cache)
 def get_spa_html():
-    with open(os.path.join(os.getcwd(), "front/dist/index.html")) as f:
+    with open(os.path.join(os.getcwd(), "../front/dist/index.html")) as f:
         return f.read()
 
 
