@@ -21,7 +21,7 @@ First, copy the sample files:
 You should then edit thoses files as they are using the defaults values we used in this documentation, which might not
 be what you've used.
 
-Once you have done, reload systemd:
+Once this is done, reload systemd:
 
 .. code-block:: shell
 
@@ -31,14 +31,14 @@ And start the services:
 
     systemctl start reel2bits.target
 
-To ensure all reel2bits processes are started automatically after a reboot, run:
+To ensure all reel2bits processes are started automatically on startup, run:
 
 .. code-block:: shell
-    
+
     systemctl enable reel2bits-web
     systemctl enable reel2bits-worker
 
-You can check the statuses of all processes like this:
+You can check the statuses of all processes at any moment:
 
 .. code-block:: shell
 

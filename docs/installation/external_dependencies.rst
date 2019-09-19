@@ -37,7 +37,7 @@ Create the project database and user:
     otherwise you'll end up with errors and crashes later on when dealing
     with music metadata that contains non-ascii chars.
 
-Assuming you already have :ref:`created your reel2bits user <create-reel2bits-user>`,
+Assuming you have :ref:`created your reel2bits user <create-reel2bits-user>`,
 you should now be able to open a postgresql shell:
 
 .. code-block:: shell
@@ -45,7 +45,7 @@ you should now be able to open a postgresql shell:
     sudo -u reel2bits -H psql
 
 Unless you give a superuser access to the database user, you should also
-enable some extensions on your database server, as those are required
+enable some extensions on your database server. Those are required
 for reel2bits to work properly:
 
 .. code-block:: shell
@@ -55,9 +55,7 @@ for reel2bits to work properly:
 Cache setup (Redis)
 -------------------
 
-reel2bits also requires a cache server:
-
-- To handle asynchronous tasks such as music transcoding or some ActivityPub tasks
+reel2bits also requires a cache server to handle asynchronous tasks such as music transcoding or some ActivityPub tasks.
 
 On Debian-like distributions, a redis package is available, and you can
 install it:
@@ -71,6 +69,6 @@ This should be enough to have your redis server set up.
 audiowaveform tool
 ------------------
 
-We needs the `audiowaveform tool <https://github.com/bbc/audiowaveform>`_ which is used to precompute the audio waveforms used by the players.
+We need the `audiowaveform tool <https://github.com/bbc/audiowaveform>`_ which is used to precompute the audio waveforms used by the players.
 
 The best way to install it is to `follow the official documentation <https://github.com/bbc/audiowaveform#installation>`_ which already mention how to install on Ubuntu or build from sources.

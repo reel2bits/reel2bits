@@ -26,7 +26,7 @@ Available installation methods
 -------------------------------
 
 Docker will soon be available to deploy a reel2bits instance.
-Right now you can install it on any Linux distribution.
+For now you can install it on any Linux distribution.
 
 .. toctree::
     :maxdepth: 1
@@ -42,9 +42,9 @@ reel2bits packages are available for the following platforms:
 Running reel2bits on the master branch
 ---------------------------------------
 
-Traditional deployments are done using tagged releases. However, you
-may want to benefits from the latest change available, or the help detect
-bugs before they are included in actual releases.
+Traditional deployments are done using tagged releases. However, you may want to
+benefit from the latest available changes, or to provide help detecting bugs
+before they are included in actual releases.
 
 To do that, you'll need to run your instance on the master branch,
 which contains all the unreleased changes and features of the next version.
@@ -80,7 +80,7 @@ You can now copy the shipped nginx config:
     cp /home/reel2bits/reel2bits/deploy/reel2bits.nginx /etc/nginx/sites-available/reel2bits.conf
     ln -s /etc/nginx/sites-available/reel2bits.conf /etc/nginx/sites-enabled/
 
-Don't forget to edit ```/etc/nginx/sites-enabled/reel2bits.conf`` to suit your needs.
+Don't forget to edit ``/etc/nginx/sites-enabled/reel2bits.conf`` to suit your needs.
 
 HTTPS Configuration
 :::::::::::::::::::

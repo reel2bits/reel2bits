@@ -1,9 +1,9 @@
-Debian based distribution installation
+Debian-based distribution installation
 ======================================
 
 .. note::
 
-    This guide targets Debian 9 (Stretch), which is the latest Debian, or the latest ubuntu
+    This guide targets Debian 9 (Stretch), which is the latest Debian. It also apply to the latest Ubuntu
 
 External dependencies
 ---------------------
@@ -55,7 +55,7 @@ Log in as the newly created user from now on:
 Download latest reel2bits release
 ---------------------------------
 
-Locate the latest release `from the release page <https://github.com/reel2bits/reel2bits/releases>`_ like ``v0.5``, or if you want to run the unstable ``master`` branch.
+Locate the latest stable release `from the release page <https://github.com/rhaamo/reel2bits/releases>`_ like ``v0.5``, or if you want to run the unstable, use the ``master`` branch.
 
 Still under your ``reel2bits`` user:
 
@@ -105,7 +105,7 @@ Finally, install the python dependencies:
     pip install waitress
     pip install -r requirements.txt
 
-.. important::
+.. warning::
 
     Further commands involving python should always be run after you activated
     the virtualenv, as described earlier, otherwise those commands will raise
@@ -120,12 +120,12 @@ You can now start to configure reel2bits:
 
     cp config.py.sample config.py
 
-Then edit this file as you wishes.
+Then edit this file as you wish.
 
 Sentry
 ------
 
-If you known, and use Sentry, you can install the python package:
+If you know and use Sentry, you can install the python package:
 
 .. code-block:: shell
 
@@ -165,7 +165,7 @@ You can then create your first user account:
 
     flask createuser
 
-.. important::
+.. warning::
 
     If you don't create an user, the first one to register from the web interface will be administrator !
 
@@ -174,7 +174,7 @@ You can then create your first user account:
 Front installation
 ------------------
 
-You also needs to either get a frontend prebuild or build it yourself.
+You also need to either get a frontend prebuild or build it yourself.
 
 Pre-build
 ^^^^^^^^^
@@ -199,14 +199,14 @@ Get the archive and extract:
     # same with this one
     rm -rf "extract"
 
-.. important::
+.. warning::
 
     Any update to the frontend files needs either a restart of the `reel2bits-web` service, or wait until the file cache expires.
 
 Build it yourself
 ^^^^^^^^^^^^^^^^^
 
-Makes sure you have nodejs installed then:
+Make sure you have Node.js installed then:
 
 .. code-block:: shell
 
