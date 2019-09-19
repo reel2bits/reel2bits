@@ -1,5 +1,5 @@
 <template>
-  <div class="row">
+  <div class="row mt-4">
     <div class="col-md-8">
       <TimelineTabs active="public" />
 

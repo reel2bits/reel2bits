@@ -6,7 +6,7 @@ dist/static/
 src/translations.json
 src/translations/*.json
 locales/en_US/LC_MESSAGES/app.po
-*.mo
+*~
 
 # local env files
 .env.local

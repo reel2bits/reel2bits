@@ -1,49 +1,62 @@
 <template>
   <div>
-    <div class="row">
-      <div class="col-md-12">
-        <div class="d-flex my-12">
-          <b-link :to="{ name: 'tracks-show', params: { username: track.account.screen_name, trackId: track.slug } }">
-            <img :src="track.picture_url" class="d-flex mr-3"
-                 style="width:112px; height:112px;"
+    <div class="flex-fill my-2">
+      <b-link :to="{ name: 'user-profile', params: { name: track.account.screen_name } }" class="text-decoration-none">
+        <img :src="track.account.profile_image_url" :alt="userAvatarAlt"
+             class="rounded-circle mr-1"
+             width="24"
+             height="24"
+        >
+      </b-link>
+      <span class="align-middle">
+        <b-link :to="{ name: 'user-profile', params: { name: track.account.screen_name } }" class="text-decoration-none">
+          {{ track.account.name }}
+        </b-link>
+        <translate translate-context="Content/Track/Single track in timelines, part of 'XXX >>uploaded a track<< YYY times ago'" :translate-params="{publishedAgo: publishedAgo}" :title="track.uploaded_on">
+          uploaded a track %{publishedAgo}
+        </translate>
+      </span>
+    </div>
+    <div class="d-flex my-12">
+      <b-link :to="{ name: 'tracks-show', params: { username: track.account.screen_name, trackId: track.slug } }">
+        <img :src="track.picture_url" class="d-flex mr-3"
+             style="width:112px; height:112px;"
+        >
+      </b-link>
+      <div class="flex-fill">
+        <div class="d-flex">
+          <h2 class="flex-fill h5" :title="track.title">
+            <b-link :to="{ name: 'tracks-show', params: { username: track.account.screen_name, trackId: track.slug } }"
+                    class="text-body text-decoration-none"
             >
-          </b-link>
-          <div class="flex-fill">
-            <div class="d-flex">
-              <h1 class="flex-fill h5" :title="track.title">
-                <b-link :to="{ name: 'tracks-show', params: { username: track.account.screen_name, trackId: track.slug } }">
-                  {{ track.title | truncate(45) }}
-                </b-link>
-              </h1>
-              <div class="d-flex" :title="track.uploaded_on">
-                {{ publishedAgo }}
-              </div>
-            </div>
-            <div v-if="processingDone" class="d-flex my-2">
-              <b-button v-if="!isPlaying" class="playPause" variant="primary"
-                        @click.prevent="togglePlay"
-              >
-                <i class="fa fa-play" aria-hidden="true" />
-              </b-button>
-              <b-button v-if="isPlaying" class="playPause" @click.prevent="togglePlay">
-                <i class="fa fa-pause" aria-hidden="true" />
-              </b-button>
-              <div :id="wavesurferContainer" class="flex-fill" />
-            </div>
+              {{ track.title | truncate(60) }}
+            </b-link>
+          </h2>
+        </div>
+        <div v-if="processingDone" class="d-flex my-2">
+          <b-button v-if="!isPlaying" class="playPause" variant="primary"
+                    @click.prevent="togglePlay"
+          >
+            <i class="fa fa-play" aria-hidden="true" />
+          </b-button>
+          <b-button v-if="isPlaying" class="playPause" @click.prevent="togglePlay">
+            <i class="fa fa-pause" aria-hidden="true" />
+          </b-button>
+          <div :id="wavesurferContainer" class="flex-fill" />
+        </div>
 
-            <div class="pt-0 d-flex">
-              <div>
-                <translate translate-context="Content/Track/Single track in timelines, 'By: xxx'">
-                  By:
-                </translate>
-                <b-link :to="{ name: 'user-profile', params: { name: track.account.screen_name } }" class="text-decoration-none text-body">
-                  {{ track.account.name }}
-                </b-link>
-              </div>
-              <div class="ml-auto align-self-end">
-                <span class="text-secondary">{{ playerTimeCur }}</span> <span class="text-muted">{{ playerTimeTot }}</span>
-              </div>
-            </div>
+        <div class="pt-0 d-flex">
+          <div class="btn-group" role="group">
+            <b-button :href="track.media_orig" variant="link"
+                      class="text-decoration-none pl-0"
+            >
+              <i class="fa fa-cloud-download" aria-hidden="true" /> <translate translate-context="Content/Track/Button">
+                Download
+              </translate>
+            </b-button>
+          </div>
+          <div class="ml-auto align-self-end">
+            <span v-if="isPlaying" class="text-secondary px-2">{{ playerTimeCur }}</span> <span class="text-muted">{{ playerTimeTot }}</span>
           </div>
         </div>
       </div>

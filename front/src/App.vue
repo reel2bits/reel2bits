@@ -1,69 +1,73 @@
 <template>
   <div id="app">
     <!-- Top navigation -->
-    <nav class="navbar fixed-top bg-light">
+    <b-navbar toggleable="lg" class="fixed-top bg-light">
       <div class="container">
-        <div class="w-100 border-bottom align-items-center d-flex justify-content-between">
-          <b-link :to="{ name: 'public-timeline' }" class="navbar-brand">
-            <MainLogo :logo_spin_duration="logoSpinDuration" /><h3 class="text-body mx-3 d-inline">
+        <div class="w-100 border-bottom align-items-center d-flex">
+          <b-navbar-toggle target="nav-collapse" />
+          <b-navbar-brand :to="{ name: 'public-timeline' }" class="d-flex mr-auto align-items-center w-50">
+            <MainLogo :logo_spin_duration="logoSpinDuration" />
+            <h3 class="text-body mx-3">
               {{ sitename }}
             </h3>
-          </b-link>
-          <div class="col-md-4">
-            <input id="topsearch" class="form-control" type="search"
-                   :placeholder="labels.searchPlaceholder" :aria-label="labels.searchAria"
-            >
-          </div>
-          <div>
-            <span v-if="currentUser">
-
-              <b-dropdown id="userDropdown" :text="labels.create"
-                          right
-                          variant="primary"
+          </b-navbar-brand>
+          <b-collapse id="nav-collapse" is-nav class="w-100">
+            <div class="w-100 justify-content-center">
+              <input id="topsearch" class="form-control" type="search"
+                     :placeholder="labels.searchPlaceholder" :aria-label="labels.searchAria"
               >
-                <b-dropdown-item>
-                  <router-link :to="{ name: 'tracks-upload' }"
-                               :text="labels.createTrack"
-                  ><translate translate-context="Header/*/DropDown/Create/NewTrack text">New Track</translate></router-link>
-                </b-dropdown-item>
-                <b-dropdown-item>
-                  <router-link :to="{ name: 'albums-new' }"
-                               :text="labels.createAlbum"
-                  ><translate translate-context="Header/*/DropDown/Create/NewAlbum text">New Album</translate></router-link>
-                </b-dropdown-item>
-              </b-dropdown>
-
-              <router-link :to="{ name: 'user-profile', params: { name: currentUser.screen_name } }">
-                <img :src="currentUser.profile_image_url" class="rounded-circle mx-2" width="40"
-                     height="40" :alt="usernameAvatar"
-                     :title="labels.myAvatarTitle"
+            </div>
+            <div class="ml-auto w-100 justify-content-end text-right">
+              <span v-if="currentUser">
+                <b-dropdown id="userDropdown" :text="labels.create"
+                            right
+                            variant="primary"
+                            toggle-class="mx-2"
                 >
-              </router-link>
-              <b-dropdown id="userDropdown" :text="atUsername"
-                          right
-                          variant="link"
-                          toggle-class="px-0 text-decoration-none"
-              >
-                <b-dropdown-item><router-link :to="{ name: 'user-profile', params: { name: currentUser.screen_name } }"><translate translate-context="Header/*/DropDown/User/MyProfile">My Profile</translate></router-link></b-dropdown-item>
-                <b-dropdown-item><router-link :to="{ name: 'user-settings' }"><translate translate-context="Header/*/DropDown/User/Settings">Settings</translate></router-link></b-dropdown-item>
-                <b-dropdown-item><router-link :to="{ name: 'account-logs' }"><translate translate-context="Header/*/DropDown/User/Logs">Logs</translate></router-link></b-dropdown-item>
-                <b-dropdown-divider />
-                <b-dropdown-item><a href="#" @click.prevent="logout"><translate translate-context="Header/*/DropDown/User/Logout">Logout</translate></a></b-dropdown-item>
-              </b-dropdown>
-            </span>
-            <span v-else>
-              <b-button type="button" variant="link"
-                        :to="{ name: 'login_form' }"
-              ><translate translate-context="Header/*/DropDown/User/Login">Login</translate></b-button>
-              <b-button v-if="registrationOpen"
-                        type="button" variant="primary"
-                        :to="{ name: 'register' }"
-              ><translate translate-context="Header/*/DropDown/User/Register">Register</translate></b-button>
-            </span>
-          </div>
+                  <b-dropdown-item>
+                    <router-link :to="{ name: 'tracks-upload' }"
+                                 :text="labels.createTrack"
+                    ><translate translate-context="Header/*/DropDown/Create/NewTrack text">New Track</translate></router-link>
+                  </b-dropdown-item>
+                  <b-dropdown-item>
+                    <router-link :to="{ name: 'albums-new' }"
+                                 :text="labels.createAlbum"
+                    ><translate translate-context="Header/*/DropDown/Create/NewAlbum text">New Album</translate></router-link>
+                  </b-dropdown-item>
+                </b-dropdown>
+
+                <router-link :to="{ name: 'user-profile', params: { name: currentUser.screen_name } }">
+                  <img :src="currentUser.profile_image_url" class="rounded-circle mx-2" width="40"
+                       height="40" :alt="usernameAvatar"
+                       :title="labels.myAvatarTitle"
+                  >
+                </router-link>
+                <b-dropdown id="userDropdown" :text="atUsername"
+                            right
+                            variant="link"
+                            toggle-class="px-0 text-decoration-none text-body mr-3"
+                >
+                  <b-dropdown-item><router-link :to="{ name: 'user-profile', params: { name: currentUser.screen_name } }"><translate translate-context="Header/*/DropDown/User/MyProfile">My Profile</translate></router-link></b-dropdown-item>
+                  <b-dropdown-item><router-link :to="{ name: 'user-settings' }"><translate translate-context="Header/*/DropDown/User/Settings">Settings</translate></router-link></b-dropdown-item>
+                  <b-dropdown-item><router-link :to="{ name: 'account-logs' }"><translate translate-context="Header/*/DropDown/User/Logs">Logs</translate></router-link></b-dropdown-item>
+                  <b-dropdown-divider />
+                  <b-dropdown-item><a href="#" @click.prevent="logout"><translate translate-context="Header/*/DropDown/User/Logout">Logout</translate></a></b-dropdown-item>
+                </b-dropdown>
+              </span>
+              <span v-else>
+                <b-button type="button" variant="link"
+                          :to="{ name: 'login_form' }"
+                ><translate translate-context="Header/*/DropDown/User/Login">Login</translate></b-button>
+                <b-button v-if="registrationOpen"
+                          type="button" variant="primary"
+                          :to="{ name: 'register' }"
+                ><translate translate-context="Header/*/DropDown/User/Register">Register</translate></b-button>
+              </span>
+            </div>
+          </b-collapse>
         </div>
       </div>
-    </nav>
+    </b-navbar>
 
     <!-- content -->
     <div class="container">
