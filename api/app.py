@@ -87,13 +87,13 @@ def make_celery(remoulade):
 def create_app(config_filename="config.development.Config", app_name=None, register_blueprints=True):
     # App configuration
     app = Flask(app_name or __name__)
-    app_settings = os.getenv('APP_SETTINGS', config_filename)
+    app_settings = os.getenv("APP_SETTINGS", config_filename)
     print(f" * Loading config: '{app_settings}'")
     try:
         cfg = import_string(app_settings)()
     except ImportError:
         print(" *** Cannot import config ***")
-        cfg = import_string('config.config.BaseConfig')
+        cfg = import_string("config.config.BaseConfig")
         print(" *** Default config loaded, expect problems ***")
     app.config.from_object(cfg)
 
