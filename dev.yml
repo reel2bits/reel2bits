@@ -1,0 +1,133 @@
+version: "3"
+
+services:
+  front:
+    build: front
+    env_file:
+      - .env.dev
+      - .env
+    environment:
+      - "HOST=0.0.0.0"
+      - "AP_DOMAIN=${COMPOSE_PROJECT_NAME-node1}.reel2bits.test"
+    ports:
+      - "8081-8081"
+    volumes:
+      - "./front:/app"
+      - "/app/node_modules"
+      - "./po:/po"
+    networks:
+      - internal
+
+  postgres:
+    env_file:
+      - .env.dev
+      - .env
+    image: postgres:${POSTGRES_VERSION-11}
+    command: postgres -c log_min_duration_statement=0
+    volumes:
+      - "./data/${COMPOSE_PROJECT_NAME-node1}/postgres:/var/lib/postgresql/data"
+    networks:
+      - internal
+
+  redis:
+    env_file:
+      - .env.dev
+      - .env
+    image: redis:3.0
+    volumes:
+      - "./data/${COMPOSE_PROJECT_NAME-node1}/redis:/data"
+    networks:
+      - internal
+
+  api:
+    env_file:
+      - .env.dev
+      - .env
+    build: &backend
+      context: ./api
+      dockerfile: Dockerfile
+      args:
+        install_dev_deps: 1
+    entrypoint: compose/dev-entrypoint.sh
+    command: >
+      bash -c "uvicorn --reload app:create_app --host 0.0.0.0 --port 8000  --reload-dir config/"
+    volumes:
+      - ./api:/app
+      - "${MUSIC_DIRECTORY_SERVE_PATH-./data/music}:/music:ro"
+      - "./data/uploads:/data/uploads"
+    environment:
+      - "APP_DB_URI=postgresql://postgres@postgres/postgres"
+      - "AP_DOMAIN=${COMPOSE_PROJECT_NAME-node1}.reel2bits.test"
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - internal
+    cap_add:
+      - SYS_PTRACE
+
+  celeryworker:
+    env_file:
+      - .env.dev
+      - .env
+    build: *backend
+    depends_on:
+      - postgres
+      - redis
+    command: celery -A tasks.celery worker -l debug -B
+    environment:
+      - "APP_DB_URI=postgresql://postgres@postgres/postgres"
+      - "CELERY_BROKER_URL=redis://redis:6379/0"
+      - "CELERY_RESULT_BACKEND=redis://redis:6379/0"
+    volumes:
+      - ./api:/app
+    networks:
+      - internal
+  nginx:
+    command: /entrypoint.sh
+    env_file:
+      - .env.dev
+      - .env
+    image: nginx
+    ports:
+      - "${NGINX_PORTS_MAPPING-8000:80}"
+    environment:
+      - "NGINX_MAX_BODY_SIZE=${NGINX_MAX_BODY_SIZE-100M}"
+      - "COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME- }"
+    depends_on:
+      - api
+      - front
+    volumes:
+      - ./deploy/docker/nginx/conf.dev:/etc/nginx/nginx.conf.template:ro
+      - ./deploy/docker/nginx/entrypoint.sh:/entrypoint.sh:ro
+      - ./deploy/reel2bits_proxy.conf:/etc/nginx/reel2bits_proxy.conf:ro
+      - "./front:/frontend:ro"
+      - "./data/uploads:/protected/uploads:ro"
+    networks:
+      - federation
+      - internal
+
+    labels:
+      traefik.backend: "${COMPOSE_PROJECT_NAME-node1}"
+      traefik.frontend.rule: "Host:${COMPOSE_PROJECT_NAME-node1}.reel2bits.test,${NODE_IP-127.0.0.1}"
+      traefik.enable: "true"
+      traefik.federation.protocol: "http"
+      traefik.federation.port: "80"
+      traefik.frontend.passHostHeader: true
+      traefik.docker.network: federation
+
+  docs:
+    build: docs
+    command: python serve.py
+    volumes:
+      - ".:/app/"
+    ports:
+      - "35730:35730"
+      - "8001:8001"
+
+
+networks:
+  ? internal
+  federation:
+    external:
+      name: federation

@@ -10,7 +10,7 @@ WorkingDirectory=/home/reel2bits/reel2bits/api
 Environment="FLASK_ENV=production"
 # Look at documentation for the configuration part
 Environment="APP_SETTINGS='config.production_secret.Config'"
-ExecStart=/home/reel2bits/reel2bits/venv/bin/waitress-serve --call 'app:create_app' --host 0.0.0.0 --port 8000
+ExecStart=/home/reel2bits/reel2bits/venv/bin/uvicorn app:create_app --host 0.0.0.0 --port 8000
 TimeoutSec=15
 Restart=always
 

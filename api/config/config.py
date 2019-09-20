@@ -152,3 +152,6 @@ class BaseConfig:
 
     # Don't touch
     SWAGGER_UI_DOC_EXPANSION = "list"
+
+    # Default SPA filename
+    REEL2BITS_SPA_HTML = os.getenv("REEL2BITS_SPA_HTML", "../front/dist/index.html")
