@@ -84,15 +84,12 @@ def upload_workflow(self, sound_id):
         print("- Cant find sound ID {id} in database".format(id=sound_id))
         return
 
-    errors = None
-
     print("METADATAS started")
     metadatas = work_metadatas(sound_id)
     print("METADATAS finished")
 
     if not metadatas:
         # cannot process further
-        errors = True
         sound.transcode_state = Sound.TRANSCODE_ERROR
         db.session.commit()
         print("UPLOAD WORKFLOW had errors")
@@ -106,7 +103,7 @@ def upload_workflow(self, sound_id):
         print("TRANSCODE finished")
 
     # Federate if public and AP enabled
-    if current_app.config["AP_ENABLED"] and not errors:
+    if current_app.config["AP_ENABLED"]:
         if not sound.private:
             print("UPLOAD WORKFLOW federating sound")
             # Federate only if sound is public
@@ -133,12 +130,6 @@ def upload_workflow(self, sound_id):
         print(f"Error sending mail: {e}")
         err = e
     except smtplib.SMTPException as e:
-        print(f"Error sending mail: {e}")
-        err = e
-    except smtplib.SMTPAuthenticationError as e:
-        print(f"Error sending mail: {e}")
-        err = e
-    except smtplib.SMTPRecipientsRefused as e:
         print(f"Error sending mail: {e}")
         err = e
     if err:

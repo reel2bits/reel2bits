@@ -123,12 +123,6 @@ def reset_password():
     except smtplib.SMTPException as e:
         print(f"Error sending mail: {e}")
         err = e
-    except smtplib.SMTPAuthenticationError as e:
-        print(f"Error sending mail: {e}")
-        err = e
-    except smtplib.SMTPRecipientsRefused as e:
-        print(f"Error sending mail: {e}")
-        err = e
     if err:
         add_log("global", "ERROR", f"Error sending email for password reset user {user.id}: {err}")
         add_user_log(user.id, user.id, "user", "error", "An error occured while sending email")

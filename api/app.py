@@ -258,7 +258,7 @@ def create_app(config_filename="config.development.Config", app_name=None, regis
 
         app.register_blueprint(bp_nodeinfo)
 
-        from controllers.api.v1.activitypub import bp_ap
+        from controllers.api.v1.ap import bp_ap
 
         # Feeds
         from controllers.feeds import bp_feeds
