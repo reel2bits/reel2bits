@@ -32,3 +32,5 @@ api/config/*_secret.py
 front/src/translations.json
 front/src/translations/*.json
 front/locales/en_US/LC_MESSAGES/app.po
+
+.env
