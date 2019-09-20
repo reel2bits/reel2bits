@@ -66,7 +66,6 @@ def duration_human(seconds):
     if seconds is None:
         return "error"
     seconds = float(seconds)
-    seconds = seconds
     minutes, seconds = divmod(seconds, 60)
     hours, minutes = divmod(minutes, 60)
     days, hours = divmod(hours, 24)
