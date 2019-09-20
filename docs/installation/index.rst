@@ -6,7 +6,7 @@ Project architecture
 
 The project relies on the following components and services to work:
 
-- A web application server (Python/Flask/Waitress)
+- A web application server (Python/Flask/Uvicorn)
 - A PostgreSQL database to store application data
 - A redis server to store tasks data
 - A celery worker to run asynchronous tasks (such as transcoding or ActivityPub)
