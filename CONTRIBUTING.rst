@@ -188,7 +188,7 @@ If you prefer to launch them in the background instead, use the ``-d`` flag, and
 Once everything is up, you can access the various funkwhale's components:
 
 - The Vue webapp, on http://localhost:8081/
-- The Backend API, on http://localhost:8000/
+- The Backend API, on http://localhost:8000/home
 - The documentation, on http://localhost:8001/ if you run the 'docs' container.
 
 Stopping everything

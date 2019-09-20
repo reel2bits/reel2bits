@@ -10,11 +10,12 @@ services:
       - "HOST=0.0.0.0"
       - "AP_DOMAIN=${COMPOSE_PROJECT_NAME-node1}.reel2bits.test"
     ports:
-      - "8081-8081"
+      - "8081:8081"
     volumes:
       - "./front:/app"
       - "/app/node_modules"
       - "./po:/po"
+      - "./deploy/docker/local.json:/app/config/local.json:ro"
     networks:
       - internal
 
@@ -49,8 +50,7 @@ services:
       args:
         install_dev_deps: 1
     entrypoint: docker/dev-entrypoint.sh
-    command: >
-      bash -c "uvicorn --reload app:create_app --host 0.0.0.0 --port 8000  --reload-dir config/"
+    command: flask run --host 0.0.0.0 --port 8000
     volumes:
       - ./api:/app
       - "${MUSIC_DIRECTORY_SERVE_PATH-./data/music}:/music:ro"
