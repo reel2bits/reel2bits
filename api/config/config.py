@@ -124,10 +124,6 @@ class BaseConfig:
     AP_ENABLED = bool_env("APP_AP_ENABLED", False)
 
     @property
-    def SERVER_NAME(self):
-        return self.AP_DOMAIN
-
-    @property
     def BASE_URL(self):
         return f"https://{self.AP_DOMAIN}"
 

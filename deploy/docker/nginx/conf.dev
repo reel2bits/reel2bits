@@ -37,6 +37,8 @@ http {
         listen [::]:80;
 
         include /etc/nginx/reel2bits_proxy.conf;
+        # Forces Host header
+        #proxy_set_header Host ${APP_AP_DOMAIN};
 
         access_log /var/log/nginx/reel2bits.access.log;
         error_log /var/log/nginx/reel2bits.error.log error;
@@ -72,7 +74,7 @@ http {
         client_max_body_size 1G;
 
         location /static {
-                root /home/reel2bits/reel2bits/front/dist;
+                root /frontend;
                 try_files $uri $uri/ @proxy;
         }
 
@@ -86,6 +88,8 @@ http {
 
         location @proxy {
             include /etc/nginx/reel2bits_proxy.conf;
+            # Forces Host header
+            #proxy_set_header Host ${APP_AP_DOMAIN};
             proxy_pass http://api:8000;
         }
 

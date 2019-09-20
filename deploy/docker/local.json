@@ -1,4 +1,4 @@
 {
-  "target": "http://node1.reel2bits.test/",
+  "target": "http://0.0.0.0:8000/",
   "host": "node1.reel2bits.test"
 }

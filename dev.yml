@@ -57,7 +57,8 @@ services:
       - "./data/uploads:/data/uploads"
     environment:
       - "APP_DB_URI=postgresql://postgres@postgres/postgres"
-      - "AP_DOMAIN=${COMPOSE_PROJECT_NAME-node1}.reel2bits.test"
+      - "APP_AP_DOMAIN=${COMPOSE_PROJECT_NAME-node1}.reel2bits.test"
+      - "AUTHLIB_INSECURE_TRANSPORT=1"
     depends_on:
       - postgres
       - redis
@@ -90,12 +91,13 @@ services:
       - .env
     image: nginx
     ports:
-      - "${NGINX_PORTS_MAPPING-8000:80}"
+      - "8000:80"
     environment:
       - "NGINX_MAX_BODY_SIZE=${NGINX_MAX_BODY_SIZE-100M}"
       - "COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME- }"
-      - "REEL2BITS_API_PORT=${REEL2BITS_API_PORT-5000}"
+      - "REEL2BITS_API_PORT=${REEL2BITS_API_PORT-8000}"
       - "REEL2BITS_API_IP=${FUNKHALE_API_IP-api}"
+      - "APP_AP_DOMAIN=${COMPOSE_PROJECT_NAME-node1}.reel2bits.test"
     depends_on:
       - api
       - front
@@ -103,8 +105,8 @@ services:
       - ./deploy/docker/nginx/conf.dev:/etc/nginx/nginx.conf.template:ro
       - ./deploy/docker/nginx/entrypoint.sh:/entrypoint.sh:ro
       - ./deploy/reel2bits_proxy.conf:/etc/nginx/reel2bits_proxy.conf:ro
-      - "./front:/frontend:ro"
-      - "./data/uploads:/protected/uploads:ro"
+      - "./front/dist:/frontend:ro"
+      - "./data/uploads:/datas/uploads:ro"
     networks:
       - federation
       - internal
