@@ -22,7 +22,7 @@ Any key can be overriden using the environment, see the configuration table for 
 Creating your configuration file
 --------------------------------
 
-You can use as example or copy the files `development.py` or `testing.py`, naming them `whatyouwant_secret.py`, the `_secret` will make sure git ignore it.
+You can use `production_secret_sample.py` as example, naming them `whatyouwant_secret.py`, the `_secret.py` will make sure git ignore it.
 
 Configuration keys and definitions
 ----------------------------------

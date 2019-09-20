@@ -42,11 +42,13 @@ import os
 #
 # Editing this file is done at your own risks, don't cry if doing that transforms your cat in an opossum.
 
+
 def bool_env(var_name, default=False):
     test_val = os.getenv(var_name, default)
-    if test_val in ('False', 'false', '0', 'no'):
+    if test_val in ("False", "false", "0", "no"):
         return False
     return bool(test_val)
+
 
 class BaseConfig:
     """ Base configuration, pls dont edit me """
@@ -73,6 +75,7 @@ class BaseConfig:
     # Secret key, you are supposed to generate one
     # Ex: `openssl rand -hex 42`
     SECRET_KEY = os.getenv("APP_SECRET_KEY", None)
+    # Ex: `openssl rand -hex 5`
     SECURITY_PASSWORD_SALT = os.getenv("APP_SEC_PASS_SALT", None)
 
     # Database stuff

@@ -8,6 +8,8 @@ Type=simple
 User=reel2bits
 WorkingDirectory=/home/reel2bits/reel2bits/api
 Environment="FLASK_ENV=production"
+# Look at documentation for the configuration part
+Environment="APP_SETTINGS='config.production_secret.Config'"
 # Celery workers handle background tasks (such file imports or federation
 # messaging). The more processes a worker gets, the more tasks
 # can be processed in parallel. However, more processes also means
