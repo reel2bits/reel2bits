@@ -62,7 +62,7 @@ class BaseConfig:
         return self.DEBUG
 
     # WTForms CSRF
-    WTF_CSRF_ENABLED = bool_env("APP_WTF_CSRF", True)
+    WTF_CSRF_ENABLED = bool_env("APP_WTF_CSRF", False)
 
     # Can users register
     REGISTRATION_ENABLED = bool_env("APP_REGISTRATION", True)

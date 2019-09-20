@@ -53,12 +53,14 @@ services:
     command: flask run --host 0.0.0.0 --port 8000
     volumes:
       - ./api:/app
-      - "${MUSIC_DIRECTORY_SERVE_PATH-./data/music}:/music:ro"
-      - "./data/uploads:/data/uploads"
+      - ./data/uploads:/data/uploads
     environment:
       - "APP_DB_URI=postgresql://postgres@postgres/postgres"
       - "APP_AP_DOMAIN=${COMPOSE_PROJECT_NAME-node1}.reel2bits.test"
       - "AUTHLIB_INSECURE_TRANSPORT=1"
+      - "APP_WTF_CSRF=False"
+      - "APP_CELERY_BROKER_URL=redis://redis:6379/0"
+      - "APP_CELERY_RESULT_BACKEND=redis://redis:6379/0"
     depends_on:
       - postgres
       - redis
@@ -78,8 +80,8 @@ services:
     command: celery -A tasks.celery worker -l debug -B
     environment:
       - "APP_DB_URI=postgresql://postgres@postgres/postgres"
-      - "CELERY_BROKER_URL=redis://redis:6379/0"
-      - "CELERY_RESULT_BACKEND=redis://redis:6379/0"
+      - "APP_CELERY_BROKER_URL=redis://redis:6379/0"
+      - "APP_CELERY_RESULT_BACKEND=redis://redis:6379/0"
     volumes:
       - ./api:/app
     networks:
@@ -105,8 +107,8 @@ services:
       - ./deploy/docker/nginx/conf.dev:/etc/nginx/nginx.conf.template:ro
       - ./deploy/docker/nginx/entrypoint.sh:/entrypoint.sh:ro
       - ./deploy/reel2bits_proxy.conf:/etc/nginx/reel2bits_proxy.conf:ro
-      - "./front/dist:/frontend:ro"
-      - "./data/uploads:/datas/uploads:ro"
+      - ./front/dist:/frontend:ro
+      - ./data/uploads:/datas/uploads:ro
     networks:
       - federation
       - internal
