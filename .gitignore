@@ -7,18 +7,22 @@
 /uploads/waveforms/
 /tmp/cty.xml
 /.pytest_cache/
-/reel2bits.egg-info
+/api/reel2bits.egg-info
+/api/.eggs
 /.eggs
 /configtest.py
-/errors_app.log
+/api/errors_app.log
 .coverage
 /.ropeproject
 /.mypy_cache
-/test-reports
+/api/test-reports
 test/unit/coverage/
 test/e2e/reports
 .DS_Store
 /docs-build
+/docs/_build/
+
+api/config/*_secret.py
 
 # Translations
 *.mo

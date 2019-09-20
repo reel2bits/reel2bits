@@ -18,6 +18,7 @@ from flask_cors import CORS
 from cachetools import cached, TTLCache
 from flasgger import Swagger
 from werkzeug.middleware.proxy_fix import ProxyFix
+from werkzeug.utils import import_string
 
 from models import db, Config, user_datastore, Role, create_actor
 from utils.various import InvalidUsage, is_admin, add_user_log
@@ -83,10 +84,18 @@ def make_celery(remoulade):
     return celery  # omnomnom
 
 
-def create_app(config_filename="config.py", app_name=None, register_blueprints=True):
+def create_app(config_filename="config.development.Config", app_name=None, register_blueprints=True):
     # App configuration
     app = Flask(app_name or __name__)
-    app.config.from_pyfile(config_filename)
+    app_settings = os.getenv("APP_SETTINGS", config_filename)
+    print(f" * Loading config: '{app_settings}'")
+    try:
+        cfg = import_string(app_settings)()
+    except ImportError:
+        print(" *** Cannot import config ***")
+        cfg = import_string("config.config.BaseConfig")
+        print(" *** Default config loaded, expect problems ***")
+    app.config.from_object(cfg)
 
     app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 

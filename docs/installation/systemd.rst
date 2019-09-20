@@ -21,6 +21,10 @@ First, copy the sample files:
 You should then edit thoses files as they are using the defaults values we used in this documentation, which might not
 be what you've used.
 
+Please look at :ref:`the dedicated configuration page <configuration-file>` for using your own settings.
+
+By default the services assumes the configuration is `config.production_secret.Config`, which correspond to a file named `production_secret.py` in the `api/config/` directory.
+
 Once this is done, reload systemd:
 
 .. code-block:: shell

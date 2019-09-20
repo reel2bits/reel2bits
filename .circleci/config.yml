@@ -93,7 +93,6 @@ aliases:
             command: |
               . venv/bin/activate
               cd api
-              cp tests/config_test.py config.py
               mkdir test-reports
               export AUTHLIB_INSECURE_TRANSPORT=1
               python setup.py test
@@ -104,7 +103,6 @@ aliases:
               psql -U postgres -h localhost -w -c 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";' reel2bits
               . venv/bin/activate
               cd api
-              cp config.py.sample config.py
               flask db upgrade
         - store_test_results:
             path: api/test-reports
@@ -344,3 +342,6 @@ workflows:
             - install
             - front-lint-lts
             - front-build
+          filters:
+            branches:
+              only: master

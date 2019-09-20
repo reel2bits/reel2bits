@@ -100,6 +100,8 @@ def test_change_password(client, session):
 
     # Can login with initial password
     rv = login(client, "dashie+UserB@sigpipe.me", init_password)
+    rv = client.get("/home")
+    assert rv.status_code == 200
     assert b"Logged as UserB" in rv.data
 
     # Change password
