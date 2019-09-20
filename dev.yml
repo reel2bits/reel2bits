@@ -94,6 +94,8 @@ services:
     environment:
       - "NGINX_MAX_BODY_SIZE=${NGINX_MAX_BODY_SIZE-100M}"
       - "COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME- }"
+      - "REEL2BITS_API_PORT=${REEL2BITS_API_PORT-5000}"
+      - "REEL2BITS_API_IP=${FUNKHALE_API_IP-api}"
     depends_on:
       - api
       - front
