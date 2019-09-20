@@ -71,7 +71,7 @@ Run the database container and the initial migrations and database seeds:
 .. code-block:: bash
 
     docker-compose up -d postgres
-    docker-compose run --rm api flask db migrate
+    docker-compose run --rm api flask db upgrade
     docker-compose run --rm api flask seed
 
 Create your admin user:

@@ -139,9 +139,13 @@ via the following command::
 Database management
 ^^^^^^^^^^^^^^^^^^^
 
-To setup reel2bits database schema, run this::
+You first have to add an extension in the postgresql database, run this command one time::
 
-    docker-compose -f dev.yml run --rm api flask db migrate
+    docker-compose -f dev.yml run --rm api psql -U postgres -h postgres -w -c 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";' postgres
+
+Then you can run the database migrations::
+
+    docker-compose -f dev.yml run --rm api flask db upgrade
 
 This will create all the tables needed for the API to run properly.
 You will also need to run this whenever changes are made on the database
@@ -183,8 +187,9 @@ If you prefer to launch them in the background instead, use the ``-d`` flag, and
 
 Once everything is up, you can access the various funkwhale's components:
 
-- The Vue webapp, on http://localhost:8081
-- The API, on http://localhost:8000/
+- The Vue webapp, on http://localhost:8081/
+- The Backend API, on http://localhost:8000/
+- The documentation, on http://localhost:8001/ if you run the 'docs' container.
 
 Stopping everything
 ^^^^^^^^^^^^^^^^^^^

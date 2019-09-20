@@ -10,6 +10,9 @@ if [ -z "$APP_DB_URI" ]; then
     export APP_DB_URI=postgres://$POSTGRES_ENV_POSTGRES_USER:$POSTGRES_ENV_POSTGRES_PASSWORD@postgres:5432/$POSTGRES_ENV_POSTGRES_USER
 fi
 
+# We add the postgres UUID extension
+psql -U ${POSTGRES_ENV_POSTGRES_USER} -p${POSTGRES_ENV_POSTGRES_PASSWORD} -h postgres -w -c 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";' ${POSTGRES_ENV_POSTGRES_USER}
+
 # we copy the frontend files, if any so we can serve them from the outside
 if [ -d "frontend" ]; then
     mkdir -p /frontend

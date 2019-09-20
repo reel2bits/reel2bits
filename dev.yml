@@ -48,7 +48,7 @@ services:
       dockerfile: Dockerfile
       args:
         install_dev_deps: 1
-    entrypoint: compose/dev-entrypoint.sh
+    entrypoint: docker/dev-entrypoint.sh
     command: >
       bash -c "uvicorn --reload app:create_app --host 0.0.0.0 --port 8000  --reload-dir config/"
     volumes:

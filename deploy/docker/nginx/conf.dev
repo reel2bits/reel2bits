@@ -104,6 +104,10 @@ http {
                 try_files $request_uri @proxy;
             }
 
+            location /front/ {
+                alias /frontend/;
+            }
+
             location @proxy {
                 include /etc/nginx/reel2bits_proxy.conf;
                 proxy_pass http://api:8000;
