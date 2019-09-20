@@ -42,23 +42,33 @@ import os
 #
 # Editing this file is done at your own risks, don't cry if doing that transforms your cat in an opossum.
 
+def bool_env(var_name, default=False):
+    test_val = os.getenv(var_name, default)
+    if test_val in ('False', 'false', '0', 'no'):
+        return False
+    return bool(test_val)
 
 class BaseConfig:
     """ Base configuration, pls dont edit me """
 
     # Debug and testing specific
-    TESTING = os.getenv("APP_TESTING", False)
-    DEBUG = os.getenv("APP_DEBUG", False)
+    TESTING = bool_env("APP_TESTING", False)
+    DEBUG = bool_env("APP_DEBUG", False)
 
     @property
     def TEMPLATES_AUTO_RELOAD(self):
         return self.DEBUG
 
     # WTForms CSRF
-    WTF_CSRF_ENABLED = os.getenv("APP_WTF_CSRF", True)
+    WTF_CSRF_ENABLED = bool_env("APP_WTF_CSRF", True)
 
     # Can users register
-    REGISTRATION_ENABLED = os.getenv("APP_REGISTRATION", True)
+    REGISTRATION_ENABLED = bool_env("APP_REGISTRATION", True)
+
+    # Registration, same as upper
+    @property
+    def SECURITY_REGISTERABLE(self):
+        return self.REGISTRATION_ENABLED
 
     # Secret key, you are supposed to generate one
     # Ex: `openssl rand -hex 42`
@@ -67,19 +77,14 @@ class BaseConfig:
 
     # Database stuff
     SQLALCHEMY_DATABASE_URI = os.getenv("APP_DB_URI", "postgresql+psycopg2://postgres@localhost/reel2bits")
-    SQLALCHEMY_ECHO = os.getenv("APP_DB_ECHO", False)
+    SQLALCHEMY_ECHO = bool_env("APP_DB_ECHO", False)
     # Thoses two shouldn't be touched
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_RECORD_QUERIES = True
 
     # Flask-Security stuff
     # Should users confirm theire email address ?
-    SECURITY_CONFIRMABLE = os.getenv("APP_SEC_CONFIRMABLE", True)
-
-    # Registration, same as upper
-    @property
-    def SECURITY_REGISTERABLE(self):
-        return self.REGISTRATION_ENABLED
+    SECURITY_CONFIRMABLE = bool_env("APP_SEC_CONFIRMABLE", True)
 
     # We have an alternative way
     SECURITY_RECOVERABLE = False
@@ -113,7 +118,7 @@ class BaseConfig:
 
     # ActivityPub stuff
     AP_DOMAIN = os.getenv("APP_AP_DOMAIN", "localhost")
-    AP_ENABLED = os.getenv("APP_AP_ENABLED", False)
+    AP_ENABLED = bool_env("APP_AP_ENABLED", False)
 
     @property
     def SERVER_NAME(self):
@@ -129,8 +134,8 @@ class BaseConfig:
     # Mail setup
     MAIL_SERVER = os.getenv("APP_MAIL_SERVER", "localhost")
     MAIL_PORT = os.getenv("APP_MAIL_PORT", 25)
-    MAIL_USE_TLS = os.getenv("APP_MAIL_USE_TLS", False)
-    MAIL_USE_SSL = os.getenv("APP_MAIL_USE_SSL", False)
+    MAIL_USE_TLS = bool_env("APP_MAIL_USE_TLS", False)
+    MAIL_USE_SSL = bool_env("APP_MAIL_USE_SSL", False)
     MAIL_USERNAME = os.getenv("APP_MAIL_USERNAME", None)
     MAIL_PASSWORD = os.getenv("APP_MAIL_PASSWORD", None)
 
