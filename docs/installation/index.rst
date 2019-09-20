@@ -33,8 +33,10 @@ For now you can install it on any Linux distribution.
 
     external_dependencies
     linux
+    docker
     configuration
     systemd
+    non_amd64_architectures
 
 reel2bits packages are available for the following platforms:
 

@@ -77,17 +77,134 @@ Setup your development environment
 If you want to fix a bug or implement a feature, you'll need
 to run a local, development copy of reel2bits.
 
-We will provide a docker based development environment, which should
+We provide a docker based development environment, which should
 be both easy to setup and work similarly regardless of your
 development machine setup.
 
-This setup is not yet implemented, you can follow the install documentation
-to setup bare-metal without docker.
+Installing docker and docker-compose
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This is already cover in the relevant documentations:
+
+- https://docs.docker.com/install/
+- https://docs.docker.com/compose/install/
 
 A note about branches
 ^^^^^^^^^^^^^^^^^^^^^
 
 Everything happens in ``master`` branch. Therefore, when submitting Merge Requests, ensure you are merging on the master branch.
+
+Working with docker
+^^^^^^^^^^^^^^^^^^^
+
+In development, we use the docker-compose file named ``dev.yml``, and this is why all our docker-compose commands will look like this::
+
+    docker-compose -f dev.yml logs
+
+If you do not want to add the ``-f dev.yml`` snippet every time, you can run this command before starting your work::
+
+    export COMPOSE_FILE=dev.yml
+
+
+Creating your env file
+^^^^^^^^^^^^^^^^^^^^^^
+
+We provide a working .env.dev configuration file that is suitable for
+development. However, to enable customization on your machine, you should
+also create a .env file that will hold your personal environment
+variables (those will not be commited to the project).
+
+Create it like this::
+
+    touch .env
+
+Create docker network
+^^^^^^^^^^^^^^^^^^^^^
+
+Create the federation network::
+
+    docker network create federation
+
+
+Building the containers
+^^^^^^^^^^^^^^^^^^^^^^^
+
+On your initial clone, or if there have been some changes in the
+app dependencies, you will have to rebuild your containers. This is done
+via the following command::
+
+    docker-compose -f dev.yml build
+
+
+Database management
+^^^^^^^^^^^^^^^^^^^
+
+To setup reel2bits database schema, run this::
+
+    docker-compose -f dev.yml run --rm api flask db migrate
+
+This will create all the tables needed for the API to run properly.
+You will also need to run this whenever changes are made on the database
+schema.
+
+It is safe to run this command multiple times, so you can run it whenever
+you fetch develop.
+
+Then run the database seeds:
+
+    docker-compose -f dev.yml run --rm api flask seed
+
+You should run only one time this command.
+
+Development data
+^^^^^^^^^^^^^^^^
+
+You'll need at least an admin user to work
+locally.
+
+Create an admin user with the following command::
+
+    docker-compose -f dev.yml run --rm api flask createuser
+
+
+Launch all services
+^^^^^^^^^^^^^^^^^^^
+
+Before the first reel2bits launch, it is required to run this::
+
+    docker-compose -f dev.yml run --rm front yarn run i18n-compile
+
+Then you can run everything with::
+
+    docker-compose -f dev.yml up front api nginx celeryworker
+
+This will launch all services, and output the logs in your current terminal window.
+If you prefer to launch them in the background instead, use the ``-d`` flag, and access the logs when you need it via ``docker-compose -f dev.yml logs --tail=50 --follow``.
+
+Once everything is up, you can access the various funkwhale's components:
+
+- The Vue webapp, on http://localhost:8081
+- The API, on http://localhost:8000/
+
+Stopping everything
+^^^^^^^^^^^^^^^^^^^
+
+Once you're down with your work, you can stop running containers, if any, with::
+
+    docker-compose -f dev.yml stop
+
+
+Removing everything
+^^^^^^^^^^^^^^^^^^^
+
+If you want to wipe your development environment completely (e.g. if you want to start over from scratch), just run::
+
+    docker-compose -f dev.yml down -v
+
+This will wipe your containers and data, so please be careful before running it.
+
+You can keep your data by removing the ``-v`` flag.
+
 
 Working with federation locally
 -------------------------------
