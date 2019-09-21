@@ -193,6 +193,8 @@ Once everything is up, you can access the various funkwhale's components:
 
 We still have issues on serving the frontend from the backend, so you should access the vue webapp itself directly, backend calls will then be handled properly.
 
+Some URLs won't be accessible because ``AP_DOMAIN`` is set to ``node1.reel2bits.test``, you can add ``127.0.0.1    node1.reel2bits.test`` into your ``/etc/hosts`` to workaround that.
+
 Stopping everything
 ^^^^^^^^^^^^^^^^^^^
 

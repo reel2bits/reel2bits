@@ -46,8 +46,6 @@ services:
     build: &backend
       context: ./api
       dockerfile: Dockerfile
-      args:
-        install_dev_deps: 1
     entrypoint: docker/dev-entrypoint.sh
     command: flask run --host 0.0.0.0 --port 8000
     volumes:
@@ -57,7 +55,6 @@ services:
       - "APP_DB_URI=postgresql://postgres@postgres/postgres"
       - "APP_AP_DOMAIN=${COMPOSE_PROJECT_NAME-node1}.reel2bits.test"
       - "AUTHLIB_INSECURE_TRANSPORT=1"
-      - "APP_WTF_CSRF=False"
       - "APP_CELERY_BROKER_URL=redis://redis:6379/0"
       - "APP_CELERY_RESULT_BACKEND=redis://redis:6379/0"
     depends_on:
@@ -76,7 +73,7 @@ services:
     depends_on:
       - postgres
       - redis
-    command: celery worker -A tasks.celery -l debug -B
+    command: celery worker -A tasks.celery -l error -B
     environment:
       - "APP_DB_URI=postgresql://postgres@postgres/postgres"
       - "APP_CELERY_BROKER_URL=redis://redis:6379/0"

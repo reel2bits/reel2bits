@@ -37,8 +37,9 @@ http {
         listen [::]:80;
 
         include /etc/nginx/reel2bits_proxy.conf;
-        # Forces Host header
-        #proxy_set_header Host ${APP_AP_DOMAIN};
+
+        add_header 'Access-Control-Allow-Origin' '*';
+        add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
 
         access_log /var/log/nginx/reel2bits.access.log;
         error_log /var/log/nginx/reel2bits.error.log error;
@@ -91,8 +92,6 @@ http {
 
         location @proxy {
             include /etc/nginx/reel2bits_proxy.conf;
-            # Forces Host header
-            #proxy_set_header Host ${APP_AP_DOMAIN};
             proxy_pass http://api:8000;
         }
 
