@@ -50,7 +50,7 @@ def bool_env(var_name, default=False):
     return bool(test_val)
 
 
-class BaseConfig:
+class BaseConfig(object):
     """ Base configuration, pls dont edit me """
 
     # Debug and testing specific
