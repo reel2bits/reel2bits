@@ -55,7 +55,7 @@ services:
       - ./data/uploads:/data/uploads
       - "${REEL2BITS_FRONTEND_PATH}:/frontend"
     ports:
-      - "5000"
+      - "8000"
 
   nginx:
     restart: unless-stopped
