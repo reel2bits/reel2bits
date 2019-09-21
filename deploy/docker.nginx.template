@@ -1,0 +1,63 @@
+# This is the main reel2bits proxy config, the one with all the needed magic
+# If you only want to proxy this config, or proxy the docker setup
+# look at docker.proxy.template.
+
+upstream reel2bits-api {
+    # depending on your setup, you may want to update this
+    server api:8000;
+}
+
+# required for websocket support
+map $http_upgrade $connection_upgrade {
+    default upgrade;
+    ''      close;
+}
+
+
+server {
+    listen 80;
+    listen [::]:80;
+
+    server_name ${APP_AP_DOMAIN};
+
+    # TLS
+    # Feel free to use your own configuration for SSL here or simply remove the
+    # lines and move the configuration to the previous server block if you
+    # don't want to run reel2bits behind https (this is not recommended)
+    # have a look here for let's encrypt configuration:
+    # https://certbot.eff.org/all-instructions/#debian-9-stretch-nginx
+
+    root /frontend;
+
+    access_log /var/log/nginx/${APP_AP_DOMAIN}.access.log;
+    error_log /var/log/nginx/${APP_AP_DOMAIN}.error.log error;
+
+    # add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; media-src 'self' data:";
+    # add_header Referrer-Policy "strict-origin-when-cross-origin";
+
+    client_max_body_size ${NGINX_MAX_BODY_SIZE};
+
+    location /static {
+            root /frontend;
+            try_files $uri $uri/ @proxy;
+    }
+
+    location / {
+        try_files $request_uri @proxy;
+    }
+
+    location @proxy {
+        include /etc/nginx/reel2bits_proxy.conf;
+        proxy_pass http://reel2bits-api/;
+    }
+
+    location /_protected/media/sounds {
+            # Same path as UPLOADS_DEFAULT_DEST in config.py but with /sounds
+            alias ${APP_UPLOADS_SOUNDS};
+    }
+
+    location /_protected/media/waveforms {
+            # Same path as UPLOADS_DEFAULT_DEST in config.py but with /waveforms
+            alias ${APP_UPLOADS_WAVEFORMS};
+    }
+}

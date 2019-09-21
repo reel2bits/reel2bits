@@ -40,7 +40,7 @@ services:
     environment:
       - C_FORCE_ROOT=true
     volumes:
-      - "${MEDIA_ROOT}:${MEDIA_ROOT}"
+      - ./data/uploads:/data/uploads
 
   api:
     restart: unless-stopped
@@ -52,7 +52,7 @@ services:
       - redis
     env_file: .env
     volumes:
-      - "${MEDIA_ROOT}:${MEDIA_ROOT}"
+      - ./data/uploads:/data/uploads
       - "${REEL2BITS_FRONTEND_PATH}:/frontend"
     ports:
       - "5000"
@@ -72,7 +72,7 @@ services:
     volumes:
       - "./deploy/reel2bits.nginx:/etc/nginx/conf.d/reel2bits.template:ro"
       - "./deploy/reel2bits_proxy.conf:/etc/nginx/reel2bits_proxy.conf:ro"
-      - "${MEDIA_ROOT}:${MEDIA_ROOT}:ro"
+      - ./data/uploads:/data/uploads:ro
       - "${REEL2BITS_FRONTEND_PATH}:/frontend:ro"
     ports:
       # override those variables in your .env file if needed

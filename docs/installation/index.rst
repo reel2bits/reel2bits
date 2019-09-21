@@ -76,14 +76,64 @@ Ensure you have a recent version of nginx on your server. On Debian-like system,
     sudo apt-get update
     sudo apt-get install nginx
 
-You can now copy the shipped nginx config:
+On docker deployments, run the following commands:
 
 .. code-block:: bash
 
-    cp /home/reel2bits/reel2bits/deploy/reel2bits.nginx /etc/nginx/sites-available/reel2bits.conf
+    export REEL2BITS_VERSION="|version|"
+    curl -L -o /etc/nginx/sites-available/reel2bits.template "https://github.com/reel2bits/reel2bits/raw/|version|/deploy/docker.proxy.template"
+    curl -L -o /etc/nginx/reel2bits_proxy.conf "https://github.com/reel2bits/reel2bits/raw/|version|/deploy/reel2bits_proxy.conf"
+
+.. code-block:: shell
+
+    # create a final nginx configuration using the template based on your environment
+    set -a && source /home/reel2bits/.env && set +a
+    envsubst "`env | awk -F = '{printf \" $%s\", $$1}'`" \
+        < /etc/nginx/sites-available/reel2bits.template \
+        > /etc/nginx/sites-available/reel2bits.conf
+
     ln -s /etc/nginx/sites-available/reel2bits.conf /etc/nginx/sites-enabled/
 
-Don't forget to edit ``/etc/nginx/sites-enabled/reel2bits.conf`` to suit your needs.
+On non-docker deployments, run the following commands:
+
+
+.. parsed-literal::
+
+    export REEL2BITS_VERSION="|version|"
+
+    # download the needed files
+    curl -L -o /etc/nginx/reel2bits_proxy.conf "https://github.com/reel2bits/reel2bits/raw/|version|/deploy/reel2bits_proxy.conf"
+    curl -L -o /etc/nginx/sites-available/reel2bits.template "https://github.com/reel2bits/reel2bits/raw/|version|/deploy/docker.nginx.template"
+
+.. code-block:: shell
+
+    # create a final nginx configuration using the template based on your environment
+    set -a && source /home/reel2bits/config/.env && set +a
+    envsubst "`env | awk -F = '{printf \" $%s\", $$1}'`" \
+        < /etc/nginx/sites-available/reel2bits.template \
+        > /etc/nginx/sites-available/reel2bits.conf
+
+    ln -s /etc/nginx/sites-available/reel2bits.conf /etc/nginx/sites-enabled/
+
+.. note::
+
+    The resulting file should not contain any variable such as ``${APP_AP_DOMAIN}``.
+    You can check that using this command::
+
+        grep '${' /etc/nginx/sites-available/reel2bits.conf
+
+.. note::
+
+    You can freely adapt the resulting file to your own needs, as we cannot
+    cover every use case with a single template, especially when it's related
+    to SSL configuration.
+
+Finally, enable the resulting configuration:
+
+.. code-block:: bash
+
+    ln -s /etc/nginx/sites-available/reel2bits.conf /etc/nginx/sites-enabled/
+
 
 HTTPS Configuration
 :::::::::::::::::::

@@ -97,12 +97,12 @@ http {
 
         location /_protected/media/sounds {
                 # Same path as UPLOADS_DEFAULT_DEST in config.py but with /sounds
-                alias /datas/uploads/sounds;
+                alias ${APP_UPLOADS_SOUNDS};
         }
 
         location /_protected/media/waveforms {
                 # Same path as UPLOADS_DEFAULT_DEST in config.py but with /waveforms
-                alias /datas/uploads/waveforms;
+                alias ${APP_UPLOADS_WAVEFORMS};
         }
     }
 }
