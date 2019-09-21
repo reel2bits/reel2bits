@@ -12,10 +12,9 @@ services:
     ports:
       - "8081:8081"
     volumes:
-      - "./front:/app"
-      - "/app/node_modules"
-      - "./po:/po"
-      - "./deploy/docker/local.json:/app/config/local.json:ro"
+      - ./front:/app
+      - /app/node_modules
+      - ./deploy/docker/local.json:/app/config/local.json:ro
     networks:
       - internal
 
@@ -77,13 +76,14 @@ services:
     depends_on:
       - postgres
       - redis
-    command: celery -A tasks.celery worker -l debug -B
+    command: celery worker -A tasks.celery -l debug -B
     environment:
       - "APP_DB_URI=postgresql://postgres@postgres/postgres"
       - "APP_CELERY_BROKER_URL=redis://redis:6379/0"
       - "APP_CELERY_RESULT_BACKEND=redis://redis:6379/0"
     volumes:
       - ./api:/app
+      - ./data/uploads:/data/uploads
     networks:
       - internal
   nginx:
@@ -126,7 +126,7 @@ services:
     build: docs
     command: python serve.py
     volumes:
-      - ".:/app/"
+      - .:/app/
     ports:
       - "35730:35730"
       - "8001:8001"
