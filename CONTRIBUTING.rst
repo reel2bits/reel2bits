@@ -191,6 +191,8 @@ Once everything is up, you can access the various funkwhale's components:
 - The Backend API, on http://localhost:8000/home
 - The documentation, on http://localhost:8001/ if you run the 'docs' container.
 
+We still have issues on serving the frontend from the backend, so you should access the vue webapp itself directly, backend calls will then be handled properly.
+
 Stopping everything
 ^^^^^^^^^^^^^^^^^^^
 
