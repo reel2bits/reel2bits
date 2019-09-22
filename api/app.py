@@ -66,8 +66,10 @@ if os.path.isdir(gitpath):
 @cached(spa_cache)
 def get_spa_html(spa_url):
     if spa_url.startswith("/"):
+        print("~~~ SPA: file", spa_url)
         with open(spa_url) as f:
             return f.read()
+    print("~~~ SPA: url", spa_url)
     response = requests.get(join_url(spa_url, "index.html"), verify=False)
     response.raise_for_status()
     content = response.text

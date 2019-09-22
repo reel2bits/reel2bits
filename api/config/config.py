@@ -123,6 +123,26 @@ class BaseConfig(object):
     AP_DOMAIN = os.getenv("APP_AP_DOMAIN", "localhost")
     AP_ENABLED = bool_env("APP_AP_ENABLED", False)
 
+    REEL2BITS_HOSTNAME = None
+    REEL2BITS_HOSTNAME_SUFFIX = os.getenv("REEL2BITS_HOSTNAME_SUFFIX", None)
+    REEL2BITS_HOSTNAME_PREFIX = os.getenv("REEL2BITS_HOSTNAME_PREFIX", None)
+    if REEL2BITS_HOSTNAME_PREFIX and REEL2BITS_HOSTNAME_SUFFIX:
+        # we're in traefik case, in development
+        REEL2BITS_HOSTNAME = f"{REEL2BITS_HOSTNAME_PREFIX}.{REEL2BITS_HOSTNAME_SUFFIX}"
+        REEL2BITS_PROTOCOL = os.getenv("REEL2BITS_PROTOCOL", "https")
+    else:
+        REEL2BITS_HOSTNAME = os.getenv("REEL2BITS_HOSTNAME", None)
+        if REEL2BITS_HOSTNAME:
+            REEL2BITS_PROTOCOL = os.getenv("REEL2BITS_PROTOCOL", "https")
+    REEL2BITS_PROTOCOL = REEL2BITS_PROTOCOL.lower()
+    REEL2BITS_HOSTNAME = REEL2BITS_HOSTNAME.lower()
+    REEL2BITS_URL = f"{REEL2BITS_PROTOCOL}://{REEL2BITS_HOSTNAME}"
+
+    # or default=REEL2BITS_URL + "/front/"
+    REEL2BITS_SPA_HTML = os.getenv("REEL2BITS_SPA_HTML", "../front/dist/index.html")
+
+    AP_DOMAIN = REEL2BITS_HOSTNAME
+
     @property
     def BASE_URL(self):
         return f"https://{self.AP_DOMAIN}"
@@ -148,6 +168,3 @@ class BaseConfig(object):
 
     # Don't touch
     SWAGGER_UI_DOC_EXPANSION = "list"
-
-    # Default SPA filename
-    REEL2BITS_SPA_HTML = os.getenv("REEL2BITS_SPA_HTML", "../front/dist/index.html")

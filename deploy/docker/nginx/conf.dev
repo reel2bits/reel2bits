@@ -87,7 +87,7 @@ http {
             proxy_pass http://front:8081/;
             # uncomment the following line and comment the proxy_pass one
             # to use the frontend built with "yarn build"
-            alias /frontend/dist/;
+            alias /frontend/;
         }
 
         location @proxy {

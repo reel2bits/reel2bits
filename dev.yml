@@ -53,10 +53,13 @@ services:
       - ./data/uploads:/data/uploads
     environment:
       - "APP_DB_URI=postgresql://postgres@postgres/postgres"
-      - "APP_AP_DOMAIN=${COMPOSE_PROJECT_NAME-node1}.reel2bits.test"
       - "AUTHLIB_INSECURE_TRANSPORT=1"
       - "APP_CELERY_BROKER_URL=redis://redis:6379/0"
       - "APP_CELERY_RESULT_BACKEND=redis://redis:6379/0"
+      - "REEL2BITS_HOSTNAME=${REEL2BITS_HOSTNAME-localhost}"
+      - "REEL2BITS_HOSTNAME_SUFFIX=reel2bits.test"
+      - "REEL2BITS_HOSTNAME_PREFIX=${COMPOSE_PROJECT_NAME}"
+      - "REEL2BITS_PROTOCOL=${REEL2BITS_PROTOCOL-http}"
     depends_on:
       - postgres
       - redis
@@ -78,6 +81,10 @@ services:
       - "APP_DB_URI=postgresql://postgres@postgres/postgres"
       - "APP_CELERY_BROKER_URL=redis://redis:6379/0"
       - "APP_CELERY_RESULT_BACKEND=redis://redis:6379/0"
+      - "REEL2BITS_HOSTNAME=${REEL2BITS_HOSTNAME-localhost}"
+      - "REEL2BITS_HOSTNAME_SUFFIX=reel2bits.test"
+      - "REEL2BITS_HOSTNAME_PREFIX=${COMPOSE_PROJECT_NAME}"
+      - "REEL2BITS_PROTOCOL=${REEL2BITS_PROTOCOL-http}"
     volumes:
       - ./api:/app
       - ./data/uploads:/data/uploads
@@ -96,7 +103,7 @@ services:
       - "COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME- }"
       - "REEL2BITS_API_PORT=${REEL2BITS_API_PORT-8000}"
       - "REEL2BITS_API_IP=${FUNKHALE_API_IP-api}"
-      - "APP_AP_DOMAIN=${COMPOSE_PROJECT_NAME-node1}.reel2bits.test"
+      - "REEL2BITS_HOSTNAME=${REEL2BITS_HOSTNAME-localhost}"
     depends_on:
       - api
       - front
