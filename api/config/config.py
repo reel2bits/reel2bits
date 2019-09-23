@@ -1,4 +1,5 @@
 import os
+from urllib.parse import urlsplit
 
 #                                 .i;;;;i.
 #                               iYcviii;vXY:
@@ -134,6 +135,12 @@ class BaseConfig(object):
         REEL2BITS_HOSTNAME = os.getenv("REEL2BITS_HOSTNAME", None)
         if REEL2BITS_HOSTNAME:
             REEL2BITS_PROTOCOL = os.getenv("REEL2BITS_PROTOCOL", "https")
+        else:
+            REEL2BITS_URL = os.getenv("REEL2BITS_URL")
+            _parsed = urlsplit(REEL2BITS_URL)
+            REEL2BITS_HOSTNAME = _parsed.netloc
+            REEL2BITS_PROTOCOL = _parsed.scheme
+
     REEL2BITS_PROTOCOL = REEL2BITS_PROTOCOL.lower()
     REEL2BITS_HOSTNAME = REEL2BITS_HOSTNAME.lower()
     REEL2BITS_URL = f"{REEL2BITS_PROTOCOL}://{REEL2BITS_HOSTNAME}"
