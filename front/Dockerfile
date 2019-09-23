@@ -10,4 +10,5 @@ RUN yarn install
 
 COPY . .
 
+ENTRYPOINT ["./docker/entrypoint.sh"]
 CMD ["yarn", "dev"]

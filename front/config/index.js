@@ -56,6 +56,13 @@ module.exports = {
         cookieDomainRewrite: 'localhost',
         headers: { host: host },
         secure: false
+      },
+      '/uploads': {
+        target,
+        changeOrigin: false,
+        cookieDomainRewrite: 'localhost',
+        headers: { host: host },
+        secure: false
       }
     },
     // CSS Sourcemaps off by default because relative paths are "buggy"

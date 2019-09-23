@@ -1,4 +1,4 @@
 {
   "target": "http://api:8000/",
-  "host": "node1.reel2bits.test"
+  "host": "${VUE_PROXY_HOST}"
 }

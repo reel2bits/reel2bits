@@ -187,14 +187,13 @@ If you prefer to launch them in the background instead, use the ``-d`` flag, and
 
 Once everything is up, you can access the various funkwhale's components:
 
-- The Vue webapp, unproxified, on http://localhost:8081/
-- Or served through the backend (recommanded) on http://localhost:8000/
+- The Vue webapp, on http://localhost:8081/
 - The Backend API, on http://localhost:8000/home
 - The documentation, on http://localhost:8001/ if you launch the 'docs' container.
 
-We still have issues on serving the frontend from the backend, so you should access the vue webapp itself directly, backend calls will then be handled properly.
-
-Some URLs won't be accessible because ``AP_DOMAIN`` is set to ``node1.reel2bits.test``, you can add ``127.0.0.1    node1.reel2bits.test`` into your ``/etc/hosts`` to workaround that.
+Development note only:
+Unfortunately because on how the frontend is made, we can't proxy it through http from the backend.
+You have to access the frontend directly, which will automatically proxy the backend API.
 
 Stopping everything
 ^^^^^^^^^^^^^^^^^^^

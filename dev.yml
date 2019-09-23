@@ -8,13 +8,15 @@ services:
       - .env
     environment:
       - "HOST=0.0.0.0"
-      - "AP_DOMAIN=${COMPOSE_PROJECT_NAME-node1}.reel2bits.test"
+      - "REEL2BITS_HOSTNAME=${REEL2BITS_HOSTNAME-localhost}"
+      - "REEL2BITS_HOSTNAME_SUFFIX=reel2bits.test"
+      - "REEL2BITS_HOSTNAME_PREFIX=${COMPOSE_PROJECT_NAME}"
     ports:
       - "8081:8081"
     volumes:
       - ./front:/app
       - /app/node_modules
-      - ./deploy/docker/local.json:/app/config/local.json:ro
+      - ./deploy/docker/local.json:/app/config/local.json.template:ro
     networks:
       - internal
 
