@@ -1,9 +1,8 @@
-#!/bin/sh
-set -e
+#!/bin/bash -eux
 
 if [ -z "$REEL2BITS_HOSTNAME_PREFIX" ]; then
     # sed the file with REEL2BITS_HOSTNAME
-    VUE_PROXY_HOST=$REEL2BITS_HOSTNAME_PREFIX
+    export VUE_PROXY_HOST=$REEL2BITS_HOSTNAME
 else
     export VUE_PROXY_HOST="${REEL2BITS_HOSTNAME_PREFIX}.${REEL2BITS_HOSTNAME_SUFFIX}"
 fi
