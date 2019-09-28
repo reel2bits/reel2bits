@@ -12,7 +12,7 @@ Environment="FLASK_ENV=production"
 Environment="APP_SETTINGS='config.production_secret.Config'"
 Environment="REEL2BITS_API_IP=127.0.0.1"
 Environment="REEL2BITS_API_PORT=8000"
-ExecStart=/home/reel2bits/reel2bits/venv/bin/waitress-serve --call app:create_app --host ${REEL2BITS_API_IP} --port ${REEL2BITS_API_PORT}
+ExecStart=/home/reel2bits/reel2bits/venv/bin/waitress-serve --host ${REEL2BITS_API_IP} --port ${REEL2BITS_API_PORT} --call app:create_app
 TimeoutSec=15
 Restart=always
 
