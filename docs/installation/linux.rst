@@ -176,7 +176,7 @@ Pre-build
 ^^^^^^^^^
 
 - The URL for a stable release will be `https://assets.reel2bits.org/front-dist-master-v0.5.zip`.
-- The URL for master will be `https://assets.reel2bits.org/front-dist-master-.zip`.
+- The URL for master will be `https://assets.reel2bits.org/front-dist-master.zip`.
 
 You can always go to https://assets.reel2bits.org/ to check the available archives, and test the link before downloading it.
 

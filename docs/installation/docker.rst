@@ -56,9 +56,34 @@ Create your env file:
     chmod 600 .env  # reduce permissions on the .env file since it contains sensitive data
     sudo nano .env
 
-
 Ensure to edit it to match your needs (this file is heavily commented), in particular ``APP_SECRET_KEY``, ``APP_SEC_PASS_SALT`` or ``AP_DOMAIN``.
 You should take a look at the `configuration reference <https://docs-develop.reel2bits.org/installation/configuration.html>`_ for more detailed information regarding each setting.
+
+Deploy a frontend build.
+
+According to your ``REEL2BITS_FRONTEND_PATH`` in ``.env``:
+
+.. parsed-literal::
+
+    grep REEL2BITS_FRONTEND_PATH .env
+    REEL2BITS_FRONTEND_PATH=/srv/reel2bits/front/dist
+
+    mkdir -p /srv/reel2bits/front/dist
+
+- The URL for a stable release will be `https://assets.reel2bits.org/front-dist-master-v0.5.zip`.
+- The URL for master will be `https://assets.reel2bits.org/front-dist-master.zip`.
+
+You can always go to https://assets.reel2bits.org/ to check the available archives, and test the link before downloading it.
+
+.. parsed-literal::
+
+    wget <the url>
+    unzip "the_filename.zip" -d extract
+    # beware with this command, take care
+    rm -rf "/srv/reel2bits/front/dist/*"
+    cp -r extract/dist/* /srv/reel2bits/front/dist/
+    # same with this one
+    rm -rf "extract"
 
 Then, you should be able to pull the required images:
 
