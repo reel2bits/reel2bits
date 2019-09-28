@@ -105,6 +105,10 @@ const Track = {
       } else {
         return '0'
       }
+    },
+    userAvatarAlt () {
+      let msg = this.$pgettext('Content/Track/Image/User Avatar alt', '%{username} avatar')
+      return this.$gettextInterpolate(msg, { username: this.track.account.screen_name })
     }
   },
   created () {
