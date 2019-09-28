@@ -70,7 +70,7 @@ services:
       # Override those variables in your .env file if needed
       - "NGINX_MAX_BODY_SIZE=${NGINX_MAX_BODY_SIZE-100M}"
     volumes:
-      - "./deploy/reel2bits.nginx:/etc/nginx/conf.d/reel2bits.template:ro"
+      - "./deploy/nginx.template:/etc/nginx/conf.d/reel2bits.template:ro"
       - "./deploy/reel2bits_proxy.conf:/etc/nginx/reel2bits_proxy.conf:ro"
       - ./data/uploads:/data/uploads:ro
       - "${REEL2BITS_FRONTEND_PATH}:/frontend:ro"

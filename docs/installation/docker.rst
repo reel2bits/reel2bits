@@ -33,7 +33,7 @@ Download the sample docker-compose file:
     mkdir /srv/reel2bits
     cd /srv/reel2bits
     mkdir nginx
-    curl -L -o nginx/reel2bits.template "https://github.com/reel2bits/reel2bits/raw/$REEL2BITS_VERSION/deploy/docker.nginx.template"
+    curl -L -o nginx/nginx.template "https://github.com/reel2bits/reel2bits/raw/$REEL2BITS_VERSION/deploy/docker.nginx.template"
     curl -L -o nginx/reel2bits_proxy.conf "https://github.com/reel2bits/reel2bits/raw/$REEL2BITS_VERSION/deploy/reel2bits_proxy.conf"
     curl -L -o docker-compose.yml "https://github.com/reel2bits/reel2bits/raw/$REEL2BITS_VERSION/deploy/docker-compose.yml"
 
