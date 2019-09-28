@@ -317,7 +317,7 @@ def create_app(config_filename="config.development.Config", app_name=None, regis
 
     @app.route("/uploads/<string:thing>/<path:stuff>", methods=["GET"])
     def get_uploads_stuff(thing, stuff):
-        if app.testing:
+        if app.testing or app.debug:
             directory = safe_join(app.config["UPLOADS_DEFAULT_DEST"], thing)
             app.logger.debug(f"serving {stuff} from {directory}")
             return send_from_directory(directory, stuff, as_attachment=True)
