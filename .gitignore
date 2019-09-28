@@ -13,7 +13,7 @@
 /configtest.py
 /api/errors_app.log
 .coverage
-/.ropeproject
+.ropeproject
 /.mypy_cache
 /api/test-reports
 test/unit/coverage/

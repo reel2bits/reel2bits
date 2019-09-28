@@ -62,6 +62,12 @@ class BaseConfig(object):
     def TEMPLATES_AUTO_RELOAD(self):
         return self.DEBUG
 
+    @property
+    def SERVER_NAME(self):
+        # Ideally we should return it only when !debug
+        if not self.DEBUG:
+            return self.REEL2BITS_HOSTNAME
+
     # WTForms CSRF
     WTF_CSRF_ENABLED = bool_env("APP_WTF_CSRF", False)
 
