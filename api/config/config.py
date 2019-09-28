@@ -62,12 +62,6 @@ class BaseConfig(object):
     def TEMPLATES_AUTO_RELOAD(self):
         return self.DEBUG
 
-    @property
-    def SERVER_NAME(self):
-        # Ideally we should return it only when !debug
-        if not self.DEBUG:
-            return self.REEL2BITS_HOSTNAME
-
     # WTForms CSRF
     WTF_CSRF_ENABLED = bool_env("APP_WTF_CSRF", False)
 
@@ -146,6 +140,10 @@ class BaseConfig(object):
             _parsed = urlsplit(REEL2BITS_URL)
             REEL2BITS_HOSTNAME = _parsed.netloc
             REEL2BITS_PROTOCOL = _parsed.scheme
+
+        # We are not in development, set the SERVER_NAME if !debug
+        if not DEBUG:
+            SERVER_NAME = REEL2BITS_HOSTNAME
 
     REEL2BITS_PROTOCOL = REEL2BITS_PROTOCOL.lower()
     REEL2BITS_HOSTNAME = REEL2BITS_HOSTNAME.lower()
