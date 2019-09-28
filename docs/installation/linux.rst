@@ -102,7 +102,6 @@ Finally, install the python dependencies:
 .. code-block:: shell
 
     pip install wheel
-    pip install waitress
     pip install -r api/requirements.txt
 
 .. warning::

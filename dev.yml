@@ -1,0 +1,145 @@
+version: "3"
+
+services:
+  front:
+    build: front
+    env_file:
+      - .env.dev
+      - .env
+    environment:
+      - "HOST=0.0.0.0"
+      - "REEL2BITS_HOSTNAME=${REEL2BITS_HOSTNAME-localhost}"
+      - "REEL2BITS_HOSTNAME_SUFFIX=reel2bits.test"
+      - "REEL2BITS_HOSTNAME_PREFIX=${COMPOSE_PROJECT_NAME}"
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./front:/app
+      - /app/node_modules
+      - ./deploy/docker/local.json:/app/config/local.json.template:ro
+    networks:
+      - internal
+
+  postgres:
+    env_file:
+      - .env.dev
+      - .env
+    image: postgres:${POSTGRES_VERSION-11}
+    command: postgres -c log_min_duration_statement=0
+    volumes:
+      - "./data/${COMPOSE_PROJECT_NAME-node1}/postgres:/var/lib/postgresql/data"
+    networks:
+      - internal
+
+  redis:
+    env_file:
+      - .env.dev
+      - .env
+    image: redis:3.0
+    volumes:
+      - "./data/${COMPOSE_PROJECT_NAME-node1}/redis:/data"
+    networks:
+      - internal
+
+  api:
+    env_file:
+      - .env.dev
+      - .env
+    build: &backend
+      context: ./api
+      dockerfile: Dockerfile
+    entrypoint: docker/dev-entrypoint.sh
+    command: flask run --host 0.0.0.0 --port 8000
+    volumes:
+      - ./api:/app
+      - ./data/uploads:/data/uploads
+    environment:
+      - "APP_DB_URI=postgresql://postgres@postgres/postgres"
+      - "AUTHLIB_INSECURE_TRANSPORT=1"
+      - "APP_CELERY_BROKER_URL=redis://redis:6379/0"
+      - "APP_CELERY_RESULT_BACKEND=redis://redis:6379/0"
+      - "REEL2BITS_HOSTNAME=${REEL2BITS_HOSTNAME-localhost}"
+      - "REEL2BITS_HOSTNAME_SUFFIX=reel2bits.test"
+      - "REEL2BITS_HOSTNAME_PREFIX=${COMPOSE_PROJECT_NAME}"
+      - "REEL2BITS_PROTOCOL=${REEL2BITS_PROTOCOL-http}"
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - internal
+    cap_add:
+      - SYS_PTRACE
+
+  celeryworker:
+    env_file:
+      - .env.dev
+      - .env
+    build: *backend
+    depends_on:
+      - postgres
+      - redis
+    command: celery worker -A tasks.celery -l error -B
+    environment:
+      - "APP_DB_URI=postgresql://postgres@postgres/postgres"
+      - "APP_CELERY_BROKER_URL=redis://redis:6379/0"
+      - "APP_CELERY_RESULT_BACKEND=redis://redis:6379/0"
+      - "REEL2BITS_HOSTNAME=${REEL2BITS_HOSTNAME-localhost}"
+      - "REEL2BITS_HOSTNAME_SUFFIX=reel2bits.test"
+      - "REEL2BITS_HOSTNAME_PREFIX=${COMPOSE_PROJECT_NAME}"
+      - "REEL2BITS_PROTOCOL=${REEL2BITS_PROTOCOL-http}"
+    volumes:
+      - ./api:/app
+      - ./data/uploads:/data/uploads
+    networks:
+      - internal
+  nginx:
+    command: /entrypoint.sh
+    env_file:
+      - .env.dev
+      - .env
+    image: nginx
+    ports:
+      - "8000:80"
+    environment:
+      - "NGINX_MAX_BODY_SIZE=${NGINX_MAX_BODY_SIZE-100M}"
+      - "COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME- }"
+      - "REEL2BITS_API_PORT=${REEL2BITS_API_PORT-8000}"
+      - "REEL2BITS_API_IP=${FUNKHALE_API_IP-api}"
+      - "REEL2BITS_HOSTNAME=${REEL2BITS_HOSTNAME-localhost}"
+    depends_on:
+      - api
+      - front
+    volumes:
+      - ./deploy/docker/nginx/conf.dev:/etc/nginx/nginx.conf.template:ro
+      - ./deploy/docker/nginx/entrypoint.sh:/entrypoint.sh:ro
+      - ./deploy/reel2bits_proxy.conf:/etc/nginx/reel2bits_proxy.conf:ro
+      - ./front/dist:/frontend:ro
+      - ./data/uploads:/datas/uploads:ro
+    networks:
+      - federation
+      - internal
+
+    labels:
+      traefik.backend: "${COMPOSE_PROJECT_NAME-node1}"
+      traefik.frontend.rule: "Host:${COMPOSE_PROJECT_NAME-node1}.reel2bits.test,${NODE_IP-127.0.0.1}"
+      traefik.enable: "true"
+      traefik.federation.protocol: "http"
+      traefik.federation.port: "80"
+      traefik.frontend.passHostHeader: true
+      traefik.docker.network: federation
+
+  docs:
+    build: docs
+    command: python serve.py
+    volumes:
+      - .:/app/
+    ports:
+      - "35730:35730"
+      - "8001:8001"
+
+
+networks:
+  ? internal
+  federation:
+    external:
+      name: federation

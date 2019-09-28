@@ -19,9 +19,10 @@ from cachetools import cached, TTLCache
 from flasgger import Swagger
 from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.utils import import_string
+import requests
 
 from models import db, Config, user_datastore, Role, create_actor
-from utils.various import InvalidUsage, is_admin, add_user_log
+from utils.various import InvalidUsage, is_admin, add_user_log, join_url
 
 import texttable
 
@@ -63,9 +64,16 @@ if os.path.isdir(gitpath):
 
 
 @cached(spa_cache)
-def get_spa_html():
-    with open(os.path.join(os.getcwd(), "../front/dist/index.html")) as f:
-        return f.read()
+def get_spa_html(spa_url):
+    if spa_url.startswith("/") or spa_url.startswith("../"):
+        print("~~~ SPA: file", spa_url)
+        with open(spa_url) as f:
+            return f.read()
+    print("~~~ SPA: url", spa_url)
+    response = requests.get(join_url(spa_url, "index.html"), verify=False)
+    response.raise_for_status()
+    content = response.text
+    return content
 
 
 def make_celery(remoulade):
@@ -309,7 +317,7 @@ def create_app(config_filename="config.development.Config", app_name=None, regis
 
     @app.route("/uploads/<string:thing>/<path:stuff>", methods=["GET"])
     def get_uploads_stuff(thing, stuff):
-        if app.testing:
+        if app.testing or app.debug:
             directory = safe_join(app.config["UPLOADS_DEFAULT_DEST"], thing)
             app.logger.debug(f"serving {stuff} from {directory}")
             return send_from_directory(directory, stuff, as_attachment=True)
@@ -330,7 +338,7 @@ def create_app(config_filename="config.development.Config", app_name=None, regis
         if any([request.path.startswith(m) for m in excluded]):
             return jsonify({"error": "page not found"}), 404
 
-        html = get_spa_html()
+        html = get_spa_html(app.config["REEL2BITS_SPA_HTML"])
         head, tail = html.split("</head>", 1)
 
         tags = ""  # TODO OG/OEmbed

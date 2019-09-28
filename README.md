@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img src="https://raw.githubusercontent.com/reel2bits/reel2bits/master/assets/logo/Logo@0.5x.png" alt="reel2bits logo">
+  <img src="https://raw.githubusercontent.com/reel2bits/reel2bits/master/api/assets/logo/Logo@0.5x.png" alt="reel2bits logo">
   <br />
   reel2bits
 </h1>

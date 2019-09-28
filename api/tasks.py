@@ -25,6 +25,8 @@ from utils.various import add_log, add_user_log
 
 # Make some gloubiboulga about Flask app context
 app = create_app(register_blueprints=False)
+# Special case where we need to force SERVER_NAME: Celery
+app.config["SERVER_NAME"] = app.config["AP_DOMAIN"]
 celery = make_celery(app)
 
 

@@ -1,4 +1,5 @@
 import os
+from urllib.parse import urlsplit
 
 #                                 .i;;;;i.
 #                               iYcviii;vXY:
@@ -50,7 +51,7 @@ def bool_env(var_name, default=False):
     return bool(test_val)
 
 
-class BaseConfig:
+class BaseConfig(object):
     """ Base configuration, pls dont edit me """
 
     # Debug and testing specific
@@ -62,7 +63,7 @@ class BaseConfig:
         return self.DEBUG
 
     # WTForms CSRF
-    WTF_CSRF_ENABLED = bool_env("APP_WTF_CSRF", True)
+    WTF_CSRF_ENABLED = bool_env("APP_WTF_CSRF", False)
 
     # Can users register
     REGISTRATION_ENABLED = bool_env("APP_REGISTRATION", True)
@@ -123,9 +124,31 @@ class BaseConfig:
     AP_DOMAIN = os.getenv("APP_AP_DOMAIN", "localhost")
     AP_ENABLED = bool_env("APP_AP_ENABLED", False)
 
-    @property
-    def SERVER_NAME(self):
-        return self.AP_DOMAIN
+    REEL2BITS_HOSTNAME = None
+    REEL2BITS_HOSTNAME_SUFFIX = os.getenv("REEL2BITS_HOSTNAME_SUFFIX", None)
+    REEL2BITS_HOSTNAME_PREFIX = os.getenv("REEL2BITS_HOSTNAME_PREFIX", None)
+    if REEL2BITS_HOSTNAME_PREFIX and REEL2BITS_HOSTNAME_SUFFIX:
+        # we're in traefik case, in development
+        REEL2BITS_HOSTNAME = f"{REEL2BITS_HOSTNAME_PREFIX}.{REEL2BITS_HOSTNAME_SUFFIX}"
+        REEL2BITS_PROTOCOL = os.getenv("REEL2BITS_PROTOCOL", "https")
+    else:
+        REEL2BITS_HOSTNAME = os.getenv("REEL2BITS_HOSTNAME", None)
+        if REEL2BITS_HOSTNAME:
+            REEL2BITS_PROTOCOL = os.getenv("REEL2BITS_PROTOCOL", "https")
+        else:
+            REEL2BITS_URL = os.getenv("REEL2BITS_URL")
+            _parsed = urlsplit(REEL2BITS_URL)
+            REEL2BITS_HOSTNAME = _parsed.netloc
+            REEL2BITS_PROTOCOL = _parsed.scheme
+
+    REEL2BITS_PROTOCOL = REEL2BITS_PROTOCOL.lower()
+    REEL2BITS_HOSTNAME = REEL2BITS_HOSTNAME.lower()
+    REEL2BITS_URL = f"{REEL2BITS_PROTOCOL}://{REEL2BITS_HOSTNAME}"
+
+    # or default=REEL2BITS_URL + "/front/"
+    REEL2BITS_SPA_HTML = os.getenv("REEL2BITS_SPA_HTML", "../front/dist/index.html")
+
+    AP_DOMAIN = REEL2BITS_HOSTNAME
 
     @property
     def BASE_URL(self):

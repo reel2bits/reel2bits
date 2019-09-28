@@ -66,8 +66,8 @@ def to_json_account(user, relationship=False):
 
 def to_json_track(track, account):
     si = track.sound_infos.first()
-    url_orig = url_for("get_uploads_stuff", thing="sounds", stuff=track.path_sound(orig=True), _external=True)
-    url_transcode = url_for("get_uploads_stuff", thing="sounds", stuff=track.path_sound(orig=False), _external=True)
+    url_orig = url_for("get_uploads_stuff", thing="sounds", stuff=track.path_sound(orig=True), _external=False)
+    url_transcode = url_for("get_uploads_stuff", thing="sounds", stuff=track.path_sound(orig=False), _external=False)
     obj = {
         "id": track.flake_id,
         "uri": None,

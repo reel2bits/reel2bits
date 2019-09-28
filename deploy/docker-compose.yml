@@ -1,0 +1,88 @@
+version: "3"
+
+services:
+  postgres:
+    restart: unless-stopped
+    networks:
+      - default
+    env_file: .env
+    image: postgres:11
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+
+  redis:
+    restart: unless-stopped
+    networks:
+      - default
+    env_file: .env
+    image: redis:3
+    volumes:
+      - ./data/redis:/data
+
+  celeryworker:
+    restart: unless-stopped
+    image: reel2bits/reel2bits:${REEL2BITS_VERSION:-latest}
+    networks:
+      - default
+    depends_on:
+      - postgres
+      - redis
+    env_file: .env
+    # Celery workers handle background tasks (such file imports or federation
+    # messaging). The more processes a worker gets, the more tasks
+    # can be processed in parallel. However, more processes also means
+    # a bigger memory footprint.
+    # By default, a worker will span a number of process equal to your number
+    # of CPUs. You can adjust this, by explicitly setting the --concurrency
+    # flag:
+    #   celery -A tasks.celery worker -l INFO --concurrency=4
+    command: celery -A tasks.celery worker -l INFO
+    environment:
+      - C_FORCE_ROOT=true
+    volumes:
+      - ./data/uploads:/data/uploads
+
+  api:
+    restart: unless-stopped
+    image: reel2bits/reel2bits:${REEL2BITS_VERSION:-latest}
+    networks:
+      - default
+    depends_on:
+      - postgres
+      - redis
+    env_file: .env
+    volumes:
+      - ./data/uploads:/data/uploads
+      - "${REEL2BITS_FRONTEND_PATH}:/frontend"
+    ports:
+      - "8000"
+
+  nginx:
+    restart: unless-stopped
+    image: nginx
+    networks:
+      - default
+    depends_on:
+      - api
+    env_file:
+      - .env
+    environment:
+      # Override those variables in your .env file if needed
+      - "NGINX_MAX_BODY_SIZE=${NGINX_MAX_BODY_SIZE-100M}"
+    volumes:
+      - "./deploy/reel2bits.nginx:/etc/nginx/conf.d/reel2bits.template:ro"
+      - "./deploy/reel2bits_proxy.conf:/etc/nginx/reel2bits_proxy.conf:ro"
+      - ./data/uploads:/data/uploads:ro
+      - "${REEL2BITS_FRONTEND_PATH}:/frontend:ro"
+    ports:
+      # override those variables in your .env file if needed
+      - "${REEL2BITS_API_IP}:${REEL2BITS_API_PORT}:80"
+    command: >
+        sh -c "envsubst \"`env | awk -F = '{printf \" $$%s\", $$1}'`\"
+        < /etc/nginx/conf.d/reel2bits.template
+        > /etc/nginx/conf.d/default.conf
+        && cat /etc/nginx/conf.d/default.conf
+        && nginx -g 'daemon off;'"
+
+networks:
+  default:

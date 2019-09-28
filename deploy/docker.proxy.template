@@ -1,0 +1,71 @@
+# This config is a "proxy" one, it can be used to proxy your reel2bits
+# when it is installed inside docker, or another host which itself
+# like the docker setup, already have a full-featured nginx config (docker.nginx.template)
+
+upstream tapemachine {
+    # depending on your setup, you may want to update this
+    server ${REEL2BITS_API_IP}:${REEL2BITS_API_PORT};
+}
+map $http_upgrade $connection_upgrade {
+    default upgrade;
+    ''      close;
+}
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name ${APP_AP_DOMAIN};
+    location / { return 301 https://$host$request_uri; }
+}
+server {
+    listen      443 ssl;
+    listen [::]:443 ssl;
+    server_name ${APP_AP_DOMAIN};
+
+    # TLS
+    ssl_protocols TLSv1.2;
+    ssl_ciphers HIGH:!MEDIUM:!LOW:!aNULL:!NULL:!SHA;
+    ssl_prefer_server_ciphers on;
+    ssl_session_cache shared:SSL:10m;
+    ssl_certificate     /etc/letsencrypt/live/${APP_AP_DOMAIN}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/${APP_AP_DOMAIN}/privkey.pem;
+
+    # HSTS
+    add_header Strict-Transport-Security "max-age=31536000";
+
+    # Security related headers
+
+    # add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; media-src 'self' data:";
+
+    # compression settings
+    gzip on;
+    gzip_comp_level    5;
+    gzip_min_length    256;
+    gzip_proxied       any;
+    gzip_vary          on;
+
+    gzip_types
+        application/javascript
+        application/vnd.geo+json
+        application/vnd.ms-fontobject
+        application/x-font-ttf
+        application/x-web-app-manifest+json
+        font/opentype
+        image/bmp
+        image/svg+xml
+        image/x-icon
+        text/cache-manifest
+        text/css
+        text/plain
+        text/vcard
+        text/vnd.rim.location.xloc
+        text/vtt
+        text/x-component
+        text/x-cross-domain-policy;
+
+    location / {
+        include /etc/nginx/reel2bits_proxy.conf;
+        client_max_body_size ${NGINX_MAX_BODY_SIZE};
+        proxy_pass   http://tapemachine/;
+    }
+}
