@@ -65,7 +65,7 @@ if os.path.isdir(gitpath):
 
 @cached(spa_cache)
 def get_spa_html(spa_url):
-    if spa_url.startswith("/"):
+    if spa_url.startswith("/") or spa_url.startswith("../"):
         print("~~~ SPA: file", spa_url)
         with open(spa_url) as f:
             return f.read()
