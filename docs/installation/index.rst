@@ -81,8 +81,8 @@ On docker deployments, run the following commands:
 .. code-block:: bash
 
     export REEL2BITS_VERSION="|version|"
-    curl -L -o /etc/nginx/sites-available/reel2bits.template "https://github.com/reel2bits/reel2bits/raw/|version|/deploy/docker.proxy.template"
-    curl -L -o /etc/nginx/reel2bits_proxy.conf "https://github.com/reel2bits/reel2bits/raw/|version|/deploy/reel2bits_proxy.conf"
+    curl -L -o /etc/nginx/sites-available/reel2bits.template "https://github.com/reel2bits/reel2bits/raw/$REEL2BITS_VERSION/deploy/docker.proxy.template"
+    curl -L -o /etc/nginx/reel2bits_proxy.conf "https://github.com/reel2bits/reel2bits/raw/$REEL2BITS_VERSION/deploy/reel2bits_proxy.conf"
 
 .. code-block:: shell
 
@@ -102,8 +102,8 @@ On non-docker deployments, run the following commands:
     export REEL2BITS_VERSION="|version|"
 
     # download the needed files
-    curl -L -o /etc/nginx/reel2bits_proxy.conf "https://github.com/reel2bits/reel2bits/raw/|version|/deploy/reel2bits_proxy.conf"
-    curl -L -o /etc/nginx/sites-available/reel2bits.template "https://github.com/reel2bits/reel2bits/raw/|version|/deploy/docker.nginx.template"
+    curl -L -o /etc/nginx/reel2bits_proxy.conf "https://github.com/reel2bits/reel2bits/raw/$REEL2BITS_VERSION/deploy/reel2bits_proxy.conf"
+    curl -L -o /etc/nginx/sites-available/reel2bits.template "https://github.com/reel2bits/reel2bits/raw/$REEL2BITS_VERSION/deploy/docker.nginx.template"
 
 .. code-block:: shell
 

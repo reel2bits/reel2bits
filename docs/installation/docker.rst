@@ -33,9 +33,9 @@ Download the sample docker-compose file:
     mkdir /srv/reel2bits
     cd /srv/reel2bits
     mkdir nginx
-    curl -L -o nginx/reel2bits.template "https://github.com/reel2bits/reel2bits/raw/|version|/deploy/docker.nginx.template"
-    curl -L -o nginx/reel2bits_proxy.conf "https://github.com/reel2bits/reel2bits/raw/|version|/deploy/reel2bits_proxy.conf"
-    curl -L -o docker-compose.yml "https://github.com/reel2bits/reel2bits/raw/|version|/deploy/docker-compose.yml"
+    curl -L -o nginx/reel2bits.template "https://github.com/reel2bits/reel2bits/raw/$REEL2BITS_VERSION/deploy/docker.nginx.template"
+    curl -L -o nginx/reel2bits_proxy.conf "https://github.com/reel2bits/reel2bits/raw/$REEL2BITS_VERSION/deploy/reel2bits_proxy.conf"
+    curl -L -o docker-compose.yml "https://github.com/reel2bits/reel2bits/raw/$REEL2BITS_VERSION/deploy/docker-compose.yml"
 
 At this point, the architecture of ``/srv/reel2bits``  should look like that:
 
@@ -51,7 +51,7 @@ Create your env file:
 
 .. parsed-literal::
 
-    curl -L -o .env "https://github.com/reel2bits/reel2bits/raw/|version|/deploy/env.prod.sample"
+    curl -L -o .env "https://github.com/reel2bits/reel2bits/raw/$REEL2BITS_VERSION/deploy/env.prod.sample"
     sed -i "s/REEL2BITS_VERSION=latest/REEL2BITS_VERSION=$REEL2BITS_VERSION/" .env
     chmod 600 .env  # reduce permissions on the .env file since it contains sensitive data
     sudo nano .env
