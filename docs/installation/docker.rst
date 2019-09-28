@@ -71,6 +71,7 @@ Run the database container and the initial migrations and database seeds:
 .. code-block:: bash
 
     docker-compose up -d postgres
+    docker-compose run --rm api psql -U postgres -h postgres -w -c 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";' postgres
     docker-compose run --rm api flask db upgrade
     docker-compose run --rm api flask seed
 

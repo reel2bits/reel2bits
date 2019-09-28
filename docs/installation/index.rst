@@ -87,7 +87,7 @@ On docker deployments, run the following commands:
 .. code-block:: shell
 
     # create a final nginx configuration using the template based on your environment
-    set -a && source /home/reel2bits/.env && set +a
+    set -a && source /srv/reel2bits/.env && set +a
     envsubst "`env | awk -F = '{printf \" $%s\", $$1}'`" \
         < /etc/nginx/sites-available/reel2bits.template \
         > /etc/nginx/sites-available/reel2bits.conf
