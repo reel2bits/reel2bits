@@ -122,7 +122,7 @@ def create_app(config_filename="config.development.Config", app_name=None, regis
         print(" * Sentry Flask/Celery support activated")
         print(" * Sentry DSN: %s" % app.config["SENTRY_DSN"])
 
-    if app.config["DEBUG"] is True:
+    if app.debug:
         app.jinja_env.auto_reload = True
         logging.basicConfig(level=logging.DEBUG)
 
@@ -130,13 +130,13 @@ def create_app(config_filename="config.development.Config", app_name=None, regis
     if not app.debug:
         formatter = logging.Formatter("%(asctime)s %(levelname)s: %(message)s " "[in %(pathname)s:%(lineno)d]")
         file_handler = RotatingFileHandler("%s/errors_app.log" % os.getcwd(), "a", 1000000, 1)
-        file_handler.setLevel(logging.DEBUG)
+        file_handler.setLevel(logging.INFO)
         file_handler.setFormatter(formatter)
         app.logger.addHandler(file_handler)
 
     CORS(app, origins=["*"])
 
-    if app.config["DEBUG"] is True:
+    if app.debug:
         logging.getLogger("flask_cors.extension").level = logging.DEBUG
 
     mail.init_app(app)

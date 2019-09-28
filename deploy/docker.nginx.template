@@ -18,7 +18,7 @@ server {
     listen 80;
     listen [::]:80;
 
-    server_name ${APP_AP_DOMAIN};
+    server_name ${REEL2BITS_HOSTNAME};
 
     # TLS
     # Feel free to use your own configuration for SSL here or simply remove the
@@ -29,8 +29,8 @@ server {
 
     root /frontend;
 
-    access_log /var/log/nginx/${APP_AP_DOMAIN}.access.log;
-    error_log /var/log/nginx/${APP_AP_DOMAIN}.error.log error;
+    access_log /var/log/nginx/${REEL2BITS_HOSTNAME}.access.log;
+    error_log /var/log/nginx/${REEL2BITS_HOSTNAME}.error.log error;
 
     # add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; media-src 'self' data:";
     # add_header Referrer-Policy "strict-origin-when-cross-origin";
@@ -48,7 +48,7 @@ server {
 
     location @proxy {
         include /etc/nginx/reel2bits_proxy.conf;
-        proxy_pass http://reel2bits-api/;
+        proxy_pass http://reel2bits-api;
     }
 
     location /_protected/media/sounds {

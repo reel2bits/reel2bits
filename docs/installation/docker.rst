@@ -37,6 +37,8 @@ Download the sample docker-compose file:
     curl -L -o nginx/reel2bits_proxy.conf "https://github.com/reel2bits/reel2bits/raw/$REEL2BITS_VERSION/deploy/reel2bits_proxy.conf"
     curl -L -o docker-compose.yml "https://github.com/reel2bits/reel2bits/raw/$REEL2BITS_VERSION/deploy/docker-compose.yml"
 
+You needs to edit ``nginx/reel2bits_proxy.conf`` to replace ``$scheme`` by ``https``.
+
 At this point, the architecture of ``/srv/reel2bits``  should look like that:
 
 ::
