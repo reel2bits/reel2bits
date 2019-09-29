@@ -141,8 +141,8 @@ class BaseConfig(object):
             REEL2BITS_PROTOCOL = _parsed.scheme
 
         # set SERVER_NAME if : !DEBUG, !TESTING, and hostname defined
-        if not DEBUG and not TESTING and REEL2BITS_HOSTNAME:
-            SERVER_NAME = REEL2BITS_HOSTNAME
+        # if not DEBUG and not TESTING and REEL2BITS_HOSTNAME:
+        #     SERVER_NAME = REEL2BITS_HOSTNAME
 
     REEL2BITS_PROTOCOL = REEL2BITS_PROTOCOL.lower()
     REEL2BITS_HOSTNAME = REEL2BITS_HOSTNAME.lower()

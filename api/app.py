@@ -415,6 +415,7 @@ def create_app(config_filename="config.development.Config", app_name=None, regis
     @app.cli.command()
     def createuser():
         """Create an user"""
+        app.config["SERVER_NAME"] = app.config["REEL2BITS_HOSTNAME"]
         username = click.prompt("Username", type=str)
         email = click.prompt("Email", type=str)
         password = click.prompt("Password", type=str, hide_input=True, confirmation_prompt=True)
