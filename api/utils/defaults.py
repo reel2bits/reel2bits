@@ -46,6 +46,7 @@ class Reel2bitsDefaults(object):
     }
 
     # http://www.matisse.net/bitcalc/
+    # Every size are in bits
     # Default is going to be 1 Go
     user_quotas_default = 1073741824
     user_quotas_available = [

@@ -291,6 +291,7 @@ class Sound(db.Model):
     transcode_state = db.Column(db.Integer(), default=0, nullable=False)
     # 0 nothing / default / waiting, 1 processing, 2 done, 3 error
 
+    # both are bits
     file_size = db.Column(db.Integer)
     transcode_file_size = db.Column(db.Integer)
 
