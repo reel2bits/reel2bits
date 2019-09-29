@@ -141,8 +141,8 @@ class BaseConfig(object):
             REEL2BITS_HOSTNAME = _parsed.netloc
             REEL2BITS_PROTOCOL = _parsed.scheme
 
-        # We are not in development, set the SERVER_NAME if !debug
-        if not DEBUG:
+        # set SERVER_NAME if : !DEBUG, !TESTING, and hostname defined
+        if not DEBUG and not TESTING and REEL2BITS_HOSTNAME:
             SERVER_NAME = REEL2BITS_HOSTNAME
 
     REEL2BITS_PROTOCOL = REEL2BITS_PROTOCOL.lower()
