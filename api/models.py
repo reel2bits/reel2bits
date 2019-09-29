@@ -102,6 +102,7 @@ class User(db.Model, UserMixin):
     # User default quota, database default is the one from the hardcoded value
     # It is overriden when registering with the app config one, here it is only
     # if there is no quota defined, and in cas of, to avoid issues.
+    # Both are in bits
     quota = db.Column(db.Integer, default=Reel2bitsDefaults.user_quotas_default)
     # This should be updated on each upload and deletes
     quota_count = db.Column(db.Integer, default=0)
