@@ -158,6 +158,14 @@ class User(db.Model, UserMixin):
     def check_password(self, password):
         return verify_password(password, self.password)
 
+    def total_files_size(self):
+        c = (
+            db.session.query(func.sum(Sound.file_size), func.sum(Sound.transcode_file_size))
+            .filter(Sound.user_id == self.id)
+            .one()
+        )
+        return (c[0] or 0) + (c[1] or 0)
+
 
 event.listen(User.name, "set", User.generate_slug, retval=False)
 

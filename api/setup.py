@@ -35,4 +35,5 @@ setup(
     ],
     setup_requires=["pytest-runner"],
     tests_require=["pytest==5.1.3", "pytest-cov==2.7.1", "jsonschema==3.0.2"],
+    entry_points={"flask.commands": ["db-datas=.db_datas:generate_tracks_uuid"]},
 )

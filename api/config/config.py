@@ -151,7 +151,9 @@ class BaseConfig(object):
     # or default=REEL2BITS_URL + "/front/"
     REEL2BITS_SPA_HTML = os.getenv("REEL2BITS_SPA_HTML", "../front/dist/index.html")
 
-    AP_DOMAIN = REEL2BITS_HOSTNAME
+    @property
+    def AP_DOMAIN(self):
+        return self.REEL2BITS_HOSTNAME
 
     @property
     def BASE_URL(self):

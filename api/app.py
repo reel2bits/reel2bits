@@ -21,6 +21,7 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.utils import import_string
 import requests
 from utils.defaults import Reel2bitsDefaults
+import db_datas
 
 from models import db, Config, user_datastore, Role, create_actor
 from utils.various import InvalidUsage, is_admin, add_user_log, join_url
@@ -441,5 +442,8 @@ def create_app(config_filename="config.development.Config", app_name=None, regis
             if FSConfirmable.requires_confirmation(u):
                 FSConfirmable.send_confirmation_instructions(u)
                 print("Look at your emails for validation instructions.")
+
+    # Add database data migrations (not schema !)
+    app.cli.add_command(db_datas.db_datas)
 
     return app

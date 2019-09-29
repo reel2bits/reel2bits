@@ -30,6 +30,11 @@ app.config["SERVER_NAME"] = app.config["AP_DOMAIN"]
 celery = make_celery(app)
 
 
+@celery.on_after_configure.connect
+def setup_periodic_tasks(sender, **kwargs):
+    pass
+
+
 def federate_new_sound(sound: Sound) -> int:
     if not current_app.config["AP_ENABLED"]:
         return None
