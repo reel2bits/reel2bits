@@ -114,6 +114,8 @@ export const parseUser = (data) => {
     output.reel2bits = {}
     output.reel2bits.albums_count = data.reel2bits.albums_count
     output.reel2bits.lang = data.reel2bits.lang || 'en'
+    output.reel2bits.quota_limit = data.reel2bits.quota_limit
+    output.reel2bits.quota_count = data.reel2bits.quota_count
   }
 
   if (data.pleroma) {

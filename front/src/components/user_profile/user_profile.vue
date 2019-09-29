@@ -48,6 +48,15 @@
         </div>
         <div class="col-md-4">
           <UserCard :user="user" />
+          <template v-if="user.reel2bits.quota_limit > 0 && isUs">
+            <div class="card mb-4">
+              <div class="card-body py-3 px-3">
+                <translate translate-context="Content/UserProfile/Sidebar/Quota" :translate-params="{quotaSlashRepr: humanQuota}">
+                  Quota: %{ quotaSlashRepr }
+                </translate>
+              </div>
+            </div>
+          </template>
           <Footer />
         </div>
       </div>
@@ -60,6 +69,7 @@ import get from 'lodash/get'
 import Timeline from '../timeline/timeline.vue'
 import Footer from '../../components/footer/footer.vue'
 import UserCard from '../../components/user_card/user_card.vue'
+import fileSizeFormatService from '../../services/file_size_format/file_size_format.js'
 
 export default {
   components: {
@@ -92,6 +102,26 @@ export default {
     },
     isTimelineDrafts () {
       return this.$route.name === 'user-profile-drafts'
+    },
+    humanQuota () {
+      let quotaCount = ''
+      let quotaLimit = ''
+
+      if (this.user.reel2bits.quota_count === 0) {
+        quotaCount = '0'
+      } else {
+        let ffs = fileSizeFormatService.fileSizeFormat(this.user.reel2bits.quota_count)
+        quotaCount = ffs.num + ffs.unit
+      }
+
+      if (this.user.reel2bits.quota_limit === 0) {
+        quotaLimit = '0'
+      } else {
+        let ffs = fileSizeFormatService.fileSizeFormat(this.user.reel2bits.quota_limit)
+        quotaLimit = ffs.num + ffs.unit
+      }
+
+      return quotaCount + '/' + quotaLimit
     }
   },
   watch: {

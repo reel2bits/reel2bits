@@ -16,7 +16,7 @@ from uuid import UUID  # noqa: E402
 
 
 def upgrade():
-    for sound in db.session.query(Sound.flake_id).all():
+    for sound in db.session.query(Sound).all():
         if not sound.flake_id:
             sound.flake_id = UUID(int=gen_flakeid())
     db.session.commit()
