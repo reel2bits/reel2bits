@@ -58,7 +58,7 @@ Create your env file:
     chmod 600 .env  # reduce permissions on the .env file since it contains sensitive data
     sudo nano .env
 
-Ensure to edit it to match your needs (this file is heavily commented), in particular ``APP_SECRET_KEY``, ``APP_SEC_PASS_SALT`` or ``AP_DOMAIN``.
+Ensure to edit it to match your needs (this file is heavily commented), in particular ``SECRET_KEY``, ``SECURITY_PASSWORD_SALT`` or ``REEL2BITS_HOSTNAME``.
 You should take a look at the `configuration reference <https://docs-develop.reel2bits.org/installation/configuration.html>`_ for more detailed information regarding each setting.
 
 Deploy a frontend build.

@@ -117,7 +117,7 @@ On non-docker deployments, run the following commands:
 
 .. note::
 
-    The resulting file should not contain any variable such as ``${APP_AP_DOMAIN}``.
+    The resulting file should not contain any variable such as ``${REEL2BITS_HOSTNAME}``.
     You can check that using this command::
 
         grep '${' /etc/nginx/sites-available/reel2bits.conf

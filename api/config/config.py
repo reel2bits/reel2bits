@@ -55,18 +55,18 @@ class BaseConfig(object):
     """ Base configuration, pls dont edit me """
 
     # Debug and testing specific
-    TESTING = bool_env("APP_TESTING", False)
-    DEBUG = bool_env("APP_DEBUG", False)
+    TESTING = bool_env("TESTING", False)
+    DEBUG = bool_env("DEBUG", False)
 
     @property
     def TEMPLATES_AUTO_RELOAD(self):
         return self.DEBUG
 
     # WTForms CSRF
-    WTF_CSRF_ENABLED = bool_env("APP_WTF_CSRF", False)
+    WTF_CSRF_ENABLED = bool_env("WTF_CSRF_ENABLED", False)
 
     # Can users register
-    REGISTRATION_ENABLED = bool_env("APP_REGISTRATION", True)
+    REGISTRATION_ENABLED = bool_env("REGISTRATION_ENABLED", True)
 
     # Registration, same as upper
     @property
@@ -75,20 +75,20 @@ class BaseConfig(object):
 
     # Secret key, you are supposed to generate one
     # Ex: `openssl rand -hex 42`
-    SECRET_KEY = os.getenv("APP_SECRET_KEY", None)
+    SECRET_KEY = os.getenv("SECRET_KEY", None)
     # Ex: `openssl rand -hex 5`
-    SECURITY_PASSWORD_SALT = os.getenv("APP_SEC_PASS_SALT", None)
+    SECURITY_PASSWORD_SALT = os.getenv("SECURITY_PASSWORD_SALT", None)
 
     # Database stuff
-    SQLALCHEMY_DATABASE_URI = os.getenv("APP_DB_URI", "postgresql+psycopg2://postgres@localhost/reel2bits")
-    SQLALCHEMY_ECHO = bool_env("APP_DB_ECHO", False)
+    SQLALCHEMY_DATABASE_URI = os.getenv("SQLALCHEMY_DATABASE_URI", "postgresql+psycopg2://postgres@localhost/reel2bits")
+    SQLALCHEMY_ECHO = bool_env("SQLALCHEMY_ECHO", False)
     # Thoses two shouldn't be touched
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_RECORD_QUERIES = True
 
     # Flask-Security stuff
     # Should users confirm theire email address ?
-    SECURITY_CONFIRMABLE = bool_env("APP_SEC_CONFIRMABLE", True)
+    SECURITY_CONFIRMABLE = bool_env("SECURITY_CONFIRMABLE", True)
 
     # We have an alternative way
     SECURITY_RECOVERABLE = False
@@ -101,28 +101,27 @@ class BaseConfig(object):
     SECURITY_SEND_PASSWORD_RESET_NOTICE_EMAIL = True
 
     # Backend default language
-    BABEL_DEFAULT_LOCALE = os.getenv("APP_API_DEFAULT_LOCALE", "en")
+    BABEL_DEFAULT_LOCALE = os.getenv("BABEL_DEFAULT_LOCALE", "en")
     # Not sure this one has any effect...
-    BABEL_DEFAULT_TIMEZONE = os.getenv("APP_API_DEFAULT_TIMEZONE", "UTC")
+    BABEL_DEFAULT_TIMEZONE = os.getenv("BABEL_DEFAULT_TIMEZONE", "UTC")
 
     # Uploads directories
-    UPLOADS_DEFAULT_DEST = os.getenv("APP_UPLOADS_DEFAULT", "/home/reel2bits/uploads")
-    UPLOADED_SOUNDS_DEST = os.getenv("APP_UPLOADS_SOUNDS", "/home/reel2bits/uploads/sounds")
-    UPLOADED_WAVEFORMS_DEST = os.getenv("APP_UPLOADS_WAVEFORMS", "/home/reel2bits/uploads/waveforms")
+    UPLOADS_DEFAULT_DEST = os.getenv("UPLOADS_DEFAULT_DEST", "/home/reel2bits/uploads")
+    UPLOADED_SOUNDS_DEST = os.getenv("UPLOADED_SOUNDS_DEST", "/home/reel2bits/uploads/sounds")
+    UPLOADED_WAVEFORMS_DEST = os.getenv("UPLOADED_WAVEFORMS_DEST", "/home/reel2bits/uploads/waveforms")
 
     # Where is audiowaveform located
-    AUDIOWAVEFORM_BIN = os.getenv("APP_AUDIOWAVEFORM_BIN", "/usr/local/bin/audiowaveform")
+    AUDIOWAVEFORM_BIN = os.getenv("AUDIOWAVEFORM_BIN", "/usr/local/bin/audiowaveform")
 
     # If using sentry
-    SENTRY_DSN = os.getenv("APP_SENTRY_DSN", None)
+    SENTRY_DSN = os.getenv("SENTRY_DSN", None)
 
     # Broker setup for Celery, same redis base for both
-    CELERY_BROKER_URL = os.getenv("APP_CELERY_BROKER_URL", "redis://127.0.0.1:6379/0")
-    CELERY_RESULT_BACKEND = os.getenv("APP_CELERY_RESULT_BACKEND", "redis://127.0.0.1:6379/0")
+    CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://127.0.0.1:6379/0")
+    CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", "redis://127.0.0.1:6379/0")
 
     # ActivityPub stuff
-    AP_DOMAIN = os.getenv("APP_AP_DOMAIN", "localhost")
-    AP_ENABLED = bool_env("APP_AP_ENABLED", False)
+    AP_ENABLED = bool_env("AP_ENABLED", False)
 
     REEL2BITS_HOSTNAME = None
     REEL2BITS_HOSTNAME_SUFFIX = os.getenv("REEL2BITS_HOSTNAME_SUFFIX", None)
@@ -159,19 +158,19 @@ class BaseConfig(object):
         return f"https://{self.AP_DOMAIN}"
 
     # Sources of that instance, should be your repos if forked
-    SOURCES_REPOSITORY_URL = os.getenv("APP_SRCS_REPO_URL", "https://github.com/reel2bits/reel2bits")
+    SOURCES_REPOSITORY_URL = os.getenv("SOURCES_REPOSITORY_URL", "https://github.com/reel2bits/reel2bits")
 
     # Mail setup
-    MAIL_SERVER = os.getenv("APP_MAIL_SERVER", "localhost")
-    MAIL_PORT = os.getenv("APP_MAIL_PORT", 25)
-    MAIL_USE_TLS = bool_env("APP_MAIL_USE_TLS", False)
-    MAIL_USE_SSL = bool_env("APP_MAIL_USE_SSL", False)
-    MAIL_USERNAME = os.getenv("APP_MAIL_USERNAME", None)
-    MAIL_PASSWORD = os.getenv("APP_MAIL_PASSWORD", None)
+    MAIL_SERVER = os.getenv("MAIL_SERVER", "localhost")
+    MAIL_PORT = os.getenv("MAIL_PORT", 25)
+    MAIL_USE_TLS = bool_env("MAIL_USE_TLS", False)
+    MAIL_USE_SSL = bool_env("MAIL_USE_SSL", False)
+    MAIL_USERNAME = os.getenv("MAIL_USERNAME", None)
+    MAIL_PASSWORD = os.getenv("MAIL_PASSWORD", None)
 
     @property
     def MAIL_DEFAULT_SENDER(self):
-        return os.getenv("APP_MAIL_DEFAULT_SENDER", f"postmaster@{self.AP_DOMAIN}")
+        return os.getenv("MAIL_DEFAULT_SENDER", f"postmaster@{self.AP_DOMAIN}")
 
     # Old stuff while we still have parts of the frontend in the backend
     SECURITY_POST_LOGIN_VIEW = "/home"

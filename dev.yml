@@ -54,10 +54,10 @@ services:
       - ./api:/app
       - ./data/uploads:/data/uploads
     environment:
-      - "APP_DB_URI=postgresql://postgres@postgres/postgres"
+      - "SQLALCHEMY_DATABASE_URI=postgresql://postgres@postgres/postgres"
       - "AUTHLIB_INSECURE_TRANSPORT=1"
-      - "APP_CELERY_BROKER_URL=redis://redis:6379/0"
-      - "APP_CELERY_RESULT_BACKEND=redis://redis:6379/0"
+      - "CELERY_BROKER_URL=redis://redis:6379/0"
+      - "CELERY_RESULT_BACKEND=redis://redis:6379/0"
       - "REEL2BITS_HOSTNAME=${REEL2BITS_HOSTNAME-localhost}"
       - "REEL2BITS_HOSTNAME_SUFFIX=reel2bits.test"
       - "REEL2BITS_HOSTNAME_PREFIX=${COMPOSE_PROJECT_NAME}"
@@ -80,9 +80,9 @@ services:
       - redis
     command: celery worker -A tasks.celery -l error -B
     environment:
-      - "APP_DB_URI=postgresql://postgres@postgres/postgres"
-      - "APP_CELERY_BROKER_URL=redis://redis:6379/0"
-      - "APP_CELERY_RESULT_BACKEND=redis://redis:6379/0"
+      - "SQLALCHEMY_DATABASE_URI=postgresql://postgres@postgres/postgres"
+      - "CELERY_BROKER_URL=redis://redis:6379/0"
+      - "CELERY_RESULT_BACKEND=redis://redis:6379/0"
       - "REEL2BITS_HOSTNAME=${REEL2BITS_HOSTNAME-localhost}"
       - "REEL2BITS_HOSTNAME_SUFFIX=reel2bits.test"
       - "REEL2BITS_HOSTNAME_PREFIX=${COMPOSE_PROJECT_NAME}"

@@ -25,7 +25,7 @@ class Config(BaseConfig):
     SENTRY_DSN = None
 
     # The domain name your instance will be using
-    AP_DOMAIN = "reel2bits.dev.lan.sigpipe.me"
+    REEL2BITS_HOSTNAME = "reel2bits.dev.lan.sigpipe.me"
     # Is the ActivityPub backend active ?
     # Even at False, you needs to setup the AP_DOMAIN because it is used
     # by more things than just ActivityPub
