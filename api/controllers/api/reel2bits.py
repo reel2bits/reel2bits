@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request, abort, current_app, render_template
-from models import db, licences, User, PasswordResetToken
+from models import db, User, PasswordResetToken
 from utils.various import add_user_log, generate_random_token, add_log
 from app_oauth import require_oauth
 from authlib.flask.oauth2 import current_token
@@ -7,6 +7,7 @@ from flask_security.utils import hash_password, verify_password
 from flask_mail import Message
 import smtplib
 from app import mail
+from utils.defaults import Reel2bitsDefaults
 
 bp_api_reel2bits = Blueprint("bp_api_reel2bits", __name__)
 
@@ -22,7 +23,7 @@ def licenses():
         200:
             description: Returns a list of various licenses.
     """
-    resp = [licences[i] for i in licences]
+    resp = [Reel2bitsDefaults.known_licences[i] for i in Reel2bitsDefaults.known_licences]
     response = jsonify(resp)
     response.mimetype = "application/json; charset=utf-8"
     response.status_code = 200

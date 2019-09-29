@@ -10,7 +10,8 @@ from wtforms_alchemy import model_form_factory
 from flask_babelex import lazy_gettext
 from wtforms_alchemy.fields import QuerySelectField
 
-from models import db, Album, licences
+from models import db, Album
+from utils.defaults import Reel2bitsDefaults
 
 BaseModelForm = model_form_factory(Form)
 
@@ -47,7 +48,10 @@ def get_albums():
 
 
 def get_licences():
-    return [(licences[a]["id"], licences[a]["name"]) for a in licences]
+    return [
+        (Reel2bitsDefaults.known_licences[a]["id"], Reel2bitsDefaults.known_licences[a]["name"])
+        for a in Reel2bitsDefaults.known_licences
+    ]
 
 
 class SoundUploadForm(Form):

@@ -1,6 +1,5 @@
 from flask import url_for
 import json
-from models import licences as track_licenses
 
 
 def to_json_relationship(of_user, against_user):
@@ -57,7 +56,12 @@ def to_json_account(user, relationship=False):
             "fields": [],
         },
         pleroma={"is_admin": user.is_admin()},
-        reel2bits={"albums_count": user.albums.count(), "lang": user.locale},
+        reel2bits={
+            "albums_count": user.albums.count(),
+            "lang": user.locale,
+            "quota_limit": user.quota,
+            "quota_count": user.quota_count,
+        },
     )
     if relationship:
         obj["pleroma"]["relationship"] = relationship
@@ -115,7 +119,7 @@ def to_json_track(track, account):
                 "done": track.processing_done(),
             },
             "metadatas": {
-                "licence": track_licenses[track.licence],
+                "licence": track.licence_info(),
                 "duration": (si.duration if si else None),
                 "type": (si.type if si else None),
                 "codec": (si.codec if si else None),

@@ -1,6 +1,7 @@
 from flask import Blueprint, current_app, jsonify, Response, g, abort
 from utils.various import RESTRICTED_NICKNAMES
 from models import db, Config, User, Sound
+from utils.defaults import Reel2bitsDefaults
 
 bp_nodeinfo = Blueprint("bp_nodeinfo", __name__, url_prefix="/nodeinfo")
 
@@ -46,7 +47,7 @@ def nodeinfo(version):
             "nodeDescription": _config.app_description,
             "taxonomy": {"postsName": "Tracks"},
             "restrictedNicknames": RESTRICTED_NICKNAMES,
-            "trackLengthLimit": 536807912,
+            "uploadLimits": {"track": Reel2bitsDefaults.track_size_limit},
         },
     }
 

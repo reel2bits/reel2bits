@@ -24,6 +24,7 @@ from authlib.flask.oauth2.sqla import OAuth2ClientMixin, OAuth2AuthorizationCode
 import time
 from utils.flake_id import gen_flakeid
 import uuid
+from utils.defaults import Reel2bitsDefaults
 
 db = SQLAlchemy()
 make_searchable(db.metadata)
@@ -42,6 +43,7 @@ class Config(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     app_name = db.Column(db.String(255), default=None)
     app_description = db.Column(db.Text)
+    user_quota = db.Column(db.Integer, default=Reel2bitsDefaults.user_quotas_default)
 
 
 # #### User ####
@@ -96,6 +98,13 @@ class User(db.Model, UserMixin):
 
     # should be removed since User.name is URL friendly
     slug = db.Column(db.String(255), nullable=True)
+
+    # User default quota, database default is the one from the hardcoded value
+    # It is overriden when registering with the app config one, here it is only
+    # if there is no quota defined, and in cas of, to avoid issues.
+    quota = db.Column(db.Integer, default=Reel2bitsDefaults.user_quotas_default)
+    # This should be updated on each upload and deletes
+    quota_count = db.Column(db.Integer, default=0)
 
     local = db.Column(db.Boolean(), default=True)
 
@@ -309,7 +318,7 @@ class Sound(db.Model):
             return os.path.join(self.user.slug, self.filename)
 
     def licence_info(self):
-        return licences[self.licence]
+        return Reel2bitsDefaults.known_licences[self.licence]
 
     def get_title(self):
         if not self.title:
@@ -369,48 +378,6 @@ class Timeline(db.Model):
     sound = db.relationship("Sound", back_populates="timeline")
 
     __mapper_args__ = {"order_by": timestamp.desc()}
-
-
-licences = {
-    0: {"name": "Not Specified", "id": 0, "link": "", "icon": ""},
-    1: {
-        "name": "CC Attribution",
-        "id": 1,
-        "link": "https://creativecommons.org/licenses/by/4.0/",
-        "icon": "creative-commons",
-    },
-    2: {
-        "name": "CC Attribution Share Alike",
-        "id": 2,
-        "link": "https://creativecommons.org/licenses/by-sa/4.0",
-        "icon": "creative-commons",
-    },
-    3: {
-        "name": "CC Attribution No Derivatives",
-        "id": 3,
-        "link": "https://creativecommons.org/licenses/by-nd/4.0",
-        "icon": "creative-commons",
-    },
-    4: {
-        "name": "CC Attribution Non Commercial",
-        "id": 4,
-        "link": "https://creativecommons.org/licenses/by-nc/4.0",
-        "icon": "creative-commons",
-    },
-    5: {
-        "name": "CC Attribution Non Commercial - Share Alike",
-        "id": 5,
-        "link": "https://creativecommons.org/licenses/by-nc-sa/4.0",
-        "icon": "creative-commons",
-    },
-    6: {
-        "name": "CC Attribution Non Commercial - No Derivatives",
-        "id": 6,
-        "link": "https://creativecommons.org/licenses/by-nc-nd/4.0",
-        "icon": "creative-commons",
-    },
-    7: {"name": "Public Domain Dedication", "id": 7, "link": "", "icon": ""},
-}
 
 
 @event.listens_for(Sound, "after_update")
