@@ -20,6 +20,7 @@ from flasgger import Swagger
 from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.utils import import_string
 import requests
+from utils.defaults import Reel2bitsDefaults
 
 from models import db, Config, user_datastore, Role, create_actor
 from utils.various import InvalidUsage, is_admin, add_user_log, join_url
@@ -246,7 +247,7 @@ def create_app(config_filename="config.development.Config", app_name=None, regis
 
     sounds = UploadSet("sounds", AUDIO)
     configure_uploads(app, sounds)
-    patch_request_class(app, 500 * 1024 * 1024)  # 500m limit
+    patch_request_class(app, Reel2bitsDefaults.track_size_limit)
 
     if register_blueprints:
         from controllers.main import bp_main

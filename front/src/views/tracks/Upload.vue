@@ -248,6 +248,7 @@ export default {
     },
     uploadFile (event) {
       // TODO check if in case of file to big, the upload isn't submitted
+      // file.size is in bytes
       const file = event.target.files[0]
       if (!file) {
         return

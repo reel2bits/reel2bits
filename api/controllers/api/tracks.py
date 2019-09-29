@@ -42,6 +42,8 @@ def upload():
     if len(errors) > 0:
         return jsonify({"error": errors}), 400
 
+    # Check for user quota
+
     form = SoundUploadForm()
 
     if form.validate_on_submit():

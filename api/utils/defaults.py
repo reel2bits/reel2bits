@@ -46,15 +46,15 @@ class Reel2bitsDefaults(object):
     }
 
     # http://www.matisse.net/bitcalc/
-    # Every size are in bits
-    # Default is going to be 1 Go
-    user_quotas_default = 1073741824
+    # Every size are in bytes
+    # Default is going to be 1 gb
+    user_quotas_default = 134217728
     user_quotas_available = [
-        {"bits": 1073741824},  # 1 Go
-        {"bits": 5368709120},  # 5 Go
-        {"bits": 21474836480},  # 20 Go
-        {"bits": 53687091200},  # 50 Go
+        {"bytes": 134217728},  # 1 gb
+        {"bytes": 671088640},  # 5 gb
+        {"bytes": 2684354560},  # 20 gb
+        {"bytes": 6710886400},  # 50 gb
     ]
 
-    # 100 Mo
-    track_size_limit = 104857600
+    # 100 mb
+    track_size_limit = 13107200
