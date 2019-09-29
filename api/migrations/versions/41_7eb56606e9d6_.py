@@ -11,7 +11,7 @@ revision = "7eb56606e9d6"
 down_revision = "a8e2274a18d3"
 
 # from utils.flake_id import gen_flakeid  # noqa: E402
-from uuid import UUID  # noqa: E402
+from sqlalchemy.dialects.postgresql import UUID  # noqa: E402
 from sqlalchemy.sql import table, column  # noqa: E402
 
 # from alembic import op  # noqa: E402
