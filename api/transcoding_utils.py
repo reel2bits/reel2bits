@@ -162,6 +162,12 @@ def work_transcode(sound_id):
 
     _a, _b = splitext(sound.filename)
     sound.filename_transcoded = "{0}.mp3".format(_a)
+
+    sound.transcode_file_size = os.path.getsize(f"{_file}.mp3")
+
+    # recompute user quota
+    sound.user.quota_count = sound.user.quota_count + sound.transcode_file_size
+
     db.session.commit()
 
     add_user_log(
