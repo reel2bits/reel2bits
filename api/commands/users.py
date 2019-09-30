@@ -43,5 +43,6 @@ def create():
         db.session.commit()
 
         if FSConfirmable.requires_confirmation(u):
-            FSConfirmable.send_confirmation_instructions(u)
-            print("Look at your emails for validation instructions.")
+            with current_app.app_context():
+                FSConfirmable.send_confirmation_instructions(u)
+                print("Look at your emails for validation instructions.")
