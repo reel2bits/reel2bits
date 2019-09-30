@@ -156,7 +156,7 @@ you fetch develop.
 
 Then run the database seeds:
 
-    docker-compose -f dev.yml run --rm api flask seed
+    docker-compose -f dev.yml run --rm api flask db-datas 000-seeds
 
 You should run only one time this command.
 
@@ -168,7 +168,7 @@ locally.
 
 Create an admin user with the following command::
 
-    docker-compose -f dev.yml run --rm api flask createuser
+    docker-compose -f dev.yml run --rm api flask users create
 
 
 Launch all services

@@ -100,13 +100,13 @@ Run the database container and the initial migrations and database seeds:
     docker-compose up -d postgres
     docker-compose run --rm api psql -U postgres -h postgres -w -c 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";' postgres
     docker-compose run --rm api flask db upgrade
-    docker-compose run --rm api flask seed
+    docker-compose run --rm api flask db-datas 000-seeds
 
 Create your admin user:
 
 .. code-block:: bash
 
-    docker-compose run --rm api flask createuser
+    docker-compose run --rm api flask users create
 
 Then launch the whole thing:
 

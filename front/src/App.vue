@@ -50,6 +50,7 @@
                   <b-dropdown-item><router-link :to="{ name: 'user-profile', params: { name: currentUser.screen_name } }"><translate translate-context="Header/*/DropDown/User/MyProfile">My Profile</translate></router-link></b-dropdown-item>
                   <b-dropdown-item><router-link :to="{ name: 'user-settings' }"><translate translate-context="Header/*/DropDown/User/Settings">Settings</translate></router-link></b-dropdown-item>
                   <b-dropdown-item><router-link :to="{ name: 'account-logs' }"><translate translate-context="Header/*/DropDown/User/Logs">Logs</translate></router-link></b-dropdown-item>
+                  <b-dropdown-item><router-link :to="{ name: 'account-quota' }"><translate translate-context="Header/*/DropDown/User/Quota">Quota</translate></router-link></b-dropdown-item>
                   <b-dropdown-divider />
                   <b-dropdown-item><a href="#" @click.prevent="logout"><translate translate-context="Header/*/DropDown/User/Logout">Logout</translate></a></b-dropdown-item>
                 </b-dropdown>

@@ -8,6 +8,7 @@ from utils.various import add_user_log, get_hashed_filename
 from flask_uploads import UploadSet, AUDIO
 from datas_helpers import to_json_track, to_json_account, to_json_relationship
 from os.path import splitext
+import os
 
 
 bp_api_tracks = Blueprint("bp_api_tracks", __name__)
@@ -42,13 +43,27 @@ def upload():
     if len(errors) > 0:
         return jsonify({"error": errors}), 400
 
+    # Check for user quota already reached
+    if current_user.quota_count >= current_user.quota:
+        return jsonify({"error": "quota limit reached"}), 507  # Insufficient storage
+        # or 509 Bandwitdh Limit Exceeded...
+
+    # Get file, and file size
+    file_uploaded = request.files["file"]
+    file_uploaded.seek(0, os.SEEK_END)  # ff to the end
+    file_size = file_uploaded.tell()
+    file_uploaded.seek(0)  # rewind
+
+    if (current_user.quota_count + file_size) > current_user.quota:
+        return jsonify({"error": "quota limit reached"}), 507  # Insufficient storage
+
     form = SoundUploadForm()
 
     if form.validate_on_submit():
-        filename_orig = request.files["file"].filename
+        filename_orig = file_uploaded.filename
         filename_hashed = get_hashed_filename(filename_orig)
 
-        sounds.save(request.files["file"], folder=current_user.slug, name=filename_hashed)
+        sounds.save(file_uploaded, folder=current_user.slug, name=filename_hashed)
 
         rec = Sound()
         rec.filename = filename_hashed
@@ -68,16 +83,18 @@ def upload():
             rec.title = form.title.data
         rec.description = form.description.data
         rec.private = form.private.data
+        rec.file_size = file_size
+        rec.transcode_file_size = 0  # will be filled, if needed in transcoding workflow
 
-        if (
-            "flac" in request.files["file"].mimetype
-            or "ogg" in request.files["file"].mimetype
-            or "wav" in request.files["file"].mimetype
-        ):
+        if "flac" in file_uploaded.mimetype or "ogg" in file_uploaded.mimetype or "wav" in file_uploaded.mimetype:
             rec.transcode_state = Sound.TRANSCODE_WAITING
             rec.transcode_needed = True
 
         db.session.add(rec)
+
+        # recompute user quota
+        current_user.quota_count = current_user.quota_count + rec.file_size
+
         db.session.commit()
 
         # push the job in queue
@@ -267,6 +284,7 @@ def delete(username, soundslug):
         return jsonify({"error": "Not found"}), 404
 
     track_name = sound.title
+    freed_space = sound.file_size + sound.transcode_file_size
 
     # Federate Delete
     from tasks import federate_delete_sound
@@ -274,6 +292,10 @@ def delete(username, soundslug):
     federate_delete_sound(sound)
 
     db.session.delete(sound)
+
+    # recompute user quota
+    current_user.quota_count = current_user.quota_count - freed_space
+
     db.session.commit()
 
     # log

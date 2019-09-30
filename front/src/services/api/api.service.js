@@ -18,6 +18,7 @@ const ALBUM_REORDER_URL = (username, id) => `/api/albums/${username}/${id}/reord
 const ALBUMS_DELETE_URL = (username, id) => `/api/albums/${username}/${id}`
 
 const ACCOUNT_LOGS_URL = (username, currentPage, perPage) => `/api/users/${username}/logs?page=${currentPage}&page_size=${perPage}`
+const ACCOUNT_QUOTA_URL = (username, currentPage, perPage) => `/api/users/${username}/quota?page=${currentPage}&page_size=${perPage}`
 
 const MASTODON_PUBLIC_TIMELINE = '/api/v1/timelines/public'
 const MASTODON_USER_HOME_TIMELINE_URL = '/api/v1/timelines/home'
@@ -340,6 +341,20 @@ const fetchUserLogs = (user, currentPage, perPage, store) => {
     .then((data) => data.json())
 }
 
+const fetchUserQuota = (user, currentPage, perPage, store) => {
+  let url = ACCOUNT_QUOTA_URL(user, currentPage, perPage)
+  let credentials = store.getters.getToken()
+
+  return fetch(url, { headers: authHeaders(credentials) })
+    .then((data) => {
+      if (data.ok) {
+        return data
+      }
+      throw new Error('Error fetching user quota summary', data)
+    })
+    .then((data) => data.json())
+}
+
 const fetchTimeline = ({
   timeline,
   credentials,
@@ -521,6 +536,7 @@ const apiService = {
   albumEdit,
   albumReorder,
   fetchUserLogs,
+  fetchUserQuota,
   fetchTimeline,
   fetchLicenses,
   fetchUserAlbums,

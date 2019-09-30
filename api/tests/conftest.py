@@ -10,7 +10,7 @@ sys.path.insert(0, mypath + "/../")
 from app import create_app  # noqa: E402
 from models import db as _db  # noqa: E402
 from models import Role, User  # noqa: E402
-from dbseed import make_db_seed  # noqa: E402
+from commands.db_datas import make_db_seed  # noqa: E402
 from models import user_datastore  # noqa: E402
 
 

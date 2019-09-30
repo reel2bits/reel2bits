@@ -15,7 +15,6 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
 import apiService from '../../services/api/api.service.js'
 
 export default {
@@ -44,15 +43,12 @@ export default {
           label: this.$pgettext('Content/Logs(user)/Table/Heading', 'Message')
         }
       ],
-      currentPage: 0,
+      currentPage: 1,
       perPage: 20,
       totalItems: 0
     }
   },
   computed: {
-    ...mapState({
-      signedIn: state => !!state.users.currentUser
-    }),
     currentUser () { return this.$store.state.users.currentUser }
   },
   watch: {

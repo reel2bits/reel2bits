@@ -114,6 +114,8 @@ export const parseUser = (data) => {
     output.reel2bits = {}
     output.reel2bits.albums_count = data.reel2bits.albums_count
     output.reel2bits.lang = data.reel2bits.lang || 'en'
+    output.reel2bits.quota_limit = data.reel2bits.quota_limit
+    output.reel2bits.quota_count = data.reel2bits.quota_count
   }
 
   if (data.pleroma) {
@@ -172,6 +174,8 @@ export const parseStatus = (data) => {
     output.metadatas.rate = data.reel2bits.metadatas.rate
     output.metadatas.bitrate = data.reel2bits.metadatas.bitrate
     output.metadatas.bitrate_mode = data.reel2bits.metadatas.bitrate_mode
+    output.metadatas.file_size = data.reel2bits.metadatas.file_size
+    output.metadatas.transcode_file_size = data.reel2bits.metadatas.transcode_file_size
   }
   if (output.type === 'album') {
     output.tracks_count = data.reel2bits.tracks_count

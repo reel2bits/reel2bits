@@ -17,7 +17,7 @@ const getNodeInfo = async ({ store }) => {
       const metadata = data.metadata
       store.dispatch('setInstanceOption', { name: 'name', value: metadata.nodeName })
       store.dispatch('setInstanceOption', { name: 'description', value: metadata.nodeDescription })
-      store.dispatch('setInstanceOption', { name: 'trackSizeLimit', value: metadata.trackLengthLimit })
+      store.dispatch('setInstanceOption', { name: 'trackSizeLimit', value: metadata.uploadLimits.track })
       store.dispatch('setInstanceOption', { name: 'restrictedNicknames', value: metadata.restrictedNicknames })
 
       const software = data.software

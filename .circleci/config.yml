@@ -104,6 +104,12 @@ aliases:
               . venv/bin/activate
               cd api
               flask db upgrade
+              flask db-datas 000-seeds
+              flask db-datas 001-generate-tracks-uuids
+              flask db-datas 002-set-local-users
+              flask db-datas 003-set-user-quota
+              flask db-datas 004-update-file-sizes
+              flask db-datas 005-update-user-quotas
         - store_test_results:
             path: api/test-reports
         - store_artifacts:

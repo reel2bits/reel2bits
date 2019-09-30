@@ -100,10 +100,7 @@
     </div>
 
     <div v-if="album" class="col-md-4 d-flex flex-column">
-      <!-- Profile Card -->
-      <UserCard :user="album.account" />
-      <!-- Footer -->
-      <Footer />
+      <Sidebar />
     </div>
   </div>
 </template>
@@ -124,8 +121,7 @@ li.tracks-list span.actions i.fa-play {
 <script>
 import { mapState } from 'vuex'
 import moment from 'moment'
-import UserCard from '../../components/user_card/user_card.vue'
-import Footer from '../../components/footer/footer.vue'
+import Sidebar from '../../components/sidebar/sidebar.vue'
 import playerUtils from '../../services/player_utils/player_utils.js'
 import WaveSurfer from 'wavesurfer.js'
 import draggable from 'vuedraggable'
@@ -133,8 +129,7 @@ import draggable from 'vuedraggable'
 export default {
   components: {
     draggable,
-    UserCard,
-    Footer
+    Sidebar
   },
   data: () => ({
     album: null,
