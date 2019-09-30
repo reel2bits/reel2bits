@@ -15,6 +15,7 @@ import AlbumsNew from '../views/albums/New.vue'
 import AlbumsShow from '../views/albums/Show.vue'
 import AlbumsEdit from '../views/albums/Edit.vue'
 import AccountLogs from '../views/account/Logs.vue'
+import AccountQuota from '../views/account/Quota.vue'
 import About from '../views/About.vue'
 import NotFound from '../views/NotFound.vue'
 import PasswordReset from '../components/password_reset/password_reset.vue'
@@ -69,6 +70,7 @@ export default (store) => {
     { name: 'albums-edit', path: '/:username/album/:albumId/edit', component: AlbumsEdit, beforeEnter: validateAuthenticatedRoute },
     // Account
     { name: 'account-logs', path: '/account/logs', component: AccountLogs, beforeEnter: validateAuthenticatedRoute },
+    { name: 'account-quota', path: '/account/quota', component: AccountQuota, beforeEnter: validateAuthenticatedRoute },
     // Always last
     { path: '*', component: NotFound }
   ]

@@ -221,7 +221,7 @@ export default {
         let msg = this.$pgettext('Content/TrackUpload/Alert/Quota', 'Current quota: %{cur} of %{max}. %{rem} remaining.')
         let cur = fileSizeFormatService.fileSizeFormat(this.currentUser.reel2bits.quota_count)
         let rem = fileSizeFormatService.fileSizeFormat(this.currentUser.reel2bits.quota_limit - this.currentUser.reel2bits.quota_count)
-        return this.$gettextInterpolate(msg, { max: max.num + max.unit, cur: cur.num + cur.unit, rem: rem.num + rem.unit })
+        return this.$gettextInterpolate(msg, { max: max.num + ' ' + max.unit, cur: cur.num + ' ' + cur.unit, rem: rem.num + ' ' + rem.unit })
       }
       return null
     }

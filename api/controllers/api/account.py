@@ -56,3 +56,54 @@ def logs(username):
 
     resp = {"page": page, "page_size": per_page, "totalItems": logs.total, "items": items}
     return jsonify(resp)
+
+
+@bp_api_account.route("/api/users/<string:username>/quota", methods=["GET"])
+@require_oauth("read")
+def quota(username):
+    """
+    User quota summary.
+    ---
+    tags:
+        - Users
+    security:
+        - OAuth2:
+            - read
+    parameters:
+        - name: username
+          in: path
+          type: string
+          required: true
+          description: User username
+    responses:
+        200:
+            description: Returns user quota summary.
+    """
+    current_user = current_token.user
+    if not current_user:
+        return jsonify({"error": "Unauthorized"}), 403
+
+    if current_user.name != username:
+        return jsonify({"error": "Unauthorized"}), 403
+
+    page = request.args.get("page", 1)
+    if page == "null":
+        abort(400)
+    page = int(page)
+    per_page = int(request.args.get("page_size", 20))
+
+    quotas = current_user.sounds.paginate(page=page, per_page=per_page)
+
+    items = []
+    for sound in quotas.items:
+        items.append(
+            {
+                "slug": sound.slug,
+                "name": sound.title,
+                "fileSize": sound.file_size,
+                "transcodeSize": sound.transcode_file_size,
+            }
+        )
+
+    resp = {"page": page, "page_size": per_page, "totalItems": quotas.total, "items": items}
+    return jsonify(resp)

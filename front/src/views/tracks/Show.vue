@@ -265,7 +265,7 @@ export default {
         return 0
       }
       let ffs = fileSizeFormatService.fileSizeFormat(num)
-      return ffs.num + ffs.unit
+      return ffs.num + ' ' + ffs.unit
     }
   },
   data: () => ({
