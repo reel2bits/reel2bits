@@ -9,9 +9,7 @@ from flask_bootstrap import Bootstrap
 from flask_mail import Mail
 from flask_migrate import Migrate
 from flask_security import Security
-from flask_security.utils import hash_password
 from flask_security import signals as FlaskSecuritySignals
-from flask_security import confirmable as FSConfirmable
 from flask_uploads import configure_uploads, UploadSet, AUDIO, patch_request_class
 from app_oauth import config_oauth
 from flask_cors import CORS
@@ -21,16 +19,14 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.utils import import_string
 import requests
 from utils.defaults import Reel2bitsDefaults
-import db_datas
+import commands
 
-from models import db, Config, user_datastore, Role, create_actor
+from models import db, Config, user_datastore, create_actor
 from utils.various import InvalidUsage, is_admin, add_user_log, join_url
 
 import texttable
 
-from dbseed import make_db_seed
 from pprint import pprint as pp
-import click
 from little_boxes import activitypub as ap
 from activitypub.backend import Reel2BitsBackend
 
@@ -409,41 +405,8 @@ def create_app(config_filename="config.development.Config", app_name=None, regis
         """Dump config"""
         pp(app.config)
 
-    @app.cli.command()
-    def seed():
-        """Seed database with default content"""
-        make_db_seed(db)
-
-    @app.cli.command()
-    def createuser():
-        """Create an user"""
-        app.config["SERVER_NAME"] = app.config["REEL2BITS_HOSTNAME"]
-        username = click.prompt("Username", type=str)
-        email = click.prompt("Email", type=str)
-        password = click.prompt("Password", type=str, hide_input=True, confirmation_prompt=True)
-        while True:
-            role = click.prompt("Role [admin/user]", type=str)
-            if role == "admin" or role == "user":
-                break
-
-        if click.confirm("Do you want to continue ?"):
-            role = Role.query.filter(Role.name == role).first()
-            if not role:
-                raise click.UsageError("Roles not present in database")
-            u = user_datastore.create_user(name=username, email=email, password=hash_password(password), roles=[role])
-
-            actor = create_actor(u)
-            actor.user = u
-            actor.user_id = u.id
-            db.session.add(actor)
-
-            db.session.commit()
-
-            if FSConfirmable.requires_confirmation(u):
-                FSConfirmable.send_confirmation_instructions(u)
-                print("Look at your emails for validation instructions.")
-
-    # Add database data migrations (not schema !)
-    app.cli.add_command(db_datas.db_datas)
+    app.cli.add_command(commands.db_datas)
+    app.cli.add_command(commands.users)
+    app.cli.add_command(commands.roles)
 
     return app

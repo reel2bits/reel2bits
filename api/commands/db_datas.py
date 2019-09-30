@@ -1,5 +1,5 @@
 import click
-from models import db, Sound, User
+from models import db, Sound, User, Role, Config
 from utils.flake_id import gen_flakeid
 from sqlalchemy.dialects.postgresql import UUID
 from utils.defaults import Reel2bitsDefaults
@@ -16,6 +16,33 @@ def db_datas():
     Run them only one time unless specified BREAKING.
     """
     pass
+
+
+@db_datas.command(name="000-seeds")
+@with_appcontext
+def seeds():
+    """
+    Seed database with default config and user values
+
+    non breaking.
+    """
+    # roles
+    roles = db.session.query(Role.name).all()
+    roles = [r[0] for r in roles]
+    if "user" not in roles:
+        role_usr = Role(name="user", description="Simple user")
+        db.session.add(role_usr)
+    if "admin" not in roles:
+        role_adm = Role(name="admin", description="Admin user")
+        db.session.add(role_adm)
+    # Config
+    config = Config.query.first()
+    if not config:
+        a = Config(app_name="My reel2bits instance", app_description="This is a reel2bits instance")
+        db.session.add(a)
+
+    # Final commit
+    db.session.commit()
 
 
 @db_datas.command(name="001-generate-tracks-uuids")

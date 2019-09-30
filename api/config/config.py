@@ -180,3 +180,6 @@ class BaseConfig(object):
 
     # Don't touch
     SWAGGER_UI_DOC_EXPANSION = "list"
+
+    SECURITY_CLI_USERS_NAME = False
+    SECURITY_CLI_ROLES_NAME = False

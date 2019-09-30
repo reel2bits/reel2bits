@@ -148,7 +148,7 @@ Then populate the database with default values (seeds):
 .. code-block:: shell
 
     # in the 'api' folder
-    flask seed
+    flask db-datas 000-seeds
 
 
 Create an admin account
@@ -159,7 +159,7 @@ You can then create your first user account:
 .. code-block:: shell
 
     # in the 'api' folder
-    flask createuser
+    flask users create
 
 .. warning::
 
