@@ -236,10 +236,7 @@
     </div>
 
     <div v-if="track" class="col-md-4 d-flex flex-column">
-      <!-- Profile Card -->
-      <UserCard :user="track.account" />
-      <!-- Footer -->
-      <Footer />
+      <Sidebar />
     </div>
   </div>
 </template>
@@ -254,15 +251,13 @@ button.playPause {
 import { mapState } from 'vuex'
 import WaveSurfer from 'wavesurfer.js'
 import moment from 'moment'
-import UserCard from '../../components/user_card/user_card.vue'
-import Footer from '../../components/footer/footer.vue'
 import playerUtils from '../../services/player_utils/player_utils.js'
 import fileSizeFormatService from '../../services/file_size_format/file_size_format.js'
+import Sidebar from '../../components/sidebar/sidebar.vue'
 
 export default {
   components: {
-    UserCard,
-    Footer
+    Sidebar
   },
   filters: {
     humanizeSize: function (num) {

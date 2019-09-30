@@ -47,17 +47,7 @@
           />
         </div>
         <div class="col-md-4">
-          <UserCard :user="user" />
-          <template v-if="user.reel2bits.quota_limit > 0 && isUs">
-            <div class="card mb-4">
-              <div class="card-body py-3 px-3">
-                <translate translate-context="Content/UserProfile/Sidebar/Quota" :translate-params="{quotaSlashRepr: humanQuota}">
-                  Quota: %{ quotaSlashRepr }
-                </translate>
-              </div>
-            </div>
-          </template>
-          <Footer />
+          <Sidebar />
         </div>
       </div>
     </div>
@@ -67,15 +57,13 @@
 <script>
 import get from 'lodash/get'
 import Timeline from '../timeline/timeline.vue'
-import Footer from '../../components/footer/footer.vue'
-import UserCard from '../../components/user_card/user_card.vue'
+import Sidebar from '../sidebar/sidebar.vue'
 import fileSizeFormatService from '../../services/file_size_format/file_size_format.js'
 
 export default {
   components: {
     Timeline,
-    UserCard,
-    Footer
+    Sidebar
   },
   data () {
     return {
