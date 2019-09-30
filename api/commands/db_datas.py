@@ -18,14 +18,7 @@ def db_datas():
     pass
 
 
-@db_datas.command(name="000-seeds")
-@with_appcontext
-def seeds():
-    """
-    Seed database with default config and user values
-
-    non breaking.
-    """
+def make_db_seed(db):
     # roles
     roles = db.session.query(Role.name).all()
     roles = [r[0] for r in roles]
@@ -43,6 +36,17 @@ def seeds():
 
     # Final commit
     db.session.commit()
+
+
+@db_datas.command(name="000-seeds")
+@with_appcontext
+def seeds():
+    """
+    Seed database with default config and user values
+
+    non breaking.
+    """
+    make_db_seed(db)
 
 
 @db_datas.command(name="001-generate-tracks-uuids")
