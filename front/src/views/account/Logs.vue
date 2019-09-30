@@ -44,7 +44,7 @@ export default {
           label: this.$pgettext('Content/Logs(user)/Table/Heading', 'Message')
         }
       ],
-      currentPage: 0,
+      currentPage: 1,
       perPage: 20,
       totalItems: 0
     }

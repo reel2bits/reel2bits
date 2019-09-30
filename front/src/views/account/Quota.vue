@@ -60,7 +60,7 @@ export default {
           label: this.$pgettext('Content/Quota(user)/Table/Heading', 'Transcoding Size')
         }
       ],
-      currentPage: 0,
+      currentPage: 1,
       perPage: 20,
       totalItems: 0
     }
