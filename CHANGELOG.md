@@ -11,4 +11,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
     - 003-set-user-quota
     - 004-update-file-sizes
 - **Breaking:** Commands to run: `flask db-datas 005-update-user-quotas` to precompute the user quotas
-- User quotas
+- User quotas (#179)
+- Refactored the cli commands (#179)
+
+### Changed
+- PNG waveforms are not computed anymore because unused (#179)
+
+### Fixed
+- Waveform JSON generation through a .dat now use the right pixels per second; avoid huge waveforms datas for long tracks (#179)
