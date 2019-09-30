@@ -11,6 +11,13 @@
       <h4 v-translate translate-context="Content/TrackUpload/Headline">
         Upload a new track
       </h4>
+
+      <template v-if="currentUser.reel2bits.quota_limit > 0">
+        <b-alert show :variant="currentUserQuotaLevel">
+          {{ currentUserQuota }}
+        </b-alert>
+      </template>
+
       <b-form class="upload-track-form" enctype="multipart/form-data" @submit.prevent="upload(track)">
         <b-form-group
           id="ig-title"
@@ -59,6 +66,14 @@
             @change="uploadFile($event)"
           />
         </b-form-group>
+
+        <template v-if="trackUploadError">
+          <br>
+          <b-alert v-if="trackUploadError" variant="danger" show>
+            {{ trackUploadError }}
+          </b-alert>
+          <br>
+        </template>
 
         <b-form-group
           id="ig-album"
@@ -114,14 +129,6 @@
 
         <br>
 
-        <template v-if="trackUploadError">
-          <br>
-          <b-alert v-if="trackUploadError" variant="danger" show>
-            {{ trackUploadError }}
-          </b-alert>
-          <br>
-        </template>
-
         <b-alert v-if="serverValidationErrors.length > 0" variant="danger" show>
           <span v-for="error in serverValidationErrors" :key="error">{{ error }}</span>
         </b-alert>
@@ -150,7 +157,8 @@ export default {
       private: ''
     },
     licenceChoices: [],
-    albumChoices: []
+    albumChoices: [],
+    currentUserQuotaLevel: 'info'
   }),
   validations: {
     track: {
@@ -178,7 +186,8 @@ export default {
     ...mapState({
       signedIn: state => !!state.users.currentUser,
       isPending: state => state.tracks.uploadPending,
-      serverValidationErrors: state => state.tracks.uploadErrors
+      serverValidationErrors: state => state.tracks.uploadErrors,
+      currentUser: state => state.users.currentUser
     }),
     labels () {
       return {
@@ -205,6 +214,16 @@ export default {
       let msg = this.$pgettext('Content/TrackUpload/File.Description', 'Maximum file size: %{maxSize}')
       let ffs = fileSizeFormatService.fileSizeFormat(this.$store.state.instance.trackSizeLimit)
       return this.$gettextInterpolate(msg, { maxSize: ffs.num + ffs.unit })
+    },
+    currentUserQuota () {
+      if (this.currentUser.reel2bits.quota_limit > 0) {
+        let max = fileSizeFormatService.fileSizeFormat(this.currentUser.reel2bits.quota_limit)
+        let msg = this.$pgettext('Content/TrackUpload/Alert/Quota', 'Current quota: %{cur} of %{max}. %{rem} remaining.')
+        let cur = fileSizeFormatService.fileSizeFormat(this.currentUser.reel2bits.quota_count)
+        let rem = fileSizeFormatService.fileSizeFormat(this.currentUser.reel2bits.quota_limit - this.currentUser.reel2bits.quota_count)
+        return this.$gettextInterpolate(msg, { max: max.num + max.unit, cur: cur.num + cur.unit, rem: rem.num + rem.unit })
+      }
+      return null
     }
   },
   created () {
@@ -290,6 +309,20 @@ export default {
           allowedSize.unit
         return
       }
+
+      // Compute quota
+      let quotaCurrent = this.currentUser.reel2bits.quota_count
+      let quotaLimit = this.currentUser.reel2bits.quota_limit
+
+      if (quotaCurrent + file.size > quotaLimit) {
+        this.currentUserQuotaLevel = 'danger'
+        let errMsg = this.$pgettext('Content/TrackUpload/Error', 'File is too big for the current remaining quota')
+        this.trackUploadError = errMsg
+        return
+      } else {
+        this.currentUserQuotaLevel = 'info'
+      }
+
       this.track.file = file
       this.trackUploadError = ''
       this.$v.track.file.$touch()
