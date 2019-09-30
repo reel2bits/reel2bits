@@ -15,7 +15,6 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
 import apiService from '../../services/api/api.service.js'
 
 export default {
@@ -50,9 +49,6 @@ export default {
     }
   },
   computed: {
-    ...mapState({
-      signedIn: state => !!state.users.currentUser
-    }),
     currentUser () { return this.$store.state.users.currentUser }
   },
   watch: {
