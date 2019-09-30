@@ -47,6 +47,7 @@
 
         <b-form-group
           id="ig-file"
+          :description="fileDescription"
           :label="labels.fileLabel"
           label-for="file"
         >
@@ -191,6 +192,19 @@ export default {
         licenseLabel: this.$pgettext('Content/TrackUpload/Input.Label/License', 'License:'),
         privateDescription: this.$pgettext('Content/TrackUpload/Input.Label/Private', 'A private track won\'t federate. You can use this as your unpublished drafts. Note that you can\'t replace audio file after upload.')
       }
+    },
+    fileDescription () {
+      if (this.track.file) {
+        const file = event.target.files[0]
+
+        let msg = this.$pgettext('Content/TrackUpload/File.Description', 'Maximum file size: %{maxSize}, current file: %{curSize}')
+        let ffsMax = fileSizeFormatService.fileSizeFormat(this.$store.state.instance.trackSizeLimit)
+        let ffsCur = fileSizeFormatService.fileSizeFormat(file.size)
+        return this.$gettextInterpolate(msg, { maxSize: ffsMax.num + ffsMax.unit, curSize: ffsCur.num + ffsCur.unit })
+      }
+      let msg = this.$pgettext('Content/TrackUpload/File.Description', 'Maximum file size: %{maxSize}')
+      let ffs = fileSizeFormatService.fileSizeFormat(this.$store.state.instance.trackSizeLimit)
+      return this.$gettextInterpolate(msg, { maxSize: ffs.num + ffs.unit })
     }
   },
   created () {
@@ -277,6 +291,7 @@ export default {
         return
       }
       this.track.file = file
+      this.trackUploadError = ''
       this.$v.track.file.$touch()
     }
   }
