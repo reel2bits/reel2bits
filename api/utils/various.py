@@ -98,7 +98,8 @@ def generate_audio_dat_file(filename):
 
     audio_dat = "{0}.dat".format(fname)
 
-    cmd = [binary, "-i", filename, "-o", audio_dat, "-b", "8"]
+    # pixels-per-second is needed here or it will be ignored in the json waveform generation
+    cmd = [binary, "-i", filename, "-o", audio_dat, "--pixels-per-second", "10", "-b", "8"]
 
     try:
         process = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -128,6 +129,7 @@ def get_waveform(filename):
 
     tmpjson = "{0}.json".format(fname)
 
+    # pixels-persecond is same value as in generate_audio_dat_file
     cmd = [binary, "-i", filename, "--pixels-per-second", "10", "-b", "8", "-o", tmpjson]
 
     """
@@ -171,6 +173,7 @@ def get_waveform(filename):
 
     if isinstance(json, list):
         json = json[0].rstrip()
+
     return json
 
 

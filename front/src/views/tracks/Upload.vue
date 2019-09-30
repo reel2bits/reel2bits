@@ -113,6 +113,14 @@
 
         <br>
 
+        <template v-if="trackUploadError">
+          <br>
+          <b-alert v-if="trackUploadError" variant="danger" show>
+            {{ trackUploadError }}
+          </b-alert>
+          <br>
+        </template>
+
         <b-alert v-if="serverValidationErrors.length > 0" variant="danger" show>
           <span v-for="error in serverValidationErrors" :key="error">{{ error }}</span>
         </b-alert>

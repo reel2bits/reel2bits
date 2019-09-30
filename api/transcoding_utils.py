@@ -9,14 +9,7 @@ import mutagen
 from pymediainfo import MediaInfo
 
 from models import db, SoundInfo, Sound
-from utils.various import (
-    get_waveform,
-    create_png_waveform,
-    duration_human,
-    add_user_log,
-    generate_audio_dat_file,
-    add_log,
-)
+from utils.various import get_waveform, duration_human, add_user_log, generate_audio_dat_file, add_log
 from pydub import AudioSegment
 from os.path import splitext
 from flask import current_app
@@ -246,14 +239,6 @@ def work_metadatas(sound_id, force=False):
                 "info",
                 "Got an error when generating waveform" " for: {0} -- {1}".format(sound.id, sound.title),
             )
-        else:
-            fdir_wf = os.path.join(current_app.config["UPLOADS_DEFAULT_DEST"], "waveforms", sound.user.slug)
-            fname_wf = os.path.join(fdir_wf, sound.filename)
-
-            if not os.path.isdir(fdir_wf):
-                os.makedirs(fdir_wf)
-
-            create_png_waveform(dat_file_name, fname_wf)
 
         # Delete the temporary dat file
         os.unlink(dat_file_name)

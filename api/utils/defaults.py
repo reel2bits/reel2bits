@@ -56,5 +56,5 @@ class Reel2bitsDefaults(object):
         {"bytes": 6710886400},  # 50 gb
     ]
 
-    # 100 mb
-    track_size_limit = 13107200
+    # 100 megabytes
+    track_size_limit = 104857600
