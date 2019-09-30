@@ -174,6 +174,8 @@ export const parseStatus = (data) => {
     output.metadatas.rate = data.reel2bits.metadatas.rate
     output.metadatas.bitrate = data.reel2bits.metadatas.bitrate
     output.metadatas.bitrate_mode = data.reel2bits.metadatas.bitrate_mode
+    output.metadatas.file_size = data.reel2bits.metadatas.file_size
+    output.metadatas.transcode_file_size = data.reel2bits.metadatas.transcode_file_size
   }
   if (output.type === 'album') {
     output.tracks_count = data.reel2bits.tracks_count

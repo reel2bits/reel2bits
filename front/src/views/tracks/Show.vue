@@ -141,63 +141,96 @@
           </li>
         </ul>
         <div class="border-top border-bottom py-4 my-4">
-          <h4 v-translate translate-context="Content/TrackShow/Track metadatas headline">
-            Metadatas of the original file
-          </h4>
-          <table class="table table-sm my-0">
-            <tbody>
-              <tr>
-                <th scope="row" class="col-md-2 border-0 font-weight-normal">
-                  <translate translate-context="Content/TrackShow/Track metadata">
-                    Type
-                  </translate>
-                </th>
-                <td class="border-0 font-weight-bold">
-                  {{ track.metadatas.type }}
-                </td>
-              </tr>
-              <tr v-if="track.metadatas.codec">
-                <th scope="row" class="border-0 font-weight-normal">
-                  <translate translate-context="Content/TrackShow/Track metadata">
-                    Codec
-                  </translate>
-                </th>
-                <td class="border-0 font-weight-bold">
-                  {{ track.metadatas.codec }}
-                </td>
-              </tr>
-              <tr>
-                <th scope="row" class="border-0 font-weight-normal">
-                  <translate translate-context="Content/TrackShow/Track metadata">
-                    Channels
-                  </translate>
-                </th>
-                <td class="border-0 font-weight-bold">
-                  {{ track.metadatas.channels }}
-                </td>
-              </tr>
-              <tr>
-                <th scope="row" class="border-0 font-weight-normal">
-                  <translate translate-context="Content/TrackShow/Track metadata">
-                    Sample rate
-                  </translate>
-                </th>
-                <td class="border-0 font-weight-bold">
-                  {{ track.metadatas.rate }}
-                </td>
-              </tr>
-              <tr v-if="track.metadatas.bitrate && track.metadatas.bitrate_mode">
-                <th scope="row" class="border-0 font-weight-normal">
-                  <translate translate-context="Content/TrackShow/Track metadata">
-                    Bit rate
-                  </translate>
-                </th>
-                <td class="border-0 font-weight-bold">
-                  {{ track.metadatas.bitrate }} {{ track.metadatas.bitrate_mode }}
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="row">
+            <div class="col-sm-6">
+              <h4 v-translate translate-context="Content/TrackShow/Track metadatas headline">
+                Metadatas of the original file
+              </h4>
+              <table class="table table-sm my-0">
+                <tbody>
+                  <tr>
+                    <th scope="row" class="col-md-2 border-0 font-weight-normal">
+                      <translate translate-context="Content/TrackShow/Track metadata">
+                        Type
+                      </translate>
+                    </th>
+                    <td class="border-0 font-weight-bold">
+                      {{ track.metadatas.type }}
+                    </td>
+                  </tr>
+                  <tr v-if="track.metadatas.codec">
+                    <th scope="row" class="border-0 font-weight-normal">
+                      <translate translate-context="Content/TrackShow/Track metadata">
+                        Codec
+                      </translate>
+                    </th>
+                    <td class="border-0 font-weight-bold">
+                      {{ track.metadatas.codec }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row" class="border-0 font-weight-normal">
+                      <translate translate-context="Content/TrackShow/Track metadata">
+                        Channels
+                      </translate>
+                    </th>
+                    <td class="border-0 font-weight-bold">
+                      {{ track.metadatas.channels }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row" class="border-0 font-weight-normal">
+                      <translate translate-context="Content/TrackShow/Track metadata">
+                        Sample rate
+                      </translate>
+                    </th>
+                    <td class="border-0 font-weight-bold">
+                      {{ track.metadatas.rate }}
+                    </td>
+                  </tr>
+                  <tr v-if="track.metadatas.bitrate && track.metadatas.bitrate_mode">
+                    <th scope="row" class="border-0 font-weight-normal">
+                      <translate translate-context="Content/TrackShow/Track metadata">
+                        Bit rate
+                      </translate>
+                    </th>
+                    <td class="border-0 font-weight-bold">
+                      {{ track.metadatas.bitrate }} {{ track.metadatas.bitrate_mode }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row" class="col-md-2 border-0 font-weight-normal">
+                      <translate translate-context="Content/TrackShow/Track metadata/Size">
+                        File size
+                      </translate>
+                    </th>
+                    <td class="border-0 font-weight-bold">
+                      {{ track.metadatas.file_size | humanizeSize }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div v-if="track.processing.transcode_needed" class="col-sm-6">
+              <h4 v-translate translate-context="Content/TrackShow/Track metadatas headline">
+                Metadatas of the transcoded file
+              </h4>
+              <table class="table table-sm my-0">
+                <tbody>
+                  <tr>
+                    <th scope="row" class="col-md-2 border-0 font-weight-normal">
+                      <translate translate-context="Content/TrackShow/Track metadata">
+                        File size
+                      </translate>
+                    </th>
+                    <td class="border-0 font-weight-bold">
+                      {{ track.metadatas.transcode_file_size | humanizeSize }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -224,11 +257,21 @@ import moment from 'moment'
 import UserCard from '../../components/user_card/user_card.vue'
 import Footer from '../../components/footer/footer.vue'
 import playerUtils from '../../services/player_utils/player_utils.js'
+import fileSizeFormatService from '../../services/file_size_format/file_size_format.js'
 
 export default {
   components: {
     UserCard,
     Footer
+  },
+  filters: {
+    humanizeSize: function (num) {
+      if (num === 0) {
+        return 0
+      }
+      let ffs = fileSizeFormatService.fileSizeFormat(num)
+      return ffs.num + ffs.unit
+    }
   },
   data: () => ({
     track: null,

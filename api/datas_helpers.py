@@ -126,6 +126,8 @@ def to_json_track(track, account):
                 "format": (si.format if si else None),
                 "channels": (si.channels if si else None),
                 "rate": (si.rate if si else None),  # Hz
+                "file_size": track.file_size,
+                "transcode_file_size": track.transcode_file_size,
             },
         },
     }
