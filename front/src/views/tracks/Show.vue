@@ -240,6 +240,21 @@
         >
           This song is not yet processed.
         </b-alert>
+
+        <template v-if="track.processing.transcode_state === 3">
+          <p>
+            <translate translate-context="Content/TrackShow/ErrorOccured text">
+              An error occured while processing the track, you can click the following link to retry (if it's only a one-time temporary error).
+            </translate>
+          </p>
+          <b-button v-translate :disabled="processingResetted" type="submit"
+                    variant="primary" translate-context="Content/TrackShow/Button/Retry processing" @click.prevent="retryProcessing"
+          >
+            retry
+          </b-button>
+          <br><br>
+        </template>
+
         <template v-if="trackLogs.length > 0">
           <h5>Current processing log:</h5>
           <b-table show-empty :items="trackLogs" :fields="trackLogsFields" />
@@ -291,6 +306,7 @@ export default {
       playerTimeCur: '00:00',
       playerTimeTot: '00:00',
       userId: null,
+      processingResetted: false,
       trackLogs: [],
       trackLogsFields: [
         {
@@ -463,6 +479,27 @@ export default {
     togglePlay: function () {
       this.wavesurfer.playPause()
       // console.log(this.track.media_transcoded)
+    },
+    retryProcessing () {
+      console.log('retrying processing...')
+      this.$store.state.api.backendInteractor.trackRetryProcessing({ userId: this.userId, trackId: this.trackId })
+        .then((_) => {
+          this.processingResetted = true
+          this.$bvToast.toast(this.$pgettext('Content/TrackShow/Toast/Info/Message', 'Processing resetted.'), {
+            title: this.$pgettext('Content/TrackShow/Toast/Info/Title', 'Track processing'),
+            autoHideDelay: 5000,
+            appendToast: false,
+            variant: 'info'
+          })
+        })
+        .catch((_) => {
+          this.$bvToast.toast(this.$pgettext('Content/TrackShow/Toast/Info/Message', 'Cannot reset processing.'), {
+            title: this.$pgettext('Content/TrackShow/Toast/Info/Title', 'Track processing'),
+            autoHideDelay: 10000,
+            appendToast: false,
+            variant: 'danger'
+          })
+        })
     }
   }
 }

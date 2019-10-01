@@ -11,6 +11,7 @@ const TRACKS_FETCH_URL = (username, id) => `/api/tracks/${username}/${id}`
 const TRACKS_EDIT_URL = (username, id) => `/api/tracks/${username}/${id}`
 const TRACKS_DELETE_URL = (username, id) => `/api/tracks/${username}/${id}`
 const TRACKS_LOGS_URL = (username, id) => `/api/tracks/${username}/${id}/logs`
+const TRACKS_RETRY_PROCESSING_URL = (username, id) => `/api/tracks/${username}/${id}/retry_processing`
 
 const ALBUMS_NEW_URL = '/api/albums'
 const ALBUMS_FETCH_URL = (username, id) => `/api/albums/${username}/${id}`
@@ -210,6 +211,14 @@ const fetchTrackLogs = ({ userId, trackId, credentials }) => {
       throw new Error('Error fetching track logs', data)
     })
     .then((data) => data.json())
+}
+
+const trackRetryProcessing = ({ userId, trackId, credentials }) => {
+  return promisedRequest({
+    url: TRACKS_RETRY_PROCESSING_URL(userId, trackId),
+    method: 'POST',
+    credentials: credentials
+  }).then((data) => data.json())
 }
 
 const albumReorder = ({ userId, albumId, tracksOrder, credentials }) => {
@@ -545,6 +554,7 @@ const apiService = {
   trackEdit,
   trackFetch,
   fetchTrackLogs,
+  trackRetryProcessing,
   albumNew,
   albumDelete,
   albumFetch,
