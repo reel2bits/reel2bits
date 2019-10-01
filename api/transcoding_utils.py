@@ -16,7 +16,13 @@ from flask import current_app
 
 
 def get_basic_infos(fname):
-    mi = MediaInfo.parse(fname)
+    try:
+        mi = MediaInfo.parse(fname)
+    except FileNotFoundError as e:
+        print("Cannot get media infos: ", e)
+        # oh no
+        return False
+
     mig = mi.tracks[0]
     mt = mig.format
 
