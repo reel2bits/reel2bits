@@ -404,7 +404,9 @@ export default {
             this.playerTimeTot = moment.utc(this.track.metadatas.duration * 1000).format('mm:ss')
           })
         } else {
-          this.fetchTrackLogs()
+          if (!this.trackError && this.track) {
+            this.fetchTrackLogs()
+          }
         }
       })
   },
