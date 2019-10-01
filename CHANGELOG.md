@@ -15,6 +15,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - User quotas (#179)
 - Refactored the cli commands (#179)
 - Added a few more users commands (#184)
+- Frontend now display correctly a not-ready track
+- Add button to retry transcoding/processing if failed
 
 ### Changed
 - PNG waveforms are not computed anymore because unused (#179)
