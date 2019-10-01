@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: front 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-09 22:00+0200\n"
+"POT-Creation-Date: 2019-10-01 21:26+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,17 +17,22 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: front/src/views/tracks/Show.vue:117
+#: front/src/views/account/Quota.vue:72
+msgctxt "Content/TrackUpload/Alert/Quota"
+msgid "(%{cur} of %{max}. %{rem} remaining)"
+msgstr ""
+
+#: front/src/views/tracks/Show.vue:3
 msgctxt "Content/TrackShow/Track federation tab title"
 msgid "%{ count } Comments"
 msgstr ""
 
-#: front/src/views/tracks/Show.vue:124
+#: front/src/views/tracks/Show.vue:15
 msgctxt "Content/TrackShow/Track federation tab title"
 msgid "%{ count } Likes"
 msgstr ""
 
-#: front/src/views/tracks/Show.vue:131
+#: front/src/views/tracks/Show.vue:23
 msgctxt "Content/TrackShow/Track federation tab title"
 msgid "%{ count } Reposts"
 msgstr ""
@@ -35,6 +40,16 @@ msgstr ""
 #: front/src/views/account/Logs.vue:3
 msgctxt "Content/Logs(user)/Headline"
 msgid "%{ username }'s logs"
+msgstr ""
+
+#: front/src/views/account/Quota.vue:3
+msgctxt "Content/Quota(user)/Headline"
+msgid "%{ username }'s quota summary <small>{{ currentUserQuota }}</small>"
+msgstr ""
+
+#: front/src/components/track/track.vue:110
+msgctxt "Content/Track/Image/User Avatar alt"
+msgid "%{username} avatar"
 msgstr ""
 
 #: front/src/components/user_card/user_card.vue:134
@@ -47,12 +62,12 @@ msgctxt "Content/UserCardList/Image/Avatar alt"
 msgid "%{username} avatar"
 msgstr ""
 
-#: front/src/App.vue:101
+#: front/src/App.vue:113
 msgctxt "Header/*/Image/Avatar alt"
 msgid "%{username} avatar"
 msgstr ""
 
-#: front/src/views/tracks/Edit.vue:158 src/views/tracks/Upload.vue:184
+#: front/src/views/tracks/Edit.vue:158 src/views/tracks/Upload.vue:202
 msgctxt "Content/TrackUpload/Input.Label/Private"
 msgid "A private track won't federate. You can use this as your unpublished drafts. Note that you can't replace audio file after upload."
 msgstr ""
@@ -77,7 +92,22 @@ msgctxt "Footer/*/Link/AboutThisInstance"
 msgid "About this instance"
 msgstr ""
 
-#: front/src/views/tracks/Edit.vue:156 src/views/tracks/Upload.vue:182
+#: front/src/views/albums/Edit.vue:147 src/views/albums/Edit.vue:168
+msgctxt "Content/AlbumsEdit/Toast/Error/Title"
+msgid "Album"
+msgstr ""
+
+#: front/src/views/albums/New.vue:122
+msgctxt "Content/AlbumsNew/Toast/Error/Title"
+msgid "Album"
+msgstr ""
+
+#: front/src/views/albums/Show.vue:166
+msgctxt "Content/TrackAlbum/Aria/Album actions"
+msgid "Album actions"
+msgstr ""
+
+#: front/src/views/tracks/Edit.vue:156 src/views/tracks/Upload.vue:200
 msgctxt "Content/TrackUpload/Input.Label/Album"
 msgid "Album:"
 msgstr ""
@@ -92,19 +122,39 @@ msgctxt "Content/UserCardList/Text/Albums (number of)"
 msgid "Albums"
 msgstr ""
 
-#: front/src/components/user_profile/user_profile.vue:76
-msgctxt "Content/UserProfile/Tab"
+#: front/src/components/user_profile/user_profile.vue:19
+msgctxt "Content/UserProfile/Tab/Text"
 msgid "Albums"
 msgstr ""
 
-#: front/src/views/tracks/Show.vue:376
+#: front/src/components/register/register.vue:231
+msgctxt "Content/Register/Toast/Error/Message"
+msgid "An error occured"
+msgstr ""
+
+#: front/src/views/tracks/Show.vue:474
 msgctxt "Content/TrackShow/Error"
 msgid "an error occured while deleting the track."
+msgstr ""
+
+#: front/src/views/tracks/Show.vue:245
+msgctxt "Content/TrackShow/ErrorOccured text"
+msgid "An error occured while processing the track, you can click the following link to retry (if it's only a one-time temporary error)."
 msgstr ""
 
 #: front/src/components/login_form/login_form.vue:143
 msgctxt "Content/Login/Error/Occured"
 msgid "An error occured, please try again later"
+msgstr ""
+
+#: front/src/components/login_form/login_form.vue:144
+msgctxt "Content/TrackAlbum/Toast/Error/Message"
+msgid "An error occured, please try again later"
+msgstr ""
+
+#: front/src/views/albums/Show.vue:65
+msgctxt "Content/AlbumShow/Modal/Delete/Content"
+msgid "Are you sure you want to delete '%{ title }' ?"
 msgstr ""
 
 #: front/src/views/tracks/Show.vue:71
@@ -127,7 +177,7 @@ msgctxt "Content/UserSettings/Input.Label/Bio"
 msgid "Bio (optional):"
 msgstr ""
 
-#: front/src/views/tracks/Show.vue:190
+#: front/src/views/tracks/Show.vue:192
 msgctxt "Content/TrackShow/Track metadata"
 msgid "Bit rate"
 msgstr ""
@@ -135,11 +185,6 @@ msgstr ""
 #: front/src/components/register/register.vue:123
 msgctxt "Content/Register/Feedback/PasswordConfirm/NotSameAsPassword"
 msgid "Both passwords needs to match"
-msgstr ""
-
-#: front/src/components/track/track.vue:35
-msgctxt "Content/Track/Single track in timelines, 'By: xxx'"
-msgid "By:"
 msgstr ""
 
 #: front/src/views/albums/Edit.vue:66
@@ -152,16 +197,108 @@ msgctxt "Content/TrackEdit/Button/Cancel"
 msgid "Cancel"
 msgstr ""
 
+#: front/src/views/albums/Edit.vue:146
+msgctxt "Content/AlbumsEdit/Toast/Error/Message"
+msgid "Cannot fetch album"
+msgstr ""
+
+#: front/src/components/user_followings/user_followings.vue:116
+msgctxt "Content/UserFollowings/Toast/Error/Message"
+msgid "Cannot fetch followings"
+msgstr ""
+
+#: front/src/views/tracks/Edit.vue:172
+msgctxt "Content/TracksEdit/Toast/Error/Message"
+msgid "Cannot fetch known licenses"
+msgstr ""
+
+#: front/src/views/tracks/Upload.vue:239
+msgctxt "Content/TracksUpload/Toast/Error/Message"
+msgid "Cannot fetch known licenses"
+msgstr ""
+
+#: front/src/views/tracks/Edit.vue:218
+msgctxt "Content/TracksEdit/Toast/Error/Message"
+msgid "Cannot fetch track"
+msgstr ""
+
+#: front/src/components/user_followers/user_followers.vue:90
+msgctxt "Content/UserFollowers/Toast/Error/Message"
+msgid "Cannot fetch user"
+msgstr ""
+
+#: front/src/components/user_followings/user_followings.vue:90
+msgctxt "Content/UserFollowings/Toast/Error/Message"
+msgid "Cannot fetch user"
+msgstr ""
+
+#: front/src/components/user_profile/user_profile.vue:158
+msgctxt "Content/UserProfile/Toast/Error/Message"
+msgid "Cannot fetch user"
+msgstr ""
+
+#: front/src/views/tracks/Edit.vue:192
+msgctxt "Content/TracksEdit/Toast/Error/Message"
+msgid "Cannot fetch user albums"
+msgstr ""
+
+#: front/src/views/tracks/Upload.vue:259
+msgctxt "Content/TracksUpload/Toast/Error/Message"
+msgid "Cannot fetch user albums"
+msgstr ""
+
+#: front/src/components/album/album.vue:222
+msgctxt "Content/Album/Toast/Error/Title"
+msgid "Cannot find track."
+msgstr ""
+
+#: front/src/views/albums/Show.vue:313
+msgctxt "Content/TrackAlbum/Toast/Error/Title"
+msgid "Cannot find track."
+msgstr ""
+
 #: front/src/components/password_reset/password_reset.vue:86
-#: front/src/components/password_reset/password_reset.vue:95
+#: front/src/components/password_reset/password_reset.vue:101
 msgctxt "Content/PasswordReset/Error"
 msgid "Cannot generate reset link"
 msgstr ""
 
+#: front/src/components/password_reset/password_reset.vue:87
+#: front/src/components/password_reset/password_reset.vue:102
+msgctxt "Content/PasswordReset/Toast/Error/Message"
+msgid "Cannot generate reset link"
+msgstr ""
+
+#: front/src/components/user_followers/user_followers.vue:117
+msgctxt "Content/UserFollowers/Toast/Error/Message"
+msgid "Cannot load followers list"
+msgstr ""
+
+#: front/src/components/timeline/timeline.vue:100
+msgctxt "Content/Timeline/Toast/Error/Message"
+msgid "Cannot load timeline"
+msgstr ""
+
 #: front/src/components/password_reset_token/password_reset_token.vue:114
-#: front/src/components/password_reset_token/password_reset_token.vue:125
+#: front/src/components/password_reset_token/password_reset_token.vue:131
 msgctxt "Content/PasswordResetToken/Errors/Cannot reset"
 msgid "Cannot reset password"
+msgstr ""
+
+#: front/src/components/password_reset_token/password_reset_token.vue:115
+#: front/src/components/password_reset_token/password_reset_token.vue:132
+msgctxt "Content/PasswordResetToken/Toast/Error/Message"
+msgid "Cannot reset password"
+msgstr ""
+
+#: front/src/views/tracks/Show.vue:496
+msgctxt "Content/TrackShow/Toast/Info/Message"
+msgid "Cannot reset processing."
+msgstr ""
+
+#: front/src/views/albums/New.vue:121
+msgctxt "Content/AlbumsNew/Toast/Error/Message"
+msgid "Cannot save album"
 msgstr ""
 
 #: front/src/views/account/Logs.vue:31
@@ -189,12 +326,12 @@ msgctxt "Content/UserSettings/Button/Change password"
 msgid "Change password"
 msgstr ""
 
-#: front/src/views/tracks/Show.vue:170
+#: front/src/views/tracks/Show.vue:172
 msgctxt "Content/TrackShow/Track metadata"
 msgid "Channels"
 msgstr ""
 
-#: front/src/views/tracks/Show.vue:160
+#: front/src/views/tracks/Show.vue:162
 msgctxt "Content/TrackShow/Track metadata"
 msgid "Codec"
 msgstr ""
@@ -219,7 +356,7 @@ msgctxt "Content/AlbumNew/Button/Create"
 msgid "Create"
 msgstr ""
 
-#: front/src/App.vue:108
+#: front/src/App.vue:120
 msgctxt "Header/*/DropDown/Create"
 msgid "Create"
 msgstr ""
@@ -234,9 +371,24 @@ msgctxt "Content/UserSettings/Input.Label/Password"
 msgid "Current password:"
 msgstr ""
 
+#: front/src/views/tracks/Upload.vue:221
+msgctxt "Content/TrackUpload/Alert/Quota"
+msgid "Current quota: %{cur} of %{max}. %{rem} remaining."
+msgstr ""
+
 #: front/src/views/account/Logs.vue:27
 msgctxt "Content/Logs(user)/Table/Heading"
 msgid "Date"
+msgstr ""
+
+#: front/src/views/tracks/Show.vue:314
+msgctxt "Content/Track(Logs)/Table/Heading"
+msgid "Date"
+msgstr ""
+
+#: front/src/views/albums/Show.vue:60
+msgctxt "Content/AlbumShow/Button"
+msgid "Delete"
 msgstr ""
 
 #: front/src/views/tracks/Show.vue:66
@@ -244,7 +396,12 @@ msgctxt "Content/TrackShow/Button"
 msgid "Delete"
 msgstr ""
 
-#: front/src/views/tracks/Show.vue:276
+#: front/src/views/albums/Show.vue:167
+msgctxt "Content/TrackAlbum/Modal/Delete/Title"
+msgid "Deleting album"
+msgstr ""
+
+#: front/src/views/tracks/Show.vue:359
 msgctxt "Content/TrackShow/Modal/Delete/Title"
 msgid "Deleting track"
 msgstr ""
@@ -259,7 +416,7 @@ msgctxt "Content/AlbumNew/Input.Label/Description"
 msgid "Description:"
 msgstr ""
 
-#: front/src/views/tracks/Edit.vue:154 src/views/tracks/Upload.vue:179
+#: front/src/views/tracks/Edit.vue:154 src/views/tracks/Upload.vue:197
 msgctxt "Content/TrackUpload/Input.Label/Description"
 msgid "Description:"
 msgstr ""
@@ -284,23 +441,33 @@ msgctxt "Content/UserSettings/Input.Label/Fullname"
 msgid "Display name:"
 msgstr ""
 
+#: front/src/components/track/track.vue:52
+msgctxt "Content/Track/Button"
+msgid "Download"
+msgstr ""
+
 #: front/src/views/tracks/Show.vue:51
 msgctxt "Content/TrackShow/Button"
 msgid "Download"
 msgstr ""
 
-#: front/src/views/tracks/Show.vue:106
+#: front/src/views/tracks/Show.vue:104
 msgctxt "Content/TrackShow/Track infos"
 msgid "Download links:"
 msgstr ""
 
-#: front/src/components/user_profile/user_profile.vue:77
-msgctxt "Content/UserProfile/Tab"
+#: front/src/components/user_profile/user_profile.vue:26
+msgctxt "Content/UserProfile/Tab/Text"
 msgid "Drafts"
 msgstr ""
 
 #: front/src/views/albums/Edit.vue:60
 msgctxt "Content/AlbumEdit/Button/Edit"
+msgid "Edit"
+msgstr ""
+
+#: front/src/views/albums/Show.vue:53
+msgctxt "Content/AlbumShow/Button"
 msgid "Edit"
 msgstr ""
 
@@ -317,6 +484,16 @@ msgstr ""
 #: front/src/views/albums/Edit.vue:10
 msgctxt "Content/AlbumEdit/Headline"
 msgid "Edit album"
+msgstr ""
+
+#: front/src/views/albums/Edit.vue:167
+msgctxt "Content/AlbumsEdit/Toast/Error/Message"
+msgid "Edit failed"
+msgstr ""
+
+#: front/src/views/tracks/Edit.vue:239
+msgctxt "Content/TracksEdit/Toast/Error/Message"
+msgid "Edit failed"
 msgstr ""
 
 #: front/src/views/tracks/Edit.vue:10
@@ -374,22 +551,37 @@ msgctxt "Content/UserSettings/Alert/Password change error"
 msgid "Error changing password"
 msgstr ""
 
-#: front/src/views/tracks/Edit.vue:184 src/views/tracks/Upload.vue:210
+#: front/src/components/user_settings/user_settings.vue:236
+msgctxt "Content/UserSettings/Toast/Error/Message"
+msgid "Error changing password"
+msgstr ""
+
+#: front/src/views/tracks/Edit.vue:190 src/views/tracks/Upload.vue:257
 msgctxt "Content/TrackUpload/Error"
 msgid "Error fetching albums"
 msgstr ""
 
-#: front/src/views/tracks/Edit.vue:170 src/views/tracks/Upload.vue:196
+#: front/src/views/tracks/Edit.vue:170 src/views/tracks/Upload.vue:237
 msgctxt "Content/TrackUpload/Error"
 msgid "Error fetching licenses"
 msgstr ""
 
-#: front/src/components/user_followers/user_followers.vue:107
+#: front/src/views/account/Logs.vue:76
+msgctxt "Content/Logs(user)/Toast/Error/Message"
+msgid "Error fetching user logs"
+msgstr ""
+
+#: front/src/views/account/Quota.vue:102
+msgctxt "Content/Quota(user)/Toast/Error/Message"
+msgid "Error fetching user quota summary"
+msgstr ""
+
+#: front/src/components/user_followers/user_followers.vue:113
 msgctxt "Content/UserFollowers/Error"
 msgid "Error loading user followers: %{errorMsg}"
 msgstr ""
 
-#: front/src/components/user_followings/user_followings.vue:106
+#: front/src/components/user_followings/user_followings.vue:112
 msgctxt "Content/UserFollowings/Error"
 msgid "Error loading user followings: %{errorMsg}"
 msgstr ""
@@ -404,9 +596,14 @@ msgctxt "Content/UserFollowings/Error"
 msgid "Error loading user: %{errorMsg}"
 msgstr ""
 
-#: front/src/components/user_profile/user_profile.vue:125
+#: front/src/components/user_profile/user_profile.vue:155
 msgctxt "Content/UserProfile/Error"
 msgid "Error loading user: %{errorMsg}"
+msgstr ""
+
+#: front/src/components/user_settings/user_settings.vue:206
+msgctxt "Content/UserSettings/Toast/Error/Message"
+msgid "Error saving settings"
 msgstr ""
 
 #: front/src/components/user_settings/user_settings.vue:6
@@ -414,7 +611,32 @@ msgctxt "Content/UserSettings/Alert/Error saving"
 msgid "Error saving settings."
 msgstr ""
 
-#: front/src/views/tracks/Upload.vue:242
+#: front/src/views/albums/Show.vue:336
+msgctxt "Content/TrackAlbum/Toast/Error/Message"
+msgid "Failed"
+msgstr ""
+
+#: front/src/views/tracks/Upload.vue:319
+msgctxt "Content/TrackUpload/Error"
+msgid "File is too big for the current remaining quota"
+msgstr ""
+
+#: front/src/views/tracks/Show.vue:221
+msgctxt "Content/TrackShow/Track metadata"
+msgid "File size"
+msgstr ""
+
+#: front/src/views/tracks/Show.vue:202
+msgctxt "Content/TrackShow/Track metadata/Size"
+msgid "File size"
+msgstr ""
+
+#: front/src/views/account/Quota.vue:55
+msgctxt "Content/Quota(user)/Table/Heading"
+msgid "File Size"
+msgstr ""
+
+#: front/src/views/tracks/Upload.vue:302
 msgctxt "Content/TrackUpload/Error"
 msgid "file too big: "
 msgstr ""
@@ -459,6 +681,12 @@ msgctxt "Content/UserCardList/Text/Followers (number of)"
 msgid "Followers"
 msgstr ""
 
+#: front/src/components/user_followers/user_followers.vue:91
+#: front/src/components/user_followers/user_followers.vue:118
+msgctxt "Content/UserFollowers/Toast/Error/Title"
+msgid "Followers"
+msgstr ""
+
 #: front/src/components/user_card/user_card.vue:104
 msgctxt "Content/UserCard/Text/Following (number of)"
 msgid "Following"
@@ -467,6 +695,12 @@ msgstr ""
 #: front/src/components/user_card_list/user_card_list.vue:104
 msgctxt "Content/UserCardList/Text/Following (number of)"
 msgid "Following"
+msgstr ""
+
+#: front/src/components/user_followings/user_followings.vue:91
+#: front/src/components/user_followings/user_followings.vue:117
+msgctxt "Content/UserFollowings/Toast/Error/Title"
+msgid "Followings"
 msgstr ""
 
 #: front/src/components/user_card/user_card.vue:55
@@ -484,12 +718,12 @@ msgctxt "Content/About/Headline/FrontendVersion"
 msgid "Frontend version: %{ frontVersion }"
 msgstr ""
 
-#: front/src/App.vue:111
+#: front/src/App.vue:123
 msgctxt "Header/*/Image/Avatar title"
 msgid "go to my profile"
 msgstr ""
 
-#: front/src/views/tracks/Edit.vue:152 src/views/tracks/Upload.vue:177
+#: front/src/views/tracks/Edit.vue:152 src/views/tracks/Upload.vue:195
 msgctxt "Content/TrackUpload/Input.Label/Title"
 msgid "If no title provided, the filename will be used."
 msgstr ""
@@ -514,7 +748,7 @@ msgctxt "Content/TrackEdit/Feedback/Title/LengthLimit"
 msgid "Length is limited to 250 characters"
 msgstr ""
 
-#: front/src/views/tracks/Upload.vue:30
+#: front/src/views/tracks/Upload.vue:37
 msgctxt "Content/TrackUpload/Feedback/Title/LengthLimit"
 msgid "Length is limited to 250 characters"
 msgstr ""
@@ -524,12 +758,17 @@ msgctxt "Content/Logs(user)/Table/Heading"
 msgid "Level"
 msgstr ""
 
-#: front/src/views/tracks/Show.vue:96 src/views/tracks/Show.vue:101
+#: front/src/views/tracks/Show.vue:318
+msgctxt "Content/Track(Logs)/Table/Heading"
+msgid "Level"
+msgstr ""
+
+#: front/src/views/tracks/Show.vue:94 src/views/tracks/Show.vue:99
 msgctxt "Content/TrackShow/Track infos"
 msgid "Licence:"
 msgstr ""
 
-#: front/src/views/tracks/Edit.vue:157 src/views/tracks/Upload.vue:183
+#: front/src/views/tracks/Edit.vue:157 src/views/tracks/Upload.vue:201
 msgctxt "Content/TrackUpload/Input.Label/License"
 msgid "License:"
 msgstr ""
@@ -544,23 +783,48 @@ msgctxt "Content/Login/Button/Login"
 msgid "Login"
 msgstr ""
 
-#: front/src/App.vue:56
+#: front/src/components/login_form/login_form.vue:145
+msgctxt "Content/TrackAlbum/Toast/Error/Title"
+msgid "Login"
+msgstr ""
+
+#: front/src/App.vue:60
 msgctxt "Header/*/DropDown/User/Login"
 msgid "Login"
 msgstr ""
 
-#: front/src/App.vue:50
+#: front/src/App.vue:54
 msgctxt "Header/*/DropDown/User/Logout"
 msgid "Logout"
 msgstr ""
 
-#: front/src/App.vue:48
+#: front/src/views/account/Logs.vue:77
+msgctxt "Content/Logs(user)/Toast/Error/Title"
+msgid "Logs"
+msgstr ""
+
+#: front/src/App.vue:51
 msgctxt "Header/*/DropDown/User/Logs"
 msgid "Logs"
 msgstr ""
 
+#: front/src/views/tracks/Upload.vue:214
+msgctxt "Content/TrackUpload/File.Description"
+msgid "Maximum file size: %{maxSize}"
+msgstr ""
+
+#: front/src/views/tracks/Upload.vue:209
+msgctxt "Content/TrackUpload/File.Description"
+msgid "Maximum file size: %{maxSize}, current file: %{curSize}"
+msgstr ""
+
 #: front/src/views/account/Logs.vue:43
 msgctxt "Content/Logs(user)/Table/Heading"
+msgid "Message"
+msgstr ""
+
+#: front/src/views/tracks/Show.vue:322
+msgctxt "Content/Track(Logs)/Table/Heading"
 msgid "Message"
 msgstr ""
 
@@ -569,9 +833,14 @@ msgctxt "Content/TrackShow/Track metadatas tab title"
 msgid "Metadatas"
 msgstr ""
 
-#: front/src/views/tracks/Show.vue:143
+#: front/src/views/tracks/Show.vue:145
 msgctxt "Content/TrackShow/Track metadatas headline"
 msgid "Metadatas of the original file"
+msgstr ""
+
+#: front/src/views/tracks/Show.vue:214
+msgctxt "Content/TrackShow/Track metadatas headline"
+msgid "Metadatas of the transcoded file"
 msgstr ""
 
 #: front/src/views/NotFound.vue:4
@@ -579,17 +848,17 @@ msgctxt "Content/NotFound/Text"
 msgid "Mmmmmmh, nope, that page doesn't exist."
 msgstr ""
 
-#: front/src/App.vue:46
+#: front/src/App.vue:49
 msgctxt "Header/*/DropDown/User/MyProfile"
 msgid "My Profile"
 msgstr ""
 
-#: front/src/App.vue:110
+#: front/src/App.vue:122
 msgctxt "Header/*/DropDown/Create/NewAlbum title"
 msgid "new album"
 msgstr ""
 
-#: front/src/App.vue:31
+#: front/src/App.vue:34
 msgctxt "Header/*/DropDown/Create/NewAlbum text"
 msgid "New Album"
 msgstr ""
@@ -599,14 +868,24 @@ msgctxt "Content/UserSettings/Input.Label/PasswordNew"
 msgid "New password:"
 msgstr ""
 
-#: front/src/App.vue:109
+#: front/src/App.vue:121
 msgctxt "Header/*/DropDown/Create/NewTrack title"
 msgid "new track"
 msgstr ""
 
-#: front/src/App.vue:26
+#: front/src/App.vue:29
 msgctxt "Header/*/DropDown/Create/NewTrack text"
 msgid "New Track"
+msgstr ""
+
+#: front/src/components/album/album.vue:34
+msgctxt "Content/Album/TracksList/Empty"
+msgid "No tracks in this album"
+msgstr ""
+
+#: front/src/views/albums/Show.vue:176
+msgctxt "Content/TrackAlbum/Toast/Error/Message"
+msgid "Not found"
 msgstr ""
 
 #: front/src/components/timeline/timeline.vue:20
@@ -619,14 +898,20 @@ msgctxt "Content/AlbumNew/Input.Placeholder/Description"
 msgid "Optional, what is this album about ?"
 msgstr ""
 
-#: front/src/views/tracks/Edit.vue:155 src/views/tracks/Upload.vue:180
+#: front/src/views/tracks/Edit.vue:155 src/views/tracks/Upload.vue:198
 msgctxt "Content/TrackUpload/Input.Placeholder/Description"
 msgid "Optional, what is this track about ?"
 msgstr ""
 
-#: front/src/views/tracks/Show.vue:108
+#: front/src/views/tracks/Show.vue:106
 msgctxt "Content/TrackShow/Track infos dls"
 msgid "original"
+msgstr ""
+
+#: front/src/components/user_settings/user_settings.vue:225
+#: front/src/components/user_settings/user_settings.vue:237
+msgctxt "Content/UserSettings/Toast/Error/Title"
+msgid "Password"
 msgstr ""
 
 #: front/src/components/user_settings/user_settings.vue:117
@@ -634,9 +919,26 @@ msgctxt "Content/UserSettings/Alert/Password changed"
 msgid "Password changed"
 msgstr ""
 
+#: front/src/components/user_settings/user_settings.vue:224
+msgctxt "Content/UserSettings/Toast/Error/Message"
+msgid "Password changed !"
+msgstr ""
+
 #: front/src/components/password_reset_token/password_reset_token.vue:52
 msgctxt "Content/PasswordResetToken/Alert/Password changed"
 msgid "Password have been changed."
+msgstr ""
+
+#: front/src/components/password_reset/password_reset.vue:88
+#: front/src/components/password_reset/password_reset.vue:103
+msgctxt "Content/PasswordReset/Toast/Error/Title"
+msgid "Password Reset"
+msgstr ""
+
+#: front/src/components/password_reset_token/password_reset_token.vue:116
+#: front/src/components/password_reset_token/password_reset_token.vue:133
+msgctxt "Content/PasswordResetToken/Toast/Error/Title"
+msgid "Password Reset"
 msgstr ""
 
 #: front/src/components/login_form/login_form.vue:97
@@ -664,7 +966,12 @@ msgctxt "Content/Login/Feedback/Password/Required"
 msgid "Please enter your password"
 msgstr ""
 
-#: front/src/components/timeline_tabs/timeline_tabs.vue:8
+#: front/src/views/tracks/Show.vue:488
+msgctxt "Content/TrackShow/Toast/Info/Message"
+msgid "Processing resetted."
+msgstr ""
+
+#: front/src/components/timeline_tabs/timeline_tabs.vue:12
 msgctxt "Content/TimelineTabs/Text/Tab"
 msgid "Public"
 msgstr ""
@@ -679,12 +986,27 @@ msgctxt "Content/UserSettings/Input.Placeholder/Bio"
 msgid "quack quack I'm a cat"
 msgstr ""
 
+#: front/src/views/account/Quota.vue:103
+msgctxt "Content/Quota(user)/Toast/Error/Title"
+msgid "Quota"
+msgstr ""
+
+#: front/src/App.vue:52
+msgctxt "Header/*/DropDown/User/Quota"
+msgid "Quota"
+msgstr ""
+
+#: front/src/components/sidebar/sidebar.vue:7
+msgctxt "Content/UserProfile/Sidebar/Quota"
+msgid "Quota: %{ quotaSlashRepr }"
+msgstr ""
+
 #: front/src/components/register/register.vue:128
 msgctxt "Content/Register/Button/Register"
 msgid "Register"
 msgstr ""
 
-#: front/src/App.vue:60
+#: front/src/App.vue:64
 msgctxt "Header/*/DropDown/User/Register"
 msgid "Register"
 msgstr ""
@@ -692,6 +1014,11 @@ msgstr ""
 #: front/src/components/register/register.vue:3
 msgctxt "Content/Register/Headline/Registering"
 msgid "Registering"
+msgstr ""
+
+#: front/src/components/register/register.vue:232
+msgctxt "Content/Register/Toast/Error/Title"
+msgid "Registration"
 msgstr ""
 
 #: front/src/components/login_form/login_form.vue:53
@@ -709,7 +1036,12 @@ msgctxt "Content/PasswordResetToken/Headline/Reset password"
 msgid "Reset password"
 msgstr ""
 
-#: front/src/views/tracks/Show.vue:180
+#: front/src/views/tracks/Show.vue:249
+msgctxt "Content/TrackShow/Button/Retry processing"
+msgid "retry"
+msgstr ""
+
+#: front/src/views/tracks/Show.vue:182
 msgctxt "Content/TrackShow/Track metadata"
 msgid "Sample rate"
 msgstr ""
@@ -719,12 +1051,17 @@ msgctxt "Content/UserSettings/Button/Save"
 msgid "Save"
 msgstr ""
 
-#: front/src/App.vue:107
+#: front/src/components/user_settings/user_settings.vue:196
+msgctxt "Content/UserSettings/Toast/Error/Message"
+msgid "Saved !"
+msgstr ""
+
+#: front/src/App.vue:119
 msgctxt "Header/*/Input/Search ARIA"
 msgid "Search"
 msgstr ""
 
-#: front/src/App.vue:106
+#: front/src/App.vue:118
 msgctxt "Header/*/Input/Search placeholder"
 msgid "Search"
 msgstr ""
@@ -739,7 +1076,13 @@ msgctxt "Content/PasswordReset/Button/Send reset email"
 msgid "Send reset email"
 msgstr ""
 
-#: front/src/App.vue:47
+#: front/src/components/user_settings/user_settings.vue:197
+#: front/src/components/user_settings/user_settings.vue:207
+msgctxt "Content/UserSettings/Toast/Error/Title"
+msgid "Settings"
+msgstr ""
+
+#: front/src/App.vue:50
 msgctxt "Header/*/DropDown/User/Settings"
 msgid "Settings"
 msgstr ""
@@ -763,7 +1106,17 @@ msgctxt "Content/About/Link/Prefix"
 msgid "Source:"
 msgstr ""
 
-#: front/src/components/timeline_tabs/timeline_tabs.vue:13
+#: front/src/views/albums/Show.vue:328
+msgctxt "Content/TrackAlbum/Toast/Error/Message"
+msgid "Success"
+msgstr ""
+
+#: front/src/App.vue:76
+msgctxt "*/*/Content/Alert"
+msgid "The backend cannot be reached properly, some functions might not work."
+msgstr ""
+
+#: front/src/components/timeline_tabs/timeline_tabs.vue:19
 msgctxt "Content/TimelineTabs/Text/Tab"
 msgid "The Whole Known Network"
 msgstr ""
@@ -778,12 +1131,17 @@ msgctxt "Content/AlbumNew/Input.Label/Private album"
 msgid "this album is private"
 msgstr ""
 
+#: front/src/views/tracks/Show.vue:237
+msgctxt "Content/TrackShow/Track not processed alert"
+msgid "This song is not yet processed."
+msgstr ""
+
 #: front/src/views/tracks/Edit.vue:69
 msgctxt "Content/TrackEdit/Input.Label/Private track"
 msgid "this track is private"
 msgstr ""
 
-#: front/src/views/tracks/Upload.vue:92
+#: front/src/views/tracks/Upload.vue:108
 msgctxt "Content/TrackUpload/Input.Label/Private track"
 msgid "this track is private"
 msgstr ""
@@ -793,29 +1151,61 @@ msgctxt "Content/Register/Feedback/Username/RestrictedUsername"
 msgid "This username cannot be used"
 msgstr ""
 
+#: front/src/components/timeline/timeline.vue:101
+msgctxt "Content/Timeline/Toast/Error/Title"
+msgid "Timeline"
+msgstr ""
+
 #: front/src/views/albums/Edit.vue:121 src/views/albums/New.vue:102
 msgctxt "Content/AlbumNew/Input.Label/Email"
 msgid "Title:"
 msgstr ""
 
-#: front/src/views/tracks/Edit.vue:151 src/views/tracks/Upload.vue:176
+#: front/src/views/tracks/Edit.vue:151 src/views/tracks/Upload.vue:194
 msgctxt "Content/TrackUpload/Input.Label/Email"
 msgid "Title:"
 msgstr ""
 
-#: front/src/views/tracks/Show.vue:275
+#: front/src/views/tracks/Show.vue:358
 msgctxt "Content/TrackShow/Aria/Track actions"
 msgid "Track actions"
 msgstr ""
 
-#: front/src/views/tracks/Upload.vue:181
+#: front/src/views/tracks/Upload.vue:199
 msgctxt "Content/TrackUpload/Input.Label/File"
 msgid "Track file:"
+msgstr ""
+
+#: front/src/views/account/Quota.vue:51
+msgctxt "Content/Quota(user)/Table/Heading"
+msgid "Track Name"
 msgstr ""
 
 #: front/src/views/tracks/Show.vue:41
 msgctxt "Content/TrackShow/Alert/Not available"
 msgid "Track not yet available."
+msgstr ""
+
+#: front/src/views/tracks/Show.vue:489 src/views/tracks/Show.vue:497
+msgctxt "Content/TrackShow/Toast/Info/Title"
+msgid "Track processing"
+msgstr ""
+
+#: front/src/views/albums/Show.vue:329 src/views/albums/Show.vue:337
+msgctxt "Content/TrackAlbum/Toast/Error/Title"
+msgid "Track reordering"
+msgstr ""
+
+#: front/src/views/tracks/Edit.vue:173 src/views/tracks/Edit.vue:193
+#: front/src/views/tracks/Edit.vue:219 src/views/tracks/Edit.vue:240
+msgctxt "Content/TracksEdit/Toast/Error/Title"
+msgid "Tracks"
+msgstr ""
+
+#: front/src/views/tracks/Upload.vue:240 src/views/tracks/Upload.vue:260
+#: front/src/views/tracks/Upload.vue:280
+msgctxt "Content/TracksUpload/Toast/Error/Title"
+msgid "Tracks"
 msgstr ""
 
 #: front/src/components/user_card/user_card.vue:71
@@ -828,17 +1218,22 @@ msgctxt "Content/UserCardList/Text/Tracks (number of)"
 msgid "Tracks"
 msgstr ""
 
-#: front/src/components/user_profile/user_profile.vue:75
-msgctxt "Content/UserProfile/Tab"
+#: front/src/components/user_profile/user_profile.vue:12
+msgctxt "Content/UserProfile/Tab/Text"
 msgid "Tracks"
 msgstr ""
 
-#: front/src/views/tracks/Show.vue:108
+#: front/src/views/tracks/Show.vue:106
 msgctxt "Content/TrackShow/Track infos dls"
 msgid "transcoded mp3"
 msgstr ""
 
-#: front/src/views/tracks/Show.vue:150
+#: front/src/views/account/Quota.vue:59
+msgctxt "Content/Quota(user)/Table/Heading"
+msgid "Transcoding Size"
+msgstr ""
+
+#: front/src/views/tracks/Show.vue:152
 msgctxt "Content/TrackShow/Track metadata"
 msgid "Type"
 msgstr ""
@@ -853,7 +1248,7 @@ msgctxt "Content/UserCardList/Button/Unfollow"
 msgid "Unfollow"
 msgstr ""
 
-#: front/src/views/tracks/Upload.vue:107
+#: front/src/views/tracks/Upload.vue:123
 msgctxt "Content/TrackUpload/Button/Upload"
 msgid "Upload"
 msgstr ""
@@ -861,6 +1256,21 @@ msgstr ""
 #: front/src/views/tracks/Upload.vue:10
 msgctxt "Content/TrackUpload/Headline"
 msgid "Upload a new track"
+msgstr ""
+
+#: front/src/views/tracks/Upload.vue:279
+msgctxt "Content/TracksUpload/Toast/Error/Message"
+msgid "Upload failed"
+msgstr ""
+
+#: front/src/components/track/track.vue:14
+msgctxt "Content/Track/Single track in timelines, part of 'XXX >>uploaded a track<< YYY times ago'"
+msgid "uploaded a track %{publishedAgo}"
+msgstr ""
+
+#: front/src/views/albums/Show.vue:177
+msgctxt "Content/TrackAlbum/Toast/Error/Title"
+msgid "User"
 msgstr ""
 
 #: front/src/components/user_followers/user_followers.vue:5
@@ -871,6 +1281,11 @@ msgstr ""
 #: front/src/components/user_followings/user_followings.vue:5
 msgctxt "Content/UserFollowings/Headline"
 msgid "User followings"
+msgstr ""
+
+#: front/src/components/user_profile/user_profile.vue:159
+msgctxt "Content/UserProfile/Toast/Error/Title"
+msgid "User Profile"
 msgstr ""
 
 #: front/src/components/user_settings/user_settings.vue:175
@@ -943,12 +1358,12 @@ msgctxt "Content/Register/Feedback/Email/Required"
 msgid "Your email is required"
 msgstr ""
 
-#: front/src/components/timeline_tabs/timeline_tabs.vue:3
+#: front/src/components/timeline_tabs/timeline_tabs.vue:5
 msgctxt "Content/TimelineTabs/Text/Tab"
 msgid "Your feed"
 msgstr ""
 
-#: front/src/views/tracks/Edit.vue:153 src/views/tracks/Upload.vue:178
+#: front/src/views/tracks/Edit.vue:153 src/views/tracks/Upload.vue:196
 msgctxt "Content/TrackUpload/Input.Placeholder/Title"
 msgid "Your track title."
 msgstr ""
