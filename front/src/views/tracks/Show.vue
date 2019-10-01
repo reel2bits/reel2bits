@@ -234,6 +234,7 @@
         </div>
       </div>
       <div v-else>
+        <hr>
         <b-alert v-translate show variant="info"
                  translate-context="Content/TrackShow/Track not processed alert"
         >
