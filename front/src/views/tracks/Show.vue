@@ -329,7 +329,7 @@ export default {
     } // else, oops
     this.fetchTrack()
       .then((v) => {
-        if (!this.trackError && this.track && this.track.processingDone) {
+        if (!this.trackError && this.track && this.processingDone) {
           console.log('initiating wavesurfer')
           this.$nextTick(() => {
             let opts = {
