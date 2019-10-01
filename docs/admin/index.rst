@@ -21,7 +21,6 @@ Administration
 .. toctree::
     :maxdepth: 2
 
-    flask
     commands
     url
     upgrading

@@ -5,6 +5,7 @@ from flask import current_app
 from flask_security.utils import hash_password
 from flask_security import confirmable as FSConfirmable
 import texttable
+import datetime
 
 
 @click.group()
@@ -89,3 +90,67 @@ def create():
             with current_app.app_context():
                 FSConfirmable.send_confirmation_instructions(u)
                 print("Look at your emails for validation instructions.")
+
+
+@users.command(name="promote-mod")
+@click.option("--username", prompt=True, help="Username")
+@with_appcontext
+def promote_mod(username):
+    """
+    Set user moderator.
+    """
+    u = User.query.filter(User.name == username, User.local.is_(True)).first()
+    if not u:
+        print(f"Cannot find local user with username '{username}'")
+        exit(1)
+
+    mod_role = Role.query.filter(Role.name == "moderator").first()
+    if not mod_role:
+        print("Cannot find a role named 'moderator'")
+        exit(1)
+    u.roles.append(mod_role)
+    db.session.commit()
+
+    roles_str = ", ".join([r.name for r in u.roles])
+    print(f"User '{username}' now have roles: {roles_str}")
+
+
+@users.command(name="demote-mod")
+@click.option("--username", prompt=True, help="Username")
+@with_appcontext
+def demote_mod(username):
+    """
+    Remove moderator role from user.
+    """
+    u = User.query.filter(User.name == username, User.local.is_(True)).first()
+    if not u:
+        print(f"Cannot find local user with username '{username}'")
+        exit(1)
+
+    mod_role = Role.query.filter(Role.name == "moderator").first()
+    if not mod_role:
+        print("Cannot find a role named 'moderator'")
+        exit(1)
+    u.roles.remove(mod_role)
+    db.session.commit()
+
+    roles_str = ", ".join([r.name for r in u.roles])
+    print(f"User '{username}' now have roles: {roles_str}")
+
+
+@users.command(name="confirm")
+@click.option("--username", prompt=True, help="Username")
+@with_appcontext
+def confirm(username):
+    """
+    Force activation of an user.
+    """
+    u = User.query.filter(User.name == username, User.local.is_(True)).first()
+    if not u:
+        print(f"Cannot find local user with username '{username}'")
+        exit(1)
+
+    u.confirmed_at = datetime.datetime.now()
+    db.session.commit()
+
+    print("User confirmed at: ", u.confirmed_at)

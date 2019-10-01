@@ -28,6 +28,9 @@ def make_db_seed(db):
     if "admin" not in roles:
         role_adm = Role(name="admin", description="Admin user")
         db.session.add(role_adm)
+    if "moderator" not in roles:
+        role_mod = Role(name="moderator", description="Moderator user")
+        db.session.add(role_mod)
     # Config
     config = Config.query.first()
     if not config:
@@ -42,7 +45,7 @@ def make_db_seed(db):
 @with_appcontext
 def seeds():
     """
-    Seed database with default config and user values
+    Seed database with default config and roles values
 
     non breaking.
     """
