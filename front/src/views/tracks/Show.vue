@@ -101,7 +101,7 @@
             Licence:
           </translate>{{ track.metadatas.licence.name }}
         </p>
-        <p>
+        <p v-if="processingDone">
           <translate translate-context="Content/TrackShow/Track infos">
             Download links:
           </translate><a :href="track.media_orig"><translate translate-context="Content/TrackShow/Track infos dls">original</translate></a><span v-if="track.processing.transcode_needed">, <a :href="track.media_transcoded"><translate translate-context="Content/TrackShow/Track infos dls">transcoded mp3</translate></a></span>.
@@ -109,7 +109,7 @@
       </div>
 
       <!-- Tabs -->
-      <div>
+      <div v-if="processingDone">
         <ul class="nav mt-5 pb-2">
           <!-- disabled for now
           <li class="nav-item pr-3">
@@ -233,6 +233,13 @@
           </div>
         </div>
       </div>
+      <div v-else>
+        <b-alert v-translate show variant="info"
+                 translate-context="Content/TrackShow/Track not processed alert"
+        >
+          This song is not yet processed.
+        </b-alert>
+      </div>
     </div>
 
     <div v-if="track" class="col-md-4 d-flex flex-column">
@@ -322,7 +329,7 @@ export default {
     } // else, oops
     this.fetchTrack()
       .then((v) => {
-        if (!this.trackError && this.track) {
+        if (!this.trackError && this.track && this.track.processingDone) {
           console.log('initiating wavesurfer')
           this.$nextTick(() => {
             let opts = {
