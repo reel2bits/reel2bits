@@ -10,6 +10,7 @@ const TRACKS_UPLOAD_URL = '/api/tracks'
 const TRACKS_FETCH_URL = (username, id) => `/api/tracks/${username}/${id}`
 const TRACKS_EDIT_URL = (username, id) => `/api/tracks/${username}/${id}`
 const TRACKS_DELETE_URL = (username, id) => `/api/tracks/${username}/${id}`
+const TRACKS_LOGS_URL = (username, id) => `/api/tracks/${username}/${id}/logs`
 
 const ALBUMS_NEW_URL = '/api/albums'
 const ALBUMS_FETCH_URL = (username, id) => `/api/albums/${username}/${id}`
@@ -196,6 +197,19 @@ const trackEdit = ({ userId, trackId, track, credentials }) => {
     payload: track,
     credentials: credentials
   }).then((data) => parseStatus(data))
+}
+
+const fetchTrackLogs = ({ userId, trackId, credentials }) => {
+  let url = TRACKS_LOGS_URL(userId, trackId)
+
+  return fetch(url, { headers: authHeaders(credentials) })
+    .then((data) => {
+      if (data.ok) {
+        return data
+      }
+      throw new Error('Error fetching track logs', data)
+    })
+    .then((data) => data.json())
 }
 
 const albumReorder = ({ userId, albumId, tracksOrder, credentials }) => {
@@ -530,6 +544,7 @@ const apiService = {
   trackDelete,
   trackEdit,
   trackFetch,
+  fetchTrackLogs,
   albumNew,
   albumDelete,
   albumFetch,

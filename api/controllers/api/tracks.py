@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from app_oauth import require_oauth
 from authlib.flask.oauth2 import current_token
 from forms import SoundUploadForm
-from models import db, Sound, User, Album
+from models import db, Sound, User, Album, UserLogging
 import json
 from utils.various import add_user_log, get_hashed_filename
 from flask_uploads import UploadSet, AUDIO
@@ -302,3 +302,72 @@ def delete(username, soundslug):
     add_user_log(sound.id, sound.user.id, "sounds", "info", "Deleted {0} -- {1}".format(sound.id, sound.title))
 
     return jsonify(track_name), 200
+
+
+@bp_api_tracks.route("/api/tracks/<string:username_or_id>/<string:soundslug>/logs", methods=["GET"])
+@require_oauth("read")
+def logs(username_or_id, soundslug):
+    """
+    Get track logs.
+    ---
+    tags:
+        - Tracks
+    parameters:
+        - name: user_id
+          in: path
+          type: integer
+          required: true
+          description: User ID
+        - name: soundslug
+          in: path
+          type: string
+          required: true
+          description: Track slug
+    responses:
+        200:
+            description: Returns track logs.
+    """
+    # Get logged in user from bearer token, or None if not logged in
+    if current_token:
+        current_user = current_token.user
+    else:
+        current_user = None
+
+    # Get the associated User from url fetch
+    if username_or_id.isdigit():
+        track_user = User.query.filter(User.id == username_or_id).first()
+    else:
+        track_user = User.query.filter(User.name == username_or_id, User.local.is_(True)).first()
+    if not track_user:
+        return jsonify({"error": "User not found"}), 404
+
+    if current_user and (track_user.id == current_user.id):
+        print("user")
+        sound = Sound.query.filter(Sound.slug == soundslug, Sound.user_id == track_user.id).first()
+    else:
+        print("no user")
+        sound = Sound.query.filter(
+            Sound.slug == soundslug, Sound.user_id == track_user.id, Sound.transcode_state == Sound.TRANSCODE_DONE
+        ).first()
+
+    if not sound:
+        print("mmmh")
+        return jsonify({"error": "not found"}), 404
+
+    if sound.private:
+        if current_user:
+            if sound.user_id != current_user.id:
+                return jsonify({"error": "forbidden"}), 403
+        else:
+            return jsonify({"error": "forbidden"}), 403
+
+    user_logs = UserLogging.query.filter(
+        UserLogging.user_id == current_user.id, UserLogging.category == "sounds", UserLogging.item_id == sound.id
+    ).all()
+
+    logs = []
+    for log in user_logs:
+        logs.append({"message": log.message, "date": log.timestamp, "level": log.level})
+
+    logs = {"trackSlug": sound.slug, "logs": logs}
+    return jsonify(logs)

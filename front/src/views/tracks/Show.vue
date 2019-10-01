@@ -239,6 +239,10 @@
         >
           This song is not yet processed.
         </b-alert>
+        <template v-if="trackLogs.length > 0">
+          <h5>Current processing log:</h5>
+          <b-table show-empty :items="trackLogs" :fields="trackLogsFields" />
+        </template>
       </div>
     </div>
 
@@ -275,17 +279,34 @@ export default {
       return ffs.num + ' ' + ffs.unit
     }
   },
-  data: () => ({
-    track: null,
-    trackError: '',
-    deleteError: null,
-    processing_done: false,
-    isOwner: false,
-    wavesurfer: null,
-    playerTimeCur: '00:00',
-    playerTimeTot: '00:00',
-    userId: null
-  }),
+  data () {
+    return {
+      track: null,
+      trackError: '',
+      deleteError: null,
+      processing_done: false,
+      isOwner: false,
+      wavesurfer: null,
+      playerTimeCur: '00:00',
+      playerTimeTot: '00:00',
+      userId: null,
+      trackLogs: [],
+      trackLogsFields: [
+        {
+          key: 'date',
+          label: this.$pgettext('Content/Track(Logs)/Table/Heading', 'Date')
+        },
+        {
+          key: 'level',
+          label: this.$pgettext('Content/Track(Logs)/Table/Heading', 'Level')
+        },
+        {
+          key: 'message',
+          label: this.$pgettext('Content/Track(Logs)/Table/Heading', 'Message')
+        }
+      ]
+    }
+  },
   computed: {
     ...mapState({
       signedIn: state => !!state.users.currentUser,
@@ -382,6 +403,8 @@ export default {
             // you hit play, when using pre-processed waveform...
             this.playerTimeTot = moment.utc(this.track.metadatas.duration * 1000).format('mm:ss')
           })
+        } else {
+          this.fetchTrackLogs()
         }
       })
   },
@@ -402,6 +425,17 @@ export default {
         })
         .catch((e) => {
           console.log('cannot fetch track:' + e.message)
+          this.trackError = e
+        })
+    },
+    async fetchTrackLogs () {
+      console.log('fetching track logs...')
+      await this.$store.state.api.backendInteractor.fetchTrackLogs({ userId: this.userId, trackId: this.trackId })
+        .then((data) => {
+          this.trackLogs = data.logs
+        })
+        .catch((e) => {
+          console.log('cannot fetch track logs:' + e.message)
           this.trackError = e
         })
     },

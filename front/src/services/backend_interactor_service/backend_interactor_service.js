@@ -28,6 +28,10 @@ const backendInteractorService = credentials => {
     return apiService.trackEdit({ userId, trackId, track, credentials })
   }
 
+  const fetchTrackLogs = ({ userId, trackId }) => {
+    return apiService.fetchTrackLogs({ userId, trackId, credentials })
+  }
+
   const albumFetch = ({ userId, albumId }) => {
     return apiService.albumFetch({ userId, albumId, credentials })
   }
@@ -202,6 +206,7 @@ const backendInteractorService = credentials => {
     trackFetch,
     trackDelete,
     trackEdit,
+    fetchTrackLogs,
     albumFetch,
     albumDelete,
     albumEdit,
