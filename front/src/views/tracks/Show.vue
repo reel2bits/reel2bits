@@ -101,7 +101,7 @@
             Licence:
           </translate>{{ track.metadatas.licence.name }}
         </p>
-        <p>
+        <p v-if="processingDone">
           <translate translate-context="Content/TrackShow/Track infos">
             Download links:
           </translate><a :href="track.media_orig"><translate translate-context="Content/TrackShow/Track infos dls">original</translate></a><span v-if="track.processing.transcode_needed">, <a :href="track.media_transcoded"><translate translate-context="Content/TrackShow/Track infos dls">transcoded mp3</translate></a></span>.
@@ -109,7 +109,7 @@
       </div>
 
       <!-- Tabs -->
-      <div>
+      <div v-if="processingDone">
         <ul class="nav mt-5 pb-2">
           <!-- disabled for now
           <li class="nav-item pr-3">
@@ -233,6 +233,33 @@
           </div>
         </div>
       </div>
+      <div v-else>
+        <hr>
+        <b-alert v-translate show variant="info"
+                 translate-context="Content/TrackShow/Track not processed alert"
+        >
+          This song is not yet processed.
+        </b-alert>
+
+        <template v-if="track.processing.transcode_state === 3">
+          <p>
+            <translate translate-context="Content/TrackShow/ErrorOccured text">
+              An error occured while processing the track, you can click the following link to retry (if it's only a one-time temporary error).
+            </translate>
+          </p>
+          <b-button :disabled="processingResetted" type="submit"
+                    variant="primary" @click.prevent="retryProcessing"
+          >
+            {{ retryButtonLabel }}
+          </b-button>
+          <br><br>
+        </template>
+
+        <template v-if="trackLogs.length > 0">
+          <h5>Current processing log:</h5>
+          <b-table show-empty :items="trackLogs" :fields="trackLogsFields" />
+        </template>
+      </div>
     </div>
 
     <div v-if="track" class="col-md-4 d-flex flex-column">
@@ -268,17 +295,35 @@ export default {
       return ffs.num + ' ' + ffs.unit
     }
   },
-  data: () => ({
-    track: null,
-    trackError: '',
-    deleteError: null,
-    processing_done: false,
-    isOwner: false,
-    wavesurfer: null,
-    playerTimeCur: '00:00',
-    playerTimeTot: '00:00',
-    userId: null
-  }),
+  data () {
+    return {
+      track: null,
+      trackError: '',
+      deleteError: null,
+      processing_done: false,
+      isOwner: false,
+      wavesurfer: null,
+      playerTimeCur: '00:00',
+      playerTimeTot: '00:00',
+      userId: null,
+      processingResetted: false,
+      trackLogs: [],
+      trackLogsFields: [
+        {
+          key: 'date',
+          label: this.$pgettext('Content/Track(Logs)/Table/Heading', 'Date')
+        },
+        {
+          key: 'level',
+          label: this.$pgettext('Content/Track(Logs)/Table/Heading', 'Level')
+        },
+        {
+          key: 'message',
+          label: this.$pgettext('Content/Track(Logs)/Table/Heading', 'Message')
+        }
+      ]
+    }
+  },
   computed: {
     ...mapState({
       signedIn: state => !!state.users.currentUser,
@@ -313,6 +358,13 @@ export default {
         ariaTrackActions: this.$pgettext('Content/TrackShow/Aria/Track actions', 'Track actions'),
         deleteModalTitle: this.$pgettext('Content/TrackShow/Modal/Delete/Title', 'Deleting track')
       }
+    },
+    retryButtonLabel () {
+      if (this.processingResetted) {
+        return this.$pgettext('Content/TrackShow/Button/Text', 'retry scheduled')
+      } else {
+        return this.$pgettext('Content/TrackShow/Button/Text', 'retry')
+      }
     }
   },
   created () {
@@ -322,7 +374,7 @@ export default {
     } // else, oops
     this.fetchTrack()
       .then((v) => {
-        if (!this.trackError && this.track) {
+        if (!this.trackError && this.track && this.processingDone) {
           console.log('initiating wavesurfer')
           this.$nextTick(() => {
             let opts = {
@@ -375,6 +427,10 @@ export default {
             // you hit play, when using pre-processed waveform...
             this.playerTimeTot = moment.utc(this.track.metadatas.duration * 1000).format('mm:ss')
           })
+        } else {
+          if (!this.trackError && this.track) {
+            this.fetchTrackLogs()
+          }
         }
       })
   },
@@ -395,6 +451,17 @@ export default {
         })
         .catch((e) => {
           console.log('cannot fetch track:' + e.message)
+          this.trackError = e
+        })
+    },
+    async fetchTrackLogs () {
+      console.log('fetching track logs...')
+      await this.$store.state.api.backendInteractor.fetchTrackLogs({ userId: this.userId, trackId: this.trackId })
+        .then((data) => {
+          this.trackLogs = data.logs
+        })
+        .catch((e) => {
+          console.log('cannot fetch track logs:' + e.message)
           this.trackError = e
         })
     },
@@ -419,6 +486,29 @@ export default {
     togglePlay: function () {
       this.wavesurfer.playPause()
       // console.log(this.track.media_transcoded)
+    },
+    async retryProcessing () {
+      console.log('retrying processing...')
+      await this.$store.state.api.backendInteractor.trackRetryProcessing({ userId: this.userId, trackId: this.trackId })
+        .then(() => {
+          console.log('ok')
+          this.processingResetted = true
+          this.$bvToast.toast(this.$pgettext('Content/TrackShow/Toast/Info/Message', 'Processing resetted.'), {
+            title: this.$pgettext('Content/TrackShow/Toast/Info/Title', 'Track processing'),
+            autoHideDelay: 5000,
+            appendToast: false,
+            variant: 'info'
+          })
+        })
+        .catch((e) => {
+          console.log('cannot reset', e)
+          this.$bvToast.toast(this.$pgettext('Content/TrackShow/Toast/Info/Message', 'Cannot reset processing.'), {
+            title: this.$pgettext('Content/TrackShow/Toast/Info/Title', 'Track processing'),
+            autoHideDelay: 10000,
+            appendToast: false,
+            variant: 'danger'
+          })
+        })
     }
   }
 }
