@@ -41,6 +41,7 @@ const RESET_PASSWORD_URL = '/api/reel2bits/reset_password'
 const RESET_PASSWORD_URL_TOKEN = (token) => `${RESET_PASSWORD_URL}/${token}`
 const REEL2BITS_DRAFTS_TIMELINE = '/api/v1/timelines/drafts'
 const REEL2BITS_ALBUMS_TIMELINE = '/api/v1/timelines/albums'
+const REEL2BITS_UNPROCESSED_TIMELINE = '/api/v1/timelines/unprocessed'
 
 const oldfetch = window.fetch
 
@@ -396,7 +397,8 @@ const fetchTimeline = ({
     'publicAndExternal': MASTODON_PUBLIC_TIMELINE,
     user: MASTODON_USER_TIMELINE_URL,
     drafts: REEL2BITS_DRAFTS_TIMELINE,
-    albums: REEL2BITS_ALBUMS_TIMELINE
+    albums: REEL2BITS_ALBUMS_TIMELINE,
+    unprocessed: REEL2BITS_UNPROCESSED_TIMELINE
   }
   const params = []
 

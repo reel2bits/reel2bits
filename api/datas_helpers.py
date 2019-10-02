@@ -1,4 +1,5 @@
 from flask import url_for
+from models import Album, Sound
 import json
 
 
@@ -37,7 +38,9 @@ def to_json_account(user, relationship=False):
         created_at=user.created_at,
         followers_count=user.actor[0].followers.count(),
         following_count=user.actor[0].followings.count(),
-        statuses_count=user.sounds.count(),
+        statuses_count=user.sounds.filter(
+            Sound.private.is_(False), Sound.transcode_state == Sound.TRANSCODE_DONE
+        ).count(),
         note=user.actor[0].summary,
         url=user.actor[0].url,
         avatar=("" or "/static/userpic_placeholder.svg"),
@@ -57,7 +60,7 @@ def to_json_account(user, relationship=False):
         },
         pleroma={"is_admin": user.is_admin()},
         reel2bits={
-            "albums_count": user.albums.count(),
+            "albums_count": user.albums.filter(Album.private.is_(False)).count(),
             "lang": user.locale,
             "quota_limit": user.quota,
             "quota_count": user.quota_count,

@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added a few more users commands (#184)
 - Frontend now display correctly a not-ready track
 - Add button to retry transcoding/processing if failed
+- User profile now have an unprocessed tab listing thoses tracks
 
 ### Changed
 - PNG waveforms are not computed anymore because unused (#179)

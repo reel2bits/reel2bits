@@ -128,7 +128,9 @@ def drafts():
     count = int(request.args.get("count", 20))
     page = int(request.args.get("page", 1))
 
-    q = Sound.query.filter(Sound.user_id == user.id, Sound.private.is_(True))
+    q = Sound.query.filter(
+        Sound.user_id == user.id, Sound.private.is_(True), Sound.transcode_state == Sound.TRANSCODE_DONE
+    )
 
     q = q.order_by(Sound.uploaded.desc())
 
@@ -201,4 +203,51 @@ def albums():
         account = to_json_account(t.user, relationship)
         albums.append(to_json_album(t, account))
     resp = {"page": page, "page_size": count, "totalItems": q.total, "items": albums, "totalPages": q.pages}
+    return jsonify(resp)
+
+
+@bp_api_v1_timelines.route("/api/v1/timelines/unprocessed", methods=["GET"])
+@require_oauth("read")
+def unprocessed():
+    """
+    User unprocessed tracks timeline.
+    ---
+    tags:
+        - Timelines
+    parameters:
+        - name: count
+          in: query
+          type: integer
+          required: true
+          description: count
+        - name: page
+          in: query
+          type: integer
+          description: page number
+    responses:
+        200:
+            description: Returns array of Status
+    """
+    user = current_token.user
+    if not user:
+        return jsonify({"error": "Unauthorized"}), 403
+
+    count = int(request.args.get("count", 20))
+    page = int(request.args.get("page", 1))
+
+    q = Sound.query.filter(
+        Sound.user_id == user.id,
+        Sound.transcode_state.in_((Sound.TRANSCODE_WAITING, Sound.TRANSCODE_PROCESSING, Sound.TRANSCODE_ERROR)),
+    )
+
+    q = q.order_by(Sound.uploaded.desc())
+
+    q = q.paginate(page=page, per_page=count)
+
+    tracks = []
+    for t in q.items:
+        relationship = to_json_relationship(current_token.user, t.user)
+        account = to_json_account(t.user, relationship)
+        tracks.append(to_json_track(t, account))
+    resp = {"page": page, "page_size": count, "totalItems": q.total, "items": tracks, "totalPages": q.pages}
     return jsonify(resp)

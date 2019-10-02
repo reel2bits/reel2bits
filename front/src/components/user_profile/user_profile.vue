@@ -22,10 +22,17 @@
               </translate>
             </b-nav-item>
             <b-nav-item v-if="isUs" :active="isTimelineDrafts" :to="{ name: 'user-profile-drafts' }"
-                        class="px-3"
+                        class="border-right px-3"
             >
               <translate translate-context="Content/UserProfile/Tab/Text">
                 Drafts
+              </translate>
+            </b-nav-item>
+            <b-nav-item v-if="isUs" :active="isTimelineUnprocessed" :to="{ name: 'user-profile-unprocessed' }"
+                        class="px-3"
+            >
+              <translate translate-context="Content/UserProfile/Tab/Text">
+                Unprocessed
               </translate>
             </b-nav-item>
           </b-nav>
@@ -43,6 +50,11 @@
           <Timeline v-else-if="isTimelineDrafts"
                     key="{{ userId }}drafts"
                     timeline-name="drafts"
+                    :user-id="userId"
+          />
+          <Timeline v-else-if="isTimelineUnprocessed"
+                    key="{{ userId }}unprocessed"
+                    timeline-name="unprocessed"
                     :user-id="userId"
           />
         </div>
@@ -90,6 +102,9 @@ export default {
     },
     isTimelineDrafts () {
       return this.$route.name === 'user-profile-drafts'
+    },
+    isTimelineUnprocessed () {
+      return this.$route.name === 'user-profile-unprocessed'
     },
     humanQuota () {
       let quotaCount = ''
