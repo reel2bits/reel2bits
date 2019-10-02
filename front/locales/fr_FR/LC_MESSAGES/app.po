@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: French (reel2bits)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-10-01 21:26+0200\n"
+"POT-Creation-Date: 2019-10-02 10:04+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: French <https://weblate.sigpipe.me/projects/reel2bits/frontend/fr/>\n"
@@ -133,7 +133,7 @@ msgctxt "Content/Register/Toast/Error/Message"
 msgid "An error occured"
 msgstr ""
 
-#: front/src/views/tracks/Show.vue:474
+#: front/src/views/tracks/Show.vue:481
 msgctxt "Content/TrackShow/Error"
 msgid "an error occured while deleting the track."
 msgstr "une erreur est survenue lors de la suppression de cette piste."
@@ -305,7 +305,7 @@ msgctxt "Content/PasswordResetToken/Toast/Error/Message"
 msgid "Cannot reset password"
 msgstr "Impossible de réinitialiser le mot de passe"
 
-#: front/src/views/tracks/Show.vue:496
+#: front/src/views/tracks/Show.vue:505
 #, fuzzy
 msgctxt "Content/TrackShow/Toast/Info/Message"
 msgid "Cannot reset processing."
@@ -1005,7 +1005,7 @@ msgctxt "Content/Login/Feedback/Password/Required"
 msgid "Please enter your password"
 msgstr "Merci d'entrer votre mot de passe"
 
-#: front/src/views/tracks/Show.vue:488
+#: front/src/views/tracks/Show.vue:496
 msgctxt "Content/TrackShow/Toast/Info/Message"
 msgid "Processing resetted."
 msgstr ""
@@ -1076,9 +1076,14 @@ msgctxt "Content/PasswordResetToken/Headline/Reset password"
 msgid "Reset password"
 msgstr "Réinitialiser le mot de passe"
 
-#: front/src/views/tracks/Show.vue:249
-msgctxt "Content/TrackShow/Button/Retry processing"
+#: front/src/views/tracks/Show.vue:366
+msgctxt "Content/TrackShow/Button/Text"
 msgid "retry"
+msgstr ""
+
+#: front/src/views/tracks/Show.vue:364
+msgctxt "Content/TrackShow/Button/Text"
+msgid "retry scheduled"
 msgstr ""
 
 #: front/src/views/tracks/Show.vue:182
@@ -1229,7 +1234,7 @@ msgctxt "Content/TrackShow/Alert/Not available"
 msgid "Track not yet available."
 msgstr "Piste non disponible pour le moment."
 
-#: front/src/views/tracks/Show.vue:489 src/views/tracks/Show.vue:497
+#: front/src/views/tracks/Show.vue:497 src/views/tracks/Show.vue:506
 #, fuzzy
 msgctxt "Content/TrackShow/Toast/Info/Title"
 msgid "Track processing"
