@@ -546,6 +546,21 @@ const fetchFollowers = ({ id, page = 1, limit = 20, credentials }) => {
     })
 }
 
+const deleteUser = ({ userId, credentials }) => {
+  const headers = authHeaders(credentials)
+  return fetch(MASTODON_USER_URL, {
+    method: 'DELETE',
+    headers: headers
+  })
+    .then((data) => {
+      if (data.ok) {
+        return data
+      }
+      throw new Error('Error queuing user deletion', data)
+    })
+    .then((data) => data.json())
+}
+
 const apiService = {
   verifyCredentials,
   register,
@@ -574,7 +589,8 @@ const apiService = {
   followUser,
   unfollowUser,
   fetchFriends,
-  fetchFollowers
+  fetchFollowers,
+  deleteUser
 }
 
 export default apiService

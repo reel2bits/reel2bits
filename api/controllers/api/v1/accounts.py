@@ -724,3 +724,31 @@ def following(user_id):
 
     resp = {"page": page, "page_size": count, "totalItems": q.total, "items": followings, "totalPages": q.pages}
     return jsonify(resp)
+
+
+@bp_api_v1_accounts.route("/api/v1/accounts", methods=["DELETE"])
+@require_oauth("write")
+def account_delete():
+    """
+    Delete account
+    ---
+    tags:
+        - Accounts
+    responses:
+      200:
+        description: Returns user username
+    """
+    current_user = current_token.user
+    if not current_user:
+        abort(400)
+
+    # store a few infos
+    username = current_user.name
+    # user_id = current_user.id
+    # email = current_user.email
+
+    # Delete user
+    # Propagage a Delete of each federated tracks
+    # mark actor as deleted
+
+    return jsonify({"username": username}), 200
