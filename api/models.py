@@ -301,10 +301,12 @@ class Sound(db.Model):
 
     flake_id = db.Column(UUID(as_uuid=True), unique=False, nullable=True)
 
+    # relations
     user_id = db.Column(db.Integer(), db.ForeignKey("user.id"), nullable=False)
     album_id = db.Column(db.Integer(), db.ForeignKey("album.id"), nullable=True)
-    sound_infos = db.relationship("SoundInfo", backref="sound_info", lazy="dynamic", cascade="delete")
     activity_id = db.Column(db.Integer(), db.ForeignKey("activity.id"), nullable=True)
+
+    sound_infos = db.relationship("SoundInfo", backref="sound_info", lazy="dynamic", cascade="delete")
     activity = db.relationship("Activity")
 
     __mapper_args__ = {"order_by": uploaded.desc()}
@@ -355,10 +357,11 @@ class Album(db.Model):
     private = db.Column(db.Boolean(), default=False, nullable=True)
     slug = db.Column(db.String(255), unique=True, nullable=True)
 
+    flake_id = db.Column(UUID(as_uuid=True), unique=False, nullable=True)
+
+    # relations
     user_id = db.Column(db.Integer(), db.ForeignKey("user.id"), nullable=False)
     sounds = db.relationship("Sound", backref="album", lazy="dynamic")
-
-    flake_id = db.Column(UUID(as_uuid=True), unique=False, nullable=True)
 
     __mapper_args__ = {"order_by": created.desc()}
 
