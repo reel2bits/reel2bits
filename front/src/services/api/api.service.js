@@ -218,7 +218,7 @@ const trackRetryProcessing = ({ userId, trackId, credentials }) => {
     url: TRACKS_RETRY_PROCESSING_URL(userId, trackId),
     method: 'POST',
     credentials: credentials
-  }).then((data) => data.json())
+  })
 }
 
 const albumReorder = ({ userId, albumId, tracksOrder, credentials }) => {

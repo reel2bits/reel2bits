@@ -247,10 +247,10 @@
               An error occured while processing the track, you can click the following link to retry (if it's only a one-time temporary error).
             </translate>
           </p>
-          <b-button v-translate :disabled="processingResetted" type="submit"
-                    variant="primary" translate-context="Content/TrackShow/Button/Retry processing" @click.prevent="retryProcessing"
+          <b-button :disabled="processingResetted" type="submit"
+                    variant="primary" @click.prevent="retryProcessing"
           >
-            retry
+            {{ retryButtonLabel }}
           </b-button>
           <br><br>
         </template>
@@ -357,6 +357,13 @@ export default {
       return {
         ariaTrackActions: this.$pgettext('Content/TrackShow/Aria/Track actions', 'Track actions'),
         deleteModalTitle: this.$pgettext('Content/TrackShow/Modal/Delete/Title', 'Deleting track')
+      }
+    },
+    retryButtonLabel () {
+      if (this.processingResetted) {
+        return this.$pgettext('Content/TrackShow/Button/Text', 'retry scheduled')
+      } else {
+        return this.$pgettext('Content/TrackShow/Button/Text', 'retry')
       }
     }
   },
@@ -480,10 +487,11 @@ export default {
       this.wavesurfer.playPause()
       // console.log(this.track.media_transcoded)
     },
-    retryProcessing () {
+    async retryProcessing () {
       console.log('retrying processing...')
-      this.$store.state.api.backendInteractor.trackRetryProcessing({ userId: this.userId, trackId: this.trackId })
-        .then((_) => {
+      await this.$store.state.api.backendInteractor.trackRetryProcessing({ userId: this.userId, trackId: this.trackId })
+        .then(() => {
+          console.log('ok')
           this.processingResetted = true
           this.$bvToast.toast(this.$pgettext('Content/TrackShow/Toast/Info/Message', 'Processing resetted.'), {
             title: this.$pgettext('Content/TrackShow/Toast/Info/Title', 'Track processing'),
@@ -492,7 +500,8 @@ export default {
             variant: 'info'
           })
         })
-        .catch((_) => {
+        .catch((e) => {
+          console.log('cannot reset', e)
           this.$bvToast.toast(this.$pgettext('Content/TrackShow/Toast/Info/Message', 'Cannot reset processing.'), {
             title: this.$pgettext('Content/TrackShow/Toast/Info/Title', 'Track processing'),
             autoHideDelay: 10000,
