@@ -109,9 +109,9 @@ class User(db.Model, UserMixin):
 
     local = db.Column(db.Boolean(), default=True)
 
-    roles = db.relationship("Role", secondary=roles_users, backref=db.backref("users", lazy="dynamic"))
-    apitokens = db.relationship("Apitoken", backref="user", lazy="dynamic", cascade="delete")
+    # Relations
 
+    roles = db.relationship("Role", secondary=roles_users, backref=db.backref("users", lazy="dynamic"))
     password_reset_tokens = db.relationship("PasswordResetToken", backref="user", lazy="dynamic", cascade="delete")
     user_loggings = db.relationship("UserLogging", backref="user", lazy="dynamic", cascade="delete")
     loggings = db.relationship("Logging", backref="user", lazy="dynamic", cascade="delete")
@@ -168,13 +168,6 @@ class User(db.Model, UserMixin):
 
 
 event.listen(User.name, "set", User.generate_slug, retval=False)
-
-
-class Apitoken(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer(), db.ForeignKey("user.id"), nullable=False)
-    token = db.Column(db.String(255), unique=True, nullable=False, info={"label": "Token"})
-    secret = db.Column(db.String(255), unique=True, nullable=False, info={"label": "Secret"})
 
 
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
