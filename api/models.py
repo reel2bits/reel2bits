@@ -111,7 +111,9 @@ class User(db.Model, UserMixin):
 
     # Relations
 
-    roles = db.relationship("Role", secondary=roles_users, backref=db.backref("users", lazy="dynamic"))
+    roles = db.relationship(
+        "Role", secondary=roles_users, backref=db.backref("users", lazy="dynamic"), cascade="delete"
+    )
     password_reset_tokens = db.relationship("PasswordResetToken", backref="user", lazy="dynamic", cascade="delete")
     user_loggings = db.relationship("UserLogging", backref="user", lazy="dynamic", cascade="delete")
     loggings = db.relationship("Logging", backref="user", lazy="dynamic", cascade="delete")
@@ -305,8 +307,6 @@ class Sound(db.Model):
     activity_id = db.Column(db.Integer(), db.ForeignKey("activity.id"), nullable=True)
     activity = db.relationship("Activity")
 
-    timeline = db.relationship("Timeline", uselist=False, back_populates="sound")
-
     __mapper_args__ = {"order_by": uploaded.desc()}
 
     def elapsed(self):
@@ -360,30 +360,11 @@ class Album(db.Model):
 
     flake_id = db.Column(UUID(as_uuid=True), unique=False, nullable=True)
 
-    timeline = db.relationship("Timeline", uselist=False, back_populates="album")
-
     __mapper_args__ = {"order_by": created.desc()}
 
     def elapsed(self):
         el = datetime.datetime.utcnow() - self.created
         return el.total_seconds()
-
-
-class Timeline(db.Model):
-    __tablename__ = "timeline"
-
-    id = db.Column(db.Integer, primary_key=True)
-    timestamp = db.Column(db.DateTime(timezone=False), default=datetime.datetime.utcnow)
-    private = db.Column(db.Boolean, default=False)
-
-    sound_id = db.Column(db.Integer(), db.ForeignKey("user.id"), nullable=False)
-    album_id = db.Column(db.Integer(), db.ForeignKey("album.id"), nullable=False)
-    user_id = db.Column(db.Integer(), db.ForeignKey("sound.id"), nullable=False)
-
-    album = db.relationship("Album", back_populates="timeline")
-    sound = db.relationship("Sound", back_populates="timeline")
-
-    __mapper_args__ = {"order_by": timestamp.desc()}
 
 
 @event.listens_for(Sound, "after_update")
