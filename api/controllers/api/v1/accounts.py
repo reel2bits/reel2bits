@@ -1,13 +1,18 @@
 from flask import Blueprint, request, jsonify, abort, current_app
-from models import db, User, user_datastore, Role, create_actor, OAuth2Token, OAuth2Client, Activity, Sound
+from models import db, User, user_datastore, Role, create_actor, OAuth2Token, OAuth2Client, Activity, Sound, Follower
 from flask_security.utils import hash_password
 from flask_security import confirmable as FSConfirmable
 from app_oauth import authorization, require_oauth
 from authlib.flask.oauth2 import current_token
 from datas_helpers import to_json_track, to_json_account, to_json_relationship
-from utils.various import forbidden_username, add_user_log
+from utils.various import forbidden_username, add_user_log, add_log
 from tasks import send_update_profile
 import re
+from sqlalchemy import or_
+from flask_mail import Message
+from flask import render_template
+import smtplib
+from app import mail
 
 
 bp_api_v1_accounts = Blueprint("bp_api_v1_accounts", __name__)
@@ -744,11 +749,50 @@ def account_delete():
 
     # store a few infos
     username = current_user.name
-    # user_id = current_user.id
-    # email = current_user.email
+    user_id = current_user.id
+    email = current_user.email
 
-    # Delete user
-    # Propagage a Delete of each federated tracks
-    # mark actor as deleted
+    # set all activities as deleted
+    activities = Activity.query.filter(Activity.actor == current_user.actor[0].id)
+    for activity in activities.all():
+        activity.meta_deleted = True
+
+    # set actor as deleted and federate a Delete(Actor)
+    current_user.actor[0].meta_deleted = True
+    # TODO FIXME: Federate Delete(Actor)
+
+    # drop all relations
+    follows = Follower.query.filter(
+        or_(Follower.actor_id == current_user.actor[0].id, Follower.target_id == current_user.actor[0].id)
+    )
+    for follow_rel in follows.all():
+        db.session.delete(follow_rel)
+
+    # delete User
+    db.session.delete(current_user)
+
+    db.session.commit()  # crimes
+
+    # send email that account have been deleted
+    msg = Message(
+        subject="Account successfully deleted", recipients=[email], sender=current_app.config["MAIL_DEFAULT_SENDER"]
+    )
+    msg.body = render_template("email/account_deleted.txt", username=username)
+    msg.html = render_template("email/account_deleted.html", username=username)
+    err = None
+    try:
+        mail.send(msg)
+    except ConnectionRefusedError as e:
+        # TODO: do something about that maybe
+        print(f"Error sending mail: {e}")
+        err = e
+    except smtplib.SMTPRecipientsRefused as e:
+        print(f"Error sending mail: {e}")
+        err = e
+    except smtplib.SMTPException as e:
+        print(f"Error sending mail: {e}")
+        err = e
+    if err:
+        add_log("global", "ERROR", f"Error sending email for account deletion of {username} ({user_id}): {err}")
 
     return jsonify({"username": username}), 200
