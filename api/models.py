@@ -487,6 +487,8 @@ class Actor(db.Model):
     # two relations. This may be better than only one, and some hackish things
     # by querying directly the old db.Table definition
 
+    meta_deleted = db.Column(db.Boolean, default=False)
+
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=True)
     user = db.relationship("User", backref=db.backref("actor"))
 
