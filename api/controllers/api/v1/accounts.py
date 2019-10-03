@@ -752,6 +752,10 @@ def account_delete():
     user_id = current_user.id
     email = current_user.email
 
+    # Revoke Oauth2 credentials
+    for oa2_token in OAuth2Token.query.filter(OAuth2Token.user_id == current_user.id).all():
+        oa2_token.revoked = True
+
     # set all activities as deleted
     activities = Activity.query.filter(Activity.actor == current_user.actor[0].id)
     for activity in activities.all():
