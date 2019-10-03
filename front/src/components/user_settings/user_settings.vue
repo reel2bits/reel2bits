@@ -2,6 +2,7 @@
   <div class="row justify-content-md-center">
     <div class="col-md-6">
       <b-tabs content="mt-3">
+        <!-- settings -->
         <b-tab :title="labels.userSettingsTab">
           <b-alert v-if="saveError" variant="danger" show>
             <span v-translate translate-context="Content/UserSettings/Alert/Error saving">Error saving settings.</span>
@@ -68,6 +69,8 @@
             </b-button>
           </b-form>
         </b-tab>
+
+        <!-- security -->
         <b-tab :title="labels.securityTab">
           <b-form-group
             id="ig-password0"
@@ -128,10 +131,34 @@
             {{ changePasswordError }}
           </p>
         </b-tab>
+
+        <!-- account -->
+        <b-tab :title="labels.accountTab">
+          <b-button v-b-modal.modal-delete
+                    variant="danger"
+          >
+            <i class="fa fa-times" aria-hidden="true" /> <translate translate-context="Content/UserSettings/Button">
+              Delete my account
+            </translate>
+          </b-button>
+          <b-modal id="modal-delete" :title="labels.deleteAccountModalTitle" @ok="deleteAccount">
+            <p v-translate class="my-4" translate-context="Content/UserSettings/Modal/Delete/Content">
+              Are you sure you want to delete your account ?
+              <br>
+              All associated datas will be permanently deleted.
+            </p>
+          </b-modal>
+        </b-tab>
       </b-tabs>
     </div>
   </div>
 </template>
+
+<style lang="scss">
+ul.nav-tabs {
+  margin-bottom: .5em;
+}
+</style>
 
 <script>
 import { validationMixin } from 'vuelidate'
@@ -173,7 +200,9 @@ export default {
         bioLabel: this.$pgettext('Content/UserSettings/Input.Label/Bio', 'Bio (optional):'),
         bioPlaceholder: this.$pgettext('Content/UserSettings/Input.Placeholder/Bio', "quack quack I'm a cat").replace(/\s*\n\s*/g, ' \n'),
         userSettingsTab: this.$pgettext('Content/UserSettings/Tabs/Label', 'User settings'),
-        securityTab: this.$pgettext('Content/UserSettings/Tabs/Label', 'Security')
+        securityTab: this.$pgettext('Content/UserSettings/Tabs/Label', 'Security'),
+        accountTab: this.$pgettext('Content/UserSettings/Tabs/Label', 'Account'),
+        deleteAccountModalTitle: this.$pgettext('Content/UserSettings/Modal/Title', 'Account deletion')
       }
     }
   },
@@ -245,6 +274,29 @@ export default {
     logout () {
       this.$store.dispatch('logout')
       this.$router.replace('/')
+    },
+    async deleteAccount () {
+      console.log('deleting account')
+      await this.$store.state.api.backendInteractor.deleteUser({ userId: this.currentUser.id })
+        .then(() => {
+          console.log('account deletion queued')
+          this.$bvToast.toast(this.$pgettext('Content/UserSettings/Toast/Error/Message', 'Action in progress'), {
+            title: this.$pgettext('Content/UserSettings/Toast/Error/Title', 'Account deletion'),
+            autoHideDelay: 10000,
+            appendToast: false,
+            variant: 'success'
+          })
+          this.logout()
+        })
+        .catch((e) => {
+          console.log('an error occured', e)
+          this.$bvToast.toast(this.$pgettext('Content/UserSettings/Toast/Error/Message', 'An error occured while deleting the account'), {
+            title: this.$pgettext('Content/UserSettings/Toast/Error/Title', 'Account deletion'),
+            autoHideDelay: 20000,
+            appendToast: false,
+            variant: 'danger'
+          })
+        })
     }
   }
 }

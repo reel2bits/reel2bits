@@ -1,13 +1,31 @@
 from flask import Blueprint, request, jsonify, abort, current_app
-from models import db, User, user_datastore, Role, create_actor, OAuth2Token, OAuth2Client, Activity, Sound
+from models import (
+    db,
+    User,
+    user_datastore,
+    Role,
+    create_actor,
+    OAuth2Token,
+    OAuth2Client,
+    Activity,
+    Sound,
+    Follower,
+    PasswordResetToken,
+    Actor,
+)
 from flask_security.utils import hash_password
 from flask_security import confirmable as FSConfirmable
 from app_oauth import authorization, require_oauth
 from authlib.flask.oauth2 import current_token
 from datas_helpers import to_json_track, to_json_account, to_json_relationship
-from utils.various import forbidden_username, add_user_log
-from tasks import send_update_profile
+from utils.various import forbidden_username, add_user_log, add_log
+from tasks import send_update_profile, federate_delete_actor
 import re
+from sqlalchemy import or_
+from flask_mail import Message
+from flask import render_template
+import smtplib
+from app import mail
 
 
 bp_api_v1_accounts = Blueprint("bp_api_v1_accounts", __name__)
@@ -92,8 +110,13 @@ def accounts():
     if "agreement" not in request.json:
         return jsonify({"error": str({"agreement": ["you need to accept the terms and conditions"]})}), 400
 
-    # Check if user already exists by username
+    # Check if user already exists by local user username
     user = User.query.filter(User.name == request.json["username"]).first()
+    if user:
+        return jsonify({"error": str({"ap_id": ["has already been taken"]})}), 400
+
+    # Check if user already exists by old local user (Actors)
+    user = Actor.query.filter(Actor.preferred_username == request.json["username"]).first()
     if user:
         return jsonify({"error": str({"ap_id": ["has already been taken"]})}), 400
 
@@ -724,3 +747,79 @@ def following(user_id):
 
     resp = {"page": page, "page_size": count, "totalItems": q.total, "items": followings, "totalPages": q.pages}
     return jsonify(resp)
+
+
+@bp_api_v1_accounts.route("/api/v1/accounts", methods=["DELETE"])
+@require_oauth("write")
+def account_delete():
+    """
+    Delete account
+    ---
+    tags:
+        - Accounts
+    responses:
+      200:
+        description: Returns user username
+    """
+    current_user = current_token.user
+    if not current_user:
+        abort(400)
+
+    # store a few infos
+    username = current_user.name
+    user_id = current_user.id
+    email = current_user.email
+
+    # Revoke Oauth2 credentials
+    for oa2_token in OAuth2Token.query.filter(OAuth2Token.user_id == current_user.id).all():
+        oa2_token.revoked = True
+
+    # Drop password reset tokens
+    for prt in PasswordResetToken.query.filter(PasswordResetToken.user_id == current_user.id).all():
+        db.session.delete(prt)
+
+    # set all activities as deleted
+    activities = Activity.query.filter(Activity.actor == current_user.actor[0].id)
+    for activity in activities.all():
+        activity.meta_deleted = True
+
+    # set actor as deleted and federate a Delete(Actor)
+    current_user.actor[0].meta_deleted = True
+    # Federate Delete(Actor)
+    federate_delete_actor(current_user.actor[0])
+
+    # drop all relations
+    follows = Follower.query.filter(
+        or_(Follower.actor_id == current_user.actor[0].id, Follower.target_id == current_user.actor[0].id)
+    )
+    for follow_rel in follows.all():
+        db.session.delete(follow_rel)
+
+    # delete User
+    db.session.delete(current_user)
+
+    db.session.commit()  # crimes
+
+    # send email that account have been deleted
+    msg = Message(
+        subject="Account successfully deleted", recipients=[email], sender=current_app.config["MAIL_DEFAULT_SENDER"]
+    )
+    msg.body = render_template("email/account_deleted.txt", username=username)
+    msg.html = render_template("email/account_deleted.html", username=username)
+    err = None
+    try:
+        mail.send(msg)
+    except ConnectionRefusedError as e:
+        # TODO: do something about that maybe
+        print(f"Error sending mail: {e}")
+        err = e
+    except smtplib.SMTPRecipientsRefused as e:
+        print(f"Error sending mail: {e}")
+        err = e
+    except smtplib.SMTPException as e:
+        print(f"Error sending mail: {e}")
+        err = e
+    if err:
+        add_log("global", "ERROR", f"Error sending email for account deletion of {username} ({user_id}): {err}")
+
+    return jsonify({"username": username}), 200

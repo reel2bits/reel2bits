@@ -1,0 +1,3 @@
+Hello {{ username }}!
+
+Your account have been successfully deleted.

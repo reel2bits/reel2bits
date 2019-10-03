@@ -67,6 +67,8 @@ def federate_delete_sound(sound: Sound) -> None:
     if not current_app.config["AP_ENABLED"]:
         return
 
+    # TODO FIXME: to who is the delete sent ?
+
     actor = sound.user.actor[0].to_dict()
     # Get activity
     # Create delete
@@ -78,6 +80,21 @@ def federate_delete_sound(sound: Sound) -> None:
     delete = ap.Delete(
         actor=actor, object=ap.Tombstone(id=sound.activity.payload["id"] + "/activity").to_dict(embed=True)
     )
+    # Federate
+    post_to_outbox(delete)
+
+
+def federate_delete_actor(actor: Actor) -> None:
+    if not current_app.config["AP_ENABLED"]:
+        return
+
+    # TODO FIXME: to who is the delete sent ?
+
+    actor = actor.to_dict()
+    # Create delete
+    # No need for '/activity' here ?
+    # FIXME do that better
+    delete = ap.Delete(actor=actor, object=ap.Tombstone(id=actor["id"]).to_dict(embed=True))
     # Federate
     post_to_outbox(delete)
 

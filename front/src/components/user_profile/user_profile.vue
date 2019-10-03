@@ -59,7 +59,7 @@
           />
         </div>
         <div class="col-md-4">
-          <Sidebar />
+          <Sidebar :user="user" />
         </div>
       </div>
     </div>

@@ -134,8 +134,8 @@ const backendInteractorService = credentials => {
   }
 
   // eslint-disable-next-line camelcase
-  const deleteUser = ({ screen_name }) => {
-    return apiService.deleteUser({ screen_name, credentials })
+  const deleteUser = ({ userId }) => {
+    return apiService.deleteUser({ userId, credentials })
   }
 
   const vote = (pollId, choices) => {

@@ -111,7 +111,9 @@ class User(db.Model, UserMixin):
 
     # Relations
 
-    roles = db.relationship("Role", secondary=roles_users, backref=db.backref("users", lazy="dynamic"))
+    roles = db.relationship(
+        "Role", secondary=roles_users, backref=db.backref("users", lazy="dynamic"), cascade_backrefs=False
+    )
     password_reset_tokens = db.relationship("PasswordResetToken", backref="user", lazy="dynamic", cascade="delete")
     user_loggings = db.relationship("UserLogging", backref="user", lazy="dynamic", cascade="delete")
     loggings = db.relationship("Logging", backref="user", lazy="dynamic", cascade="delete")
@@ -299,13 +301,13 @@ class Sound(db.Model):
 
     flake_id = db.Column(UUID(as_uuid=True), unique=False, nullable=True)
 
+    # relations
     user_id = db.Column(db.Integer(), db.ForeignKey("user.id"), nullable=False)
     album_id = db.Column(db.Integer(), db.ForeignKey("album.id"), nullable=True)
-    sound_infos = db.relationship("SoundInfo", backref="sound_info", lazy="dynamic", cascade="delete")
     activity_id = db.Column(db.Integer(), db.ForeignKey("activity.id"), nullable=True)
-    activity = db.relationship("Activity")
 
-    timeline = db.relationship("Timeline", uselist=False, back_populates="sound")
+    sound_infos = db.relationship("SoundInfo", backref="sound_info", lazy="dynamic", cascade="delete")
+    activity = db.relationship("Activity")
 
     __mapper_args__ = {"order_by": uploaded.desc()}
 
@@ -340,6 +342,22 @@ class Sound(db.Model):
             return False
         return self.processing_done() and infos.done_basic
 
+    # Delete files file when COMMIT DELETE
+    def __commit_delete__(self):
+        print("COMMIT DELETE: Deleting files")
+        fname = os.path.join(current_app.config["UPLOADED_SOUNDS_DEST"], self.path_sound(orig=True))
+        if os.path.isfile(fname):
+            os.unlink(fname)
+        else:
+            print(f"!!! COMMIT DELETE cannot delete orig file {fname}")
+
+        if self.transcode_needed:
+            fname = os.path.join(current_app.config["UPLOADED_SOUNDS_DEST"], self.path_sound(orig=False))
+            if os.path.isfile(fname):
+                os.unlink(fname)
+            else:
+                print(f"!!! COMMIT DELETE cannot delete transcoded file {fname}")
+
 
 class Album(db.Model):
     __tablename__ = "album"
@@ -355,35 +373,17 @@ class Album(db.Model):
     private = db.Column(db.Boolean(), default=False, nullable=True)
     slug = db.Column(db.String(255), unique=True, nullable=True)
 
-    user_id = db.Column(db.Integer(), db.ForeignKey("user.id"), nullable=False)
-    sounds = db.relationship("Sound", backref="album", lazy="dynamic")
-
     flake_id = db.Column(UUID(as_uuid=True), unique=False, nullable=True)
 
-    timeline = db.relationship("Timeline", uselist=False, back_populates="album")
+    # relations
+    user_id = db.Column(db.Integer(), db.ForeignKey("user.id"), nullable=False)
+    sounds = db.relationship("Sound", backref="album", lazy="dynamic")
 
     __mapper_args__ = {"order_by": created.desc()}
 
     def elapsed(self):
         el = datetime.datetime.utcnow() - self.created
         return el.total_seconds()
-
-
-class Timeline(db.Model):
-    __tablename__ = "timeline"
-
-    id = db.Column(db.Integer, primary_key=True)
-    timestamp = db.Column(db.DateTime(timezone=False), default=datetime.datetime.utcnow)
-    private = db.Column(db.Boolean, default=False)
-
-    sound_id = db.Column(db.Integer(), db.ForeignKey("user.id"), nullable=False)
-    album_id = db.Column(db.Integer(), db.ForeignKey("album.id"), nullable=False)
-    user_id = db.Column(db.Integer(), db.ForeignKey("sound.id"), nullable=False)
-
-    album = db.relationship("Album", back_populates="timeline")
-    sound = db.relationship("Sound", back_populates="timeline")
-
-    __mapper_args__ = {"order_by": timestamp.desc()}
 
 
 @event.listens_for(Sound, "after_update")
@@ -406,6 +406,11 @@ def generate_sound_flakeid(mapper, connection, target):
     if not target.flake_id:
         flake_id = uuid.UUID(int=gen_flakeid())
         connection.execute(Sound.__table__.update().where(Sound.__table__.c.id == target.id).values(flake_id=flake_id))
+
+
+@event.listens_for(Sound, "after_delete")
+def delete_files(mapper, connection, target):
+    target.__commit_delete__()
 
 
 @event.listens_for(Album, "after_update")
@@ -502,6 +507,8 @@ class Actor(db.Model):
     # By using an Association Object, which isn't possible except by using
     # two relations. This may be better than only one, and some hackish things
     # by querying directly the old db.Table definition
+
+    meta_deleted = db.Column(db.Boolean, default=False)
 
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=True)
     user = db.relationship("User", backref=db.backref("actor"))

@@ -4,7 +4,7 @@ from little_boxes.httpsig import verify_request
 from activitypub.vars import Box
 from tasks import post_to_inbox
 from activitypub.utils import activity_from_doc, build_ordered_collection
-from models import Activity, User
+from models import Activity, User, Actor
 from flask_accept import accept_fallback
 from flask_babelex import gettext
 
@@ -13,14 +13,26 @@ bp_ap = Blueprint("bp_ap", __name__)
 
 @bp_ap.route("/user/<string:name>", methods=["GET"])
 def user_actor_json(name):
-    user = User.query.filter(User.name == name).first()
-    if not user:
-        return Response("", status=404)
-    actors = user.actor
-    if len(actors) <= 0:
-        return Response("", status=500)
+    actor = Actor.query.filter(
+        Actor.preferred_username == name, Actor.domain == current_app.config["AP_DOMAIN"]
+    ).first()
+    if not actor:
+        return Response("", status=404, mimetype="application/activity+json; charset=utf-8")
 
-    response = jsonify(actors[0].to_dict())
+    if not actor.meta_deleted:
+        response = jsonify(actor.to_dict())
+    else:
+        # Get the tombstone
+        # tomb = Activity.query.filter(
+        #     Activity.type == "Delete",
+        #     Activity.box == "outbox",
+        #     Activity.local.is_(True),
+        #     Activity.actor == actor.id,
+        #     Activity.payload[("object", "type")].astext == "Tombstone",
+        #     Activity.payload[("object", "id")].astext == actor.url,
+        # ).one()
+        return Response(response="", status=410, mimetype="application/activity+json; charset=utf-8")
+
     response.mimetype = "application/activity+json; charset=utf-8"
     return response
 

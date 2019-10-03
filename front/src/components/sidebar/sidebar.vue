@@ -1,8 +1,8 @@
 <template>
   <div>
-    <template v-if="currentUser">
-      <UserCard :user="currentUser" />
-      <template v-if="currentUser.reel2bits.quota_limit > 0">
+    <template v-if="displayUser">
+      <UserCard :user="displayUser" />
+      <template v-if="isUs && displayUser.reel2bits.quota_limit > 0">
         <div class="card mb-4">
           <div class="card-body py-3 px-3">
             <translate translate-context="Content/UserProfile/Sidebar/Quota" :translate-params="{quotaSlashRepr: humanQuota}">
@@ -26,23 +26,31 @@ const Sidebar = {
     UserCard,
     Footer
   },
+  props: [
+    'user'
+  ],
   computed: {
     currentUser () { return this.$store.state.users.currentUser },
+    displayUser () { return this.user || this.currentUser },
+    isUs () {
+      return this.displayUser && this.$store.state.users.currentUser.id &&
+        this.displayUser.id === this.$store.state.users.currentUser.id
+    },
     humanQuota () {
       let quotaCount = ''
       let quotaLimit = ''
 
-      if (this.currentUser.reel2bits.quota_count === 0) {
+      if (this.displayUser.reel2bits.quota_count === 0) {
         quotaCount = '0'
       } else {
-        let ffs = fileSizeFormatService.fileSizeFormat(this.currentUser.reel2bits.quota_count)
+        let ffs = fileSizeFormatService.fileSizeFormat(this.displayUser.reel2bits.quota_count)
         quotaCount = ffs.num + ffs.unit
       }
 
-      if (this.currentUser.reel2bits.quota_limit === 0) {
+      if (this.displayUser.reel2bits.quota_limit === 0) {
         quotaLimit = '0'
       } else {
-        let ffs = fileSizeFormatService.fileSizeFormat(this.currentUser.reel2bits.quota_limit)
+        let ffs = fileSizeFormatService.fileSizeFormat(this.displayUser.reel2bits.quota_limit)
         quotaLimit = ffs.num + ffs.unit
       }
 
