@@ -342,6 +342,15 @@ class Sound(db.Model):
             return False
         return self.processing_done() and infos.done_basic
 
+    # Delete transcoding file when COMMIT DELETE
+    def __commit_delete__(self):
+        if self.transcode_needed:
+            fname = os.path.join(current_app.config["UPLOADED_SOUNDS_DEST"], self.path_sound(orig=False))
+            if os.path.isfile(fname):
+                os.unlink(fname)
+            else:
+                print(f"!!! COMMIT DELETE cannot delete file {fname}")
+
 
 class Album(db.Model):
     __tablename__ = "album"
