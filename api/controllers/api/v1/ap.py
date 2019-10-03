@@ -13,23 +13,25 @@ bp_ap = Blueprint("bp_ap", __name__)
 
 @bp_ap.route("/user/<string:name>", methods=["GET"])
 def user_actor_json(name):
-    actor = Actor.query.filter(Actor.preferred_username == name, Actor.domain == current_app.config["AP_DOMAIN"]).one()
+    actor = Actor.query.filter(
+        Actor.preferred_username == name, Actor.domain == current_app.config["AP_DOMAIN"]
+    ).first()
     if not actor:
-        return Response("", status=404)
+        return Response("", status=404, mimetype="application/activity+json; charset=utf-8")
 
     if not actor.meta_deleted:
         response = jsonify(actor.to_dict())
     else:
         # Get the tombstone
-        tomb = Activity.query.filter(
-            Activity.type == "Delete",
-            Activity.box == "outbox",
-            Activity.local.is_(True),
-            Activity.actor == actor.id,
-            Activity.payload[("object", "type")].astext == "Tombstone",
-            Activity.payload[("object", "id")].astext == actor.url,
-        ).one()
-        response = jsonify(tomb.payload)
+        # tomb = Activity.query.filter(
+        #     Activity.type == "Delete",
+        #     Activity.box == "outbox",
+        #     Activity.local.is_(True),
+        #     Activity.actor == actor.id,
+        #     Activity.payload[("object", "type")].astext == "Tombstone",
+        #     Activity.payload[("object", "id")].astext == actor.url,
+        # ).one()
+        return Response(response="", status=410, mimetype="application/activity+json; charset=utf-8")
 
     response.mimetype = "application/activity+json; charset=utf-8"
     return response
