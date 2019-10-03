@@ -1,5 +1,18 @@
 from flask import Blueprint, request, jsonify, abort, current_app
-from models import db, User, user_datastore, Role, create_actor, OAuth2Token, OAuth2Client, Activity, Sound, Follower
+from models import (
+    db,
+    User,
+    user_datastore,
+    Role,
+    create_actor,
+    OAuth2Token,
+    OAuth2Client,
+    Activity,
+    Sound,
+    Follower,
+    PasswordResetToken,
+    Actor,
+)
 from flask_security.utils import hash_password
 from flask_security import confirmable as FSConfirmable
 from app_oauth import authorization, require_oauth
@@ -97,8 +110,13 @@ def accounts():
     if "agreement" not in request.json:
         return jsonify({"error": str({"agreement": ["you need to accept the terms and conditions"]})}), 400
 
-    # Check if user already exists by username
+    # Check if user already exists by local user username
     user = User.query.filter(User.name == request.json["username"]).first()
+    if user:
+        return jsonify({"error": str({"ap_id": ["has already been taken"]})}), 400
+
+    # Check if user already exists by old local user (Actors)
+    user = Actor.query.filter(Actor.preferred_username == request.json["username"]).first()
     if user:
         return jsonify({"error": str({"ap_id": ["has already been taken"]})}), 400
 
@@ -755,6 +773,10 @@ def account_delete():
     # Revoke Oauth2 credentials
     for oa2_token in OAuth2Token.query.filter(OAuth2Token.user_id == current_user.id).all():
         oa2_token.revoked = True
+
+    # Drop password reset tokens
+    for prt in PasswordResetToken.query.filter(PasswordResetToken.user_id == current_user.id).all():
+        db.session.delete(prt)
 
     # set all activities as deleted
     activities = Activity.query.filter(Activity.actor == current_user.actor[0].id)
