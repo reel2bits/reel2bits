@@ -243,6 +243,7 @@ def create_app(config_filename="config.development.Config", app_name=None, regis
         response.status_code = error.status_code
         return response
 
+    # Execute extra function if defined when DELETE COMMIT
     @models_committed.connect_via(app)
     def on_models_committed(sender, changes):
         for obj, change in changes:
