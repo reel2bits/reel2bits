@@ -112,7 +112,7 @@ class User(db.Model, UserMixin):
     # Relations
 
     roles = db.relationship(
-        "Role", secondary=roles_users, backref=db.backref("users", lazy="dynamic"), cascade="delete"
+        "Role", secondary=roles_users, backref=db.backref("users", lazy="dynamic"), cascade_backrefs=False
     )
     password_reset_tokens = db.relationship("PasswordResetToken", backref="user", lazy="dynamic", cascade="delete")
     user_loggings = db.relationship("UserLogging", backref="user", lazy="dynamic", cascade="delete")
