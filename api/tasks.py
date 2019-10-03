@@ -92,9 +92,9 @@ def federate_delete_actor(actor: Actor) -> None:
 
     actor = actor.to_dict()
     # Create delete
-    # Somehow we needs to add /activity here
+    # No need for '/activity' here ?
     # FIXME do that better
-    delete = ap.Delete(actor=actor, object=ap.Tombstone(id=actor["id"] + "/activity").to_dict(embed=True))
+    delete = ap.Delete(actor=actor, object=ap.Tombstone(id=actor["id"]).to_dict(embed=True))
     # Federate
     post_to_outbox(delete)
 
