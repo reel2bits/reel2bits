@@ -1,18 +1,25 @@
-from flask import Blueprint, request, abort, current_app, Response, jsonify, flash, render_template, redirect, url_for
+from flask import Blueprint, request, abort, current_app, Response, jsonify
 from little_boxes import activitypub
 from little_boxes.httpsig import verify_request
 from activitypub.vars import Box
 from tasks import post_to_inbox
 from activitypub.utils import activity_from_doc, build_ordered_collection
 from models import Activity, User, Actor
-from flask_accept import accept_fallback
-from flask_babelex import gettext
 
 bp_ap = Blueprint("bp_ap", __name__)
 
 
 @bp_ap.route("/user/<string:name>", methods=["GET"])
 def user_actor_json(name):
+    """
+    Actor
+    ---
+    tags:
+        - ActivityPub
+    responses:
+        200:
+            description: Returns an actor
+    """
     actor = Actor.query.filter(
         Actor.preferred_username == name, Actor.domain == current_app.config["AP_DOMAIN"]
     ).first()
@@ -39,6 +46,15 @@ def user_actor_json(name):
 
 @bp_ap.route("/user/<string:name>/inbox", methods=["GET", "POST"])
 def user_inbox(name):
+    """
+    User inbox
+    ---
+    tags:
+        - ActivityPub
+    responses:
+        200:
+            description: Returns something
+    """
     be = activitypub.get_backend()
     if not be:
         abort(500)
@@ -74,6 +90,15 @@ def user_inbox(name):
 
 @bp_ap.route("/user/<string:name>/outbox", methods=["GET", "POST"])
 def user_outbox(name):
+    """
+    User outbox
+    ---
+    tags:
+        - ActivityPub
+    responses:
+        200:
+            description: Returns something
+    """
     be = activitypub.get_backend()
     if not be:
         abort(500)
@@ -84,26 +109,17 @@ def user_outbox(name):
     current_app.logger.debug(f"raw_data={data}")
 
 
-@bp_ap.route("/user/<string:name>/followings", methods=["GET"])
-@accept_fallback
-def followings(name):
-    pcfg = {"title": gettext("%(username)s' followings", username=name)}
-
-    user = User.query.filter(User.name == name).first()
-    if not user:
-        flash(gettext("User not found"), "error")
-        return redirect(url_for("bp_main.home"))
-
-    followings_list = user.actor[0].followings
-
-    return render_template(
-        "users/followings.jinja2", pcfg=pcfg, user=user, actor=user.actor[0], followings=followings_list
-    )
-
-
 @bp_ap.route("/user/<string:name>/followings", methods=["GET", "POST"])
-@followings.support("application/json", "application/activity+json")
 def user_followings(name):
+    """
+    User followings
+    ---
+    tags:
+        - ActivityPub
+    responses:
+        200:
+            description: Returns a collection of Actors
+    """
     be = activitypub.get_backend()
     if not be:
         abort(500)
@@ -123,26 +139,17 @@ def user_followings(name):
     return jsonify(**build_ordered_collection(followings_list, actor.url, request.args.get("page"), switch_side=True))
 
 
-@bp_ap.route("/user/<string:name>/followers", methods=["GET"])
-@accept_fallback
-def followers(name):
-    pcfg = {"title": gettext("%(username)s' followers", username=name)}
-
-    user = User.query.filter(User.name == name).first()
-    if not user:
-        flash(gettext("User not found"), "error")
-        return redirect(url_for("bp_main.home"))
-
-    followers_list = user.actor[0].followers
-
-    return render_template(
-        "users/followers.jinja2", pcfg=pcfg, user=user, actor=user.actor[0], followers=followers_list
-    )
-
-
 @bp_ap.route("/user/<string:name>/followers", methods=["GET", "POST"])
-@followers.support("application/json", "application/activity+json")
 def user_followers(name):
+    """
+    User followers
+    ---
+    tags:
+        - ActivityPub
+    responses:
+        200:
+            description: Returns a collection of Actors
+    """
     be = activitypub.get_backend()
     if not be:
         abort(500)
@@ -164,6 +171,15 @@ def user_followers(name):
 
 @bp_ap.route("/inbox", methods=["GET", "POST"])
 def inbox():
+    """
+    Global inbox
+    ---
+    tags:
+        - ActivityPub
+    responses:
+        200:
+            description: Returns something
+    """
     be = activitypub.get_backend()
     if not be:
         abort(500)
@@ -199,6 +215,15 @@ def inbox():
 
 @bp_ap.route("/outbox", methods=["GET", "POST"])
 def outbox():
+    """
+    Global outbox
+    ---
+    tags:
+        - ActivityPub
+    responses:
+        200:
+            description: Returns something
+    """
     be = activitypub.get_backend()
     if not be:
         abort(500)
@@ -211,6 +236,15 @@ def outbox():
 
 @bp_ap.route("/outbox/<string:item_id>", methods=["GET", "POST"])
 def outbox_item(item_id):
+    """
+    Outbox item
+    ---
+    tags:
+        - ActivityPub
+    responses:
+        200:
+            description: Returns something
+    """
     be = activitypub.get_backend()
     if not be:
         abort(500)
@@ -239,6 +273,15 @@ def outbox_item(item_id):
 
 @bp_ap.route("/outbox/<string:item_id>/activity", methods=["GET", "POST"])
 def outbox_item_activity(item_id):
+    """
+    Outbox activity
+    ---
+    tags:
+        - ActivityPub
+    responses:
+        200:
+            description: Returns something
+    """
     be = activitypub.get_backend()
     if not be:
         abort(500)
