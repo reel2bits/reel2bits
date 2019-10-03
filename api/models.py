@@ -344,6 +344,7 @@ class Sound(db.Model):
 
     # Delete files file when COMMIT DELETE
     def __commit_delete__(self):
+        print("COMMIT DELETE: Deleting files")
         fname = os.path.join(current_app.config["UPLOADED_SOUNDS_DEST"], self.path_sound(orig=True))
         if os.path.isfile(fname):
             os.unlink(fname)
@@ -405,6 +406,11 @@ def generate_sound_flakeid(mapper, connection, target):
     if not target.flake_id:
         flake_id = uuid.UUID(int=gen_flakeid())
         connection.execute(Sound.__table__.update().where(Sound.__table__.c.id == target.id).values(flake_id=flake_id))
+
+
+@event.listens_for(Sound, "after_delete")
+def delete_files(mapper, connection, target):
+    target.__commit_delete__()
 
 
 @event.listens_for(Album, "after_update")

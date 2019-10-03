@@ -20,7 +20,6 @@ from werkzeug.utils import import_string
 import requests
 from utils.defaults import Reel2bitsDefaults
 import commands
-from flask_sqlalchemy import models_committed
 
 from models import db, Config, user_datastore, create_actor
 from utils.various import InvalidUsage, is_admin, add_user_log, join_url
@@ -242,13 +241,6 @@ def create_app(config_filename="config.development.Config", app_name=None, regis
         response = jsonify(error.to_dict())
         response.status_code = error.status_code
         return response
-
-    # Execute extra function if defined when DELETE COMMIT
-    @models_committed.connect_via(app)
-    def on_models_committed(sender, changes):
-        for obj, change in changes:
-            if change == "delete" and hasattr(obj, "__commit_delete__"):
-                obj.__commit_delete__()
 
     sounds = UploadSet("sounds", AUDIO)
     configure_uploads(app, sounds)
