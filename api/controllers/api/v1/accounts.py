@@ -6,7 +6,7 @@ from app_oauth import authorization, require_oauth
 from authlib.flask.oauth2 import current_token
 from datas_helpers import to_json_track, to_json_account, to_json_relationship
 from utils.various import forbidden_username, add_user_log, add_log
-from tasks import send_update_profile
+from tasks import send_update_profile, federate_delete_actor
 import re
 from sqlalchemy import or_
 from flask_mail import Message
@@ -759,7 +759,8 @@ def account_delete():
 
     # set actor as deleted and federate a Delete(Actor)
     current_user.actor[0].meta_deleted = True
-    # TODO FIXME: Federate Delete(Actor)
+    # Federate Delete(Actor)
+    federate_delete_actor(current_user.actor[0])
 
     # drop all relations
     follows = Follower.query.filter(
