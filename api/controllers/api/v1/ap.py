@@ -19,6 +19,10 @@ def user_actor_json(name):
     responses:
         200:
             description: Returns an actor
+        404:
+            description: The actor cannot be found
+        410:
+            description: The actor have been deleted
     """
     actor = Actor.query.filter(
         Actor.preferred_username == name, Actor.domain == current_app.config["AP_DOMAIN"]
