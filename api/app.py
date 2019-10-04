@@ -138,7 +138,7 @@ def create_app(config_filename="config.development.Config", app_name=None, regis
         logging.getLogger("flask_cors.extension").level = logging.DEBUG
 
     mail.init_app(app)
-    migrate = Migrate(app, db)  # noqa: F841
+    migrate = Migrate(app, db)  # noqa: F841 lgtm [py/unused-local-variable]
     babel = Babel(app)  # noqa: F841
     app.babel = babel
 
@@ -178,7 +178,7 @@ def create_app(config_filename="config.development.Config", app_name=None, regis
     config_oauth(app)
 
     # Setup Flask-Security
-    security = Security(app, user_datastore)  # noqa: F841
+    security = Security(app, user_datastore)  # noqa: F841 lgtm [py/unused-local-variable]
 
     @FlaskSecuritySignals.password_reset.connect_via(app)
     @FlaskSecuritySignals.password_changed.connect_via(app)
@@ -311,7 +311,7 @@ def create_app(config_filename="config.development.Config", app_name=None, regis
 
         app.register_blueprint(bp_api_pleroma_admin)
 
-        swagger = Swagger(app, template=template)  # noqa: F841
+        swagger = Swagger(app, template=template)  # noqa: F841 lgtm [py/unused-local-variable]
 
     @app.route("/uploads/<string:thing>/<path:stuff>", methods=["GET"])
     def get_uploads_stuff(thing, stuff):
