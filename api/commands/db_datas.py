@@ -1,7 +1,7 @@
 import click
 from models import db, Sound, User, Role, Config
 from utils.flake_id import gen_flakeid
-from sqlalchemy.dialects.postgresql import UUID
+from uuid import UUID
 from utils.defaults import Reel2bitsDefaults
 import os
 from flask.cli import with_appcontext

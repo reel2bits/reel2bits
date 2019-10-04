@@ -1,5 +1,5 @@
 import apiService from '../services/api/api.service.js'
-import { humanizeErrors } from '../services/errors/errors'
+import { humanizeErrors } from '../services/errors/registration_error.js'
 
 export const mutations = {
   uploadPending (state) {
