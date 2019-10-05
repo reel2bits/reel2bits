@@ -277,7 +277,7 @@ class Sound(db.Model):
     updated = db.Column(
         db.DateTime(timezone=False), default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow
     )
-    # TODO genre
+    genre = db.Column(db.String(255), nullable=True)
     # TODO tags
     # TODO picture ?
     licence = db.Column(db.Integer, nullable=False, server_default="0")

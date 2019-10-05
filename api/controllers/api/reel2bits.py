@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request, abort, current_app, render_template
-from models import db, User, PasswordResetToken
+from models import db, User, PasswordResetToken, Sound
 from utils.various import add_user_log, generate_random_token, add_log
 from app_oauth import require_oauth
 from authlib.flask.oauth2 import current_token
@@ -8,6 +8,7 @@ from flask_mail import Message
 import smtplib
 from app import mail
 from utils.defaults import Reel2bitsDefaults
+from datas_helpers import default_genres
 
 bp_api_reel2bits = Blueprint("bp_api_reel2bits", __name__)
 
@@ -24,6 +25,26 @@ def licenses():
             description: Returns a list of various licenses.
     """
     resp = [Reel2bitsDefaults.known_licences[i] for i in Reel2bitsDefaults.known_licences]
+    response = jsonify(resp)
+    response.mimetype = "application/json; charset=utf-8"
+    response.status_code = 200
+    return response
+
+
+@bp_api_reel2bits.route("/api/reel2bits/genres", methods=["GET"])
+def genres():
+    """
+    List of genres.
+    ---
+    tags:
+        - Tracks
+    responses:
+        200:
+            description: Returns a list of genres from database and default.
+    """
+    genres_db = db.session.query(Sound.genre).group_by(Sound.genre).all()
+    resp = list(set(genres_db).union(set(default_genres())))
+
     response = jsonify(resp)
     response.mimetype = "application/json; charset=utf-8"
     response.status_code = 200
