@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, abort
+from flask import Blueprint, request, jsonify, abort, render_template
 from models import db, OAuth2Client, User
 from werkzeug.security import gen_salt
 from app_oauth import authorization
@@ -90,7 +90,8 @@ def oauth_authorize():
     # input: client_id, client_secret, redirect_uri, scope
     # should authorize the user, and then return auth code if urn:ietf:wg:oauth:2.0:oob or redirect
     if request.method == "GET":
-        abort(404)
+        scopes = request.args.get("scope", "").split(" ")
+        return render_template("oauth/authorize.jinja2", scopes=scopes)
     else:
         grant_user = None
 
