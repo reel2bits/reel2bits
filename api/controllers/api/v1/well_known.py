@@ -15,7 +15,7 @@ def host_meta():
         200:
             description: ???
     """
-    method = "https"
+    method = current_app.config["REEL2BITS_PROTOCOL"]
     domain = current_app.config["AP_DOMAIN"]
     resp = f"""<?xml version="1.0" encoding="UTF-8"?>
 <XRD xmlns="http://docs.oasis-open.org/ns/xri/xrd-1.0">
