@@ -4,6 +4,27 @@ from models import db, User, Actor
 bp_wellknown = Blueprint("bp_wellknown", __name__, url_prefix="/.well-known")
 
 
+@bp_wellknown.route("/host-meta", methods=["GET"])
+def host_meta():
+    """
+    ???
+    ---
+    tags:
+        - ActivityPub
+    responses:
+        200:
+            description: ???
+    """
+    method = "https"
+    domain = current_app.config["AP_DOMAIN"]
+    resp = f"""<?xml version="1.0" encoding="UTF-8"?>
+<XRD xmlns="http://docs.oasis-open.org/ns/xri/xrd-1.0">
+  <Link rel="lrdd" type="application/xrd+xml" template="{method}://{domain}/.well-known/webfinger?resource={{uri}}"/>
+</XRD>
+"""
+    return Response(resp, status=200, content_type="application/xrd+xml; charset=utf-8")
+
+
 @bp_wellknown.route("/webfinger", methods=["GET"])
 def webfinger():
     """
