@@ -311,6 +311,7 @@ def outbox_item_activity(item_id):
     return jsonify(**obj["object"])
 
 
+@bp_ap.route("/api/v1/instance/", methods=["GET"])
 @bp_ap.route("/api/v1/instance", methods=["GET"])
 def api_v1_instance():
     """
