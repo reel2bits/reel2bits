@@ -12,7 +12,7 @@
 </p>
 
 <p align="center">
-  <a href="https://sound.otter.sh/user/dashie">Example single user instance</a>
+  <a href="https://demo.reel2bits.org/">Demo instance</a>
   —
   <a href="https://riot.im/app/#/room/#reel2bits:otter.sh">Matrix room: #reel2bits:otter.sh</a>
   -
