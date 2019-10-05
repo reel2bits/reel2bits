@@ -336,7 +336,7 @@ def create_app(config_filename="config.development.Config", app_name=None, regis
 
     @app.errorhandler(404)
     def page_not_found(msg):
-        excluded = ["/api", "/.well-known", "/feeds"]
+        excluded = ["/api", "/.well-known", "/feeds", "/oauth/authorize"]
         if any([request.path.startswith(m) for m in excluded]):
             return jsonify({"error": "page not found"}), 404
 
