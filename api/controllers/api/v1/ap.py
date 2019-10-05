@@ -1,10 +1,10 @@
-from flask import Blueprint, request, abort, current_app, Response, jsonify
+from flask import Blueprint, request, abort, current_app, Response, jsonify, g
 from little_boxes import activitypub
 from little_boxes.httpsig import verify_request
 from activitypub.vars import Box
 from tasks import post_to_inbox
 from activitypub.utils import activity_from_doc, build_ordered_collection
-from models import Activity, User, Actor
+from models import db, Activity, User, Actor, Role, Config, Sound
 
 bp_ap = Blueprint("bp_ap", __name__)
 
@@ -309,3 +309,108 @@ def outbox_item_activity(item_id):
         abort(404)
 
     return jsonify(**obj["object"])
+
+
+@bp_ap.route("/api/v1/instance", methods=["GET"])
+def api_v1_instance():
+    """
+    Information about the server.
+    ---
+    tags:
+        - ActivityPub
+    definitions:
+        URLs:
+            type: object
+            properties:
+                streaming_api:
+                    type: url
+                    nullable: false
+        Stats:
+            type: object
+            properties:
+                user_count:
+                    nullable: false
+                    type: integer
+                status_count:
+                    nullable: false
+                    type: integer
+                domain_count:
+                    nullable: false
+                    type: integer
+        Instance:
+            type: object
+            properties:
+                uri:
+                    type: string
+                    nullable: false
+                title:
+                    type: string
+                    nullable: false
+                description:
+                    type: string
+                    nullable: false
+                email:
+                    type: string
+                    nullable: false
+                version:
+                    type: string
+                    nullable: false
+                thumbnail:
+                    type: url
+                    nullable: true
+                urls:
+                    type: hash
+                    nullable: false
+                    items:
+                        type: object
+                        $ref: '#/definitions/URLs'
+                stats:
+                    type: hash
+                    nullable: false
+                    items:
+                        type: object
+                        $ref: '#/definitions/Stats'
+                languages:
+                    type: array
+                    nullable: false
+                    items:
+                        type: string
+                contact_account:
+                    type: object
+                    $ref: '#/definitions/Account'
+                    nullable: true
+    responses:
+        200:
+            description: Returns Instance
+            schema:
+                $ref: '#/definitions/Instance'
+    """
+    method = current_app.config["REEL2BITS_PROTOCOL"] or "https"
+    domain = current_app.config["AP_DOMAIN"]
+    _config = Config.query.one()
+    if not _config:
+        return Response("", status=500, content_type="application/jrd+json; charset=utf-8")
+    user_count = db.session.query(User.id).filter(User.local.is_(True)).count()
+    # TODO: when Sound.local is implemented (incoming sound), add a Sound.local.is_(True) to the filters
+    status_count = (
+        db.session.query(Sound.id)
+        .filter(Sound.transcode_state == Sound.TRANSCODE_DONE, Sound.private.is_(False))
+        .count()
+    )
+    domain_count = db.session.query(Actor.domain).filter(Actor.domain != domain).group_by(Actor.domain).count()
+    first_admin_email = db.session.query(User.email).filter(User.roles.any(Role.name == "admin")).first()
+
+    return jsonify(
+        {
+            "uri": f"{method}://{domain}",
+            "title": _config.app_name,
+            "description": _config.app_description,
+            "email": first_admin_email[0] if first_admin_email else None,
+            "version": g.cfg["REEL2BITS_VERSION"],
+            "thumbnail": None,
+            "urls": [],  # no 'streaming_api'
+            "stats": {"domain_count": domain_count, "status_count": status_count, "user_count": user_count},
+            "languages": ["en"],
+            "contact_account": None,
+        }
+    )

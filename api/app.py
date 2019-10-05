@@ -54,7 +54,7 @@ except ImportError:
 mail = Mail()
 
 GIT_VERSION = ""
-gitpath = os.path.join(os.getcwd(), ".git")
+gitpath = os.path.join(os.getcwd(), "../.git")
 if os.path.isdir(gitpath):
     GIT_VERSION = subprocess.check_output(["git", "rev-parse", "--short", "HEAD"])
     if GIT_VERSION:
@@ -230,10 +230,14 @@ def create_app(config_filename="config.development.Config", app_name=None, regis
         cfg = {
             "REEL2BITS_VERSION_VER": VERSION,
             "REEL2BITS_VERSION_GIT": GIT_VERSION,
-            "REEL2BITS_VERSION": "{0}-{1}".format(VERSION, GIT_VERSION),
             "app_name": _config.app_name,
             "app_description": _config.app_description,
         }
+        if GIT_VERSION:
+            cfg["REEL2BITS_VERSION"] = "{0}-{1}".format(VERSION, GIT_VERSION)
+        else:
+            cfg["REEL2BITS_VERSION"] = VERSION
+
         g.cfg = cfg
 
     @app.errorhandler(InvalidUsage)
