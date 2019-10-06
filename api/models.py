@@ -22,7 +22,6 @@ from little_boxes import activitypub as ap
 from urllib.parse import urlparse
 from authlib.flask.oauth2.sqla import OAuth2ClientMixin, OAuth2AuthorizationCodeMixin, OAuth2TokenMixin
 import time
-from utils.flake_id import gen_flakeid
 import uuid
 from utils.defaults import Reel2bitsDefaults
 
@@ -404,7 +403,7 @@ def make_sound_slug(mapper, connection, target):
 @event.listens_for(Sound, "after_insert")
 def generate_sound_flakeid(mapper, connection, target):
     if not target.flake_id:
-        flake_id = uuid.UUID(int=gen_flakeid())
+        flake_id = uuid.UUID(int=current_app.flake_id.gen())
         connection.execute(Sound.__table__.update().where(Sound.__table__.c.id == target.id).values(flake_id=flake_id))
 
 
@@ -424,7 +423,7 @@ def make_album_slug(mapper, connection, target):
 @event.listens_for(Album, "after_insert")
 def generate_album_flakeid(mapper, connection, target):
     if not target.flake_id:
-        flake_id = uuid.UUID(int=gen_flakeid())
+        flake_id = uuid.UUID(int=current_app.flake_id.gen())
         connection.execute(Album.__table__.update().where(Album.__table__.c.id == target.id).values(flake_id=flake_id))
 
 

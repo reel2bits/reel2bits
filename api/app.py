@@ -20,6 +20,7 @@ from werkzeug.utils import import_string
 import requests
 from utils.defaults import Reel2bitsDefaults
 import commands
+from utils.flake_id import FlakeId
 
 from models import db, Config, user_datastore, create_actor
 from utils.various import InvalidUsage, is_admin, add_user_log, join_url
@@ -249,6 +250,8 @@ def create_app(config_filename="config.development.Config", app_name=None, regis
     sounds = UploadSet("sounds", AUDIO)
     configure_uploads(app, sounds)
     patch_request_class(app, Reel2bitsDefaults.track_size_limit)
+
+    app.flake_id = FlakeId()
 
     if register_blueprints:
         from controllers.main import bp_main
