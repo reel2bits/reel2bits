@@ -1,5 +1,6 @@
 from utils.flake_id import FlakeId
 import time
+import uuid
 
 TEST_ROUNDS = 1000
 
@@ -41,7 +42,14 @@ def test_always_bigger_than_previous():
     flocons = FlakeId()
 
     last_flake = flocons.get()
+    last_uuid = uuid.UUID(int=last_flake)
+
     for i in range(0, TEST_ROUNDS):
-        flake = flocons.get()
-        assert flake > last_flake
-        last_flake = flake
+        new_flake = flocons.get()
+        assert new_flake > last_flake
+
+        new_uuid = uuid.UUID(int=new_flake)
+        assert new_uuid > last_uuid
+
+        last_flake = new_flake
+        last_uuid = new_uuid
