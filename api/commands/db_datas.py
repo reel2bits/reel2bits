@@ -1,6 +1,6 @@
 import click
-from models import db, Sound, User, Role, Config
-from utils.flake_id import gen_flakeid
+from models import db, Sound, User, Role, Config, Album
+from utils.flake_id import FlakeId
 from uuid import UUID
 from utils.defaults import Reel2bitsDefaults
 import os
@@ -60,9 +60,10 @@ def generate_tracks_uuid():
 
     non breaking.
     """
+    flake_gen = FlakeId()
     for sound in db.session.query(Sound).all():
         if not sound.flake_id:
-            sound.flake_id = UUID(int=gen_flakeid())
+            sound.flake_id = UUID(int=flake_gen.get())
     db.session.commit()
 
 
@@ -127,4 +128,19 @@ def update_user_quotas():
     for user in User.query.filter(User.local.is_(True)).all():
         print(f"computing for {user.name} ({user.id})")
         user.quota_count = user.total_files_size()
+    db.session.commit()
+
+
+@db_datas.command(name="006-generate-albums-uuids")
+@with_appcontext
+def generate_albums_uuid():
+    """
+    Generate albums UUIDs when missing (43_b34114160aa4)
+
+    non breaking.
+    """
+    flake_gen = FlakeId()
+    for album in db.session.query(Album).all():
+        if not album.flake_id:
+            album.flake_id = UUID(int=flake_gen.get())
     db.session.commit()

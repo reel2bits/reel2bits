@@ -438,6 +438,7 @@ const fetchTimeline = ({
 
   params.push(['count', 5])
   params.push(['with_muted', withMuted])
+  params.push(['paginated', true])
 
   const queryString = map(params, (param) => `${param[0]}=${param[1]}`).join('&')
   url += `?${queryString}`

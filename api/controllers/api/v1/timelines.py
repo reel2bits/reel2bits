@@ -35,6 +35,7 @@ def home():
         200:
             description: Returns array of Status
     """
+    # TODO don't forget to handle if paginated=true paginate else mastoapi
     return jsonify([])
 
 
@@ -66,9 +67,10 @@ def public():
             description: Returns array of Status
     """
     # Caveats: only handle public Sounds since we either federate (public) or no
-    local_only = request.args.get("local", False)
+
+    paginated = request.args.get("paginated", False)
     count = int(request.args.get("count", 20))
-    page = int(request.args.get("page", 1))
+    local_only = request.args.get("local", False)
 
     q = db.session.query(Activity, Sound).filter(
         Activity.type == "Create", Activity.payload[("object", "type")].astext == "Audio"
@@ -83,20 +85,46 @@ def public():
     q = q.join(Sound, Sound.activity_id == Activity.id)
     q = q.order_by(Activity.creation_date.desc())
 
-    q = q.paginate(page=page, per_page=count)
+    if paginated:
+        # Render timeline as paginated
+        page = int(request.args.get("page", 1))
 
-    tracks = []
-    for t in q.items:
-        if t.Sound:
-            relationship = False
-            if current_token and current_token.user:
-                relationship = to_json_relationship(current_token.user, t.Sound.user)
-            account = to_json_account(t.Sound.user, relationship)
-            tracks.append(to_json_track(t.Sound, account))
-        else:
-            print(t.Activity)
-    resp = {"page": page, "page_size": count, "totalItems": q.total, "items": tracks, "totalPages": q.pages}
-    return jsonify(resp)
+        q = q.paginate(page=page, per_page=count)
+
+        tracks = []
+        for t in q.items:
+            if t.Sound:
+                relationship = False
+                if current_token and current_token.user:
+                    relationship = to_json_relationship(current_token.user, t.Sound.user)
+                account = to_json_account(t.Sound.user, relationship)
+                tracks.append(to_json_track(t.Sound, account))
+            else:
+                print(t.Activity)
+        resp = {"page": page, "page_size": count, "totalItems": q.total, "items": tracks, "totalPages": q.pages}
+        return jsonify(resp)
+    else:
+        # mastoapi compatible
+        since_id = request.args.get("since_id")
+
+        # since then we want the timeline
+        if since_id:
+            q = q.filter(Sound.flake_id > since_id)
+
+        # then limit count
+        q = q.limit(count)
+
+        tracks = []
+        for t in q.all():
+            if t.Sound:
+                relationship = False
+                if current_token and current_token.user:
+                    relationship = to_json_relationship(current_token.user, t.Sound.user)
+                account = to_json_account(t.Sound.user, relationship)
+                tracks.append(to_json_track(t.Sound, account))
+            else:
+                print(t.Activity)
+        return jsonify(tracks)
 
 
 @bp_api_v1_timelines.route("/api/v1/timelines/drafts", methods=["GET"])
