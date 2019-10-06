@@ -2,13 +2,13 @@
 # Copyright (C) 2019 THE front'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the front package.
 # Automatically generated, 2019.
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: front 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-02 10:04+0200\n"
-"PO-Revision-Date: 2019-10-02 10:04+0200\n"
+"PO-Revision-Date: 2019-10-06 15:08+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: tr\n"
@@ -16,6 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 2.2.4\n"
 
 #: front/src/views/account/Quota.vue:72
 msgctxt "Content/TrackUpload/Alert/Quota"
@@ -374,7 +375,7 @@ msgstr "Şu anki şifre:"
 #: front/src/views/tracks/Upload.vue:221
 msgctxt "Content/TrackUpload/Alert/Quota"
 msgid "Current quota: %{cur} of %{max}. %{rem} remaining."
-msgstr "Kullanım: %{max} den %{cur}". %{rem} kaldı."
+msgstr "Kullanım: %{max} den %{cur}\". %{rem} kaldı."
 
 #: front/src/views/account/Logs.vue:27
 msgctxt "Content/Logs(user)/Table/Heading"
