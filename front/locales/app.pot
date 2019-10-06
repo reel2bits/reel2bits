@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: front 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-10-02 10:04+0200\n"
+"POT-Creation-Date: 2019-10-06 15:03+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -92,6 +92,27 @@ msgctxt "Footer/*/Link/AboutThisInstance"
 msgid "About this instance"
 msgstr ""
 
+#: front/src/components/user_settings/user_settings.vue:204
+msgctxt "Content/UserSettings/Tabs/Label"
+msgid "Account"
+msgstr ""
+
+#: front/src/components/user_settings/user_settings.vue:205
+msgctxt "Content/UserSettings/Modal/Title"
+msgid "Account deletion"
+msgstr ""
+
+#: front/src/components/user_settings/user_settings.vue:284
+#: front/src/components/user_settings/user_settings.vue:294
+msgctxt "Content/UserSettings/Toast/Error/Title"
+msgid "Account deletion"
+msgstr ""
+
+#: front/src/components/user_settings/user_settings.vue:283
+msgctxt "Content/UserSettings/Toast/Error/Message"
+msgid "Action in progress"
+msgstr ""
+
 #: front/src/views/albums/Edit.vue:147 src/views/albums/Edit.vue:168
 msgctxt "Content/AlbumsEdit/Toast/Error/Title"
 msgid "Album"
@@ -132,6 +153,11 @@ msgctxt "Content/Register/Toast/Error/Message"
 msgid "An error occured"
 msgstr ""
 
+#: front/src/components/user_settings/user_settings.vue:293
+msgctxt "Content/UserSettings/Toast/Error/Message"
+msgid "An error occured while deleting the account"
+msgstr ""
+
 #: front/src/views/tracks/Show.vue:481
 msgctxt "Content/TrackShow/Error"
 msgid "an error occured while deleting the track."
@@ -162,6 +188,15 @@ msgctxt "Content/TrackShow/Modal/Delete/Content"
 msgid "Are you sure you want to delete '%{ title }' ?"
 msgstr ""
 
+#: front/src/components/user_settings/user_settings.vue:144
+msgctxt "Content/UserSettings/Modal/Delete/Content"
+msgid ""
+"Are you sure you want to delete your account ?\n"
+"            <br>\n"
+"            All associated datas will be permanently deleted.\n"
+"          </br>"
+msgstr ""
+
 #: front/src/views/About.vue:20
 msgctxt "Content/About/Headline/BackendVersion"
 msgid "Backend version: %{ backendVersion }"
@@ -172,7 +207,7 @@ msgctxt "Content/Register/Input.Label/Bio"
 msgid "Bio (optional):"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:173
+#: front/src/components/user_settings/user_settings.vue:200
 msgctxt "Content/UserSettings/Input.Label/Bio"
 msgid "Bio (optional):"
 msgstr ""
@@ -232,7 +267,7 @@ msgctxt "Content/UserFollowings/Toast/Error/Message"
 msgid "Cannot fetch user"
 msgstr ""
 
-#: front/src/components/user_profile/user_profile.vue:158
+#: front/src/components/user_profile/user_profile.vue:173
 msgctxt "Content/UserProfile/Toast/Error/Message"
 msgid "Cannot fetch user"
 msgstr ""
@@ -321,7 +356,7 @@ msgctxt "Content/PasswordResetToken/Button/Change password"
 msgid "Change password"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:111
+#: front/src/components/user_settings/user_settings.vue:114
 msgctxt "Content/UserSettings/Button/Change password"
 msgid "Change password"
 msgstr ""
@@ -336,7 +371,7 @@ msgctxt "Content/TrackShow/Track metadata"
 msgid "Codec"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:170
+#: front/src/components/user_settings/user_settings.vue:197
 msgctxt "Content/UserSettings/Input.Label/PasswordNewConfirm"
 msgid "Confirm new password:"
 msgstr ""
@@ -366,7 +401,7 @@ msgctxt "Content/AlbumNew/Headline"
 msgid "Create a new album"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:168
+#: front/src/components/user_settings/user_settings.vue:195
 msgctxt "Content/UserSettings/Input.Label/Password"
 msgid "Current password:"
 msgstr ""
@@ -394,6 +429,11 @@ msgstr ""
 #: front/src/views/tracks/Show.vue:66
 msgctxt "Content/TrackShow/Button"
 msgid "Delete"
+msgstr ""
+
+#: front/src/components/user_settings/user_settings.vue:139
+msgctxt "Content/UserSettings/Button"
+msgid "Delete my account"
 msgstr ""
 
 #: front/src/views/albums/Show.vue:167
@@ -426,7 +466,7 @@ msgctxt "Content/Register/Feedback/DisplayName/Required"
 msgid "Display name is required"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:31
+#: front/src/components/user_settings/user_settings.vue:32
 msgctxt "Content/UserSettings/Feedback/DisplayName/Required"
 msgid "Display name is required"
 msgstr ""
@@ -436,7 +476,7 @@ msgctxt "Content/Register/Input.Label/Fullname"
 msgid "Display name:"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:171
+#: front/src/components/user_settings/user_settings.vue:198
 msgctxt "Content/UserSettings/Input.Label/Fullname"
 msgid "Display name:"
 msgstr ""
@@ -546,12 +586,12 @@ msgctxt "Content/Register/Input.Placeholder/Username"
 msgid "Enter username"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:122
+#: front/src/components/user_settings/user_settings.vue:125
 msgctxt "Content/UserSettings/Alert/Password change error"
 msgid "Error changing password"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:236
+#: front/src/components/user_settings/user_settings.vue:265
 msgctxt "Content/UserSettings/Toast/Error/Message"
 msgid "Error changing password"
 msgstr ""
@@ -596,17 +636,17 @@ msgctxt "Content/UserFollowings/Error"
 msgid "Error loading user: %{errorMsg}"
 msgstr ""
 
-#: front/src/components/user_profile/user_profile.vue:155
+#: front/src/components/user_profile/user_profile.vue:170
 msgctxt "Content/UserProfile/Error"
 msgid "Error loading user: %{errorMsg}"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:206
+#: front/src/components/user_settings/user_settings.vue:235
 msgctxt "Content/UserSettings/Toast/Error/Message"
 msgid "Error saving settings"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:6
+#: front/src/components/user_settings/user_settings.vue:7
 msgctxt "Content/UserSettings/Alert/Error saving"
 msgid "Error saving settings."
 msgstr ""
@@ -733,7 +773,7 @@ msgctxt "Content/Logs(user)/Table/Heading"
 msgid "Item ID"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:167
+#: front/src/components/user_settings/user_settings.vue:194
 msgctxt "Content/UserSettings/Input.Label/Lang"
 msgid "Language:"
 msgstr ""
@@ -863,7 +903,7 @@ msgctxt "Header/*/DropDown/Create/NewAlbum text"
 msgid "New Album"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:169
+#: front/src/components/user_settings/user_settings.vue:196
 msgctxt "Content/UserSettings/Input.Label/PasswordNew"
 msgid "New password:"
 msgstr ""
@@ -908,18 +948,18 @@ msgctxt "Content/TrackShow/Track infos dls"
 msgid "original"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:225
-#: front/src/components/user_settings/user_settings.vue:237
+#: front/src/components/user_settings/user_settings.vue:254
+#: front/src/components/user_settings/user_settings.vue:266
 msgctxt "Content/UserSettings/Toast/Error/Title"
 msgid "Password"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:117
+#: front/src/components/user_settings/user_settings.vue:120
 msgctxt "Content/UserSettings/Alert/Password changed"
 msgid "Password changed"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:224
+#: front/src/components/user_settings/user_settings.vue:253
 msgctxt "Content/UserSettings/Toast/Error/Message"
 msgid "Password changed !"
 msgstr ""
@@ -981,7 +1021,7 @@ msgctxt "Content/Register/Input.Placeholder/Bio"
 msgid "quack quack I'm a cat"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:174
+#: front/src/components/user_settings/user_settings.vue:201
 msgctxt "Content/UserSettings/Input.Placeholder/Bio"
 msgid "quack quack I'm a cat"
 msgstr ""
@@ -1051,12 +1091,12 @@ msgctxt "Content/TrackShow/Track metadata"
 msgid "Sample rate"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:64
+#: front/src/components/user_settings/user_settings.vue:65
 msgctxt "Content/UserSettings/Button/Save"
 msgid "Save"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:196
+#: front/src/components/user_settings/user_settings.vue:225
 msgctxt "Content/UserSettings/Toast/Error/Message"
 msgid "Saved !"
 msgstr ""
@@ -1071,7 +1111,7 @@ msgctxt "Header/*/Input/Search placeholder"
 msgid "Search"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:176
+#: front/src/components/user_settings/user_settings.vue:203
 msgctxt "Content/UserSettings/Tabs/Label"
 msgid "Security"
 msgstr ""
@@ -1081,8 +1121,8 @@ msgctxt "Content/PasswordReset/Button/Send reset email"
 msgid "Send reset email"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:197
-#: front/src/components/user_settings/user_settings.vue:207
+#: front/src/components/user_settings/user_settings.vue:226
+#: front/src/components/user_settings/user_settings.vue:236
 msgctxt "Content/UserSettings/Toast/Error/Title"
 msgid "Settings"
 msgstr ""
@@ -1092,7 +1132,7 @@ msgctxt "Header/*/DropDown/User/Settings"
 msgid "Settings"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:13
+#: front/src/components/user_settings/user_settings.vue:14
 msgctxt "Content/UserSettings/Alert/Success saving"
 msgid "Settings saved."
 msgstr ""
@@ -1253,6 +1293,11 @@ msgctxt "Content/UserCardList/Button/Unfollow"
 msgid "Unfollow"
 msgstr ""
 
+#: front/src/components/user_profile/user_profile.vue:33
+msgctxt "Content/UserProfile/Tab/Text"
+msgid "Unprocessed"
+msgstr ""
+
 #: front/src/views/tracks/Upload.vue:123
 msgctxt "Content/TrackUpload/Button/Upload"
 msgid "Upload"
@@ -1288,12 +1333,12 @@ msgctxt "Content/UserFollowings/Headline"
 msgid "User followings"
 msgstr ""
 
-#: front/src/components/user_profile/user_profile.vue:159
+#: front/src/components/user_profile/user_profile.vue:174
 msgctxt "Content/UserProfile/Toast/Error/Title"
 msgid "User Profile"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:175
+#: front/src/components/user_settings/user_settings.vue:202
 msgctxt "Content/UserSettings/Tabs/Label"
 msgid "User settings"
 msgstr ""
@@ -1343,7 +1388,7 @@ msgctxt "Content/Register/Input.Placeholder/Fullname"
 msgid "your display name"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:172
+#: front/src/components/user_settings/user_settings.vue:199
 msgctxt "Content/UserSettings/Input.Placeholder/Fullname"
 msgid "your display name"
 msgstr ""
