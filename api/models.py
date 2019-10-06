@@ -403,7 +403,7 @@ def make_sound_slug(mapper, connection, target):
 @event.listens_for(Sound, "after_insert")
 def generate_sound_flakeid(mapper, connection, target):
     if not target.flake_id:
-        flake_id = uuid.UUID(int=current_app.flake_id.gen())
+        flake_id = uuid.UUID(int=current_app.flake_id.get())
         connection.execute(Sound.__table__.update().where(Sound.__table__.c.id == target.id).values(flake_id=flake_id))
 
 
@@ -423,7 +423,7 @@ def make_album_slug(mapper, connection, target):
 @event.listens_for(Album, "after_insert")
 def generate_album_flakeid(mapper, connection, target):
     if not target.flake_id:
-        flake_id = uuid.UUID(int=current_app.flake_id.gen())
+        flake_id = uuid.UUID(int=current_app.flake_id.get())
         connection.execute(Album.__table__.update().where(Album.__table__.c.id == target.id).values(flake_id=flake_id))
 
 
