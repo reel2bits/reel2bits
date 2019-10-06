@@ -16,6 +16,10 @@ if not hasattr(time, "time_ns"):
     time.time_ns = lambda: int(time.time() * 1e9)
 
 
+# The FlakeId.get() should return a 128bit integer
+# Which should be able to be fed to uuid.UUID(int=FlakeId.get())
+
+
 class FlakeId(object):
     def __init__(self):
         self.state_node = self.worker_id()
