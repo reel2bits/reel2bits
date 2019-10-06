@@ -10,8 +10,8 @@ export default {
         "label": "Français"
     },
     {
-      "code": "tr_TR",
-      "label": "Türkçe"
+        "code": "tr_TR",
+        "label": "Türkçe"
     }
   ]
 }
