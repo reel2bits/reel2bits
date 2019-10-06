@@ -3,7 +3,6 @@ import threading
 import os
 import random
 import binascii
-import math
 import warnings
 
 """
@@ -37,12 +36,8 @@ class FlakeId(object):
 
     def time(self):
         """some length cursed timestamp"""
-        time_ns = time.time_ns()
-        seconds = time_ns / 1000000000  # 1e+9
-        mega_seconds = seconds * 100000  # 1e+5
-        micro_seconds = time_ns / 1000
-
-        return int(1000000000 * mega_seconds + seconds * 1000 + math.trunc(micro_seconds / 1000))
+        # docs don't seem to guarantee this to be 64bits so here's a bitmask
+        return time.time_ns() & 0xFFFF_FFFF_FFFF_FFFF
 
     def gen_flakeid(self):
         fid_time = format(self.state_time, "064b")  # 64bit
@@ -54,7 +49,7 @@ class FlakeId(object):
     def get(self):
         """Return a Flake ID"""
         # Increment sequence on call
-        self.state_sq += 1
+        self.state_sq = (self.state_sq + 1) & 0xFFFF
         # Get time
         self.state_time = self.time()
         # Get a Flake ID
