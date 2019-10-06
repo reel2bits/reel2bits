@@ -44,8 +44,8 @@ class FlakeId(object):
         fid_time = format(self.state_time, "064b")  # 64bit
         fid_node = format(self.state_node, "048b")  # 48bit
         fid_seq = format(self.state_sq, "016b")  # 16bit
-        flake = [fid_time, fid_node, fid_seq]
-        return sum(int(x, 2) for x in flake)
+        # return a big 128bit binary string
+        return f"{fid_time}{fid_node}{fid_seq}"
 
     def get(self):
         """Return a Flake ID"""
@@ -54,7 +54,8 @@ class FlakeId(object):
         # Get time
         self.state_time = self.time()
         # Get a Flake ID
-        return self.gen_flakeid()
+        flake_id = self.gen_flakeid()
+        return int(flake_id, 2)
 
 
 def gen_flakeid():
