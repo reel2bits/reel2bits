@@ -86,12 +86,13 @@
           >
             <vue-tags-input
               v-model="curTag"
-              :tags="$v.track.tags.$model"
+              :tags="tags"
               :autocomplete-items="autocompleteTags"
               :add-only-from-autocomplete="false"
               :allow-edit-tags="true"
               :max-tags="10"
               :validation="tagsValidations"
+              :maxlength="25"
               @tags-changed="updateTags"
             />
           </b-form-group>
@@ -236,6 +237,7 @@ export default {
       maxSuggestions: 4
     },
     curTag: '',
+    tags: [],
     autocompleteTags: [],
     debounceTags: null,
     tagsValidations: [
@@ -364,6 +366,7 @@ export default {
       if (!this.$v.$invalid) {
         try {
           console.debug('track upload: uploading')
+          this.track.tags = this.tags.map(a => a.text) // quick fix for vue-tags-input not handling track.tags
           await this.uploadTrack(this.track)
           this.$router.push({ name: 'tracks-show', params: { username: this.$store.state.users.currentUser.screen_name, trackId: this.$store.state.tracks.uploadSlug } })
         } catch (error) {

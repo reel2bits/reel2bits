@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from app_oauth import require_oauth
 from authlib.flask.oauth2 import current_token
 from forms import SoundUploadForm
-from models import db, Sound, User, Album, UserLogging
+from models import db, Sound, User, Album, UserLogging, SoundTag
 import json
 from utils.various import add_user_log, get_hashed_filename
 from flask_uploads import UploadSet, AUDIO
@@ -86,6 +86,22 @@ def upload():
         rec.file_size = file_size
         rec.transcode_file_size = 0  # will be filled, if needed in transcoding workflow
         rec.genre = form.genre.data
+
+        # Handle tags
+        tags = form.tags.data.split(",")
+        print(tags)
+        # Clean
+        tags = [t.strip() for t in tags if t]
+        print(tags)
+        # For each tag get it or create it
+        for tag in tags:
+            dbt = db.session.query(SoundTag.name).filter(SoundTag.name == tag).first()
+            if not dbt:
+                dbt = SoundTag(name=tag)
+                db.session.add(dbt)
+            rec.tags.append(dbt)
+
+        print(rec.tags)
 
         if "flac" in file_uploaded.mimetype or "ogg" in file_uploaded.mimetype or "wav" in file_uploaded.mimetype:
             rec.transcode_state = Sound.TRANSCODE_WAITING

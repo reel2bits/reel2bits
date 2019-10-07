@@ -153,6 +153,7 @@ export const parseStatus = (data) => {
   output.reblogged = data.reblogged
   output.comments = 0 // FIXME TODO
   output.genre = data.reel2bits.genre
+  output.tags = data.reel2bits.tags
 
   output.type = (data.reel2bits.type || 'status')
 

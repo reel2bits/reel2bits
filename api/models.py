@@ -6,10 +6,8 @@ from flask_security import SQLAlchemyUserDatastore, UserMixin, RoleMixin
 from flask_security.utils import verify_password
 from flask_sqlalchemy import SQLAlchemy
 from slugify import slugify
-from sqlalchemy import UniqueConstraint
-from sqlalchemy import event
-from sqlalchemy.ext.hybrid import Comparator
-from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy import event, UniqueConstraint, PrimaryKeyConstraint
+from sqlalchemy.ext.hybrid import Comparator, hybrid_property
 from sqlalchemy.sql import func
 from sqlalchemy_searchable import make_searchable
 from sqlalchemy_utils.types.choice import ChoiceType
@@ -264,6 +262,21 @@ class SoundInfo(db.Model):
     sound_id = db.Column(db.Integer(), db.ForeignKey("sound.id"), nullable=False)
 
 
+# Table for association between Sound and SoundTag
+sound_tags = db.Table(
+    "sound_tags",
+    db.Column("tag_id", db.Integer, db.ForeignKey("sound_tag.id"), primary_key=True),
+    db.Column("sound_id", db.Integer, db.ForeignKey("sound.id"), primary_key=True),
+    PrimaryKeyConstraint("tag_id", "sound_id"),
+)
+
+
+class SoundTag(db.Model):
+    __tablename__ = "sound_tag"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False, unique=True)
+
+
 class Sound(db.Model):
     __tablename__ = "sound"
     TRANSCODE_WAITING = 0
@@ -278,7 +291,7 @@ class Sound(db.Model):
         db.DateTime(timezone=False), default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow
     )
     genre = db.Column(db.String(255), nullable=True)
-    # TODO tags
+    tags = db.relationship("SoundTag", secondary=sound_tags, lazy="subquery", backref=db.backref("sounds", lazy=True))
     # TODO picture ?
     licence = db.Column(db.Integer, nullable=False, server_default="0")
     description = db.Column(db.UnicodeText(), nullable=True)
