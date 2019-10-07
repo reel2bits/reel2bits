@@ -85,6 +85,7 @@ def upload():
         rec.private = form.private.data
         rec.file_size = file_size
         rec.transcode_file_size = 0  # will be filled, if needed in transcoding workflow
+        rec.genre = form.genre.data
 
         if "flac" in file_uploaded.mimetype or "ogg" in file_uploaded.mimetype or "wav" in file_uploaded.mimetype:
             rec.transcode_state = Sound.TRANSCODE_WAITING
@@ -214,6 +215,7 @@ def edit(username, soundslug):
     licence = request.json.get("licence")
     private = request.json.get("private")
     title = request.json.get("title")
+    genre = request.json.get("genre")
 
     if sound.private and not private:
         return jsonify({"error": "Cannot change to private: track already federated"})
@@ -225,6 +227,7 @@ def edit(username, soundslug):
 
     sound.description = description
     sound.licence = licence
+    sound.genre = genre
 
     # Fetch album, and associate if owner
     if album and (album != "__None"):

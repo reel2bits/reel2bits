@@ -115,6 +115,7 @@ def to_json_track(track, account):
             "uploaded_elapsed": track.elapsed(),
             "album_id": (track.album.id if track.album else None),
             "album_order": (track.album_order if track.album else None),
+            "genre": track.genre,
             "processing": {
                 "basic": (si.done_basic if si else None),
                 "transcode_state": track.transcode_state,

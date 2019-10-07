@@ -67,6 +67,7 @@ class SoundUploadForm(Form):
     )
     licence = SelectField(choices=get_licences(), coerce=int, label=lazy_gettext("Licence"))
     private = BooleanField(lazy_gettext("Private"), default=False)
+    genre = StringField("Genre", [Length(max=255)])
 
     def validate_private(form, field):
         if form.album.data:

@@ -54,7 +54,8 @@ def genres():
 
     if query:
         genres_db = genres_db.filter(Sound.genre.ilike("%" + query + "%")).all()
-        builtin_filtered = set(filter(lambda k: query in k, default_genres()))
+        genres_db = [a.genre for a in genres_db]
+        builtin_filtered = set(filter(lambda k: query.lower() in k.lower(), default_genres()))
         resp = list(set(genres_db).union(builtin_filtered))
     else:
         resp = list(set(genres_db.all()).union(set(default_genres())))

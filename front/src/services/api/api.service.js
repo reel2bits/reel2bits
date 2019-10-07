@@ -147,6 +147,7 @@ const trackUpload = (trackInfo, store) => {
   form.append('licence', trackInfo.licence)
   form.append('private', trackInfo.private)
   form.append('file', trackInfo.file)
+  form.append('genre', trackInfo.genre)
 
   return fetch(TRACKS_UPLOAD_URL, {
     body: form,
