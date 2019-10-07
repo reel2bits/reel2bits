@@ -58,13 +58,26 @@
               />
             </b-form-group>
 
-            <vue-bootstrap-typeahead
-              v-model.trim="$v.track.genre.$model"
-              :data="genres"
-              class="mb-5"
-              placeholder="Type a genre..."
-              :prepend="labels.genreLabel"
-            />
+            <b-form-group
+              id="ig-genre"
+              :class="{ 'form-group--error': $v.track.genre.$error }"
+              :label="labels.genreLabel"
+              label-for="genre"
+            >
+              <vue-simple-suggest
+                v-model="$v.track.genre.$model"
+                :list="getGenres"
+                :filter-by-query="true"
+                :styles="autoCompleteStyle"
+                :destyled="true"
+                :min-length="genresAutoComplete.minLength"
+                :max-suggestions="genresAutoComplete.maxSuggestions"
+              />
+
+              <b-form-invalid-feedback id="genre-live-feedback">
+                <span v-if="!$v.track.genre.maxLength" v-translate translate-context="Content/TrackUpload/Feedback/Genre/LengthLimit">Length is limited to 250 characters</span>
+              </b-form-invalid-feedback>
+            </b-form-group>
           </div>
 
           <div class="col-md-5">
@@ -155,17 +168,26 @@
   </div>
 </template>
 
+<style lang="scss">
+.z-1000 {
+  z-index: 1000;
+}
+.hover {
+  background-color: #007bff;
+  color: #fff;
+}
+</style>
+
 <script>
 import { validationMixin } from 'vuelidate'
 import { required, maxLength } from 'vuelidate/lib/validators'
 import { mapState, mapActions } from 'vuex'
 import fileSizeFormatService from '../../services/file_size_format/file_size_format.js'
-import VueBootstrapTypeahead from 'vue-bootstrap-typeahead'
-import _ from 'underscore'
+import VueSimpleSuggest from 'vue-simple-suggest'
 
 export default {
   components: {
-    VueBootstrapTypeahead
+    VueSimpleSuggest
   },
   mixins: [validationMixin],
   data: () => ({
@@ -183,7 +205,17 @@ export default {
     licenceChoices: [],
     albumChoices: [],
     currentUserQuotaLevel: 'info',
-    genres: []
+    autoCompleteStyle: {
+      vueSimpleSuggest: 'position-relative',
+      inputWrapper: '',
+      defaultInput: 'form-control',
+      suggestions: 'position-absolute list-group z-1000',
+      suggestItem: 'list-group-item'
+    },
+    genresAutoComplete: {
+      minLength: 3,
+      maxSuggestions: 4
+    }
   }),
   validations: {
     track: {
@@ -253,9 +285,6 @@ export default {
       }
       return null
     }
-  },
-  watch: {
-    'track.genre': _.debounce(function (q) { this.getGenres(q) }, 500)
   },
   created () {
     // Fetch licenses
@@ -358,11 +387,8 @@ export default {
       this.trackUploadError = ''
       this.$v.track.file.$touch()
     },
-    async getGenres (query) {
-      await this.$store.state.api.backendInteractor.fetchGenres({ query: query })
-        .then((res) => {
-          this.genres = res
-        })
+    getGenres (query) {
+      return this.$store.state.api.backendInteractor.fetchGenres({ query: query })
         .catch((e) => {
           this.$bvToast.toast(this.$pgettext('Content/TracksUpload/Toast/Error/Message', 'Cannot fetch genres'), {
             title: this.$pgettext('Content/TracksUpload/Toast/Error/Title', 'Genres'),
