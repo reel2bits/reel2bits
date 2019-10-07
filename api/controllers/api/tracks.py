@@ -89,19 +89,15 @@ def upload():
 
         # Handle tags
         tags = form.tags.data.split(",")
-        print(tags)
         # Clean
         tags = [t.strip() for t in tags if t]
-        print(tags)
         # For each tag get it or create it
         for tag in tags:
-            dbt = db.session.query(SoundTag.name).filter(SoundTag.name == tag).first()
+            dbt = SoundTag.query.filter(SoundTag.name == tag).first()
             if not dbt:
                 dbt = SoundTag(name=tag)
                 db.session.add(dbt)
             rec.tags.append(dbt)
-
-        print(rec.tags)
 
         if "flac" in file_uploaded.mimetype or "ogg" in file_uploaded.mimetype or "wav" in file_uploaded.mimetype:
             rec.transcode_state = Sound.TRANSCODE_WAITING
@@ -232,6 +228,7 @@ def edit(username, soundslug):
     private = request.json.get("private")
     title = request.json.get("title")
     genre = request.json.get("genre")
+    tags = request.json.get("tags")
 
     if sound.private and not private:
         return jsonify({"error": "Cannot change to private: track already federated"})
@@ -244,6 +241,24 @@ def edit(username, soundslug):
     sound.description = description
     sound.licence = licence
     sound.genre = genre
+
+    # First remove tags which have been removed
+    for tag in sound.tags:
+        if tag.name not in tags:
+            sound.tags.remove(tag)
+
+    # Then add the new ones if new
+    for tag in tags:
+        if tag not in [a.name for a in sound.tags]:
+            dbt = SoundTag.query.filter(SoundTag.name == tag).first()
+            if not dbt:
+                dbt = SoundTag(name=tag)
+                db.session.add(dbt)
+            sound.tags.append(dbt)
+
+    # Purge orphaned tags
+    for otag in SoundTag.query.filter(~SoundTag.sounds.any()).all():
+        db.session.delete(otag)
 
     # Fetch album, and associate if owner
     if album and (album != "__None"):

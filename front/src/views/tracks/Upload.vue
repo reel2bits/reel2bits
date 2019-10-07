@@ -237,7 +237,6 @@ export default {
       maxSuggestions: 4
     },
     curTag: '',
-    tags: [],
     autocompleteTags: [],
     debounceTags: null,
     tagsValidations: [
@@ -366,7 +365,6 @@ export default {
       if (!this.$v.$invalid) {
         try {
           console.debug('track upload: uploading')
-          this.track.tags = this.tags.map(a => a.text) // quick fix for vue-tags-input not handling track.tags
           await this.uploadTrack(this.track)
           this.$router.push({ name: 'tracks-show', params: { username: this.$store.state.users.currentUser.screen_name, trackId: this.$store.state.tracks.uploadSlug } })
         } catch (error) {
@@ -435,7 +433,7 @@ export default {
     },
     updateTags (newTags) {
       this.autocompleteTags = []
-      this.tags = newTags
+      this.track.tags = newTags
     },
     getTags () {
       if (this.curTag.length < 2) {

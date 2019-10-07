@@ -148,7 +148,7 @@ const trackUpload = (trackInfo, store) => {
   form.append('licence', trackInfo.licence)
   form.append('private', trackInfo.private)
   form.append('genre', trackInfo.genre)
-  form.append('tags', trackInfo.tags)
+  form.append('tags', trackInfo.tags.map(a => a.text))
   // let the file last for dev tools inspection
   form.append('file', trackInfo.file)
 
@@ -198,10 +198,21 @@ const trackDelete = ({ userId, trackId, credentials }) => {
 }
 
 const trackEdit = ({ userId, trackId, track, credentials }) => {
+  // Make the track tags list a better format
+  const payload = {
+    title: track.title,
+    description: track.description,
+    album: track.album,
+    licence: track.licence,
+    private: track.private,
+    genre: track.genre,
+    tags: track.tags.map(a => a.text)
+  }
+
   return promisedRequest({
     url: TRACKS_EDIT_URL(userId, trackId),
     method: 'PATCH',
-    payload: track,
+    payload: payload,
     credentials: credentials
   }).then((data) => parseStatus(data))
 }
