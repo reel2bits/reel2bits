@@ -203,6 +203,8 @@ const backendInteractorService = credentials => {
 
   const fetchLicenses = () => apiService.fetchLicenses()
 
+  const fetchGenres = ({ query = false }) => apiService.fetchGenres({ query })
+
   const backendInteractorServiceInstance = {
     fetchTimeline,
     fetchUserAlbums,
@@ -281,7 +283,8 @@ const backendInteractorService = credentials => {
     fetchLicenses,
     updateUserSettings,
     resetPassword,
-    resetPasswordToken
+    resetPasswordToken,
+    fetchGenres
   }
 
   return backendInteractorServiceInstance

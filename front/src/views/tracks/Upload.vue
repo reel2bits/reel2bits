@@ -58,24 +58,13 @@
               />
             </b-form-group>
 
-            <b-form-group
-              id="ig-genre"
-              :class="{ 'form-group--error': $v.track.genre.$error }"
-              :label="labels.genreLabel"
-              label-for="genre"
-              :description="labels.genreDescription"
-            >
-              <b-form-input
-                id="genre"
-                v-model.trim="$v.track.genre.$model"
-                :disabled="isPending"
-                :state="$v.track.genre.$dirty ? !$v.track.genre.$error : null"
-                aria-describedby="genre-live-feedback"
-              />
-              <b-form-invalid-feedback id="genre-live-feedback">
-                <span v-if="!$v.track.genre.maxLength" v-translate translate-context="Content/TrackUpload/Feedback/Genre/LengthLimit">Length is limited to 250 characters</span>
-              </b-form-invalid-feedback>
-            </b-form-group>
+            <vue-bootstrap-typeahead
+              v-model.trim="$v.track.genre.$model"
+              :data="genres"
+              class="mb-5"
+              placeholder="Type a genre..."
+              :prepend="labels.genreLabel"
+            />
           </div>
 
           <div class="col-md-5">
@@ -171,8 +160,13 @@ import { validationMixin } from 'vuelidate'
 import { required, maxLength } from 'vuelidate/lib/validators'
 import { mapState, mapActions } from 'vuex'
 import fileSizeFormatService from '../../services/file_size_format/file_size_format.js'
+import VueBootstrapTypeahead from 'vue-bootstrap-typeahead'
+import _ from 'underscore'
 
 export default {
+  components: {
+    VueBootstrapTypeahead
+  },
   mixins: [validationMixin],
   data: () => ({
     trackUploadError: '',
@@ -188,7 +182,8 @@ export default {
     },
     licenceChoices: [],
     albumChoices: [],
-    currentUserQuotaLevel: 'info'
+    currentUserQuotaLevel: 'info',
+    genres: []
   }),
   validations: {
     track: {
@@ -258,6 +253,9 @@ export default {
       }
       return null
     }
+  },
+  watch: {
+    'track.genre': _.debounce(function (q) { this.getGenres(q) }, 500)
   },
   created () {
     // Fetch licenses
@@ -359,6 +357,20 @@ export default {
       this.track.file = file
       this.trackUploadError = ''
       this.$v.track.file.$touch()
+    },
+    async getGenres (query) {
+      await this.$store.state.api.backendInteractor.fetchGenres({ query: query })
+        .then((res) => {
+          this.genres = res
+        })
+        .catch((e) => {
+          this.$bvToast.toast(this.$pgettext('Content/TracksUpload/Toast/Error/Message', 'Cannot fetch genres'), {
+            title: this.$pgettext('Content/TracksUpload/Toast/Error/Title', 'Genres'),
+            autoHideDelay: 10000,
+            appendToast: false,
+            variant: 'danger'
+          })
+        })
     }
   }
 }

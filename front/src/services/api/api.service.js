@@ -35,6 +35,7 @@ const MASTODON_FOLLOWING_URL = id => `/api/v1/accounts/${id}/following`
 const MASTODON_FOLLOWERS_URL = id => `/api/v1/accounts/${id}/followers`
 
 const REEL2BITS_LICENSES = '/api/reel2bits/licenses'
+const REEL2BITS_GENRES = '/api/reel2bits/genres'
 const REEL2BITS_ALBUMS = (username) => `/api/albums/${username}`
 const CHANGE_PASSWORD_URL = '/api/reel2bits/change_password'
 const RESET_PASSWORD_URL = '/api/reel2bits/reset_password'
@@ -269,6 +270,28 @@ const fetchLicenses = () => {
         return data
       }
       throw new Error('Error fetching licenses', data)
+    })
+    .then((data) => data.json())
+}
+
+const fetchGenres = ({ query = false }) => {
+  let url = REEL2BITS_GENRES
+
+  const params = []
+
+  if (query) {
+    params.push(['query', query])
+  }
+
+  const queryString = map(params, (param) => `${param[0]}=${param[1]}`).join('&')
+  url += `?${queryString}`
+
+  return fetch(url)
+    .then((data) => {
+      if (data.ok) {
+        return data
+      }
+      throw new Error('Error fetching genres', data)
     })
     .then((data) => data.json())
 }
@@ -591,7 +614,8 @@ const apiService = {
   unfollowUser,
   fetchFriends,
   fetchFollowers,
-  deleteUser
+  deleteUser,
+  fetchGenres
 }
 
 export default apiService

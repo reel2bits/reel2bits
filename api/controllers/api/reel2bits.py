@@ -38,12 +38,26 @@ def genres():
     ---
     tags:
         - Tracks
+    parameters:
+        - name: query
+          in: query
+          type: string
+          required: false
+          description: filter the returned list
     responses:
         200:
             description: Returns a list of genres from database and default.
     """
-    genres_db = db.session.query(Sound.genre).group_by(Sound.genre).all()
-    resp = list(set(genres_db).union(set(default_genres())))
+    genres_db = db.session.query(Sound.genre).group_by(Sound.genre)
+
+    query = request.args.get("query", False)
+
+    if query:
+        genres_db = genres_db.filter(Sound.genre.ilike("%" + query + "%")).all()
+        builtin_filtered = set(filter(lambda k: query in k, default_genres()))
+        resp = list(set(genres_db).union(builtin_filtered))
+    else:
+        resp = list(set(genres_db.all()).union(set(default_genres())))
 
     response = jsonify(resp)
     response.mimetype = "application/json; charset=utf-8"
