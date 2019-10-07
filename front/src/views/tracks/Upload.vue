@@ -77,6 +77,24 @@
               <span v-if="!$v.track.genre.maxLength" v-translate translate-context="Content/TrackUpload/Feedback/Genre/LengthLimit">Length is limited to 250 characters</span>
             </b-form-invalid-feedback>
           </b-form-group>
+
+          <b-form-group
+            id="ig-tags"
+            :class="{ 'form-group--error': false }"
+            :label="labels.tagLabel"
+            label-for="tag"
+          >
+            <vue-tags-input
+              v-model="curTag"
+              :tags="$v.track.tags.$model"
+              :autocomplete-items="autocompleteTags"
+              :add-only-from-autocomplete="false"
+              :allow-edit-tags="true"
+              :max-tags="10"
+              :validation="tagsValidations"
+              @tags-changed="updateTags"
+            />
+          </b-form-group>
         </div>
 
         <div class="col-md-5">
@@ -182,10 +200,12 @@ import { required, maxLength } from 'vuelidate/lib/validators'
 import { mapState, mapActions } from 'vuex'
 import fileSizeFormatService from '../../services/file_size_format/file_size_format.js'
 import VueSimpleSuggest from 'vue-simple-suggest'
+import VueTagsInput from '@johmun/vue-tags-input'
 
 export default {
   components: {
-    VueSimpleSuggest
+    VueSimpleSuggest,
+    VueTagsInput
   },
   mixins: [validationMixin],
   data: () => ({
@@ -198,7 +218,8 @@ export default {
       file: '',
       album: '__None',
       licence: 0,
-      private: ''
+      private: '',
+      tags: []
     },
     licenceChoices: [],
     albumChoices: [],
@@ -213,13 +234,23 @@ export default {
     genresAutoComplete: {
       minLength: 3,
       maxSuggestions: 4
-    }
+    },
+    curTag: '',
+    autocompleteTags: [],
+    debounceTags: null,
+    tagsValidations: [
+      {
+        classes: 'class',
+        rule: /^([\d\w-\s]+)$/ // Allow a-Z0-9 - _(implicit by \w) and space
+      }
+    ]
   }),
   validations: {
     track: {
       title: { maxLength: maxLength(250) },
       description: {},
       genre: { maxLength: maxLength(250) },
+      tags: {},
       file: { required },
       album: { required },
       licence: { required },
@@ -251,6 +282,7 @@ export default {
         titleDescription: this.$pgettext('Content/TrackUpload/Input.Label/Title', 'If no title provided, the filename will be used.'),
         titlePlaceholder: this.$pgettext('Content/TrackUpload/Input.Placeholder/Title', 'Your track title.'),
         genreLabel: this.$pgettext('Content/TrackUpload/Input.Label/Genre', 'Genre:'),
+        tagLabel: this.$pgettext('Content/TrackUpload/Input.Label/Tags', 'Tags:'),
         descriptionLabel: this.$pgettext('Content/TrackUpload/Input.Label/Description', 'Description:'),
         descriptionPlaceholder: this.$pgettext('Content/TrackUpload/Input.Placeholder/Description', 'Optional, what is this track about ?'),
         fileLabel: this.$pgettext('Content/TrackUpload/Input.Label/File', 'Track file:'),
@@ -282,6 +314,9 @@ export default {
       }
       return null
     }
+  },
+  watch: {
+    'curTag': 'getTags'
   },
   created () {
     // Fetch licenses
@@ -394,6 +429,30 @@ export default {
             variant: 'danger'
           })
         })
+    },
+    updateTags (newTags) {
+      this.autocompleteTags = []
+      this.tags = newTags
+    },
+    getTags () {
+      if (this.curTag.length < 2) {
+        return
+      }
+      clearTimeout(this.debounceTags)
+      this.debounce = setTimeout(() => {
+        this.$store.state.api.backendInteractor.fetchTags({ query: this.curTag })
+          .then((res) => {
+            return res
+          })
+          .catch((e) => {
+            this.$bvToast.toast(this.$pgettext('Content/TracksUpload/Toast/Error/Message', 'Cannot fetch tags'), {
+              title: this.$pgettext('Content/TracksUpload/Toast/Error/Title', 'Tags'),
+              autoHideDelay: 10000,
+              appendToast: false,
+              variant: 'danger'
+            })
+          })
+      }, 600)
     }
   }
 }

@@ -205,6 +205,8 @@ const backendInteractorService = credentials => {
 
   const fetchGenres = ({ query = false }) => apiService.fetchGenres({ query })
 
+  const fetchTags = ({ query = false }) => apiService.fetchTags({ query })
+
   const backendInteractorServiceInstance = {
     fetchTimeline,
     fetchUserAlbums,
@@ -284,7 +286,8 @@ const backendInteractorService = credentials => {
     updateUserSettings,
     resetPassword,
     resetPasswordToken,
-    fetchGenres
+    fetchGenres,
+    fetchTags
   }
 
   return backendInteractorServiceInstance

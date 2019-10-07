@@ -66,6 +66,31 @@ def genres():
     return response
 
 
+@bp_api_reel2bits.route("/api/reel2bits/tags", methods=["GET"])
+def tags():
+    """
+    List of tags.
+    ---
+    tags:
+        - Tracks
+    parameters:
+        - name: query
+          in: query
+          type: string
+          required: false
+          description: filter the returned list
+    responses:
+        200:
+            description: Returns a list of tags from database.
+    """
+    resp = []
+
+    response = jsonify(resp)
+    response.mimetype = "application/json; charset=utf-8"
+    response.status_code = 200
+    return response
+
+
 @bp_api_reel2bits.route("/api/reel2bits/change_password", methods=["POST"])
 @require_oauth("write")
 def change_password():
