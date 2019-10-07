@@ -46,7 +46,7 @@ def genres():
           description: filter the returned list
     responses:
         200:
-            description: Returns a list of genres from database and default.
+            description: Returns a list of genres from database and builtin.
     """
     genres_db = db.session.query(Sound.genre).group_by(Sound.genre)
 
