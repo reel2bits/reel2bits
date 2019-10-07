@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request, abort, current_app, render_template
-from models import db, User, PasswordResetToken, Sound
+from models import db, User, PasswordResetToken, Sound, SoundTag
 from utils.various import add_user_log, generate_random_token, add_log
 from app_oauth import require_oauth
 from authlib.flask.oauth2 import current_token
@@ -83,7 +83,14 @@ def tags():
         200:
             description: Returns a list of tags from database.
     """
-    resp = []
+    tags_db = db.session.query(SoundTag.name).group_by(SoundTag.name)
+
+    query = request.args.get("query", False)
+
+    if query:
+        tags_db = tags_db.filter(SoundTag.name.ilike("%" + query + "%")).all()
+
+    resp = [a.name for a in tags_db]
 
     response = jsonify(resp)
     response.mimetype = "application/json; charset=utf-8"

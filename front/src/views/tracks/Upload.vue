@@ -86,9 +86,9 @@
           >
             <vue-tags-input
               v-model="curTag"
-              :tags="tags"
+              :tags="track.tags"
               :autocomplete-items="autocompleteTags"
-              :add-only-from-autocomplete="false"
+              :add-only-from-autocomplete="true"
               :allow-edit-tags="true"
               :max-tags="10"
               :validation="tagsValidations"
@@ -443,7 +443,7 @@ export default {
       this.debounce = setTimeout(() => {
         this.$store.state.api.backendInteractor.fetchTags({ query: this.curTag })
           .then((res) => {
-            return res
+            this.autocompleteTags = res.map(a => { return { text: a } })
           })
           .catch((e) => {
             this.$bvToast.toast(this.$pgettext('Content/TracksUpload/Toast/Error/Message', 'Cannot fetch tags'), {

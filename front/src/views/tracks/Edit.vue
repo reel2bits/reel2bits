@@ -364,7 +364,7 @@ export default {
       this.debounce = setTimeout(() => {
         this.$store.state.api.backendInteractor.fetchTags({ query: this.curTag })
           .then((res) => {
-            return res
+            this.autocompleteTags = res.map(a => { return { text: a } })
           })
           .catch((e) => {
             this.$bvToast.toast(this.$pgettext('Content/TracksUpload/Toast/Error/Message', 'Cannot fetch tags'), {
