@@ -1,137 +1,166 @@
 <template>
-  <div class="row justify-content-md-center">
-    <div class="col-md-6">
-      <b-alert v-if="fetchErrors.length > 0" variant="danger" show
-               dismissible
-               @dismissed="fetchErrors=[]"
-      >
-        <span v-for="error in fetchErrors" :key="error">{{ error }}</span>
-      </b-alert>
-
-      <h4 v-translate translate-context="Content/TrackUpload/Headline">
-        Upload a new track
-      </h4>
-
-      <template v-if="currentUser.reel2bits.quota_limit > 0">
-        <b-alert show :variant="currentUserQuotaLevel">
-          {{ currentUserQuota }}
+  <div>
+    <div class="row justify-content-md-center">
+      <div class="col-md-5">
+        <b-alert v-if="fetchErrors.length > 0" variant="danger" show
+                 dismissible
+                 @dismissed="fetchErrors=[]"
+        >
+          <span v-for="error in fetchErrors" :key="error">{{ error }}</span>
         </b-alert>
-      </template>
 
-      <b-form class="upload-track-form" enctype="multipart/form-data" @submit.prevent="upload(track)">
-        <b-form-group
-          id="ig-title"
-          :class="{ 'form-group--error': $v.track.title.$error }"
-          :label="labels.titleLabel"
-          label-for="title"
-          :description="labels.titleDescription"
-        >
-          <b-form-input
-            id="title"
-            v-model.trim="$v.track.title.$model"
-            :disabled="isPending"
-            :placeholder="labels.titlePlaceholder"
-            :state="$v.track.title.$dirty ? !$v.track.title.$error : null"
-            aria-describedby="title-live-feedback"
-          />
-          <b-form-invalid-feedback id="title-live-feedback">
-            <span v-if="!$v.track.title.maxLength" v-translate translate-context="Content/TrackUpload/Feedback/Title/LengthLimit">Length is limited to 250 characters</span>
-          </b-form-invalid-feedback>
-        </b-form-group>
+        <h4 v-translate translate-context="Content/TrackUpload/Headline">
+          Upload a new track
+        </h4>
 
-        <b-form-group
-          id="ig-description"
-          :label="labels.descriptionLabel"
-          label-for="description"
-        >
-          <b-form-textarea
-            id="description"
-            v-model="track.description"
-            :disabled="isPending"
-            :placeholder="labels.descriptionPlaceholder"
-          />
-        </b-form-group>
-
-        <b-form-group
-          id="ig-file"
-          :description="fileDescription"
-          :label="labels.fileLabel"
-          label-for="file"
-        >
-          <b-form-file
-            :accept="acceptedMimeTypes"
-            name="file"
-            :disabled="isPending"
-            required
-            @change="uploadFile($event)"
-          />
-        </b-form-group>
-
-        <template v-if="trackUploadError">
-          <br>
-          <b-alert v-if="trackUploadError" variant="danger" show>
-            {{ trackUploadError }}
+        <template v-if="currentUser.reel2bits.quota_limit > 0">
+          <b-alert show :variant="currentUserQuotaLevel">
+            {{ currentUserQuota }}
           </b-alert>
-          <br>
         </template>
+      </div>
+    </div>
 
-        <b-form-group
-          id="ig-album"
-          :label="labels.albumLabel"
-          label-for="album"
-        >
-          <b-form-select
-            id="album"
-            v-model="track.album"
-            :disabled="isPending"
-            :options="albumChoices"
-          />
-        </b-form-group>
+    <div class="row justify-content-md-center">
+      <b-form class="upload-track-form" enctype="multipart/form-data" @submit.prevent="upload(track)">
+        <div class="row justify-content-md-center">
+          <div class="col-md-5">
+            <b-form-group
+              id="ig-title"
+              :class="{ 'form-group--error': $v.track.title.$error }"
+              :label="labels.titleLabel"
+              label-for="title"
+              :description="labels.titleDescription"
+            >
+              <b-form-input
+                id="title"
+                v-model.trim="$v.track.title.$model"
+                :disabled="isPending"
+                :placeholder="labels.titlePlaceholder"
+                :state="$v.track.title.$dirty ? !$v.track.title.$error : null"
+                aria-describedby="title-live-feedback"
+              />
+              <b-form-invalid-feedback id="title-live-feedback">
+                <span v-if="!$v.track.title.maxLength" v-translate translate-context="Content/TrackUpload/Feedback/Title/LengthLimit">Length is limited to 250 characters</span>
+              </b-form-invalid-feedback>
+            </b-form-group>
 
-        <b-form-group
-          id="ig-license"
-          :label="labels.licenseLabel"
-          label-for="license"
-        >
-          <b-form-select
-            id="license"
-            v-model="track.licence"
-            :disabled="isPending"
-            :options="licenceChoices"
-          />
-        </b-form-group>
+            <b-form-group
+              id="ig-description"
+              :label="labels.descriptionLabel"
+              label-for="description"
+            >
+              <b-form-textarea
+                id="description"
+                v-model="track.description"
+                :disabled="isPending"
+                :placeholder="labels.descriptionPlaceholder"
+              />
+            </b-form-group>
 
-        <b-form-group
-          id="ig-private"
-          label-for="private"
-          :description="labels.privateDescription"
-        >
-          <b-form-checkbox
-            id="private"
-            v-model="track.private"
-            v-translate
-            name="private"
-            value="y"
-            unchecked-value=""
-            :disabled="isPending" translate-context="Content/TrackUpload/Input.Label/Private track"
-          >
-            this track is private
-          </b-form-checkbox>
-        </b-form-group>
+            <b-form-group
+              id="ig-genre"
+              :class="{ 'form-group--error': $v.track.genre.$error }"
+              :label="labels.genreLabel"
+              label-for="genre"
+              :description="labels.genreDescription"
+            >
+              <b-form-input
+                id="genre"
+                v-model.trim="$v.track.genre.$model"
+                :disabled="isPending"
+                :state="$v.track.genre.$dirty ? !$v.track.genre.$error : null"
+                aria-describedby="genre-live-feedback"
+              />
+              <b-form-invalid-feedback id="genre-live-feedback">
+                <span v-if="!$v.track.genre.maxLength" v-translate translate-context="Content/TrackUpload/Feedback/Genre/LengthLimit">Length is limited to 250 characters</span>
+              </b-form-invalid-feedback>
+            </b-form-group>
+          </div>
 
-        <br>
+          <div class="col-md-5">
+            <b-form-group
+              id="ig-file"
+              :description="fileDescription"
+              :label="labels.fileLabel"
+              label-for="file"
+            >
+              <b-form-file
+                :accept="acceptedMimeTypes"
+                name="file"
+                :disabled="isPending"
+                required
+                @change="uploadFile($event)"
+              />
+            </b-form-group>
 
-        <b-button v-translate :disabled="isPending" type="submit"
-                  variant="primary" translate-context="Content/TrackUpload/Button/Upload"
-        >
-          Upload
-        </b-button>
+            <template v-if="trackUploadError">
+              <br>
+              <b-alert v-if="trackUploadError" variant="danger" show>
+                {{ trackUploadError }}
+              </b-alert>
+              <br>
+            </template>
 
-        <br>
+            <b-form-group
+              id="ig-album"
+              :label="labels.albumLabel"
+              label-for="album"
+            >
+              <b-form-select
+                id="album"
+                v-model="track.album"
+                :disabled="isPending"
+                :options="albumChoices"
+              />
+            </b-form-group>
 
-        <b-alert v-if="serverValidationErrors.length > 0" variant="danger" show>
-          <span v-for="error in serverValidationErrors" :key="error">{{ error }}</span>
-        </b-alert>
+            <b-form-group
+              id="ig-license"
+              :label="labels.licenseLabel"
+              label-for="license"
+            >
+              <b-form-select
+                id="license"
+                v-model="track.licence"
+                :disabled="isPending"
+                :options="licenceChoices"
+              />
+            </b-form-group>
+
+            <b-form-group
+              id="ig-private"
+              label-for="private"
+              :description="labels.privateDescription"
+            >
+              <b-form-checkbox
+                id="private"
+                v-model="track.private"
+                v-translate
+                name="private"
+                value="y"
+                unchecked-value=""
+                :disabled="isPending" translate-context="Content/TrackUpload/Input.Label/Private track"
+              >
+                this track is private
+              </b-form-checkbox>
+            </b-form-group>
+
+            <br>
+
+            <b-button v-translate :disabled="isPending" type="submit"
+                      variant="primary" translate-context="Content/TrackUpload/Button/Upload"
+            >
+              Upload
+            </b-button>
+
+            <br>
+
+            <b-alert v-if="serverValidationErrors.length > 0" variant="danger" show>
+              <span v-for="error in serverValidationErrors" :key="error">{{ error }}</span>
+            </b-alert>
+          </div>
+        </div>
       </b-form>
     </div>
   </div>
@@ -151,6 +180,7 @@ export default {
     track: {
       title: '',
       description: '',
+      genre: '',
       file: '',
       album: '__None',
       licence: 0,
@@ -164,6 +194,7 @@ export default {
     track: {
       title: { maxLength: maxLength(250) },
       description: {},
+      genre: { maxLength: maxLength(250) },
       file: { required },
       album: { required },
       licence: { required },
@@ -191,9 +222,11 @@ export default {
     }),
     labels () {
       return {
-        titleLabel: this.$pgettext('Content/TrackUpload/Input.Label/Email', 'Title:'),
+        titleLabel: this.$pgettext('Content/TrackUpload/Input.Label/Title', 'Title:'),
         titleDescription: this.$pgettext('Content/TrackUpload/Input.Label/Title', 'If no title provided, the filename will be used.'),
         titlePlaceholder: this.$pgettext('Content/TrackUpload/Input.Placeholder/Title', 'Your track title.'),
+        genreLabel: this.$pgettext('Content/TrackUpload/Input.Label/Genre', 'Genre:'),
+        genreDescription: this.$pgettext('Content/TrackUpload/Input.Label/Genre', 'What kind of genre it is ?'),
         descriptionLabel: this.$pgettext('Content/TrackUpload/Input.Label/Description', 'Description:'),
         descriptionPlaceholder: this.$pgettext('Content/TrackUpload/Input.Placeholder/Description', 'Optional, what is this track about ?'),
         fileLabel: this.$pgettext('Content/TrackUpload/Input.Label/File', 'Track file:'),
