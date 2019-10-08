@@ -82,5 +82,7 @@ class AlbumForm(Form):
     title = StringField(lazy_gettext("Title"), [Length(max=255), DataRequired()])
     description = TextAreaField(lazy_gettext("Description"))
     private = BooleanField(lazy_gettext("Private"), default=False)
+    genre = StringField("Genre", [Length(max=255)])
+    tags = StringField("Tags", [Length(max=1000)])
 
     submit = SubmitField(lazy_gettext("Save"))

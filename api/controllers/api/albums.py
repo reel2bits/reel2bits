@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, request
 from app_oauth import require_oauth
 from authlib.flask.oauth2 import current_token
 from forms import AlbumForm
-from models import db, Album, User, Sound
+from models import db, Album, User, Sound, SoundTag
 import json
 from utils.various import add_user_log
 from datas_helpers import to_json_relationship, to_json_account, to_json_album
@@ -37,6 +37,19 @@ def new():
         rec.title = form.title.data
         rec.private = form.private.data
         rec.description = form.description.data
+        rec.genre = form.genre.data
+
+        # Handle tags
+        tags = form.tags.data.split(",")
+        # Clean
+        tags = [t.strip() for t in tags if t]
+        # For each tag get it or create it
+        for tag in tags:
+            dbt = SoundTag.query.filter(SoundTag.name == tag).first()
+            if not dbt:
+                dbt = SoundTag(name=tag)
+                db.session.add(dbt)
+            rec.tags.append(dbt)
 
         db.session.add(rec)
         db.session.commit()
@@ -196,6 +209,8 @@ def edit(username, albumslug):
     description = request.json.get("description")
     private = request.json.get("private")
     title = request.json.get("title")
+    genre = request.json.get("genre")
+    tags = request.json.get("tags")
 
     if album.private and not private:
         return jsonify({"error": "Cannot change to private: album already federated"})
@@ -205,6 +220,25 @@ def edit(username, albumslug):
 
     album.title = title
     album.description = description
+    album.genre = genre
+
+    # First remove tags which have been removed
+    for tag in album.tags:
+        if tag.name not in tags:
+            album.tags.remove(tag)
+
+    # Then add the new ones if new
+    for tag in tags:
+        if tag not in [a.name for a in album.tags]:
+            dbt = SoundTag.query.filter(SoundTag.name == tag).first()
+            if not dbt:
+                dbt = SoundTag(name=tag)
+                db.session.add(dbt)
+            album.tags.append(dbt)
+
+    # Purge orphaned tags
+    for otag in SoundTag.query.filter(~SoundTag.albums.any()).all():
+        db.session.delete(otag)
 
     db.session.commit()
 

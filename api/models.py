@@ -269,6 +269,13 @@ sound_tags = db.Table(
     db.Column("sound_id", db.Integer, db.ForeignKey("sound.id"), primary_key=True),
     PrimaryKeyConstraint("tag_id", "sound_id"),
 )
+# Same but for albums
+album_tags = db.Table(
+    "album_tags",
+    db.Column("tag_id", db.Integer, db.ForeignKey("sound_tag.id"), primary_key=True),
+    db.Column("album_id", db.Integer, db.ForeignKey("album.id"), primary_key=True),
+    PrimaryKeyConstraint("tag_id", "album_id"),
+)
 
 
 class SoundTag(db.Model):
@@ -380,7 +387,8 @@ class Album(db.Model):
     updated = db.Column(
         db.DateTime(timezone=False), default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow
     )
-    # TODO tags
+    genre = db.Column(db.String(255), nullable=True)
+    tags = db.relationship("SoundTag", secondary=album_tags, lazy="subquery", backref=db.backref("albums", lazy=True))
     description = db.Column(db.UnicodeText(), nullable=True)
     private = db.Column(db.Boolean(), default=False, nullable=True)
     slug = db.Column(db.String(255), unique=True, nullable=True)
