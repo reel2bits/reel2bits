@@ -1,15 +1,15 @@
 from flask import Blueprint, request, url_for, abort, current_app, g
 from models import User, Sound, Album
+from utils.defaults import Reel2bitsDefaults
 from feedgen.feed import FeedGenerator
 import pytz
 
 bp_feeds = Blueprint("bp_feeds", __name__)
 
 
-def gen_feed(title, author, feed_url, url, subtitle, logo):
+def gen_feed(title, author, feed_url, url, subtitle, logo, categories=None, album=False, licenses=False):
     fg = FeedGenerator()
     fg.load_extension("podcast")
-    # fg.podcast.itunes_category('Technology', 'Podcasting')
 
     fg.id(feed_url)
     fg.title(title)
@@ -22,6 +22,14 @@ def gen_feed(title, author, feed_url, url, subtitle, logo):
     fg.generator(
         generator="reel2bits", uri=f"https://{current_app.config['AP_DOMAIN']}", version=g.cfg["REEL2BITS_VERSION"]
     )
+
+    if album and categories:
+        fg.podcast.itunes_category(categories[0])
+        fg.category([{"term": c, "label": c} for c in categories])
+
+    if licenses:
+        fg.rights("See individual tracks: " + ", ".join(licenses))
+
     return fg
 
 
@@ -61,7 +69,7 @@ def tracks(user_id):
         fe.description(track.description)
         fe.author({"name": user.name, "uri": f"https://{current_app.config['AP_DOMAIN']}/{user.name}"})
         fe.rights(track.licence_info()["name"])
-        fe.pubdate(utcdate(track.uploaded))
+        fe.pubDate(utcdate(track.uploaded))
         fe.updated(utcdate(track.updated))
         fe.content(track.description)
     return feed.atom_str(pretty=True)
@@ -82,8 +90,25 @@ def album(user_id, album_id):
     author = {"name": user.name, "uri": f"https://{current_app.config['AP_DOMAIN']}/{user.name}"}
     logo = None or f"https://{current_app.config['AP_DOMAIN']}/static/artwork_placeholder.png"
 
+    categories = [album.genre]
+
+    licenses = album.sounds.with_entities(Sound.licence).group_by(Sound.licence).all()
+    lics = []
+    for lic in licenses:
+        lic_infos = Reel2bitsDefaults.known_licences[lic.licence]
+        if lic_infos:
+            lics.append(lic_infos["name"])
+
     feed = gen_feed(
-        f"{album.title} by {user.name}", author, feed_url, url, f"Tracks for album '{album.title}' by {user.name}", logo
+        f"{album.title} by {user.name}",
+        author,
+        feed_url,
+        url,
+        f"Tracks for album '{album.title}' by {user.name}",
+        logo,
+        categories=categories,
+        album=True,
+        licenses=lics,
     )
 
     for track in album.sounds.filter(Sound.transcode_state == Sound.TRANSCODE_DONE):
@@ -100,7 +125,8 @@ def album(user_id, album_id):
         fe.description(track.description)
         fe.author({"name": user.name, "uri": f"https://{current_app.config['AP_DOMAIN']}/{user.name}"})
         fe.rights(track.licence_info()["name"])
-        fe.pubdate(utcdate(track.uploaded))
+        fe.pubDate(utcdate(track.uploaded))
         fe.updated(utcdate(track.updated))
         fe.content(track.description)
+        fe.category([{"term": c, "label": c} for c in [track.genre]])
     return feed.atom_str(pretty=True)

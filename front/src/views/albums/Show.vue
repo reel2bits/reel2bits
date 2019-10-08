@@ -47,32 +47,64 @@
 
           <div class="pt-0 d-flex">
             <div class="btn-group" role="group" :aria-label="labels.ariaAlbumActions">
-              <div v-if="isOwner">
-                <b-button variant="link" class="text-decoration-none"
-                          @click.prevent="editAlbum"
-                >
-                  <i class="fa fa-pencil" aria-hidden="true" /> <translate translate-context="Content/AlbumShow/Button">
-                    Edit
-                  </translate>
-                </b-button>
-                <b-button v-b-modal.modal-delete variant="link"
-                          class="text-decoration-none"
-                >
-                  <i class="fa fa-times" aria-hidden="true" /> <translate translate-context="Content/AlbumShow/Button">
-                    Delete
-                  </translate>
-                </b-button>
-                <b-modal id="modal-delete" :title="labels.deleteModalTitle" @ok="deleteAlbum">
-                  <p v-translate="{title: album.title}" class="my-4" translate-context="Content/AlbumShow/Modal/Delete/Content">
-                    Are you sure you want to delete '%{ title }' ?
-                  </p>
-                </b-modal>
+              <div>
+                <i class="fa fa-rss" aria-hidden="true" />
+                <a :href="album.url_feed" target="_blank">RSS feed</a>
+
+                <span v-if="isOwner">
+                  <b-button variant="link" class="text-decoration-none"
+                            @click.prevent="editAlbum"
+                  >
+                    <i class="fa fa-pencil" aria-hidden="true" /> <translate translate-context="Content/AlbumShow/Button">
+                      Edit
+                    </translate>
+                  </b-button>
+                  <b-button v-b-modal.modal-delete variant="link"
+                            class="text-decoration-none"
+                  >
+                    <i class="fa fa-times" aria-hidden="true" /> <translate translate-context="Content/AlbumShow/Button">
+                      Delete
+                    </translate>
+                  </b-button>
+                  <b-modal id="modal-delete" :title="labels.deleteModalTitle" @ok="deleteAlbum">
+                    <p v-translate="{title: album.title}" class="my-4" translate-context="Content/AlbumShow/Modal/Delete/Content">
+                      Are you sure you want to delete '%{ title }' ?
+                    </p>
+                  </b-modal>
+                </span>
               </div>
             </div>
             <div class="ml-auto align-self-end">
               <span class="text-secondary">{{ playerTimeCur }}</span> <span class="text-muted">{{ playerTimeTot }}</span>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- genre and tags -->
+      <div class="d-flex p-2">
+        <div class="p-2">
+          <i class="fa fa-folder-o" aria-hidden="true" />
+          <translate v-if="!album.genre" translate-context="Content/AlbumShow/Album genre">
+            No genre defined
+          </translate>
+          <template v-else>
+            {{ album.genre }}
+          </template>
+        </div>
+
+        <div class="p-2">
+          <i class="fa fa-tags" aria-hidden="true" />
+          <template v-if="album.tags.length > 0">
+            <b-badge v-for="tag in album.tags" :key="tag" pill
+                     class="tags_pill" variant="info"
+            >
+              {{ tag }}
+            </b-badge>
+          </template>
+          <translate v-else translate-context="Content/AlbumShow/Album tags">
+            No tags
+          </translate>
         </div>
       </div>
 
@@ -115,6 +147,10 @@ li.tracks-list span.actions {
 }
 li.tracks-list span.actions i.fa-play {
   padding-left: 5px;
+}
+
+span.tags_pill {
+  margin-right: 5px;
 }
 </style>
 

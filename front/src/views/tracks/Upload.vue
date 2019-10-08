@@ -88,7 +88,7 @@
               v-model="curTag"
               :tags="track.tags"
               :autocomplete-items="autocompleteTags"
-              :add-only-from-autocomplete="true"
+              :add-only-from-autocomplete="false"
               :allow-edit-tags="true"
               :max-tags="10"
               :validation="tagsValidations"

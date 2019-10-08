@@ -143,6 +143,7 @@ export const parseStatus = (data) => {
   output.picture_url = (data.reel2bits.picture_url || '/static/artwork_placeholder.svg')
   output.media_orig = data.reel2bits.media_orig
   output.media_transcoded = data.reel2bits.media_transcoded
+  output.url_feed = data.reel2bits.url_feed
   output.waveform = data.reel2bits.waveform
   output.private = data.reel2bits.private
   output.uploaded_on = data.created_at

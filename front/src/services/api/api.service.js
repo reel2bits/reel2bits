@@ -198,7 +198,7 @@ const trackDelete = ({ userId, trackId, credentials }) => {
 }
 
 const trackEdit = ({ userId, trackId, track, credentials }) => {
-  // Make the track tags list a better format
+  // Do that to avoid modifying `track` and bork the vue variable (tags)
   const payload = {
     title: track.title,
     description: track.description,
@@ -357,6 +357,8 @@ const albumNew = (albumInfo, store) => {
   form.append('title', albumInfo.title)
   form.append('description', albumInfo.description)
   form.append('private', albumInfo.private)
+  form.append('genre', albumInfo.genre)
+  form.append('tags', albumInfo.tags.map(a => a.text))
 
   return fetch(ALBUMS_NEW_URL, {
     body: form,
@@ -403,10 +405,19 @@ const albumDelete = ({ userId, albumId, credentials }) => {
 }
 
 const albumEdit = ({ userId, albumId, album, credentials }) => {
+  // Do that to avoid modifying `album` and bork the vue variable (tags)
+  const payload = {
+    title: album.title,
+    description: album.description,
+    private: album.private,
+    genre: album.genre,
+    tags: album.tags.map(a => a.text)
+  }
+
   return promisedRequest({
     url: ALBUMS_EDIT_URL(userId, albumId),
     method: 'PATCH',
-    payload: album,
+    payload: payload,
     credentials: credentials
   }).then((data) => parseStatus(data))
 }

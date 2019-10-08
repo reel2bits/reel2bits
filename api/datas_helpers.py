@@ -144,6 +144,7 @@ def to_json_track(track, account):
 
 
 def to_json_album(album, account):
+    url_feed = url_for("bp_feeds.album", user_id=album.user.id, album_id=album.id, _external=False)
     obj = {
         "id": album.flake_id,
         "uri": None,
@@ -181,6 +182,9 @@ def to_json_album(album, account):
             "uploaded_elapsed": album.elapsed(),
             "tracks_count": album.sounds.count(),
             "tracks": [to_json_track(t, account) for t in album.sounds],
+            "genre": album.genre,
+            "tags": [a.name for a in album.tags],
+            "url_feed": url_feed,
         },
     }
     return obj

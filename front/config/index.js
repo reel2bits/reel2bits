@@ -14,6 +14,14 @@ try {
 const target = settings.target || 'http://localhost:5000/'
 const host = settings.host || 'localhost.dev'
 
+const proxyTableOpts = {
+  target,
+  changeOrigin: false,
+  cookieDomainRewrite: 'localhost',
+  headers: { host: host },
+  secure: false
+}
+
 module.exports = {
   build: {
     env: require('./prod.env'),
@@ -36,34 +44,11 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-      '/api': {
-        target,
-        changeOrigin: false,
-        cookieDomainRewrite: 'localhost',
-        headers: { host: host },
-        secure: false
-      },
-      '/nodeinfo': {
-        target,
-        changeOrigin: false,
-        cookieDomainRewrite: 'localhost',
-        headers: { host: host },
-        secure: false
-      },
-      '/oauth': {
-        target,
-        changeOrigin: false,
-        cookieDomainRewrite: 'localhost',
-        headers: { host: host },
-        secure: false
-      },
-      '/uploads': {
-        target,
-        changeOrigin: false,
-        cookieDomainRewrite: 'localhost',
-        headers: { host: host },
-        secure: false
-      }
+      '/api': proxyTableOpts,
+      '/nodeinfo': proxyTableOpts,
+      '/oauth': proxyTableOpts,
+      '/uploads': proxyTableOpts,
+      '/feeds': proxyTableOpts
     },
     // CSS Sourcemaps off by default because relative paths are "buggy"
     // with this option, according to the CSS-Loader README
