@@ -84,6 +84,5 @@ You can use the following keys to define upload paths:
 
 - UPLOADS_DEFAULT_DEST, default: /home/reel2bits/uploads
 - UPLOADED_SOUNDS_DEST, default: /home/reel2bits/uploads/sounds
-- UPLOADED_WAVEFORMS_DEST, default: /home/reel2bits/uploads/sounds
 
 Paths of sounds and waveforms should be under the default one.

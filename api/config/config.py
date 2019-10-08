@@ -108,7 +108,6 @@ class BaseConfig(object):
     # Uploads directories
     UPLOADS_DEFAULT_DEST = os.getenv("UPLOADS_DEFAULT_DEST", "/home/reel2bits/uploads")
     UPLOADED_SOUNDS_DEST = os.getenv("UPLOADED_SOUNDS_DEST", "/home/reel2bits/uploads/sounds")
-    UPLOADED_WAVEFORMS_DEST = os.getenv("UPLOADED_WAVEFORMS_DEST", "/home/reel2bits/uploads/waveforms")
 
     # Where is audiowaveform located
     AUDIOWAVEFORM_BIN = os.getenv("AUDIOWAVEFORM_BIN", "/usr/local/bin/audiowaveform")

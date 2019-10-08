@@ -55,9 +55,4 @@ server {
             # Same path as UPLOADS_DEFAULT_DEST in config.py but with /sounds
             alias ${UPLOADED_SOUNDS_DEST};
     }
-
-    location /_protected/media/waveforms {
-            # Same path as UPLOADS_DEFAULT_DEST in config.py but with /waveforms
-            alias ${UPLOADED_WAVEFORMS_DEST};
-    }
 }

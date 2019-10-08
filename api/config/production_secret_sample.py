@@ -16,7 +16,6 @@ class Config(BaseConfig):
     # Don't forget that SOUNDS and WAVEFORMS have to be under DEFAULT path folder
     UPLOADS_DEFAULT_DEST = "/Users/dashie/dev/reel2bits/uploads"
     UPLOADED_SOUNDS_DEST = "/Users/dashie/dev/reel2bits/uploads/sounds"
-    UPLOADED_WAVEFORMS_DEST = "/Users/dashie/dev/reel2bits/uploads/waveforms"
 
     # Where is the audiowaveform binary located
     AUDIOWAVEFORM_BIN = "/usr/local/bin/audiowaveform"
