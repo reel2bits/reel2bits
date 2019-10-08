@@ -6,6 +6,8 @@ from models import db, Album, User, Sound, SoundTag
 import json
 from utils.various import add_user_log
 from datas_helpers import to_json_relationship, to_json_account, to_json_album
+from sqlalchemy import and_
+
 
 bp_api_albums = Blueprint("bp_api_albums", __name__)
 
@@ -237,7 +239,7 @@ def edit(username, albumslug):
             album.tags.append(dbt)
 
     # Purge orphaned tags
-    for otag in SoundTag.query.filter(~SoundTag.albums.any()).all():
+    for otag in SoundTag.query.filter(and_(~SoundTag.sounds.any(), ~SoundTag.albums.any())).all():
         db.session.delete(otag)
 
     db.session.commit()

@@ -9,6 +9,7 @@ from flask_uploads import UploadSet, AUDIO
 from datas_helpers import to_json_track, to_json_account, to_json_relationship
 from os.path import splitext
 import os
+from sqlalchemy import and_
 
 
 bp_api_tracks = Blueprint("bp_api_tracks", __name__)
@@ -257,7 +258,7 @@ def edit(username, soundslug):
             sound.tags.append(dbt)
 
     # Purge orphaned tags
-    for otag in SoundTag.query.filter(~SoundTag.sounds.any()).all():
+    for otag in SoundTag.query.filter(and_(~SoundTag.sounds.any(), ~SoundTag.albums.any())).all():
         db.session.delete(otag)
 
     # Fetch album, and associate if owner
