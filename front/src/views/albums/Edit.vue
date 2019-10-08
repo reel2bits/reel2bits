@@ -43,6 +43,46 @@
           />
         </b-form-group>
 
+        <b-form-group
+          id="ig-genre"
+          :class="{ 'form-group--error': $v.album.genre.$error }"
+          :label="labels.genreLabel"
+          label-for="genre"
+        >
+          <vue-simple-suggest
+            v-model="$v.album.genre.$model"
+            :list="getGenres"
+            :filter-by-query="true"
+            :styles="autoCompleteStyle"
+            :destyled="true"
+            :min-length="genresAutoComplete.minLength"
+            :max-suggestions="genresAutoComplete.maxSuggestions"
+          />
+
+          <b-form-invalid-feedback id="genre-live-feedback">
+            <span v-if="!$v.album.genre.maxLength" v-translate translate-context="Content/AlbumEdit/Feedback/Genre/LengthLimit">Length is limited to 250 characters</span>
+          </b-form-invalid-feedback>
+        </b-form-group>
+
+        <b-form-group
+          id="ig-tags"
+          :class="{ 'form-group--error': false }"
+          :label="labels.tagLabel"
+          label-for="tag"
+        >
+          <vue-tags-input
+            v-model="curTag"
+            :tags="album.tags"
+            :autocomplete-items="autocompleteTags"
+            :add-only-from-autocomplete="false"
+            :allow-edit-tags="true"
+            :max-tags="10"
+            :validation="tagsValidations"
+            :maxlength="25"
+            @tags-changed="updateTags"
+          />
+        </b-form-group>
+
         <b-form-checkbox
           v-if="!alreadyFederated"
           id="private"
@@ -80,13 +120,29 @@
   </div>
 </template>
 
+<style lang="scss">
+.z-1000 {
+  z-index: 1000;
+}
+.hover {
+  background-color: #007bff;
+  color: #fff;
+}
+</style>
+
 <script>
 import { validationMixin } from 'vuelidate'
 import { required, maxLength } from 'vuelidate/lib/validators'
 import { mapState } from 'vuex'
 import unescape from 'lodash/unescape'
+import VueSimpleSuggest from 'vue-simple-suggest'
+import VueTagsInput from '@johmun/vue-tags-input'
 
 export default {
+  components: {
+    VueSimpleSuggest,
+    VueTagsInput
+  },
   mixins: [validationMixin],
   data: () => ({
     albumEditError: '',
@@ -94,16 +150,40 @@ export default {
     album: {
       title: '',
       description: '',
-      private: ''
+      private: '',
+      genre: '',
+      tags: []
     },
     albumObj: null,
-    alreadyFederated: null
+    alreadyFederated: null,
+    autoCompleteStyle: {
+      vueSimpleSuggest: 'position-relative',
+      inputWrapper: '',
+      defaultInput: 'form-control',
+      suggestions: 'position-absolute list-group z-1000',
+      suggestItem: 'list-group-item'
+    },
+    genresAutoComplete: {
+      minLength: 3,
+      maxSuggestions: 4
+    },
+    curTag: '',
+    autocompleteTags: [],
+    debounceTags: null,
+    tagsValidations: [
+      {
+        classes: 'class',
+        rule: /^([\d\w-\s]+)$/ // Allow a-Z0-9 - _(implicit by \w) and space
+      }
+    ]
   }),
   validations: {
     album: {
       title: { required, maxLength: maxLength(250) },
       description: {},
-      private: {}
+      private: {},
+      genre: { maxLength: maxLength(250) },
+      tags: {}
     }
   },
   computed: {
@@ -121,9 +201,14 @@ export default {
         titleLabel: this.$pgettext('Content/AlbumNew/Input.Label/Email', 'Title:'),
         titlePlaceholder: this.$pgettext('Content/AlbumNew/Input.Placeholder/Title', 'Your album title.'),
         descriptionLabel: this.$pgettext('Content/AlbumNew/Input.Label/Description', 'Description:'),
-        descriptionPlaceholder: this.$pgettext('Content/AlbumNew/Input.Placeholder/Description', 'Optional, what is this album about ?')
+        descriptionPlaceholder: this.$pgettext('Content/AlbumNew/Input.Placeholder/Description', 'Optional, what is this album about ?'),
+        genreLabel: this.$pgettext('Content/AlbumNew/Input.Label/Genre', 'Genre:'),
+        tagLabel: this.$pgettext('Content/AlbumNew/Input.Label/Tags', 'Tags:')
       }
     }
+  },
+  watch: {
+    'curTag': 'getTags'
   },
   async created () {
     this.fetchAlbum()
@@ -137,6 +222,8 @@ export default {
           this.album.description = unescape(album.description)
           this.album.private = album.private
           this.alreadyFederated = !this.album.private
+          this.album.genre = album.genre
+          this.album.tags = album.tags.map(a => { return { text: a, tiClasses: ['ti-valid'] } })
           this.albumObj = album
           console.log('album fetched')
         })
@@ -174,6 +261,41 @@ export default {
       } else {
         console.log('form is invalid', this.$v.$invalid)
       }
+    },
+    getGenres (query) {
+      return this.$store.state.api.backendInteractor.fetchGenres({ query: query })
+        .catch((e) => {
+          this.$bvToast.toast(this.$pgettext('Content/AlbumEdit/Toast/Error/Message', 'Cannot fetch genres'), {
+            title: this.$pgettext('Content/AlbumEdit/Toast/Error/Title', 'Genres'),
+            autoHideDelay: 10000,
+            appendToast: false,
+            variant: 'danger'
+          })
+        })
+    },
+    updateTags (newTags) {
+      this.autocompleteTags = []
+      this.album.tags = newTags
+    },
+    getTags () {
+      if (this.curTag.length < 2) {
+        return
+      }
+      clearTimeout(this.debounceTags)
+      this.debounce = setTimeout(() => {
+        this.$store.state.api.backendInteractor.fetchTags({ query: this.curTag })
+          .then((res) => {
+            this.autocompleteTags = res.map(a => { return { text: a } })
+          })
+          .catch((e) => {
+            this.$bvToast.toast(this.$pgettext('Content/AlbumEdit/Toast/Error/Message', 'Cannot fetch tags'), {
+              title: this.$pgettext('Content/AlbumEdit/Toast/Error/Title', 'Tags'),
+              autoHideDelay: 10000,
+              appendToast: false,
+              variant: 'danger'
+            })
+          })
+      }, 600)
     }
   }
 }

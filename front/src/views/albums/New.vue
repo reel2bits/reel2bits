@@ -109,6 +109,16 @@
   </div>
 </template>
 
+<style lang="scss">
+.z-1000 {
+  z-index: 1000;
+}
+.hover {
+  background-color: #007bff;
+  color: #fff;
+}
+</style>
+
 <script>
 import { validationMixin } from 'vuelidate'
 import { required, maxLength } from 'vuelidate/lib/validators'
