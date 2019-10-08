@@ -116,6 +116,7 @@ export const parseUser = (data) => {
     output.reel2bits.lang = data.reel2bits.lang || 'en'
     output.reel2bits.quota_limit = data.reel2bits.quota_limit
     output.reel2bits.quota_count = data.reel2bits.quota_count
+    output.reel2bits.url_feed = data.reel2bits.url_feed
   }
 
   if (data.pleroma) {

@@ -29,6 +29,8 @@ def to_json_relationship(of_user, against_user):
 
 
 def to_json_account(user, relationship=False):
+    url_feed = url_for("bp_feeds.tracks", user_id=user.id, _external=False)
+
     obj = dict(
         id=user.id,
         username=user.name,
@@ -64,6 +66,7 @@ def to_json_account(user, relationship=False):
             "lang": user.locale,
             "quota_limit": user.quota,
             "quota_count": user.quota_count,
+            "url_feed": url_feed,
         },
     )
     if relationship:

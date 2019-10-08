@@ -2,6 +2,18 @@
   <div>
     <template v-if="displayUser">
       <UserCard :user="displayUser" />
+
+      <template>
+        <div class="card mb-4">
+          <div class="card-body py-3 px-3">
+            <translate translate-context="Content/UserProfile/Sidebar/RSS Feed" :translate-params="{quotaSlashRepr: humanQuota}">
+              All user tracks:
+            </translate>
+            <a :href="displayUser.reel2bits.url_feed" target="_blank"><i class="fa fa-rss" aria-hidden="true" /></a>
+          </div>
+        </div>
+      </template>
+
       <template v-if="isUs && displayUser.reel2bits.quota_limit > 0">
         <div class="card mb-4">
           <div class="card-body py-3 px-3">

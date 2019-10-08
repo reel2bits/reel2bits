@@ -48,8 +48,10 @@
           <div class="pt-0 d-flex">
             <div class="btn-group" role="group" :aria-label="labels.ariaAlbumActions">
               <div>
-                <i class="fa fa-rss" aria-hidden="true" />
-                <a :href="album.url_feed" target="_blank">RSS feed</a>
+                <span :title="labels.titleRss">
+                  <i class="fa fa-rss" aria-hidden="true" />
+                  <a :href="album.url_feed" target="_blank">RSS feed</a>
+                </span>
 
                 <span v-if="isOwner">
                   <b-button variant="link" class="text-decoration-none"
@@ -200,7 +202,8 @@ export default {
     labels () {
       return {
         ariaAlbumActions: this.$pgettext('Content/TrackAlbum/Aria/Album actions', 'Album actions'),
-        deleteModalTitle: this.$pgettext('Content/TrackAlbum/Modal/Delete/Title', 'Deleting album')
+        deleteModalTitle: this.$pgettext('Content/TrackAlbum/Modal/Delete/Title', 'Deleting album'),
+        titleRss: this.$pgettext('Content/TrackAlbum/Content/RSS links tooltip', 'This album as a Podcast compliant RSS Feed')
       }
     }
   },
