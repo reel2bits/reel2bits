@@ -26,6 +26,7 @@
     "bootstrap": "^4.3.1",
     "bootstrap-vue": "^2.0.2",
     "core-js": "^2.6.5",
+    "cropperjs": "^1.5.6",
     "karma-mocha-reporter": "^2.2.1",
     "localforage": "^1.7.3",
     "lodash": "^4.17.15",

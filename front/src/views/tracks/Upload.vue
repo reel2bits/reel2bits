@@ -96,6 +96,45 @@
               @tags-changed="updateTags"
             />
           </b-form-group>
+
+          <div class="row">
+            <div class="col-sm-6">
+              <p v-translate translate-context="Content/TrackUpload/Text/Artwork picker" class="visibility-notice">
+                The recommended minimum size for artworks pictures is 112x112 pixels.
+              </p>
+              <p v-translate translate-context="Content/TrackUpload/Title/Artwork picker">
+                Current artwork
+              </p>
+              <img
+                :src="currentArtworkUrl"
+                class="current-artwork"
+                width="112"
+                height="112"
+              >
+            </div>
+            <div class="col-sm-6">
+              <p v-translate translate-context="Content/TrackUpload/Title/Artwork picker">
+                Set new artwork
+              </p>
+              <b-button
+                v-show="pickArtworkBtnVisible"
+                id="pick-artwork"
+                v-translate
+                class="btn"
+                type="button"
+                translate-context="Content/TrackUpload/Text/Artwork picker"
+              >
+                Upload an image
+              </b-button>
+
+              <image-cropper
+                trigger="#pick-artwork"
+                :submit-handler="submitArtwork"
+                @open="pickArtworkBtnVisible=false"
+                @close="pickArtworkBtnVisible=true"
+              />
+            </div>
+          </div>
         </div>
 
         <div class="col-md-5">
@@ -202,11 +241,13 @@ import { mapState, mapActions } from 'vuex'
 import fileSizeFormatService from '../../services/file_size_format/file_size_format.js'
 import VueSimpleSuggest from 'vue-simple-suggest'
 import VueTagsInput from '@johmun/vue-tags-input'
+import ImageCropper from '../../components/image_cropper/image_cropper.vue'
 
 export default {
   components: {
     VueSimpleSuggest,
-    VueTagsInput
+    VueTagsInput,
+    ImageCropper
   },
   mixins: [validationMixin],
   data: () => ({
@@ -220,7 +261,8 @@ export default {
       album: '__None',
       licence: 0,
       private: '',
-      tags: []
+      tags: [],
+      artwork: ''
     },
     licenceChoices: [],
     albumChoices: [],
@@ -244,7 +286,9 @@ export default {
         classes: 'class',
         rule: /^([\d\w-\s]+)$/ // Allow a-Z0-9 - _(implicit by \w) and space
       }
-    ]
+    ],
+    pickArtworkBtnVisible: true,
+    currentArtworkUrl: '/static/artwork_placeholder.svg'
   }),
   validations: {
     track: {
@@ -454,6 +498,22 @@ export default {
             })
           })
       }, 600)
+    },
+    submitArtwork (cropper, file) {
+      const that = this
+      return new Promise((resolve, reject) => {
+        function updateArtwork (avatar) {
+          that.track.artwork = avatar
+          that.currentArtworkUrl = URL.createObjectURL(avatar)
+          resolve()
+        }
+
+        if (cropper) {
+          cropper.getCroppedCanvas().toBlob(updateArtwork, file.type)
+        } else {
+          updateArtwork(file)
+        }
+      })
     }
   }
 }
