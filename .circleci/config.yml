@@ -69,9 +69,9 @@ aliases:
         - run:
             command: |
               cd front
+              npm install webpack-cli
               yarn install --frozen-lockfile
               cd node_modules/wavesurfer.js/
-              npm install webpack-cli
               npm run build
               cd -
 
