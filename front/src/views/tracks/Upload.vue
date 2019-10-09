@@ -100,7 +100,7 @@
           <div class="row">
             <div class="col-sm-6">
               <p v-translate translate-context="Content/TrackUpload/Text/Artwork picker" class="visibility-notice">
-                The recommended minimum size for artworks pictures is 112x112 pixels.
+                The recommended minimum size for artworks pictures is 112x112 pixels. JPEG, PNG or GIF only.
               </p>
               <p v-translate translate-context="Content/TrackUpload/Title/Artwork picker">
                 Current artwork
@@ -119,12 +119,10 @@
               <b-button
                 v-show="pickArtworkBtnVisible"
                 id="pick-artwork"
-                v-translate
-                class="btn"
-                type="button"
-                translate-context="Content/TrackUpload/Text/Artwork picker"
               >
-                Upload an image
+                <translate translate-context="Content/TrackUpload/Button/Artwork picker">
+                  Upload an image
+                </translate>
               </b-button>
 
               <image-cropper

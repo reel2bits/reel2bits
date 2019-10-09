@@ -15,7 +15,7 @@ from sqlalchemy import and_
 bp_api_tracks = Blueprint("bp_api_tracks", __name__)
 
 sounds = UploadSet("sounds", AUDIO)
-artworksounds = UploadSet("artworksounds", (".jpg", ".jpe", ".jpeg", ".png", ".gif"))
+artworksounds = UploadSet("artworksounds", tuple("jpg jpe jpeg png gif JPG JPE JPEG PNG GIF".split()))
 
 
 @bp_api_tracks.route("/api/tracks", methods=["POST"])

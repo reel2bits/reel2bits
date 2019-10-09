@@ -151,7 +151,15 @@ const trackUpload = (trackInfo, store) => {
   form.append('tags', trackInfo.tags.map(a => a.text))
   // let the files last for dev tools inspection
   if (trackInfo.artwork) {
-    form.append('artwork', trackInfo.artwork)
+    let filename = 'blob.invalid'
+    if (trackInfo.artwork.type === 'image/jpeg') {
+      filename = 'blob.jpg'
+    } else if (trackInfo.artwork.type === 'image/png') {
+      filename = 'blob.png'
+    } else if (trackInfo.artwork.type === 'image/gif') {
+      filename = 'blob.gif'
+    }
+    form.append('artwork', trackInfo.artwork, filename)
   }
   form.append('file', trackInfo.file)
 

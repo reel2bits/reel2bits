@@ -78,6 +78,8 @@ def to_json_track(track, account):
     si = track.sound_infos.first()
     url_orig = url_for("get_uploads_stuff", thing="sounds", stuff=track.path_sound(orig=True), _external=False)
     url_transcode = url_for("get_uploads_stuff", thing="sounds", stuff=track.path_sound(orig=False), _external=False)
+    url_artwork = url_for("get_uploads_stuff", thing="artwork_sounds", stuff=track.path_artwork(), _external=False)
+
     obj = {
         "id": track.flake_id,
         "uri": None,
@@ -110,7 +112,7 @@ def to_json_track(track, account):
             "slug": track.slug,
             "local": track.user.actor[0].is_local(),
             "title": track.title,
-            "picture_url": None,  # FIXME not implemented yet
+            "picture_url": url_artwork,
             "media_orig": url_orig,
             "media_transcoded": url_transcode,
             "waveform": (json.loads(si.waveform) if si else None),

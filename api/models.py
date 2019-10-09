@@ -337,15 +337,17 @@ class Sound(db.Model):
         el = datetime.datetime.utcnow() - self.uploaded
         return el.total_seconds()
 
-    def path_waveform(self):
-        fname, _ = os.path.splitext(self.filename)
-        return os.path.join(self.user.slug, "{0}.png".format(fname))
-
     def path_sound(self, orig=False):
         if self.transcode_needed and self.transcode_state == self.TRANSCODE_DONE and not orig:
             return os.path.join(self.user.slug, self.filename_transcoded)
         else:
             return os.path.join(self.user.slug, self.filename)
+
+    def path_artwork(self):
+        if self.artwork_filename:
+            return os.path.join(self.user.slug, self.artwork_filename)
+        else:
+            return None
 
     def licence_info(self):
         return Reel2bitsDefaults.known_licences[self.licence]

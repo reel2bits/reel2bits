@@ -2,9 +2,7 @@
 /config.py
 /.idea
 *.db
-/uploads/pictures/*
-/uploads/sounds/*
-/uploads/waveforms/
+/uploads/*/*
 /tmp/cty.xml
 /.pytest_cache/
 /api/reel2bits.egg-info
