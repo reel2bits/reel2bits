@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app
 from app_oauth import require_oauth
 from authlib.flask.oauth2 import current_token
 from forms import SoundUploadForm
@@ -514,3 +514,67 @@ def retry_processing(username_or_id, soundslug):
     )
 
     return jsonify({"trackId": sound.id})
+
+
+@bp_api_tracks.route("/api/tracks/<string:username>/<string:trackslug>/artwork", methods=["PATCH"])
+@require_oauth("write")
+def artwork(username, trackslug):
+    """
+    Change track artwork.
+    ---
+    tags:
+        - Tracks
+    security:
+        - OAuth2:
+            - write
+    parameters:
+        - name: username
+          in: path
+          type: string
+          required: true
+          description: User username
+        - name: trackslug
+          in: path
+          type: string
+          required: true
+          description: Track slug
+    responses:
+        200:
+            description: Returns ok or not.
+    """
+    current_user = current_token.user
+    if not current_user:
+        return jsonify({"error": "Unauthorized"}), 403
+
+    # Get the track
+    track = Sound.query.filter(Sound.user_id == current_user.id, Sound.slug == trackslug).first()
+    if not track:
+        return jsonify({"error": "Not found"}), 404
+
+    # Check artwork file size
+    if "artwork" not in request.files:
+        return jsonify({"error": "Artwork file missing"}), 503
+
+    artwork_uploaded = request.files["artwork"]
+    artwork_uploaded.seek(0, os.SEEK_END)
+    artwork_size = artwork_uploaded.tell()
+    artwork_uploaded.seek(0)
+    if artwork_size > Reel2bitsDefaults.artwork_size_limit:
+        return jsonify({"error": "artwork too big, 2MB maximum"}), 413  # Request Entity Too Large
+
+    # Delete old artwork
+    old_artwork = os.path.join(current_app.config["UPLOADED_ARTWORKSOUNDS_DEST"], track.path_artwork())
+    if os.path.isfile(old_artwork):
+        os.unlink(old_artwork)
+    else:
+        print(f"Error: cannot delete old track artwork: {track.id} / {track.artwork_filename}")
+
+    # Save new artwork
+    artwork_filename = get_hashed_filename(artwork_uploaded.filename)
+    artworksounds.save(artwork_uploaded, folder=current_user.slug, name=artwork_filename)
+
+    track.artwork_filename = artwork_filename
+
+    db.session.commit()
+
+    return jsonify({"status": "ok", "path": track.path_artwork()})

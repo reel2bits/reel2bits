@@ -150,6 +150,45 @@
         </div>
       </div>
     </b-form>
+
+    <hr>
+
+    <div class="row justify-content-md-center">
+      <div class="col-sm-4">
+        <p v-translate translate-context="Content/TrackEdit/Text/Artwork picker" class="visibility-notice">
+          The recommended minimum size for artworks pictures is 112x112 pixels. JPEG, PNG or GIF only.
+        </p>
+        <p v-translate translate-context="Content/TrackEdit/Title/Artwork picker">
+          Current artwork
+        </p>
+        <img
+          :src="currentArtwork"
+          class="current-artwork"
+          width="112"
+          height="112"
+        >
+      </div>
+      <div class="col-sm-4">
+        <p v-translate translate-context="Content/TrackEdit/Title/Artwork picker">
+          Set new artwork
+        </p>
+        <b-button
+          v-show="pickArtworkBtnVisible"
+          id="pick-artwork"
+        >
+          <translate translate-context="Content/TrackEdit/Button/Artwork picker">
+            Upload an image
+          </translate>
+        </b-button>
+
+        <image-cropper
+          trigger="#pick-artwork"
+          :submit-handler="submitArtwork"
+          @open="pickArtworkBtnVisible=false"
+          @close="pickArtworkBtnVisible=true"
+        />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -170,11 +209,13 @@ import { mapState } from 'vuex'
 import unescape from 'lodash/unescape'
 import VueSimpleSuggest from 'vue-simple-suggest'
 import VueTagsInput from '@johmun/vue-tags-input'
+import ImageCropper from '../../components/image_cropper/image_cropper.vue'
 
 export default {
   components: {
     VueSimpleSuggest,
-    VueTagsInput
+    VueTagsInput,
+    ImageCropper
   },
   mixins: [validationMixin],
   data: () => ({
@@ -211,7 +252,8 @@ export default {
         classes: 'class',
         rule: /^([\d\w-\s]+)$/ // Allow a-Z0-9 - _(implicit by \w) and space
       }
-    ]
+    ],
+    pickArtworkBtnVisible: true
   }),
   validations: {
     track: {
@@ -245,6 +287,13 @@ export default {
         albumLabel: this.$pgettext('Content/TrackUpload/Input.Label/Album', 'Album:'),
         licenseLabel: this.$pgettext('Content/TrackUpload/Input.Label/License', 'License:'),
         privateDescription: this.$pgettext('Content/TrackUpload/Input.Label/Private', 'A private track won\'t federate. You can use this as your unpublished drafts. Note that you can\'t replace audio file after upload.')
+      }
+    },
+    currentArtwork () {
+      if (this.trackObj && this.trackObj.picture_url) {
+        return this.trackObj.picture_url
+      } else {
+        return '/static/artwork_placeholder.svg'
       }
     }
   },
@@ -375,6 +424,26 @@ export default {
             })
           })
       }, 600)
+    },
+    submitArtwork (cropper, file) {
+      const that = this
+      return new Promise((resolve, reject) => {
+        function updateArtwork (picture) {
+          that.$store.state.api.backendInteractor.updateArtwork({ kind: 'track', objId: that.trackObj.slug, userId: that.$store.state.users.currentUser.screen_name, picture })
+            .then((res) => {
+              that.$router.push({ name: 'tracks-show', params: { username: that.$store.state.users.currentUser.screen_name, trackId: that.trackObj.slug } })
+            })
+            .catch((err) => {
+              reject(new Error(that.$pgettext('Content/TrackEdit/Error/Message', 'cannot upload artwork: ') + err.message))
+            })
+        }
+
+        if (cropper) {
+          cropper.getCroppedCanvas().toBlob(updateArtwork, file.type)
+        } else {
+          updateArtwork(file)
+        }
+      })
     }
   }
 }
