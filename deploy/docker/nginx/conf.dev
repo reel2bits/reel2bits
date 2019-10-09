@@ -103,7 +103,7 @@ http {
             alias ${UPLOADED_ARTWORKSOUNDS_DEST};
         }
 
-        location /_protected/media/artwork_albumss {
+        location /_protected/media/artwork_albums {
             alias ${UPLOADED_ARTWORKALBUMS_DEST};
         }
     }
