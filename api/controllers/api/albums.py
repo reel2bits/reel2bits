@@ -422,12 +422,13 @@ def artwork(username, albumslug):
     if artwork_size > Reel2bitsDefaults.artwork_size_limit:
         return jsonify({"error": "artwork too big, 2MB maximum"}), 413  # Request Entity Too Large
 
-    # Delete old artwork
-    old_artwork = os.path.join(current_app.config["UPLOADED_ARTWORKALBUMS_DEST"], album.path_artwork())
-    if os.path.isfile(old_artwork):
-        os.unlink(old_artwork)
-    else:
-        print(f"Error: cannot delete old artwork: {album.id} / {album.artwork_filename}")
+    # Delete old artwork if any
+    if album.artwork_filename:
+        old_artwork = os.path.join(current_app.config["UPLOADED_ARTWORKALBUMS_DEST"], album.path_artwork())
+        if os.path.isfile(old_artwork):
+            os.unlink(old_artwork)
+        else:
+            print(f"Error: cannot delete old artwork: {album.id} / {album.artwork_filename}")
 
     # Save new artwork
     artwork_filename = get_hashed_filename(artwork_uploaded.filename)
