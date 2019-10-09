@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: French (reel2bits)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-10-06 15:03+0200\n"
+"POT-Creation-Date: 2019-10-09 18:10+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: French <https://weblate.sigpipe.me/projects/reel2bits/frontend/fr/>\n"
@@ -64,7 +64,7 @@ msgctxt "Header/*/Image/Avatar alt"
 msgid "%{username} avatar"
 msgstr "avatar de %{username}"
 
-#: front/src/views/tracks/Edit.vue:158 src/views/tracks/Upload.vue:202
+#: front/src/views/tracks/Edit.vue:289 src/views/tracks/Upload.vue:334
 msgctxt "Content/TrackUpload/Input.Label/Private"
 msgid "A private track won't federate. You can use this as your unpublished drafts. Note that you can't replace audio file after upload."
 msgstr "Une piste privée ne pourra pas être fédérée. Vous pouvez utiliser ceci pour les brouillons que vous ne souhaitez pas publier. Notez que vous ne pouvez pas remplacer un fichier audio après sa mise en ligne."
@@ -74,7 +74,7 @@ msgctxt "Content/Register/Feedback/Password/Required"
 msgid "A secure password is required"
 msgstr "Un mot de passe sécurisé est requis"
 
-#: front/src/views/albums/Edit.vue:28 src/views/albums/New.vue:22
+#: front/src/views/albums/Edit.vue:34 src/views/albums/New.vue:28
 msgctxt "Content/AlbumNew/Feedback/Title/Required"
 msgid "A title is required"
 msgstr "Vous devez préciser un titre"
@@ -111,25 +111,25 @@ msgctxt "Content/UserSettings/Toast/Error/Message"
 msgid "Action in progress"
 msgstr "Changement en cours"
 
-#: front/src/views/albums/Edit.vue:147 src/views/albums/Edit.vue:168
+#: front/src/views/albums/Edit.vue:290 src/views/albums/Edit.vue:311
 #, fuzzy
 msgctxt "Content/AlbumsEdit/Toast/Error/Title"
 msgid "Album"
 msgstr "Album :"
 
-#: front/src/views/albums/New.vue:122
+#: front/src/views/albums/New.vue:259
 #, fuzzy
 msgctxt "Content/AlbumsNew/Toast/Error/Title"
 msgid "Album"
 msgstr "Album :"
 
-#: front/src/views/albums/Show.vue:166
+#: front/src/views/albums/Show.vue:208
 #, fuzzy
 msgctxt "Content/TrackAlbum/Aria/Album actions"
 msgid "Album actions"
 msgstr "Albums"
 
-#: front/src/views/tracks/Edit.vue:156 src/views/tracks/Upload.vue:200
+#: front/src/views/tracks/Edit.vue:287 src/views/tracks/Upload.vue:332
 msgctxt "Content/TrackUpload/Input.Label/Album"
 msgid "Album:"
 msgstr "Album :"
@@ -150,6 +150,11 @@ msgctxt "Content/UserProfile/Tab/Text"
 msgid "Albums"
 msgstr "Albums"
 
+#: front/src/components/sidebar/sidebar.vue:8
+msgctxt "Content/UserProfile/Sidebar/RSS Feed"
+msgid "All user tracks:"
+msgstr ""
+
 #: front/src/components/register/register.vue:231
 msgctxt "Content/Register/Toast/Error/Message"
 msgid "An error occured"
@@ -161,12 +166,12 @@ msgctxt "Content/UserSettings/Toast/Error/Message"
 msgid "An error occured while deleting the account"
 msgstr "une erreur est survenue lors de la suppression de cette piste."
 
-#: front/src/views/tracks/Show.vue:481
+#: front/src/views/tracks/Show.vue:512
 msgctxt "Content/TrackShow/Error"
 msgid "an error occured while deleting the track."
 msgstr "une erreur est survenue lors de la suppression de cette piste."
 
-#: front/src/views/tracks/Show.vue:245
+#: front/src/views/tracks/Show.vue:272
 msgctxt "Content/TrackShow/ErrorOccured text"
 msgid "An error occured while processing the track, you can click the following link to retry (if it's only a one-time temporary error)."
 msgstr ""
@@ -182,7 +187,7 @@ msgctxt "Content/TrackAlbum/Toast/Error/Message"
 msgid "An error occured, please try again later"
 msgstr "Une erreur est survenue, merci de réessayer plus tard"
 
-#: front/src/views/albums/Show.vue:65
+#: front/src/views/albums/Show.vue:71
 #, fuzzy
 msgctxt "Content/AlbumShow/Modal/Delete/Content"
 msgid "Are you sure you want to delete '%{ title }' ?"
@@ -217,7 +222,7 @@ msgctxt "Content/UserSettings/Input.Label/Bio"
 msgid "Bio (optional):"
 msgstr "Biographie (optionelle) :"
 
-#: front/src/views/tracks/Show.vue:192
+#: front/src/views/tracks/Show.vue:219
 msgctxt "Content/TrackShow/Track metadata"
 msgid "Bit rate"
 msgstr "Taux de transfert"
@@ -227,17 +232,23 @@ msgctxt "Content/Register/Feedback/PasswordConfirm/NotSameAsPassword"
 msgid "Both passwords needs to match"
 msgstr "Les deux mots de passe doivent être identiques"
 
-#: front/src/views/albums/Edit.vue:66
+#: front/src/views/albums/Edit.vue:112
 msgctxt "Content/AlbumEdit/Link/Cancel"
 msgid "Cancel"
 msgstr "Annuler"
 
-#: front/src/views/tracks/Edit.vue:90
+#: front/src/components/image_cropper/image_cropper.vue:138
+#, fuzzy
+msgctxt "Content/ImageCropper/Button/Label"
+msgid "Cancel"
+msgstr "Annuler"
+
+#: front/src/views/tracks/Edit.vue:138
 msgctxt "Content/TrackEdit/Button/Cancel"
 msgid "Cancel"
 msgstr "Annuler"
 
-#: front/src/views/albums/Edit.vue:146
+#: front/src/views/albums/Edit.vue:289
 #, fuzzy
 msgctxt "Content/AlbumsEdit/Toast/Error/Message"
 msgid "Cannot fetch album"
@@ -249,19 +260,61 @@ msgctxt "Content/UserFollowings/Toast/Error/Message"
 msgid "Cannot fetch followings"
 msgstr "Suivis par l'utilisateur"
 
-#: front/src/views/tracks/Edit.vue:172
+#: front/src/views/albums/Edit.vue:324
+#, fuzzy
+msgctxt "Content/AlbumEdit/Toast/Error/Message"
+msgid "Cannot fetch genres"
+msgstr "Impossible de réinitialiser le mot de passe"
+
+#: front/src/views/albums/New.vue:272
+#, fuzzy
+msgctxt "Content/AlbumsNew/Toast/Error/Message"
+msgid "Cannot fetch genres"
+msgstr "Impossible de réinitialiser le mot de passe"
+
+#: front/src/views/tracks/Edit.vue:396
+#, fuzzy
+msgctxt "Content/TracksEdit/Toast/Error/Message"
+msgid "Cannot fetch genres"
+msgstr "Impossible de réinitialiser le mot de passe"
+
+#: front/src/views/tracks/Upload.vue:468
+#, fuzzy
+msgctxt "Content/TracksUpload/Toast/Error/Message"
+msgid "Cannot fetch genres"
+msgstr "Impossible de réinitialiser le mot de passe"
+
+#: front/src/views/tracks/Edit.vue:313
 #, fuzzy
 msgctxt "Content/TracksEdit/Toast/Error/Message"
 msgid "Cannot fetch known licenses"
 msgstr "Erreur lors de la récupération des licences"
 
-#: front/src/views/tracks/Upload.vue:239
+#: front/src/views/tracks/Upload.vue:374
 #, fuzzy
 msgctxt "Content/TracksUpload/Toast/Error/Message"
 msgid "Cannot fetch known licenses"
 msgstr "Erreur lors de la récupération des licences"
 
-#: front/src/views/tracks/Edit.vue:218
+#: front/src/views/albums/Edit.vue:347
+#, fuzzy
+msgctxt "Content/AlbumEdit/Toast/Error/Message"
+msgid "Cannot fetch tags"
+msgstr "Impossible de réinitialiser le mot de passe"
+
+#: front/src/views/albums/New.vue:295
+#, fuzzy
+msgctxt "Content/AlbumsNew/Toast/Error/Message"
+msgid "Cannot fetch tags"
+msgstr "Impossible de réinitialiser le mot de passe"
+
+#: front/src/views/tracks/Edit.vue:419 src/views/tracks/Upload.vue:491
+#, fuzzy
+msgctxt "Content/TracksUpload/Toast/Error/Message"
+msgid "Cannot fetch tags"
+msgstr "Impossible de réinitialiser le mot de passe"
+
+#: front/src/views/tracks/Edit.vue:361
 msgctxt "Content/TracksEdit/Toast/Error/Message"
 msgid "Cannot fetch track"
 msgstr ""
@@ -284,13 +337,13 @@ msgctxt "Content/UserProfile/Toast/Error/Message"
 msgid "Cannot fetch user"
 msgstr "Impossible de réinitialiser le mot de passe"
 
-#: front/src/views/tracks/Edit.vue:192
+#: front/src/views/tracks/Edit.vue:333
 #, fuzzy
 msgctxt "Content/TracksEdit/Toast/Error/Message"
 msgid "Cannot fetch user albums"
 msgstr "Erreur lors de la récupération des albums"
 
-#: front/src/views/tracks/Upload.vue:259
+#: front/src/views/tracks/Upload.vue:394
 #, fuzzy
 msgctxt "Content/TracksUpload/Toast/Error/Message"
 msgid "Cannot fetch user albums"
@@ -301,7 +354,7 @@ msgctxt "Content/Album/Toast/Error/Title"
 msgid "Cannot find track."
 msgstr ""
 
-#: front/src/views/albums/Show.vue:313
+#: front/src/views/albums/Show.vue:356
 msgctxt "Content/TrackAlbum/Toast/Error/Title"
 msgid "Cannot find track."
 msgstr ""
@@ -342,17 +395,27 @@ msgctxt "Content/PasswordResetToken/Toast/Error/Message"
 msgid "Cannot reset password"
 msgstr "Impossible de réinitialiser le mot de passe"
 
-#: front/src/views/tracks/Show.vue:505
+#: front/src/views/tracks/Show.vue:536
 #, fuzzy
 msgctxt "Content/TrackShow/Toast/Info/Message"
 msgid "Cannot reset processing."
 msgstr "Impossible de réinitialiser le mot de passe"
 
-#: front/src/views/albums/New.vue:121
+#: front/src/views/albums/New.vue:258
 #, fuzzy
 msgctxt "Content/AlbumsNew/Toast/Error/Message"
 msgid "Cannot save album"
 msgstr "Créer un nouvel album"
+
+#: front/src/views/albums/Edit.vue:365
+msgctxt "Content/AlbumEdit/Error/Message"
+msgid "cannot upload artwork: "
+msgstr ""
+
+#: front/src/views/tracks/Edit.vue:437
+msgctxt "Content/TrackEdit/Error/Message"
+msgid "cannot upload artwork: "
+msgstr ""
 
 #: front/src/views/account/Logs.vue:31
 msgctxt "Content/Logs(user)/Table/Heading"
@@ -379,12 +442,12 @@ msgctxt "Content/UserSettings/Button/Change password"
 msgid "Change password"
 msgstr "Changer de mot de passe"
 
-#: front/src/views/tracks/Show.vue:172
+#: front/src/views/tracks/Show.vue:199
 msgctxt "Content/TrackShow/Track metadata"
 msgid "Channels"
 msgstr "Chaînes"
 
-#: front/src/views/tracks/Show.vue:162
+#: front/src/views/tracks/Show.vue:189
 msgctxt "Content/TrackShow/Track metadata"
 msgid "Codec"
 msgstr "Codec"
@@ -404,7 +467,7 @@ msgctxt "Content/Register/Input.Label/PasswordConfirm"
 msgid "Confirm password:"
 msgstr "Confirmez le mot de passe :"
 
-#: front/src/views/albums/New.vue:55
+#: front/src/views/albums/New.vue:141
 msgctxt "Content/AlbumNew/Button/Create"
 msgid "Create"
 msgstr "Créer"
@@ -414,17 +477,35 @@ msgctxt "Header/*/DropDown/Create"
 msgid "Create"
 msgstr "Créer"
 
-#: front/src/views/albums/New.vue:3
+#: front/src/views/albums/New.vue:4
 msgctxt "Content/AlbumNew/Headline"
 msgid "Create a new album"
 msgstr "Créer un nouvel album"
+
+#: front/src/views/albums/New.vue:107
+#, fuzzy
+msgctxt "Content/AlbumNew/Title/Artwork picker"
+msgid "Current artwork"
+msgstr "Mot de passe actuel :"
+
+#: front/src/views/tracks/Edit.vue:160
+#, fuzzy
+msgctxt "Content/TrackEdit/Title/Artwork picker"
+msgid "Current artwork"
+msgstr "Mot de passe actuel :"
+
+#: front/src/views/albums/Edit.vue:132 src/views/tracks/Upload.vue:104
+#, fuzzy
+msgctxt "Content/TrackUpload/Title/Artwork picker"
+msgid "Current artwork"
+msgstr "Mot de passe actuel :"
 
 #: front/src/components/user_settings/user_settings.vue:195
 msgctxt "Content/UserSettings/Input.Label/Password"
 msgid "Current password:"
 msgstr "Mot de passe actuel :"
 
-#: front/src/views/tracks/Upload.vue:221
+#: front/src/views/tracks/Upload.vue:353
 msgctxt "Content/TrackUpload/Alert/Quota"
 msgid "Current quota: %{cur} of %{max}. %{rem} remaining."
 msgstr ""
@@ -434,13 +515,13 @@ msgctxt "Content/Logs(user)/Table/Heading"
 msgid "Date"
 msgstr "Date"
 
-#: front/src/views/tracks/Show.vue:314
+#: front/src/views/tracks/Show.vue:345
 #, fuzzy
 msgctxt "Content/Track(Logs)/Table/Heading"
 msgid "Date"
 msgstr "Date"
 
-#: front/src/views/albums/Show.vue:60
+#: front/src/views/albums/Show.vue:66
 #, fuzzy
 msgctxt "Content/AlbumShow/Button"
 msgid "Delete"
@@ -456,13 +537,13 @@ msgctxt "Content/UserSettings/Button"
 msgid "Delete my account"
 msgstr ""
 
-#: front/src/views/albums/Show.vue:167
+#: front/src/views/albums/Show.vue:209
 #, fuzzy
 msgctxt "Content/TrackAlbum/Modal/Delete/Title"
 msgid "Deleting album"
 msgstr "Supprimer la piste"
 
-#: front/src/views/tracks/Show.vue:359
+#: front/src/views/tracks/Show.vue:390
 msgctxt "Content/TrackShow/Modal/Delete/Title"
 msgid "Deleting track"
 msgstr "Supprimer la piste"
@@ -472,12 +553,12 @@ msgctxt "Content/About/Headline/Description"
 msgid "Description"
 msgstr "Description"
 
-#: front/src/views/albums/Edit.vue:123 src/views/albums/New.vue:104
+#: front/src/views/albums/Edit.vue:252 src/views/albums/New.vue:236
 msgctxt "Content/AlbumNew/Input.Label/Description"
 msgid "Description:"
 msgstr "Description :"
 
-#: front/src/views/tracks/Edit.vue:154 src/views/tracks/Upload.vue:197
+#: front/src/views/tracks/Edit.vue:283 src/views/tracks/Upload.vue:329
 msgctxt "Content/TrackUpload/Input.Label/Description"
 msgid "Description:"
 msgstr "Description :"
@@ -513,7 +594,7 @@ msgctxt "Content/TrackShow/Button"
 msgid "Download"
 msgstr "Télécharger"
 
-#: front/src/views/tracks/Show.vue:104
+#: front/src/views/tracks/Show.vue:131
 msgctxt "Content/TrackShow/Track infos"
 msgid "Download links:"
 msgstr "Liens de téléchargement :"
@@ -524,18 +605,18 @@ msgctxt "Content/UserProfile/Tab/Text"
 msgid "Drafts"
 msgstr "Brouillons"
 
-#: front/src/views/albums/Edit.vue:60
+#: front/src/views/albums/Edit.vue:106
 msgctxt "Content/AlbumEdit/Button/Edit"
 msgid "Edit"
 msgstr "Éditer"
 
-#: front/src/views/albums/Show.vue:53
+#: front/src/views/albums/Show.vue:59
 #, fuzzy
 msgctxt "Content/AlbumShow/Button"
 msgid "Edit"
 msgstr "Éditer"
 
-#: front/src/views/tracks/Edit.vue:84
+#: front/src/views/tracks/Edit.vue:132
 msgctxt "Content/TrackEdit/Button/Edit"
 msgid "Edit"
 msgstr "Éditer"
@@ -545,24 +626,24 @@ msgctxt "Content/TrackShow/Button"
 msgid "Edit"
 msgstr "Éditer"
 
-#: front/src/views/albums/Edit.vue:10
+#: front/src/views/albums/Edit.vue:11
 msgctxt "Content/AlbumEdit/Headline"
 msgid "Edit album"
 msgstr "Éditer l'album"
 
-#: front/src/views/albums/Edit.vue:167
+#: front/src/views/albums/Edit.vue:310
 #, fuzzy
 msgctxt "Content/AlbumsEdit/Toast/Error/Message"
 msgid "Edit failed"
 msgstr "Éditer l'album"
 
-#: front/src/views/tracks/Edit.vue:239
+#: front/src/views/tracks/Edit.vue:382
 #, fuzzy
 msgctxt "Content/TracksEdit/Toast/Error/Message"
 msgid "Edit failed"
 msgstr "Éditer l'album"
 
-#: front/src/views/tracks/Edit.vue:10
+#: front/src/views/tracks/Edit.vue:11
 msgctxt "Content/TrackEdit/Headline"
 msgid "Edit track"
 msgstr "Éditer la piste"
@@ -623,12 +704,12 @@ msgctxt "Content/UserSettings/Toast/Error/Message"
 msgid "Error changing password"
 msgstr "Erreur lors du changement du mot de passe"
 
-#: front/src/views/tracks/Edit.vue:190 src/views/tracks/Upload.vue:257
+#: front/src/views/tracks/Edit.vue:331 src/views/tracks/Upload.vue:392
 msgctxt "Content/TrackUpload/Error"
 msgid "Error fetching albums"
 msgstr "Erreur lors de la récupération des albums"
 
-#: front/src/views/tracks/Edit.vue:170 src/views/tracks/Upload.vue:237
+#: front/src/views/tracks/Edit.vue:311 src/views/tracks/Upload.vue:372
 msgctxt "Content/TrackUpload/Error"
 msgid "Error fetching licenses"
 msgstr "Erreur lors de la récupération des licences"
@@ -681,22 +762,22 @@ msgctxt "Content/UserSettings/Alert/Error saving"
 msgid "Error saving settings."
 msgstr "Erreur lors de la sauvegarde des paramètres."
 
-#: front/src/views/albums/Show.vue:336
+#: front/src/views/albums/Show.vue:379
 msgctxt "Content/TrackAlbum/Toast/Error/Message"
 msgid "Failed"
 msgstr ""
 
-#: front/src/views/tracks/Upload.vue:319
+#: front/src/views/tracks/Upload.vue:454
 msgctxt "Content/TrackUpload/Error"
 msgid "File is too big for the current remaining quota"
 msgstr ""
 
-#: front/src/views/tracks/Show.vue:221
+#: front/src/views/tracks/Show.vue:248
 msgctxt "Content/TrackShow/Track metadata"
 msgid "File size"
 msgstr ""
 
-#: front/src/views/tracks/Show.vue:202
+#: front/src/views/tracks/Show.vue:229
 msgctxt "Content/TrackShow/Track metadata/Size"
 msgid "File size"
 msgstr ""
@@ -706,7 +787,7 @@ msgctxt "Content/Quota(user)/Table/Heading"
 msgid "File Size"
 msgstr ""
 
-#: front/src/views/tracks/Upload.vue:302
+#: front/src/views/tracks/Upload.vue:437
 msgctxt "Content/TrackUpload/Error"
 msgid "file too big: "
 msgstr "fichier trop volumineux : "
@@ -790,12 +871,43 @@ msgctxt "Content/About/Headline/FrontendVersion"
 msgid "Frontend version: %{ frontVersion }"
 msgstr "Version du front-end : %{ frontVersion }"
 
+#: front/src/views/albums/Edit.vue:254
+msgctxt "Content/AlbumNew/Input.Label/Genre"
+msgid "Genre:"
+msgstr ""
+
+#: front/src/views/albums/New.vue:238 src/views/tracks/Edit.vue:285
+#: front/src/views/tracks/Upload.vue:327
+msgctxt "Content/TrackUpload/Input.Label/Genre"
+msgid "Genre:"
+msgstr ""
+
+#: front/src/views/albums/Edit.vue:325
+msgctxt "Content/AlbumEdit/Toast/Error/Title"
+msgid "Genres"
+msgstr ""
+
+#: front/src/views/albums/New.vue:273
+msgctxt "Content/AlbumsNew/Toast/Error/Title"
+msgid "Genres"
+msgstr ""
+
+#: front/src/views/tracks/Edit.vue:397
+msgctxt "Content/TracksEdit/Toast/Error/Title"
+msgid "Genres"
+msgstr ""
+
+#: front/src/views/tracks/Upload.vue:469
+msgctxt "Content/TracksUpload/Toast/Error/Title"
+msgid "Genres"
+msgstr ""
+
 #: front/src/App.vue:123
 msgctxt "Header/*/Image/Avatar title"
 msgid "go to my profile"
 msgstr "aller a mon profil"
 
-#: front/src/views/tracks/Edit.vue:152 src/views/tracks/Upload.vue:195
+#: front/src/views/tracks/Edit.vue:281 src/views/tracks/Upload.vue:325
 msgctxt "Content/TrackUpload/Input.Label/Title"
 msgid "If no title provided, the filename will be used."
 msgstr "Le nom du fichier sera utilisé si aucun titre n'est fourni."
@@ -810,17 +922,35 @@ msgctxt "Content/UserSettings/Input.Label/Lang"
 msgid "Language:"
 msgstr "Langage :"
 
-#: front/src/views/albums/Edit.vue:29 src/views/albums/New.vue:23
+#: front/src/views/albums/Edit.vue:68
+#, fuzzy
+msgctxt "Content/AlbumEdit/Feedback/Genre/LengthLimit"
+msgid "Length is limited to 250 characters"
+msgstr "Longueur limitée à 250 caractères"
+
+#: front/src/views/albums/New.vue:63
+#, fuzzy
+msgctxt "Content/AlbumNew/Feedback/Genre/LengthLimit"
+msgid "Length is limited to 250 characters"
+msgstr "Longueur limitée à 250 caractères"
+
+#: front/src/views/albums/Edit.vue:35 src/views/albums/New.vue:29
 msgctxt "Content/AlbumNew/Feedback/Title/LengthLimit"
 msgid "Length is limited to 250 characters"
 msgstr "Longueur limitée à 250 caractères"
 
-#: front/src/views/tracks/Edit.vue:29
+#: front/src/views/tracks/Edit.vue:35
 msgctxt "Content/TrackEdit/Feedback/Title/LengthLimit"
 msgid "Length is limited to 250 characters"
 msgstr "Longueur limitée à 250 caractères"
 
-#: front/src/views/tracks/Upload.vue:37
+#: front/src/views/tracks/Edit.vue:68 src/views/tracks/Upload.vue:76
+#, fuzzy
+msgctxt "Content/TrackUpload/Feedback/Genre/LengthLimit"
+msgid "Length is limited to 250 characters"
+msgstr "Longueur limitée à 250 caractères"
+
+#: front/src/views/tracks/Upload.vue:42
 msgctxt "Content/TrackUpload/Feedback/Title/LengthLimit"
 msgid "Length is limited to 250 characters"
 msgstr "Longueur limitée à 250 caractères"
@@ -830,18 +960,18 @@ msgctxt "Content/Logs(user)/Table/Heading"
 msgid "Level"
 msgstr "Niveau"
 
-#: front/src/views/tracks/Show.vue:318
+#: front/src/views/tracks/Show.vue:349
 #, fuzzy
 msgctxt "Content/Track(Logs)/Table/Heading"
 msgid "Level"
 msgstr "Niveau"
 
-#: front/src/views/tracks/Show.vue:94 src/views/tracks/Show.vue:99
+#: front/src/views/tracks/Show.vue:121 src/views/tracks/Show.vue:126
 msgctxt "Content/TrackShow/Track infos"
 msgid "Licence:"
 msgstr "Licence :"
 
-#: front/src/views/tracks/Edit.vue:157 src/views/tracks/Upload.vue:201
+#: front/src/views/tracks/Edit.vue:288 src/views/tracks/Upload.vue:333
 msgctxt "Content/TrackUpload/Input.Label/License"
 msgid "License:"
 msgstr "Licence :"
@@ -883,12 +1013,12 @@ msgctxt "Header/*/DropDown/User/Logs"
 msgid "Logs"
 msgstr "Logs"
 
-#: front/src/views/tracks/Upload.vue:214
+#: front/src/views/tracks/Upload.vue:346
 msgctxt "Content/TrackUpload/File.Description"
 msgid "Maximum file size: %{maxSize}"
 msgstr ""
 
-#: front/src/views/tracks/Upload.vue:209
+#: front/src/views/tracks/Upload.vue:341
 msgctxt "Content/TrackUpload/File.Description"
 msgid "Maximum file size: %{maxSize}, current file: %{curSize}"
 msgstr ""
@@ -898,23 +1028,23 @@ msgctxt "Content/Logs(user)/Table/Heading"
 msgid "Message"
 msgstr "Message"
 
-#: front/src/views/tracks/Show.vue:322
+#: front/src/views/tracks/Show.vue:353
 #, fuzzy
 msgctxt "Content/Track(Logs)/Table/Heading"
 msgid "Message"
 msgstr "Message"
 
-#: front/src/views/tracks/Show.vue:137
+#: front/src/views/tracks/Show.vue:164
 msgctxt "Content/TrackShow/Track metadatas tab title"
 msgid "Metadatas"
 msgstr "Métadonnées"
 
-#: front/src/views/tracks/Show.vue:145
+#: front/src/views/tracks/Show.vue:172
 msgctxt "Content/TrackShow/Track metadatas headline"
 msgid "Metadatas of the original file"
 msgstr "Métadonnées du fichier originel"
 
-#: front/src/views/tracks/Show.vue:214
+#: front/src/views/tracks/Show.vue:241
 #, fuzzy
 msgctxt "Content/TrackShow/Track metadatas headline"
 msgid "Metadatas of the transcoded file"
@@ -955,12 +1085,32 @@ msgctxt "Header/*/DropDown/Create/NewTrack text"
 msgid "New Track"
 msgstr "Nouvelle Piste"
 
+#: front/src/views/albums/Show.vue:89
+msgctxt "Content/AlbumShow/Album genre"
+msgid "No genre defined"
+msgstr ""
+
+#: front/src/views/tracks/Show.vue:88
+msgctxt "Content/TrackShow/Track genre"
+msgid "No genre defined"
+msgstr ""
+
+#: front/src/views/albums/Show.vue:106
+msgctxt "Content/AlbumShow/Album tags"
+msgid "No tags"
+msgstr ""
+
+#: front/src/views/tracks/Show.vue:105
+msgctxt "Content/TrackShow/Track tags"
+msgid "No tags"
+msgstr ""
+
 #: front/src/components/album/album.vue:34
 msgctxt "Content/Album/TracksList/Empty"
 msgid "No tracks in this album"
 msgstr ""
 
-#: front/src/views/albums/Show.vue:176
+#: front/src/views/albums/Show.vue:219
 msgctxt "Content/TrackAlbum/Toast/Error/Message"
 msgid "Not found"
 msgstr ""
@@ -970,17 +1120,17 @@ msgctxt "Content/Timeline/*/Empty"
 msgid "Nothing to show"
 msgstr "Rien à afficher ici"
 
-#: front/src/views/albums/Edit.vue:124 src/views/albums/New.vue:105
+#: front/src/views/albums/Edit.vue:253 src/views/albums/New.vue:237
 msgctxt "Content/AlbumNew/Input.Placeholder/Description"
 msgid "Optional, what is this album about ?"
 msgstr "Optionnel, quel est le sujet de l'album ?"
 
-#: front/src/views/tracks/Edit.vue:155 src/views/tracks/Upload.vue:198
+#: front/src/views/tracks/Edit.vue:284 src/views/tracks/Upload.vue:330
 msgctxt "Content/TrackUpload/Input.Placeholder/Description"
 msgid "Optional, what is this track about ?"
 msgstr "Optionnel, quel est le sujet de la piste ?"
 
-#: front/src/views/tracks/Show.vue:106
+#: front/src/views/tracks/Show.vue:133
 msgctxt "Content/TrackShow/Track infos dls"
 msgid "original"
 msgstr "original"
@@ -1047,7 +1197,7 @@ msgctxt "Content/Login/Feedback/Password/Required"
 msgid "Please enter your password"
 msgstr "Merci d'entrer votre mot de passe"
 
-#: front/src/views/tracks/Show.vue:496
+#: front/src/views/tracks/Show.vue:527
 msgctxt "Content/TrackShow/Toast/Info/Message"
 msgid "Processing resetted."
 msgstr ""
@@ -1077,7 +1227,7 @@ msgctxt "Header/*/DropDown/User/Quota"
 msgid "Quota"
 msgstr ""
 
-#: front/src/components/sidebar/sidebar.vue:7
+#: front/src/components/sidebar/sidebar.vue:19
 msgctxt "Content/UserProfile/Sidebar/Quota"
 msgid "Quota: %{ quotaSlashRepr }"
 msgstr ""
@@ -1118,25 +1268,36 @@ msgctxt "Content/PasswordResetToken/Headline/Reset password"
 msgid "Reset password"
 msgstr "Réinitialiser le mot de passe"
 
-#: front/src/views/tracks/Show.vue:366
+#: front/src/views/tracks/Show.vue:397
 msgctxt "Content/TrackShow/Button/Text"
 msgid "retry"
 msgstr ""
 
-#: front/src/views/tracks/Show.vue:364
+#: front/src/views/tracks/Show.vue:395
 msgctxt "Content/TrackShow/Button/Text"
 msgid "retry scheduled"
 msgstr ""
 
-#: front/src/views/tracks/Show.vue:182
+#: front/src/views/tracks/Show.vue:209
 msgctxt "Content/TrackShow/Track metadata"
 msgid "Sample rate"
 msgstr "Taux d'échantillonage"
+
+#: front/src/components/image_cropper/image_cropper.vue:132
+#, fuzzy
+msgctxt "Content/ImageCropper/Button/Label"
+msgid "Save"
+msgstr "Sauvegarder"
 
 #: front/src/components/user_settings/user_settings.vue:65
 msgctxt "Content/UserSettings/Button/Save"
 msgid "Save"
 msgstr "Sauvegarder"
+
+#: front/src/components/image_cropper/image_cropper.vue:135
+msgctxt "Content/ImageCropper/Button/Label"
+msgid "Save without cropping"
+msgstr ""
 
 #: front/src/components/user_settings/user_settings.vue:225
 #, fuzzy
@@ -1163,6 +1324,21 @@ msgstr "Sécurité"
 msgctxt "Content/PasswordReset/Button/Send reset email"
 msgid "Send reset email"
 msgstr "Envoyer un email de réinitialisation"
+
+#: front/src/views/albums/New.vue:118
+msgctxt "Content/AlbumNew/Title/Artwork picker"
+msgid "Set new artwork"
+msgstr ""
+
+#: front/src/views/tracks/Edit.vue:171
+msgctxt "Content/TrackEdit/Title/Artwork picker"
+msgid "Set new artwork"
+msgstr ""
+
+#: front/src/views/albums/Edit.vue:143 src/views/tracks/Upload.vue:115
+msgctxt "Content/TrackUpload/Title/Artwork picker"
+msgid "Set new artwork"
+msgstr ""
 
 #: front/src/components/user_settings/user_settings.vue:226
 #: front/src/components/user_settings/user_settings.vue:236
@@ -1195,9 +1371,35 @@ msgctxt "Content/About/Link/Prefix"
 msgid "Source:"
 msgstr "Code source :"
 
-#: front/src/views/albums/Show.vue:328
+#: front/src/views/albums/Show.vue:371
 msgctxt "Content/TrackAlbum/Toast/Error/Message"
 msgid "Success"
+msgstr ""
+
+#: front/src/views/albums/Edit.vue:348
+msgctxt "Content/AlbumEdit/Toast/Error/Title"
+msgid "Tags"
+msgstr ""
+
+#: front/src/views/albums/New.vue:296
+msgctxt "Content/AlbumsNew/Toast/Error/Title"
+msgid "Tags"
+msgstr ""
+
+#: front/src/views/tracks/Edit.vue:420 src/views/tracks/Upload.vue:492
+msgctxt "Content/TracksUpload/Toast/Error/Title"
+msgid "Tags"
+msgstr ""
+
+#: front/src/views/albums/Edit.vue:255
+msgctxt "Content/AlbumNew/Input.Label/Tags"
+msgid "Tags:"
+msgstr ""
+
+#: front/src/views/albums/New.vue:239 src/views/tracks/Edit.vue:286
+#: front/src/views/tracks/Upload.vue:328
+msgctxt "Content/TrackUpload/Input.Label/Tags"
+msgid "Tags:"
 msgstr ""
 
 #: front/src/App.vue:76
@@ -1205,32 +1407,52 @@ msgctxt "*/*/Content/Alert"
 msgid "The backend cannot be reached properly, some functions might not work."
 msgstr ""
 
+#: front/src/views/albums/New.vue:104
+msgctxt "Content/AlbumNew/Text/Artwork picker"
+msgid "The recommended minimum size for artworks pictures is 112x112 pixels. JPEG, PNG or GIF only."
+msgstr ""
+
+#: front/src/views/tracks/Edit.vue:157
+msgctxt "Content/TrackEdit/Text/Artwork picker"
+msgid "The recommended minimum size for artworks pictures is 112x112 pixels. JPEG, PNG or GIF only."
+msgstr ""
+
+#: front/src/views/albums/Edit.vue:129 src/views/tracks/Upload.vue:101
+msgctxt "Content/TrackUpload/Text/Artwork picker"
+msgid "The recommended minimum size for artworks pictures is 112x112 pixels. JPEG, PNG or GIF only."
+msgstr ""
+
 #: front/src/components/timeline_tabs/timeline_tabs.vue:19
 msgctxt "Content/TimelineTabs/Text/Tab"
 msgid "The Whole Known Network"
 msgstr "Ensemble du réseau connu"
 
-#: front/src/views/albums/Edit.vue:45
+#: front/src/views/albums/Show.vue:210
+msgctxt "Content/TrackAlbum/Content/RSS links tooltip"
+msgid "This album as a Podcast compliant RSS Feed"
+msgstr ""
+
+#: front/src/views/albums/Edit.vue:91
 msgctxt "Content/AlbumEdit/Input.Label/Private album"
 msgid "this album is private"
 msgstr "cet album est privé"
 
-#: front/src/views/albums/New.vue:40
+#: front/src/views/albums/New.vue:86
 msgctxt "Content/AlbumNew/Input.Label/Private album"
 msgid "this album is private"
 msgstr "cet album est privé"
 
-#: front/src/views/tracks/Show.vue:237
+#: front/src/views/tracks/Show.vue:264
 msgctxt "Content/TrackShow/Track not processed alert"
 msgid "This song is not yet processed."
 msgstr ""
 
-#: front/src/views/tracks/Edit.vue:69
+#: front/src/views/tracks/Edit.vue:117
 msgctxt "Content/TrackEdit/Input.Label/Private track"
 msgid "this track is private"
 msgstr "cet album est privé"
 
-#: front/src/views/tracks/Upload.vue:108
+#: front/src/views/tracks/Upload.vue:192
 msgctxt "Content/TrackUpload/Input.Label/Private track"
 msgid "this track is private"
 msgstr "cet album est privé"
@@ -1245,22 +1467,28 @@ msgctxt "Content/Timeline/Toast/Error/Title"
 msgid "Timeline"
 msgstr ""
 
-#: front/src/views/albums/Edit.vue:121 src/views/albums/New.vue:102
+#: front/src/views/albums/Edit.vue:250 src/views/albums/New.vue:234
 msgctxt "Content/AlbumNew/Input.Label/Email"
 msgid "Title:"
 msgstr "Titre :"
 
-#: front/src/views/tracks/Edit.vue:151 src/views/tracks/Upload.vue:194
+#: front/src/views/tracks/Edit.vue:280
 msgctxt "Content/TrackUpload/Input.Label/Email"
 msgid "Title:"
 msgstr "Titre :"
 
-#: front/src/views/tracks/Show.vue:358
+#: front/src/views/tracks/Upload.vue:324
+#, fuzzy
+msgctxt "Content/TrackUpload/Input.Label/Title"
+msgid "Title:"
+msgstr "Titre :"
+
+#: front/src/views/tracks/Show.vue:389
 msgctxt "Content/TrackShow/Aria/Track actions"
 msgid "Track actions"
 msgstr "Actions sur la piste"
 
-#: front/src/views/tracks/Upload.vue:199
+#: front/src/views/tracks/Upload.vue:331
 msgctxt "Content/TrackUpload/Input.Label/File"
 msgid "Track file:"
 msgstr "Fichier de la piste :"
@@ -1276,26 +1504,26 @@ msgctxt "Content/TrackShow/Alert/Not available"
 msgid "Track not yet available."
 msgstr "Piste non disponible pour le moment."
 
-#: front/src/views/tracks/Show.vue:497 src/views/tracks/Show.vue:506
+#: front/src/views/tracks/Show.vue:528 src/views/tracks/Show.vue:537
 #, fuzzy
 msgctxt "Content/TrackShow/Toast/Info/Title"
 msgid "Track processing"
 msgstr "Actions sur la piste"
 
-#: front/src/views/albums/Show.vue:329 src/views/albums/Show.vue:337
+#: front/src/views/albums/Show.vue:372 src/views/albums/Show.vue:380
 msgctxt "Content/TrackAlbum/Toast/Error/Title"
 msgid "Track reordering"
 msgstr ""
 
-#: front/src/views/tracks/Edit.vue:173 src/views/tracks/Edit.vue:193
-#: front/src/views/tracks/Edit.vue:219 src/views/tracks/Edit.vue:240
+#: front/src/views/tracks/Edit.vue:314 src/views/tracks/Edit.vue:334
+#: front/src/views/tracks/Edit.vue:362 src/views/tracks/Edit.vue:383
 #, fuzzy
 msgctxt "Content/TracksEdit/Toast/Error/Title"
 msgid "Tracks"
 msgstr "Pistes"
 
-#: front/src/views/tracks/Upload.vue:240 src/views/tracks/Upload.vue:260
-#: front/src/views/tracks/Upload.vue:280
+#: front/src/views/tracks/Upload.vue:375 src/views/tracks/Upload.vue:395
+#: front/src/views/tracks/Upload.vue:415
 #, fuzzy
 msgctxt "Content/TracksUpload/Toast/Error/Title"
 msgid "Tracks"
@@ -1317,7 +1545,7 @@ msgctxt "Content/UserProfile/Tab/Text"
 msgid "Tracks"
 msgstr "Pistes"
 
-#: front/src/views/tracks/Show.vue:106
+#: front/src/views/tracks/Show.vue:133
 msgctxt "Content/TrackShow/Track infos dls"
 msgid "transcoded mp3"
 msgstr "MP3 transcodé"
@@ -1327,7 +1555,7 @@ msgctxt "Content/Quota(user)/Table/Heading"
 msgid "Transcoding Size"
 msgstr ""
 
-#: front/src/views/tracks/Show.vue:152
+#: front/src/views/tracks/Show.vue:179
 msgctxt "Content/TrackShow/Track metadata"
 msgid "Type"
 msgstr "Type"
@@ -1347,17 +1575,35 @@ msgctxt "Content/UserProfile/Tab/Text"
 msgid "Unprocessed"
 msgstr ""
 
-#: front/src/views/tracks/Upload.vue:123
+#: front/src/views/tracks/Upload.vue:207
 msgctxt "Content/TrackUpload/Button/Upload"
 msgid "Upload"
 msgstr "Mettre en ligne"
 
-#: front/src/views/tracks/Upload.vue:10
+#: front/src/views/tracks/Upload.vue:11
 msgctxt "Content/TrackUpload/Headline"
 msgid "Upload a new track"
 msgstr "Mettre en ligne une nouvelle piste"
 
-#: front/src/views/tracks/Upload.vue:279
+#: front/src/views/albums/New.vue:125
+#, fuzzy
+msgctxt "Content/AlbumNew/Button/Artwork picker"
+msgid "Upload an image"
+msgstr "Mettre en ligne"
+
+#: front/src/views/tracks/Edit.vue:178
+#, fuzzy
+msgctxt "Content/TrackEdit/Button/Artwork picker"
+msgid "Upload an image"
+msgstr "Mettre en ligne"
+
+#: front/src/views/albums/Edit.vue:150 src/views/tracks/Upload.vue:122
+#, fuzzy
+msgctxt "Content/TrackUpload/Button/Artwork picker"
+msgid "Upload an image"
+msgstr "Mettre en ligne"
+
+#: front/src/views/tracks/Upload.vue:414
 #, fuzzy
 msgctxt "Content/TracksUpload/Toast/Error/Message"
 msgid "Upload failed"
@@ -1368,7 +1614,7 @@ msgctxt "Content/Track/Single track in timelines, part of 'XXX >>uploaded a trac
 msgid "uploaded a track %{publishedAgo}"
 msgstr ""
 
-#: front/src/views/albums/Show.vue:177
+#: front/src/views/albums/Show.vue:220
 #, fuzzy
 msgctxt "Content/TrackAlbum/Toast/Error/Title"
 msgid "User"
@@ -1430,7 +1676,7 @@ msgctxt "Content/Register/Feedback/PasswordConfirm/Required"
 msgid "You need to confirm your password"
 msgstr "Vous devez confirmer votre mot de passe"
 
-#: front/src/views/albums/Edit.vue:122 src/views/albums/New.vue:103
+#: front/src/views/albums/Edit.vue:251 src/views/albums/New.vue:235
 msgctxt "Content/AlbumNew/Input.Placeholder/Title"
 msgid "Your album title."
 msgstr "Le titre de votre album."
@@ -1465,7 +1711,7 @@ msgctxt "Content/TimelineTabs/Text/Tab"
 msgid "Your feed"
 msgstr "Votre flux"
 
-#: front/src/views/tracks/Edit.vue:153 src/views/tracks/Upload.vue:196
+#: front/src/views/tracks/Edit.vue:282 src/views/tracks/Upload.vue:326
 msgctxt "Content/TrackUpload/Input.Placeholder/Title"
 msgid "Your track title."
 msgstr "Le titre de votre piste."
