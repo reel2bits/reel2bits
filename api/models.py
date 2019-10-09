@@ -373,14 +373,21 @@ class Sound(db.Model):
         if os.path.isfile(fname):
             os.unlink(fname)
         else:
-            print(f"!!! COMMIT DELETE cannot delete orig file {fname}")
+            print(f"!!! COMMIT DELETE SOUND cannot delete orig file {fname}")
 
         if self.transcode_needed:
             fname = os.path.join(current_app.config["UPLOADED_SOUNDS_DEST"], self.path_sound(orig=False))
             if os.path.isfile(fname):
                 os.unlink(fname)
             else:
-                print(f"!!! COMMIT DELETE cannot delete transcoded file {fname}")
+                print(f"!!! COMMIT DELETE SOUND cannot delete transcoded file {fname}")
+
+        if self.artwork_filename:
+            fname = os.path.join(current_app.config["UPLOADED_ARTWORKSOUNDS_DEST"], self.path_artwork())
+            if os.path.isfile(fname):
+                os.unlink(fname)
+            else:
+                print(f"!!! COMMIT DELETE SOUND cannot delete artwork file {fname}")
 
 
 class Album(db.Model):
@@ -418,6 +425,15 @@ class Album(db.Model):
         else:
             return None
 
+    # Delete files file when COMMIT DELETE
+    def __commit_delete__(self):
+        if self.artwork_filename:
+            fname = os.path.join(current_app.config["UPLOADED_ARTWORKALBUMS_DEST"], self.path_artwork())
+            if os.path.isfile(fname):
+                os.unlink(fname)
+            else:
+                print(f"!!! COMMIT DELETE ALBUM cannot delete artwork file {fname}")
+
 
 @event.listens_for(Sound, "after_update")
 @event.listens_for(Sound, "after_insert")
@@ -442,6 +458,7 @@ def generate_sound_flakeid(mapper, connection, target):
 
 
 @event.listens_for(Sound, "after_delete")
+@event.listens_for(Album, "after_delete")
 def delete_files(mapper, connection, target):
     target.__commit_delete__()
 
