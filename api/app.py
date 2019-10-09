@@ -252,11 +252,11 @@ def create_app(config_filename="config.development.Config", app_name=None, regis
     configure_uploads(app, sounds)
 
     # Album artwork upload set
-    artworkalbums = UploadSet("artworkalbums", tuple("jpg jpe jpeg png gif JPG JPE JPEG PNG GIF".split()))
+    artworkalbums = UploadSet("artworkalbums", Reel2bitsDefaults.artwork_extensions_allowed)
     configure_uploads(app, artworkalbums)
 
     # Track artwork upload set
-    artworksounds = UploadSet("artworksounds", tuple("jpg jpe jpeg png gif JPG JPE JPEG PNG GIF".split()))
+    artworksounds = UploadSet("artworksounds", Reel2bitsDefaults.artwork_extensions_allowed)
     configure_uploads(app, artworksounds)
 
     # Total max size upload for the whole app

@@ -111,6 +111,10 @@
       </div>
 
       <div>
+        <p>{{ album.description }}</p>
+      </div>
+
+      <div>
         <draggable ref="draggable" tag="ul" :list="tracksList"
                    class="list-group"
                    handle=".handle" :disabled="!isOwner"

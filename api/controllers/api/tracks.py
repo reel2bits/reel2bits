@@ -10,12 +10,13 @@ from datas_helpers import to_json_track, to_json_account, to_json_relationship
 from os.path import splitext
 import os
 from sqlalchemy import and_
+from utils.defaults import Reel2bitsDefaults
 
 
 bp_api_tracks = Blueprint("bp_api_tracks", __name__)
 
 sounds = UploadSet("sounds", AUDIO)
-artworksounds = UploadSet("artworksounds", tuple("jpg jpe jpeg png gif JPG JPE JPEG PNG GIF".split()))
+artworksounds = UploadSet("artworksounds", Reel2bitsDefaults.artwork_extensions_allowed)
 
 
 @bp_api_tracks.route("/api/tracks", methods=["POST"])
@@ -60,13 +61,12 @@ def upload():
         return jsonify({"error": "quota limit reached"}), 507  # Insufficient storage
 
     # Do the same with the artwork
-    print(request.files)
     if "artwork" in request.files:
         artwork_uploaded = request.files["artwork"]
         artwork_uploaded.seek(0, os.SEEK_END)
         artwork_size = artwork_uploaded.tell()
         artwork_uploaded.seek(0)
-        if artwork_size > 2000000:  # Max size of 2MB
+        if artwork_size > Reel2bitsDefaults.artwork_size_limit:  # Max size of 2MB
             return jsonify({"error": "artwork too big, 2MB maximum"}), 413  # Request Entity Too Large
     else:
         artwork_uploaded = None
@@ -80,16 +80,14 @@ def upload():
         # Save the track file
         sounds.save(file_uploaded, folder=current_user.slug, name=filename_hashed)
 
-        # Save the artwork
-        if artwork_uploaded:
-            artwork_filename = get_hashed_filename(artwork_uploaded.filename)
-            artworksounds.save(artwork_uploaded, folder=current_user.slug, name=artwork_filename)
-
         rec = Sound()
         rec.filename = filename_hashed
         rec.filename_orig = filename_orig
 
+        # Save the artwork
         if artwork_uploaded:
+            artwork_filename = get_hashed_filename(artwork_uploaded.filename)
+            artworksounds.save(artwork_uploaded, folder=current_user.slug, name=artwork_filename)
             rec.artwork_filename = artwork_filename
 
         rec.licence = form.licence.data

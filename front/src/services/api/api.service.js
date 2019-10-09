@@ -370,6 +370,18 @@ const albumNew = (albumInfo, store) => {
   form.append('private', albumInfo.private)
   form.append('genre', albumInfo.genre)
   form.append('tags', albumInfo.tags.map(a => a.text))
+  // let the files last for dev tools inspection
+  if (albumInfo.artwork) {
+    let filename = 'blob.invalid'
+    if (albumInfo.artwork.type === 'image/jpeg') {
+      filename = 'blob.jpg'
+    } else if (albumInfo.artwork.type === 'image/png') {
+      filename = 'blob.png'
+    } else if (albumInfo.artwork.type === 'image/gif') {
+      filename = 'blob.gif'
+    }
+    form.append('artwork', albumInfo.artwork, filename)
+  }
 
   return fetch(ALBUMS_NEW_URL, {
     body: form,

@@ -4,12 +4,17 @@ from authlib.flask.oauth2 import current_token
 from forms import AlbumForm
 from models import db, Album, User, Sound, SoundTag
 import json
-from utils.various import add_user_log
+from utils.various import add_user_log, get_hashed_filename
 from datas_helpers import to_json_relationship, to_json_account, to_json_album
 from sqlalchemy import and_
+from flask_uploads import UploadSet
+from utils.defaults import Reel2bitsDefaults
+import os
 
 
 bp_api_albums = Blueprint("bp_api_albums", __name__)
+
+artworkalbums = UploadSet("artworkalbums", Reel2bitsDefaults.artwork_extensions_allowed)
 
 
 @bp_api_albums.route("/api/albums", methods=["POST"])
@@ -31,6 +36,17 @@ def new():
     if not current_user:
         return jsonify({"error": "Unauthorized"}), 403
 
+    # Check artwork file size
+    if "artwork" in request.files:
+        artwork_uploaded = request.files["artwork"]
+        artwork_uploaded.seek(0, os.SEEK_END)
+        artwork_size = artwork_uploaded.tell()
+        artwork_uploaded.seek(0)
+        if artwork_size > Reel2bitsDefaults.artwork_size_limit:
+            return jsonify({"error": "artwork too big, 2MB maximum"}), 413  # Request Entity Too Large
+    else:
+        artwork_uploaded = None
+
     form = AlbumForm()
 
     if form.validate_on_submit():
@@ -40,6 +56,12 @@ def new():
         rec.private = form.private.data
         rec.description = form.description.data
         rec.genre = form.genre.data
+
+        # Save the artwork
+        if artwork_uploaded:
+            artwork_filename = get_hashed_filename(artwork_uploaded.filename)
+            artworkalbums.save(artwork_uploaded, folder=current_user.slug, name=artwork_filename)
+            rec.artwork_filename = artwork_filename
 
         # Handle tags
         tags = form.tags.data.split(",")

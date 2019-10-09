@@ -88,7 +88,11 @@ def album(user_id, album_id):
     feed_url = request.url
     url = f"https://{current_app.config['AP_DOMAIN']}/{user.name}/album/{album.title}"
     author = {"name": user.name, "uri": f"https://{current_app.config['AP_DOMAIN']}/{user.name}"}
-    logo = None or f"https://{current_app.config['AP_DOMAIN']}/static/artwork_placeholder.png"
+
+    if album.path_artwork():
+        logo = url_for("get_uploads_stuff", thing="artwork_albums", stuff=album.path_artwork(), _external=True)
+    else:
+        logo = None
 
     categories = [album.genre]
 

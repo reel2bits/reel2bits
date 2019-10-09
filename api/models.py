@@ -412,6 +412,12 @@ class Album(db.Model):
         el = datetime.datetime.utcnow() - self.created
         return el.total_seconds()
 
+    def path_artwork(self):
+        if self.artwork_filename:
+            return os.path.join(self.user.slug, self.artwork_filename)
+        else:
+            return None
+
 
 @event.listens_for(Sound, "after_update")
 @event.listens_for(Sound, "after_insert")

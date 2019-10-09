@@ -500,9 +500,9 @@ export default {
     submitArtwork (cropper, file) {
       const that = this
       return new Promise((resolve, reject) => {
-        function updateArtwork (avatar) {
-          that.track.artwork = avatar
-          that.currentArtworkUrl = URL.createObjectURL(avatar)
+        function updateArtwork (picture) {
+          that.track.artwork = picture
+          that.currentArtworkUrl = URL.createObjectURL(picture)
           resolve()
         }
 

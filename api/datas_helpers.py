@@ -78,7 +78,10 @@ def to_json_track(track, account):
     si = track.sound_infos.first()
     url_orig = url_for("get_uploads_stuff", thing="sounds", stuff=track.path_sound(orig=True), _external=False)
     url_transcode = url_for("get_uploads_stuff", thing="sounds", stuff=track.path_sound(orig=False), _external=False)
-    url_artwork = url_for("get_uploads_stuff", thing="artwork_sounds", stuff=track.path_artwork(), _external=False)
+    if track.path_artwork():
+        url_artwork = url_for("get_uploads_stuff", thing="artwork_sounds", stuff=track.path_artwork(), _external=False)
+    else:
+        url_artwork = None
 
     obj = {
         "id": track.flake_id,
@@ -150,6 +153,11 @@ def to_json_track(track, account):
 
 def to_json_album(album, account):
     url_feed = url_for("bp_feeds.album", user_id=album.user.id, album_id=album.id, _external=False)
+    if album.path_artwork():
+        url_artwork = url_for("get_uploads_stuff", thing="artwork_albums", stuff=album.path_artwork(), _external=False)
+    else:
+        url_artwork = None
+
     obj = {
         "id": album.flake_id,
         "uri": None,
@@ -182,7 +190,7 @@ def to_json_album(album, account):
             "slug": album.slug,
             "local": True,  # NOTE, albums doesn't federate (yet)
             "title": album.title,
-            "picture_url": None,  # FIXME not implemented yet
+            "picture_url": url_artwork,
             "private": album.private,
             "uploaded_elapsed": album.elapsed(),
             "tracks_count": album.sounds.count(),
