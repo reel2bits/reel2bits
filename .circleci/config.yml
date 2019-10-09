@@ -70,6 +70,10 @@ aliases:
             command: |
               cd front
               yarn install --frozen-lockfile
+              cd node_modules/wavesurfer.js/
+              npm run build
+              cd -
+
         - save_cache:
             key: v1-node-depdencies-{{ checksum "front/yarn.lock" }}
             paths:
