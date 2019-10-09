@@ -11,6 +11,7 @@ const TRACKS_FETCH_URL = (username, id) => `/api/tracks/${username}/${id}`
 const TRACKS_EDIT_URL = (username, id) => `/api/tracks/${username}/${id}`
 const TRACKS_DELETE_URL = (username, id) => `/api/tracks/${username}/${id}`
 const TRACKS_LOGS_URL = (username, id) => `/api/tracks/${username}/${id}/logs`
+const TRACKS_UPDATE_ARTWORK_URL = (username, id) => `/api/tracks/${username}/${id}/artwork`
 const TRACKS_RETRY_PROCESSING_URL = (username, id) => `/api/tracks/${username}/${id}/retry_processing`
 
 const ALBUMS_NEW_URL = '/api/albums'
@@ -18,6 +19,7 @@ const ALBUMS_FETCH_URL = (username, id) => `/api/albums/${username}/${id}`
 const ALBUMS_EDIT_URL = (username, id) => `/api/albums/${username}/${id}`
 const ALBUM_REORDER_URL = (username, id) => `/api/albums/${username}/${id}/reorder`
 const ALBUMS_DELETE_URL = (username, id) => `/api/albums/${username}/${id}`
+const ALBUMS_UPDATE_ARTWORK_URL = (username, id) => `/api/albums/${username}/${id}/artwork`
 
 const ACCOUNT_LOGS_URL = (username, currentPage, perPage) => `/api/users/${username}/logs?page=${currentPage}&page_size=${perPage}`
 const ACCOUNT_QUOTA_URL = (username, currentPage, perPage) => `/api/users/${username}/quota?page=${currentPage}&page_size=${perPage}`
@@ -656,6 +658,38 @@ const deleteUser = ({ userId, credentials }) => {
     .then((data) => data.json())
 }
 
+const updateArtwork = ({ kind, objId, userId, picture, credentials }) => {
+  let url = null
+  if (kind === 'album') {
+    url = ALBUMS_UPDATE_ARTWORK_URL(userId, objId)
+  } else if (kind === 'track') {
+    url = TRACKS_UPDATE_ARTWORK_URL(userId, objId)
+  }
+
+  const form = new FormData()
+  let filename = 'blob.invalid'
+  if (picture.type === 'image/jpeg') {
+    filename = 'blob.jpg'
+  } else if (picture.type === 'image/png') {
+    filename = 'blob.png'
+  } else if (picture.type === 'image/gif') {
+    filename = 'blob.gif'
+  }
+  form.append('artwork', picture, filename)
+
+  return fetch(url, {
+    headers: authHeaders(credentials),
+    method: 'PATCH',
+    body: form
+  }).then((response) => {
+    if (response.ok) {
+      return response.json()
+    } else {
+      return response.json().then((error) => { throw new Error(error.error) })
+    }
+  })
+}
+
 const apiService = {
   verifyCredentials,
   register,
@@ -687,7 +721,8 @@ const apiService = {
   fetchFollowers,
   deleteUser,
   fetchGenres,
-  fetchTags
+  fetchTags,
+  updateArtwork
 }
 
 export default apiService

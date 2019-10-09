@@ -1,121 +1,167 @@
 <template>
-  <div class="row justify-content-md-center">
-    <div class="col-md-6">
-      <b-alert v-if="fetchErrors.length > 0" variant="danger" show
-               dismissible
-               @dismissed="fetchErrors=[]"
-      >
-        <span v-for="error in fetchErrors" :key="error">{{ error }}</span>
-      </b-alert>
-
-      <h4 v-translate translate-context="Content/AlbumEdit/Headline">
-        Edit album
-      </h4>
-      <b-form class="edit-album-form" enctype="multipart/form-data" @submit.prevent="edit(album)">
-        <b-form-group
-          id="ig-title"
-          :class="{ 'form-group--error': $v.album.title.$error }"
-          :label="labels.titleLabel"
-          label-for="title"
+  <div>
+    <div class="row justify-content-md-center">
+      <div class="col-md-6">
+        <b-alert v-if="fetchErrors.length > 0" variant="danger" show
+                 dismissible
+                 @dismissed="fetchErrors=[]"
         >
-          <b-form-input
-            id="title"
-            v-model.trim="$v.album.title.$model"
-            :placeholder="labels.titlePlaceholder"
-            :state="$v.album.title.$dirty ? !$v.album.title.$error : null"
-            aria-describedby="title-live-feedback"
-          />
-          <b-form-invalid-feedback id="title-live-feedback">
-            <span v-if="!$v.album.title.required" v-translate translate-context="Content/AlbumNew/Feedback/Title/Required">A title is required</span>
-            <span v-if="!$v.album.title.maxLength" v-translate translate-context="Content/AlbumNew/Feedback/Title/LengthLimit">Length is limited to 250 characters</span>
-          </b-form-invalid-feedback>
-        </b-form-group>
-
-        <b-form-group
-          id="ig-description"
-          :label="labels.descriptionLabel"
-          label-for="description"
-        >
-          <b-form-textarea
-            id="description"
-            v-model="album.description"
-            :placeholder="labels.descriptionPlaceholder"
-          />
-        </b-form-group>
-
-        <b-form-group
-          id="ig-genre"
-          :class="{ 'form-group--error': $v.album.genre.$error }"
-          :label="labels.genreLabel"
-          label-for="genre"
-        >
-          <vue-simple-suggest
-            v-model="$v.album.genre.$model"
-            :list="getGenres"
-            :filter-by-query="true"
-            :styles="autoCompleteStyle"
-            :destyled="true"
-            :min-length="genresAutoComplete.minLength"
-            :max-suggestions="genresAutoComplete.maxSuggestions"
-          />
-
-          <b-form-invalid-feedback id="genre-live-feedback">
-            <span v-if="!$v.album.genre.maxLength" v-translate translate-context="Content/AlbumEdit/Feedback/Genre/LengthLimit">Length is limited to 250 characters</span>
-          </b-form-invalid-feedback>
-        </b-form-group>
-
-        <b-form-group
-          id="ig-tags"
-          :class="{ 'form-group--error': false }"
-          :label="labels.tagLabel"
-          label-for="tag"
-        >
-          <vue-tags-input
-            v-model="curTag"
-            :tags="album.tags"
-            :autocomplete-items="autocompleteTags"
-            :add-only-from-autocomplete="false"
-            :allow-edit-tags="true"
-            :max-tags="10"
-            :validation="tagsValidations"
-            :maxlength="25"
-            @tags-changed="updateTags"
-          />
-        </b-form-group>
-
-        <b-form-checkbox
-          v-if="!alreadyFederated"
-          id="private"
-          v-model="album.private"
-          v-translate
-          name="private"
-          value="y"
-          unchecked-value=""
-          translate-context="Content/AlbumEdit/Input.Label/Private album"
-        >
-          this album is private
-        </b-form-checkbox>
-
-        <br>
-
-        <b-button v-translate type="submit" variant="primary"
-                  translate-context="Content/AlbumEdit/Button/Edit"
-        >
-          Edit
-        </b-button>
-
-        <b-button v-translate variant="warning" :to="{ name: 'albums-show', params: { username: userName, albumId: albumId } }"
-                  translate-context="Content/AlbumEdit/Link/Cancel"
-        >
-          Cancel
-        </b-button>
-
-        <br>
-
-        <b-alert v-if="albumEditError" variant="danger" show>
-          <span>{{ error }}</span>
+          <span v-for="error in fetchErrors" :key="error">{{ error }}</span>
         </b-alert>
-      </b-form>
+
+        <h4 v-translate translate-context="Content/AlbumEdit/Headline" class="text-center">
+          Edit album
+        </h4>
+      </div>
+    </div>
+
+    <div class="row justify-content-md-center">
+      <div class="col-md-5">
+        <b-form class="edit-album-form" enctype="multipart/form-data" @submit.prevent="edit(album)">
+          <b-form-group
+            id="ig-title"
+            :class="{ 'form-group--error': $v.album.title.$error }"
+            :label="labels.titleLabel"
+            label-for="title"
+          >
+            <b-form-input
+              id="title"
+              v-model.trim="$v.album.title.$model"
+              :placeholder="labels.titlePlaceholder"
+              :state="$v.album.title.$dirty ? !$v.album.title.$error : null"
+              aria-describedby="title-live-feedback"
+            />
+            <b-form-invalid-feedback id="title-live-feedback">
+              <span v-if="!$v.album.title.required" v-translate translate-context="Content/AlbumNew/Feedback/Title/Required">A title is required</span>
+              <span v-if="!$v.album.title.maxLength" v-translate translate-context="Content/AlbumNew/Feedback/Title/LengthLimit">Length is limited to 250 characters</span>
+            </b-form-invalid-feedback>
+          </b-form-group>
+
+          <b-form-group
+            id="ig-description"
+            :label="labels.descriptionLabel"
+            label-for="description"
+          >
+            <b-form-textarea
+              id="description"
+              v-model="album.description"
+              :placeholder="labels.descriptionPlaceholder"
+            />
+          </b-form-group>
+
+          <b-form-group
+            id="ig-genre"
+            :class="{ 'form-group--error': $v.album.genre.$error }"
+            :label="labels.genreLabel"
+            label-for="genre"
+          >
+            <vue-simple-suggest
+              v-model="$v.album.genre.$model"
+              :list="getGenres"
+              :filter-by-query="true"
+              :styles="autoCompleteStyle"
+              :destyled="true"
+              :min-length="genresAutoComplete.minLength"
+              :max-suggestions="genresAutoComplete.maxSuggestions"
+            />
+
+            <b-form-invalid-feedback id="genre-live-feedback">
+              <span v-if="!$v.album.genre.maxLength" v-translate translate-context="Content/AlbumEdit/Feedback/Genre/LengthLimit">Length is limited to 250 characters</span>
+            </b-form-invalid-feedback>
+          </b-form-group>
+
+          <b-form-group
+            id="ig-tags"
+            :class="{ 'form-group--error': false }"
+            :label="labels.tagLabel"
+            label-for="tag"
+          >
+            <vue-tags-input
+              v-model="curTag"
+              :tags="album.tags"
+              :autocomplete-items="autocompleteTags"
+              :add-only-from-autocomplete="false"
+              :allow-edit-tags="true"
+              :max-tags="10"
+              :validation="tagsValidations"
+              :maxlength="25"
+              @tags-changed="updateTags"
+            />
+          </b-form-group>
+
+          <b-form-checkbox
+            v-if="!alreadyFederated"
+            id="private"
+            v-model="album.private"
+            v-translate
+            name="private"
+            value="y"
+            unchecked-value=""
+            translate-context="Content/AlbumEdit/Input.Label/Private album"
+          >
+            this album is private
+          </b-form-checkbox>
+
+          <br>
+
+          <b-button v-translate type="submit" variant="primary"
+                    translate-context="Content/AlbumEdit/Button/Edit"
+          >
+            Edit
+          </b-button>
+
+          <b-button v-translate variant="warning" :to="{ name: 'albums-show', params: { username: userName, albumId: albumId } }"
+                    translate-context="Content/AlbumEdit/Link/Cancel"
+          >
+            Cancel
+          </b-button>
+
+          <br>
+
+          <b-alert v-if="albumEditError" variant="danger" show>
+            <span>{{ error }}</span>
+          </b-alert>
+        </b-form>
+      </div>
+
+      <div class="col-md-5">
+        <div class="row">
+          <div class="col-sm-6">
+            <p v-translate translate-context="Content/TrackUpload/Text/Artwork picker" class="visibility-notice">
+              The recommended minimum size for artworks pictures is 112x112 pixels. JPEG, PNG or GIF only.
+            </p>
+            <p v-translate translate-context="Content/TrackUpload/Title/Artwork picker">
+              Current artwork
+            </p>
+            <img
+              :src="currentArtwork"
+              class="current-artwork"
+              width="112"
+              height="112"
+            >
+          </div>
+          <div class="col-sm-6">
+            <p v-translate translate-context="Content/TrackUpload/Title/Artwork picker">
+              Set new artwork
+            </p>
+            <b-button
+              v-show="pickArtworkBtnVisible"
+              id="pick-artwork"
+            >
+              <translate translate-context="Content/TrackUpload/Button/Artwork picker">
+                Upload an image
+              </translate>
+            </b-button>
+
+            <image-cropper
+              trigger="#pick-artwork"
+              :submit-handler="submitArtwork"
+              @open="pickArtworkBtnVisible=false"
+              @close="pickArtworkBtnVisible=true"
+            />
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -137,11 +183,13 @@ import { mapState } from 'vuex'
 import unescape from 'lodash/unescape'
 import VueSimpleSuggest from 'vue-simple-suggest'
 import VueTagsInput from '@johmun/vue-tags-input'
+import ImageCropper from '../../components/image_cropper/image_cropper.vue'
 
 export default {
   components: {
     VueSimpleSuggest,
-    VueTagsInput
+    VueTagsInput,
+    ImageCropper
   },
   mixins: [validationMixin],
   data: () => ({
@@ -175,7 +223,8 @@ export default {
         classes: 'class',
         rule: /^([\d\w-\s]+)$/ // Allow a-Z0-9 - _(implicit by \w) and space
       }
-    ]
+    ],
+    pickArtworkBtnVisible: true
   }),
   validations: {
     album: {
@@ -204,6 +253,13 @@ export default {
         descriptionPlaceholder: this.$pgettext('Content/AlbumNew/Input.Placeholder/Description', 'Optional, what is this album about ?'),
         genreLabel: this.$pgettext('Content/AlbumNew/Input.Label/Genre', 'Genre:'),
         tagLabel: this.$pgettext('Content/AlbumNew/Input.Label/Tags', 'Tags:')
+      }
+    },
+    currentArtwork () {
+      if (this.albumObj && this.albumObj.picture_url) {
+        return this.albumObj.picture_url
+      } else {
+        return '/static/artwork_placeholder.svg'
       }
     }
   },
@@ -296,6 +352,26 @@ export default {
             })
           })
       }, 600)
+    },
+    submitArtwork (cropper, file) {
+      const that = this
+      return new Promise((resolve, reject) => {
+        function updateArtwork (picture) {
+          that.$store.state.api.backendInteractor.updateArtwork({ kind: 'album', objId: that.albumObj.slug, userId: that.$store.state.users.currentUser.screen_name, picture })
+            .then((res) => {
+              that.$router.push({ name: 'albums-show', params: { username: that.$store.state.users.currentUser.screen_name, albumId: that.albumObj.slug } })
+            })
+            .catch((err) => {
+              reject(new Error(that.$pgettext('Content/AlbumEdit/Error/Message', 'cannot upload artwork: ') + err.message))
+            })
+        }
+
+        if (cropper) {
+          cropper.getCroppedCanvas().toBlob(updateArtwork, file.type)
+        } else {
+          updateArtwork(file)
+        }
+      })
     }
   }
 }

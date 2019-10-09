@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, current_app
 from app_oauth import require_oauth
 from authlib.flask.oauth2 import current_token
 from forms import AlbumForm
@@ -374,3 +374,67 @@ def reorder(username, albumslug):
     resp = to_json_album(album, account)
 
     return jsonify(resp)
+
+
+@bp_api_albums.route("/api/albums/<string:username>/<string:albumslug>/artwork", methods=["PATCH"])
+@require_oauth("write")
+def artwork(username, albumslug):
+    """
+    Change album artwork.
+    ---
+    tags:
+        - Albums
+    security:
+        - OAuth2:
+            - write
+    parameters:
+        - name: username
+          in: path
+          type: string
+          required: true
+          description: User username
+        - name: albumslug
+          in: path
+          type: string
+          required: true
+          description: Album slug
+    responses:
+        200:
+            description: Returns ok or not.
+    """
+    current_user = current_token.user
+    if not current_user:
+        return jsonify({"error": "Unauthorized"}), 403
+
+    # Get the album
+    album = Album.query.filter(Album.user_id == current_user.id, Album.slug == albumslug).first()
+    if not album:
+        return jsonify({"error": "Not found"}), 404
+
+    # Check artwork file size
+    if "artwork" not in request.files:
+        return jsonify({"error": "Artwork file missing"}), 503
+
+    artwork_uploaded = request.files["artwork"]
+    artwork_uploaded.seek(0, os.SEEK_END)
+    artwork_size = artwork_uploaded.tell()
+    artwork_uploaded.seek(0)
+    if artwork_size > Reel2bitsDefaults.artwork_size_limit:
+        return jsonify({"error": "artwork too big, 2MB maximum"}), 413  # Request Entity Too Large
+
+    # Delete old artwork
+    old_artwork = os.path.join(current_app.config["UPLOADED_ARTWORKALBUMS_DEST"], album.path_artwork())
+    if os.path.isfile(old_artwork):
+        os.unlink(old_artwork)
+    else:
+        print(f"Error: cannot delete old artwork: {album.id} / {album.artwork_filename}")
+
+    # Save new artwork
+    artwork_filename = get_hashed_filename(artwork_uploaded.filename)
+    artworkalbums.save(artwork_uploaded, folder=current_user.slug, name=artwork_filename)
+
+    album.artwork_filename = artwork_filename
+
+    db.session.commit()
+
+    return jsonify({"status": "ok", "path": album.path_artwork()})
