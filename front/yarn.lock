@@ -10666,10 +10666,9 @@ watchpack@^1.6.0:
     graceful-fs "^4.1.2"
     neo-async "^2.5.0"
 
-wavesurfer.js@^3.1.0:
+wavesurfer.js@katspaugh/wavesurfer.js#master:
   version "3.1.0"
-  resolved "https://registry.yarnpkg.com/wavesurfer.js/-/wavesurfer.js-3.1.0.tgz#e6c8726afe7c3908550f4c07a0183c0f63724243"
-  integrity sha512-ip4NesZYmRVHGHukxRSXGRtqlKMKvqnWxD0JTJTCHyQk1GyQnASxL7zOrY+e6WRFL4/iDNiw96zDKAr9eNtuqg==
+  resolved "https://codeload.github.com/katspaugh/wavesurfer.js/tar.gz/9f1ed9064ea86e736cc9d4051ffe0a2bfb4d74b3"
 
 wbuf@^1.1.0, wbuf@^1.7.3:
   version "1.7.3"
