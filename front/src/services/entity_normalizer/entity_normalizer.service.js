@@ -116,6 +116,7 @@ export const parseUser = (data) => {
     output.reel2bits.lang = data.reel2bits.lang || 'en'
     output.reel2bits.quota_limit = data.reel2bits.quota_limit
     output.reel2bits.quota_count = data.reel2bits.quota_count
+    output.reel2bits.url_feed = data.reel2bits.url_feed
   }
 
   if (data.pleroma) {
@@ -143,6 +144,7 @@ export const parseStatus = (data) => {
   output.picture_url = (data.reel2bits.picture_url || '/static/artwork_placeholder.svg')
   output.media_orig = data.reel2bits.media_orig
   output.media_transcoded = data.reel2bits.media_transcoded
+  output.url_feed = data.reel2bits.url_feed
   output.waveform = data.reel2bits.waveform
   output.private = data.reel2bits.private
   output.uploaded_on = data.created_at
@@ -152,6 +154,8 @@ export const parseStatus = (data) => {
   output.favorited = data.favorited
   output.reblogged = data.reblogged
   output.comments = 0 // FIXME TODO
+  output.genre = data.reel2bits.genre
+  output.tags = data.reel2bits.tags
 
   output.type = (data.reel2bits.type || 'status')
 

@@ -175,6 +175,12 @@ export default {
       this.logoSpinDuration = dur
     },
     autodetectLanguage () {
+      if (this.currentUser) {
+        console.log('logged in user, overriding language with account setting:', this.currentUser.reel2bits.lang)
+        this.$store.dispatch('setOption', { name: 'interfaceLanguage', value: this.currentUser.reel2bits.lang })
+        return
+      }
+      console.log('user not logged in, detecting language...')
       let userLanguage = navigator.language || navigator.userLanguage
       let available = locales.locales.map(e => { return e.code })
       let candidate

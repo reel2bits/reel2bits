@@ -13,10 +13,11 @@ class Config(BaseConfig):
     # Set your DB URI
     SQLALCHEMY_DATABASE_URI = "postgresql+psycopg2://dashie@localhost/reel2bits"
 
-    # Don't forget that SOUNDS and WAVEFORMS have to be under DEFAULT path folder
+    # Don't forget that SOUNDS and ARTWORKS, etc. have to be under DEFAULT path folder
     UPLOADS_DEFAULT_DEST = "/Users/dashie/dev/reel2bits/uploads"
     UPLOADED_SOUNDS_DEST = "/Users/dashie/dev/reel2bits/uploads/sounds"
-    UPLOADED_WAVEFORMS_DEST = "/Users/dashie/dev/reel2bits/uploads/waveforms"
+    UPLOADED_ARTWORKALBUMS_DEST = "/Users/dashie/dev/reel2bits/uploads/artwork_albums"
+    UPLOADED_ARTWORKSOUNDS_DEST = "/Users/dashie/dev/reel2bits/uploads/artwork_sounds"
 
     # Where is the audiowaveform binary located
     AUDIOWAVEFORM_BIN = "/usr/local/bin/audiowaveform"

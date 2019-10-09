@@ -82,6 +82,33 @@
         </div>
       </div>
 
+      <!-- genre and tags -->
+      <div class="d-flex p-2">
+        <div class="p-2">
+          <i class="fa fa-folder-o" aria-hidden="true" />
+          <translate v-if="!track.genre" translate-context="Content/TrackShow/Track genre">
+            No genre defined
+          </translate>
+          <template v-else>
+            {{ track.genre }}
+          </template>
+        </div>
+
+        <div class="p-2">
+          <i class="fa fa-tags" aria-hidden="true" />
+          <template v-if="track.tags.length > 0">
+            <b-badge v-for="tag in track.tags" :key="tag" pill
+                     class="tags_pill" variant="info"
+            >
+              {{ tag }}
+            </b-badge>
+          </template>
+          <translate v-else translate-context="Content/TrackShow/Track tags">
+            No tags
+          </translate>
+        </div>
+      </div>
+
       <div>
         <p class="h6">
           {{ track.title }}
@@ -270,6 +297,10 @@
 
 <style scoped lang="scss">
 button.playPause {
+  margin-right: 5px;
+}
+
+span.tags_pill {
   margin-right: 5px;
 }
 </style>

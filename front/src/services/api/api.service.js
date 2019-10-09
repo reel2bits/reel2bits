@@ -11,6 +11,7 @@ const TRACKS_FETCH_URL = (username, id) => `/api/tracks/${username}/${id}`
 const TRACKS_EDIT_URL = (username, id) => `/api/tracks/${username}/${id}`
 const TRACKS_DELETE_URL = (username, id) => `/api/tracks/${username}/${id}`
 const TRACKS_LOGS_URL = (username, id) => `/api/tracks/${username}/${id}/logs`
+const TRACKS_UPDATE_ARTWORK_URL = (username, id) => `/api/tracks/${username}/${id}/artwork`
 const TRACKS_RETRY_PROCESSING_URL = (username, id) => `/api/tracks/${username}/${id}/retry_processing`
 
 const ALBUMS_NEW_URL = '/api/albums'
@@ -18,6 +19,7 @@ const ALBUMS_FETCH_URL = (username, id) => `/api/albums/${username}/${id}`
 const ALBUMS_EDIT_URL = (username, id) => `/api/albums/${username}/${id}`
 const ALBUM_REORDER_URL = (username, id) => `/api/albums/${username}/${id}/reorder`
 const ALBUMS_DELETE_URL = (username, id) => `/api/albums/${username}/${id}`
+const ALBUMS_UPDATE_ARTWORK_URL = (username, id) => `/api/albums/${username}/${id}/artwork`
 
 const ACCOUNT_LOGS_URL = (username, currentPage, perPage) => `/api/users/${username}/logs?page=${currentPage}&page_size=${perPage}`
 const ACCOUNT_QUOTA_URL = (username, currentPage, perPage) => `/api/users/${username}/quota?page=${currentPage}&page_size=${perPage}`
@@ -35,6 +37,8 @@ const MASTODON_FOLLOWING_URL = id => `/api/v1/accounts/${id}/following`
 const MASTODON_FOLLOWERS_URL = id => `/api/v1/accounts/${id}/followers`
 
 const REEL2BITS_LICENSES = '/api/reel2bits/licenses'
+const REEL2BITS_GENRES = '/api/reel2bits/genres'
+const REEL2BITS_TAGS = '/api/reel2bits/tags'
 const REEL2BITS_ALBUMS = (username) => `/api/albums/${username}`
 const CHANGE_PASSWORD_URL = '/api/reel2bits/change_password'
 const RESET_PASSWORD_URL = '/api/reel2bits/reset_password'
@@ -145,6 +149,20 @@ const trackUpload = (trackInfo, store) => {
   form.append('album', trackInfo.album)
   form.append('licence', trackInfo.licence)
   form.append('private', trackInfo.private)
+  form.append('genre', trackInfo.genre)
+  form.append('tags', trackInfo.tags.map(a => a.text))
+  // let the files last for dev tools inspection
+  if (trackInfo.artwork) {
+    let filename = 'blob.invalid'
+    if (trackInfo.artwork.type === 'image/jpeg') {
+      filename = 'blob.jpg'
+    } else if (trackInfo.artwork.type === 'image/png') {
+      filename = 'blob.png'
+    } else if (trackInfo.artwork.type === 'image/gif') {
+      filename = 'blob.gif'
+    }
+    form.append('artwork', trackInfo.artwork, filename)
+  }
   form.append('file', trackInfo.file)
 
   return fetch(TRACKS_UPLOAD_URL, {
@@ -193,10 +211,21 @@ const trackDelete = ({ userId, trackId, credentials }) => {
 }
 
 const trackEdit = ({ userId, trackId, track, credentials }) => {
+  // Do that to avoid modifying `track` and bork the vue variable (tags)
+  const payload = {
+    title: track.title,
+    description: track.description,
+    album: track.album,
+    licence: track.licence,
+    private: track.private,
+    genre: track.genre,
+    tags: track.tags.map(a => a.text)
+  }
+
   return promisedRequest({
     url: TRACKS_EDIT_URL(userId, trackId),
     method: 'PATCH',
-    payload: track,
+    payload: payload,
     credentials: credentials
   }).then((data) => parseStatus(data))
 }
@@ -273,6 +302,50 @@ const fetchLicenses = () => {
     .then((data) => data.json())
 }
 
+const fetchGenres = ({ query = false }) => {
+  let url = REEL2BITS_GENRES
+
+  const params = []
+
+  if (query) {
+    params.push(['query', query])
+  }
+
+  const queryString = map(params, (param) => `${param[0]}=${param[1]}`).join('&')
+  url += `?${queryString}`
+
+  return fetch(url)
+    .then((data) => {
+      if (data.ok) {
+        return data
+      }
+      throw new Error('Error fetching genres', data)
+    })
+    .then((data) => data.json())
+}
+
+const fetchTags = ({ query = false }) => {
+  let url = REEL2BITS_TAGS
+
+  const params = []
+
+  if (query) {
+    params.push(['query', query])
+  }
+
+  const queryString = map(params, (param) => `${param[0]}=${param[1]}`).join('&')
+  url += `?${queryString}`
+
+  return fetch(url)
+    .then((data) => {
+      if (data.ok) {
+        return data
+      }
+      throw new Error('Error fetching tags', data)
+    })
+    .then((data) => data.json())
+}
+
 const fetchUserAlbums = ({ userId, short = false, credentials }) => {
   let url = REEL2BITS_ALBUMS(userId)
 
@@ -297,6 +370,20 @@ const albumNew = (albumInfo, store) => {
   form.append('title', albumInfo.title)
   form.append('description', albumInfo.description)
   form.append('private', albumInfo.private)
+  form.append('genre', albumInfo.genre)
+  form.append('tags', albumInfo.tags.map(a => a.text))
+  // let the files last for dev tools inspection
+  if (albumInfo.artwork) {
+    let filename = 'blob.invalid'
+    if (albumInfo.artwork.type === 'image/jpeg') {
+      filename = 'blob.jpg'
+    } else if (albumInfo.artwork.type === 'image/png') {
+      filename = 'blob.png'
+    } else if (albumInfo.artwork.type === 'image/gif') {
+      filename = 'blob.gif'
+    }
+    form.append('artwork', albumInfo.artwork, filename)
+  }
 
   return fetch(ALBUMS_NEW_URL, {
     body: form,
@@ -343,10 +430,19 @@ const albumDelete = ({ userId, albumId, credentials }) => {
 }
 
 const albumEdit = ({ userId, albumId, album, credentials }) => {
+  // Do that to avoid modifying `album` and bork the vue variable (tags)
+  const payload = {
+    title: album.title,
+    description: album.description,
+    private: album.private,
+    genre: album.genre,
+    tags: album.tags.map(a => a.text)
+  }
+
   return promisedRequest({
     url: ALBUMS_EDIT_URL(userId, albumId),
     method: 'PATCH',
-    payload: album,
+    payload: payload,
     credentials: credentials
   }).then((data) => parseStatus(data))
 }
@@ -562,6 +658,38 @@ const deleteUser = ({ userId, credentials }) => {
     .then((data) => data.json())
 }
 
+const updateArtwork = ({ kind, objId, userId, picture, credentials }) => {
+  let url = null
+  if (kind === 'album') {
+    url = ALBUMS_UPDATE_ARTWORK_URL(userId, objId)
+  } else if (kind === 'track') {
+    url = TRACKS_UPDATE_ARTWORK_URL(userId, objId)
+  }
+
+  const form = new FormData()
+  let filename = 'blob.invalid'
+  if (picture.type === 'image/jpeg') {
+    filename = 'blob.jpg'
+  } else if (picture.type === 'image/png') {
+    filename = 'blob.png'
+  } else if (picture.type === 'image/gif') {
+    filename = 'blob.gif'
+  }
+  form.append('artwork', picture, filename)
+
+  return fetch(url, {
+    headers: authHeaders(credentials),
+    method: 'PATCH',
+    body: form
+  }).then((response) => {
+    if (response.ok) {
+      return response.json()
+    } else {
+      return response.json().then((error) => { throw new Error(error.error) })
+    }
+  })
+}
+
 const apiService = {
   verifyCredentials,
   register,
@@ -591,7 +719,10 @@ const apiService = {
   unfollowUser,
   fetchFriends,
   fetchFollowers,
-  deleteUser
+  deleteUser,
+  fetchGenres,
+  fetchTags,
+  updateArtwork
 }
 
 export default apiService

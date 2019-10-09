@@ -58,3 +58,8 @@ class Reel2bitsDefaults(object):
 
     # 100 megabytes
     track_size_limit = 104857600
+
+    # 2MB
+    artwork_size_limit = 2000000
+
+    artwork_extensions_allowed = tuple("jpg jpe jpeg png gif JPG JPE JPEG PNG GIF".split())

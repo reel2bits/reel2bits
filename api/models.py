@@ -6,10 +6,8 @@ from flask_security import SQLAlchemyUserDatastore, UserMixin, RoleMixin
 from flask_security.utils import verify_password
 from flask_sqlalchemy import SQLAlchemy
 from slugify import slugify
-from sqlalchemy import UniqueConstraint
-from sqlalchemy import event
-from sqlalchemy.ext.hybrid import Comparator
-from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy import event, UniqueConstraint, PrimaryKeyConstraint
+from sqlalchemy.ext.hybrid import Comparator, hybrid_property
 from sqlalchemy.sql import func
 from sqlalchemy_searchable import make_searchable
 from sqlalchemy_utils.types.choice import ChoiceType
@@ -105,6 +103,8 @@ class User(db.Model, UserMixin):
     quota = db.Column(db.Integer(), default=Reel2bitsDefaults.user_quotas_default)
     # This should be updated on each upload and deletes
     quota_count = db.Column(db.Integer(), default=0)
+
+    avatar_filename = db.Column(db.String(255), unique=False, nullable=True)
 
     local = db.Column(db.Boolean(), default=True)
 
@@ -264,6 +264,28 @@ class SoundInfo(db.Model):
     sound_id = db.Column(db.Integer(), db.ForeignKey("sound.id"), nullable=False)
 
 
+# Table for association between Sound and SoundTag
+sound_tags = db.Table(
+    "sound_tags",
+    db.Column("tag_id", db.Integer, db.ForeignKey("sound_tag.id"), primary_key=True),
+    db.Column("sound_id", db.Integer, db.ForeignKey("sound.id"), primary_key=True),
+    PrimaryKeyConstraint("tag_id", "sound_id"),
+)
+# Same but for albums
+album_tags = db.Table(
+    "album_tags",
+    db.Column("tag_id", db.Integer, db.ForeignKey("sound_tag.id"), primary_key=True),
+    db.Column("album_id", db.Integer, db.ForeignKey("album.id"), primary_key=True),
+    PrimaryKeyConstraint("tag_id", "album_id"),
+)
+
+
+class SoundTag(db.Model):
+    __tablename__ = "sound_tag"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False, unique=True)
+
+
 class Sound(db.Model):
     __tablename__ = "sound"
     TRANSCODE_WAITING = 0
@@ -277,9 +299,8 @@ class Sound(db.Model):
     updated = db.Column(
         db.DateTime(timezone=False), default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow
     )
-    # TODO genre
-    # TODO tags
-    # TODO picture ?
+    genre = db.Column(db.String(255), nullable=True)
+    tags = db.relationship("SoundTag", secondary=sound_tags, lazy="subquery", backref=db.backref("sounds", lazy=True))
     licence = db.Column(db.Integer, nullable=False, server_default="0")
     description = db.Column(db.UnicodeText(), nullable=True)
     private = db.Column(db.Boolean(), default=False, nullable=True)
@@ -289,6 +310,8 @@ class Sound(db.Model):
 
     filename_orig = db.Column(db.String(255), unique=False, nullable=True)
     album_order = db.Column(db.Integer, nullable=True)
+
+    artwork_filename = db.Column(db.String(255), unique=False, nullable=True)
 
     transcode_needed = db.Column(db.Boolean(), default=False, nullable=True)
     transcode_state = db.Column(db.Integer(), default=0, nullable=False)
@@ -314,15 +337,17 @@ class Sound(db.Model):
         el = datetime.datetime.utcnow() - self.uploaded
         return el.total_seconds()
 
-    def path_waveform(self):
-        fname, _ = os.path.splitext(self.filename)
-        return os.path.join(self.user.slug, "{0}.png".format(fname))
-
     def path_sound(self, orig=False):
         if self.transcode_needed and self.transcode_state == self.TRANSCODE_DONE and not orig:
             return os.path.join(self.user.slug, self.filename_transcoded)
         else:
             return os.path.join(self.user.slug, self.filename)
+
+    def path_artwork(self):
+        if self.artwork_filename:
+            return os.path.join(self.user.slug, self.artwork_filename)
+        else:
+            return None
 
     def licence_info(self):
         return Reel2bitsDefaults.known_licences[self.licence]
@@ -348,14 +373,21 @@ class Sound(db.Model):
         if os.path.isfile(fname):
             os.unlink(fname)
         else:
-            print(f"!!! COMMIT DELETE cannot delete orig file {fname}")
+            print(f"!!! COMMIT DELETE SOUND cannot delete orig file {fname}")
 
         if self.transcode_needed:
             fname = os.path.join(current_app.config["UPLOADED_SOUNDS_DEST"], self.path_sound(orig=False))
             if os.path.isfile(fname):
                 os.unlink(fname)
             else:
-                print(f"!!! COMMIT DELETE cannot delete transcoded file {fname}")
+                print(f"!!! COMMIT DELETE SOUND cannot delete transcoded file {fname}")
+
+        if self.artwork_filename:
+            fname = os.path.join(current_app.config["UPLOADED_ARTWORKSOUNDS_DEST"], self.path_artwork())
+            if os.path.isfile(fname):
+                os.unlink(fname)
+            else:
+                print(f"!!! COMMIT DELETE SOUND cannot delete artwork file {fname}")
 
 
 class Album(db.Model):
@@ -367,10 +399,13 @@ class Album(db.Model):
     updated = db.Column(
         db.DateTime(timezone=False), default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow
     )
-    # TODO tags
+    genre = db.Column(db.String(255), nullable=True)
+    tags = db.relationship("SoundTag", secondary=album_tags, lazy="subquery", backref=db.backref("albums", lazy=True))
     description = db.Column(db.UnicodeText(), nullable=True)
     private = db.Column(db.Boolean(), default=False, nullable=True)
     slug = db.Column(db.String(255), unique=True, nullable=True)
+
+    artwork_filename = db.Column(db.String(255), unique=False, nullable=True)
 
     flake_id = db.Column(UUID(as_uuid=True), unique=False, nullable=True)
 
@@ -383,6 +418,21 @@ class Album(db.Model):
     def elapsed(self):
         el = datetime.datetime.utcnow() - self.created
         return el.total_seconds()
+
+    def path_artwork(self):
+        if self.artwork_filename:
+            return os.path.join(self.user.slug, self.artwork_filename)
+        else:
+            return None
+
+    # Delete files file when COMMIT DELETE
+    def __commit_delete__(self):
+        if self.artwork_filename:
+            fname = os.path.join(current_app.config["UPLOADED_ARTWORKALBUMS_DEST"], self.path_artwork())
+            if os.path.isfile(fname):
+                os.unlink(fname)
+            else:
+                print(f"!!! COMMIT DELETE ALBUM cannot delete artwork file {fname}")
 
 
 @event.listens_for(Sound, "after_update")
@@ -408,6 +458,7 @@ def generate_sound_flakeid(mapper, connection, target):
 
 
 @event.listens_for(Sound, "after_delete")
+@event.listens_for(Album, "after_delete")
 def delete_files(mapper, connection, target):
     target.__commit_delete__()
 

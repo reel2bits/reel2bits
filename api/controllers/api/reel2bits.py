@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request, abort, current_app, render_template
-from models import db, User, PasswordResetToken
+from models import db, User, PasswordResetToken, Sound, SoundTag
 from utils.various import add_user_log, generate_random_token, add_log
 from app_oauth import require_oauth
 from authlib.flask.oauth2 import current_token
@@ -8,6 +8,7 @@ from flask_mail import Message
 import smtplib
 from app import mail
 from utils.defaults import Reel2bitsDefaults
+from datas_helpers import default_genres
 
 bp_api_reel2bits = Blueprint("bp_api_reel2bits", __name__)
 
@@ -24,6 +25,73 @@ def licenses():
             description: Returns a list of various licenses.
     """
     resp = [Reel2bitsDefaults.known_licences[i] for i in Reel2bitsDefaults.known_licences]
+    response = jsonify(resp)
+    response.mimetype = "application/json; charset=utf-8"
+    response.status_code = 200
+    return response
+
+
+@bp_api_reel2bits.route("/api/reel2bits/genres", methods=["GET"])
+def genres():
+    """
+    List of genres.
+    ---
+    tags:
+        - Tracks
+    parameters:
+        - name: query
+          in: query
+          type: string
+          required: false
+          description: filter the returned list
+    responses:
+        200:
+            description: Returns a list of genres from database and builtin.
+    """
+    genres_db = db.session.query(Sound.genre).group_by(Sound.genre)
+
+    query = request.args.get("query", False)
+
+    if query:
+        genres_db = genres_db.filter(Sound.genre.ilike("%" + query + "%")).all()
+        genres_db = [a.genre for a in genres_db]
+        builtin_filtered = set(filter(lambda k: query.lower() in k.lower(), default_genres()))
+        resp = list(set(genres_db).union(builtin_filtered))
+    else:
+        resp = list(set(genres_db.all()).union(set(default_genres())))
+
+    response = jsonify(resp)
+    response.mimetype = "application/json; charset=utf-8"
+    response.status_code = 200
+    return response
+
+
+@bp_api_reel2bits.route("/api/reel2bits/tags", methods=["GET"])
+def tags():
+    """
+    List of tags.
+    ---
+    tags:
+        - Tracks
+    parameters:
+        - name: query
+          in: query
+          type: string
+          required: false
+          description: filter the returned list
+    responses:
+        200:
+            description: Returns a list of tags from database.
+    """
+    tags_db = db.session.query(SoundTag.name).group_by(SoundTag.name)
+
+    query = request.args.get("query", False)
+
+    if query:
+        tags_db = tags_db.filter(SoundTag.name.ilike("%" + query + "%")).all()
+
+    resp = [a.name for a in tags_db]
+
     response = jsonify(resp)
     response.mimetype = "application/json; charset=utf-8"
     response.status_code = 200

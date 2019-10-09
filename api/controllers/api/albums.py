@@ -1,13 +1,20 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, current_app
 from app_oauth import require_oauth
 from authlib.flask.oauth2 import current_token
 from forms import AlbumForm
-from models import db, Album, User, Sound
+from models import db, Album, User, Sound, SoundTag
 import json
-from utils.various import add_user_log
+from utils.various import add_user_log, get_hashed_filename
 from datas_helpers import to_json_relationship, to_json_account, to_json_album
+from sqlalchemy import and_
+from flask_uploads import UploadSet
+from utils.defaults import Reel2bitsDefaults
+import os
+
 
 bp_api_albums = Blueprint("bp_api_albums", __name__)
+
+artworkalbums = UploadSet("artworkalbums", Reel2bitsDefaults.artwork_extensions_allowed)
 
 
 @bp_api_albums.route("/api/albums", methods=["POST"])
@@ -29,6 +36,17 @@ def new():
     if not current_user:
         return jsonify({"error": "Unauthorized"}), 403
 
+    # Check artwork file size
+    if "artwork" in request.files:
+        artwork_uploaded = request.files["artwork"]
+        artwork_uploaded.seek(0, os.SEEK_END)
+        artwork_size = artwork_uploaded.tell()
+        artwork_uploaded.seek(0)
+        if artwork_size > Reel2bitsDefaults.artwork_size_limit:
+            return jsonify({"error": "artwork too big, 2MB maximum"}), 413  # Request Entity Too Large
+    else:
+        artwork_uploaded = None
+
     form = AlbumForm()
 
     if form.validate_on_submit():
@@ -37,6 +55,25 @@ def new():
         rec.title = form.title.data
         rec.private = form.private.data
         rec.description = form.description.data
+        rec.genre = form.genre.data
+
+        # Save the artwork
+        if artwork_uploaded:
+            artwork_filename = get_hashed_filename(artwork_uploaded.filename)
+            artworkalbums.save(artwork_uploaded, folder=current_user.slug, name=artwork_filename)
+            rec.artwork_filename = artwork_filename
+
+        # Handle tags
+        tags = form.tags.data.split(",")
+        # Clean
+        tags = [t.strip() for t in tags if t]
+        # For each tag get it or create it
+        for tag in tags:
+            dbt = SoundTag.query.filter(SoundTag.name == tag).first()
+            if not dbt:
+                dbt = SoundTag(name=tag)
+                db.session.add(dbt)
+            rec.tags.append(dbt)
 
         db.session.add(rec)
         db.session.commit()
@@ -196,6 +233,8 @@ def edit(username, albumslug):
     description = request.json.get("description")
     private = request.json.get("private")
     title = request.json.get("title")
+    genre = request.json.get("genre")
+    tags = request.json.get("tags")
 
     if album.private and not private:
         return jsonify({"error": "Cannot change to private: album already federated"})
@@ -205,6 +244,25 @@ def edit(username, albumslug):
 
     album.title = title
     album.description = description
+    album.genre = genre
+
+    # First remove tags which have been removed
+    for tag in album.tags:
+        if tag.name not in tags:
+            album.tags.remove(tag)
+
+    # Then add the new ones if new
+    for tag in tags:
+        if tag not in [a.name for a in album.tags]:
+            dbt = SoundTag.query.filter(SoundTag.name == tag).first()
+            if not dbt:
+                dbt = SoundTag(name=tag)
+                db.session.add(dbt)
+            album.tags.append(dbt)
+
+    # Purge orphaned tags
+    for otag in SoundTag.query.filter(and_(~SoundTag.sounds.any(), ~SoundTag.albums.any())).all():
+        db.session.delete(otag)
 
     db.session.commit()
 
@@ -316,3 +374,68 @@ def reorder(username, albumslug):
     resp = to_json_album(album, account)
 
     return jsonify(resp)
+
+
+@bp_api_albums.route("/api/albums/<string:username>/<string:albumslug>/artwork", methods=["PATCH"])
+@require_oauth("write")
+def artwork(username, albumslug):
+    """
+    Change album artwork.
+    ---
+    tags:
+        - Albums
+    security:
+        - OAuth2:
+            - write
+    parameters:
+        - name: username
+          in: path
+          type: string
+          required: true
+          description: User username
+        - name: albumslug
+          in: path
+          type: string
+          required: true
+          description: Album slug
+    responses:
+        200:
+            description: Returns ok or not.
+    """
+    current_user = current_token.user
+    if not current_user:
+        return jsonify({"error": "Unauthorized"}), 403
+
+    # Get the album
+    album = Album.query.filter(Album.user_id == current_user.id, Album.slug == albumslug).first()
+    if not album:
+        return jsonify({"error": "Not found"}), 404
+
+    # Check artwork file size
+    if "artwork" not in request.files:
+        return jsonify({"error": "Artwork file missing"}), 503
+
+    artwork_uploaded = request.files["artwork"]
+    artwork_uploaded.seek(0, os.SEEK_END)
+    artwork_size = artwork_uploaded.tell()
+    artwork_uploaded.seek(0)
+    if artwork_size > Reel2bitsDefaults.artwork_size_limit:
+        return jsonify({"error": "artwork too big, 2MB maximum"}), 413  # Request Entity Too Large
+
+    # Delete old artwork if any
+    if album.artwork_filename:
+        old_artwork = os.path.join(current_app.config["UPLOADED_ARTWORKALBUMS_DEST"], album.path_artwork())
+        if os.path.isfile(old_artwork):
+            os.unlink(old_artwork)
+        else:
+            print(f"Error: cannot delete old artwork: {album.id} / {album.artwork_filename}")
+
+    # Save new artwork
+    artwork_filename = get_hashed_filename(artwork_uploaded.filename)
+    artworkalbums.save(artwork_uploaded, folder=current_user.slug, name=artwork_filename)
+
+    album.artwork_filename = artwork_filename
+
+    db.session.commit()
+
+    return jsonify({"status": "ok", "path": album.path_artwork()})
