@@ -30,6 +30,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - PNG waveforms are not computed anymore because unused (#179)
 - Timelines now uses a `paginated=true/false` GET parameter, if false, the timeline is rendered unpaginated for mastoapi compatibility
 - Old unused APIToken table removed
+- User language setting in profile now override browser one
 
 ### Fixed
 - Waveform JSON generation through a .dat now use the right pixels per second; avoid huge waveforms datas for long tracks (#179)
