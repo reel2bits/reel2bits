@@ -104,6 +104,8 @@ class User(db.Model, UserMixin):
     # This should be updated on each upload and deletes
     quota_count = db.Column(db.Integer(), default=0)
 
+    avatar_filename = db.Column(db.String(255), unique=False, nullable=True)
+
     local = db.Column(db.Boolean(), default=True)
 
     # Relations
@@ -299,7 +301,6 @@ class Sound(db.Model):
     )
     genre = db.Column(db.String(255), nullable=True)
     tags = db.relationship("SoundTag", secondary=sound_tags, lazy="subquery", backref=db.backref("sounds", lazy=True))
-    # TODO picture ?
     licence = db.Column(db.Integer, nullable=False, server_default="0")
     description = db.Column(db.UnicodeText(), nullable=True)
     private = db.Column(db.Boolean(), default=False, nullable=True)
@@ -309,6 +310,8 @@ class Sound(db.Model):
 
     filename_orig = db.Column(db.String(255), unique=False, nullable=True)
     album_order = db.Column(db.Integer, nullable=True)
+
+    artwork_filename = db.Column(db.String(255), unique=False, nullable=True)
 
     transcode_needed = db.Column(db.Boolean(), default=False, nullable=True)
     transcode_state = db.Column(db.Integer(), default=0, nullable=False)
@@ -392,6 +395,8 @@ class Album(db.Model):
     description = db.Column(db.UnicodeText(), nullable=True)
     private = db.Column(db.Boolean(), default=False, nullable=True)
     slug = db.Column(db.String(255), unique=True, nullable=True)
+
+    artwork_filename = db.Column(db.String(255), unique=False, nullable=True)
 
     flake_id = db.Column(UUID(as_uuid=True), unique=False, nullable=True)
 

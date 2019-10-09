@@ -15,6 +15,7 @@ from sqlalchemy import and_
 bp_api_tracks = Blueprint("bp_api_tracks", __name__)
 
 sounds = UploadSet("sounds", AUDIO)
+artworksounds = UploadSet("artworksounds", (".jpg", ".jpe", ".jpeg", ".png", ".gif"))
 
 
 @bp_api_tracks.route("/api/tracks", methods=["POST"])
@@ -58,17 +59,39 @@ def upload():
     if (current_user.quota_count + file_size) > current_user.quota:
         return jsonify({"error": "quota limit reached"}), 507  # Insufficient storage
 
+    # Do the same with the artwork
+    print(request.files)
+    if "artwork" in request.files:
+        artwork_uploaded = request.files["artwork"]
+        artwork_uploaded.seek(0, os.SEEK_END)
+        artwork_size = artwork_uploaded.tell()
+        artwork_uploaded.seek(0)
+        if artwork_size > 2000000:  # Max size of 2MB
+            return jsonify({"error": "artwork too big, 2MB maximum"}), 413  # Request Entity Too Large
+    else:
+        artwork_uploaded = None
+
     form = SoundUploadForm()
 
     if form.validate_on_submit():
         filename_orig = file_uploaded.filename
         filename_hashed = get_hashed_filename(filename_orig)
 
+        # Save the track file
         sounds.save(file_uploaded, folder=current_user.slug, name=filename_hashed)
+
+        # Save the artwork
+        if artwork_uploaded:
+            artwork_filename = get_hashed_filename(artwork_uploaded.filename)
+            artworksounds.save(artwork_uploaded, folder=current_user.slug, name=artwork_filename)
 
         rec = Sound()
         rec.filename = filename_hashed
         rec.filename_orig = filename_orig
+
+        if artwork_uploaded:
+            rec.artwork_filename = artwork_filename
+
         rec.licence = form.licence.data
         if form.album.data:
             rec.album_id = form.album.data.id

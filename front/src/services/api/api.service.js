@@ -149,7 +149,10 @@ const trackUpload = (trackInfo, store) => {
   form.append('private', trackInfo.private)
   form.append('genre', trackInfo.genre)
   form.append('tags', trackInfo.tags.map(a => a.text))
-  // let the file last for dev tools inspection
+  // let the files last for dev tools inspection
+  if (trackInfo.artwork) {
+    form.append('artwork', trackInfo.artwork)
+  }
   form.append('file', trackInfo.file)
 
   return fetch(TRACKS_UPLOAD_URL, {
