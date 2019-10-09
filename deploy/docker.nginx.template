@@ -52,7 +52,14 @@ server {
     }
 
     location /_protected/media/sounds {
-            # Same path as UPLOADS_DEFAULT_DEST in config.py but with /sounds
-            alias ${UPLOADED_SOUNDS_DEST};
+        alias ${UPLOADED_SOUNDS_DEST};
+    }
+
+    location /_protected/media/artwork_sounds {
+        alias ${UPLOADED_ARTWORKSOUNDS_DEST};
+    }
+
+    location /_protected/media/artwork_albumss {
+        alias ${UPLOADED_ARTWORKALBUMS_DEST};
     }
 }
