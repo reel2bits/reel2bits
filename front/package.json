@@ -41,7 +41,7 @@
     "vuedraggable": "^2.23.2",
     "vuelidate": "^0.7.4",
     "vuex": "^3.0.1",
-    "wavesurfer.js": "katspaugh/wavesurfer.js#master"
+    "wavesurfer.js": "https://github.com/katspaugh/wavesurfer.js#master"
   },
   "devDependencies": {
     "@babel/polyfill": "^7.6.0",
