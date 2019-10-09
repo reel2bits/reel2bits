@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
     - 005-update-user-quotas
     - 006-generate-albums-uuids
 - **Breaking:** Commands to run: `flask db-datas 005-update-user-quotas` to precompute the user quotas
+- **Breaking:** New config options to set: `UPLOADED_ARTWORKALBUMS_DEST` and `UPLOADED_ARTWORKSOUNDS_DEST`; Update nginx config accordingly
 - User quotas (#179)
 - Refactored the cli commands (#179)
 - Added a few more users commands (#184)
@@ -23,6 +24,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Turkish language added
 - An user can now delete his own account, triggering the right deletions and AP broadcasts
 - Added `/.well-known/host-meta` and `/api/v1/instance` for more mastodon API compatibility
+- Albums and Tracks can now have a custom artwork
 
 ### Changed
 - PNG waveforms are not computed anymore because unused (#179)
