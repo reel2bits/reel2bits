@@ -166,7 +166,7 @@ import moment from 'moment'
 import Sidebar from '../../components/sidebar/sidebar.vue'
 import playerUtils from '../../services/player_utils/player_utils.js'
 import draggable from 'vuedraggable'
-const WaveSurfer = require('wavesurfer.js/dist/wavesurfer')
+import WaveSurfer from 'wavesurfer.js'
 
 export default {
   components: {
