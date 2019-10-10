@@ -259,6 +259,10 @@ def create_app(config_filename="config.development.Config", app_name=None, regis
     artworksounds = UploadSet("artworksounds", Reel2bitsDefaults.artwork_extensions_allowed)
     configure_uploads(app, artworksounds)
 
+    # User avatars
+    avatars = UploadSet("avatars", Reel2bitsDefaults.avatar_extensions_allowed)
+    configure_uploads(app, avatars)
+
     # Total max size upload for the whole app
     patch_request_class(app, Reel2bitsDefaults.track_size_limit)
 

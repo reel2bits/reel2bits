@@ -14,7 +14,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
     - 005-update-user-quotas
     - 006-generate-albums-uuids
 - **Breaking:** Commands to run: `flask db-datas 005-update-user-quotas` to precompute the user quotas
-- **Breaking:** New config options to set: `UPLOADED_ARTWORKALBUMS_DEST` and `UPLOADED_ARTWORKSOUNDS_DEST`; Update nginx config accordingly
+- **Breaking:** New config options to set:
+    - `UPLOADED_ARTWORKALBUMS_DEST`
+    - `UPLOADED_ARTWORKSOUNDS_DEST`
+    - `UPLOADED_AVATARS_DEST`
+    - Update nginx config accordingly
 - User quotas (#179)
 - Refactored the cli commands (#179)
 - Added a few more users commands (#184)

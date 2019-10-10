@@ -18,7 +18,7 @@ from flask_security import confirmable as FSConfirmable
 from app_oauth import authorization, require_oauth
 from authlib.flask.oauth2 import current_token
 from datas_helpers import to_json_track, to_json_account, to_json_relationship
-from utils.various import forbidden_username, add_user_log, add_log
+from utils.various import forbidden_username, add_user_log, add_log, get_hashed_filename
 from tasks import send_update_profile, federate_delete_actor
 import re
 from sqlalchemy import or_
@@ -26,11 +26,15 @@ from flask_mail import Message
 from flask import render_template
 import smtplib
 from app import mail
+from utils.defaults import Reel2bitsDefaults
+from flask_uploads import UploadSet
+import os
 
 
 bp_api_v1_accounts = Blueprint("bp_api_v1_accounts", __name__)
 
 username_is_legal = re.compile("^[a-zA-Z0-9]+$")
+avatars = UploadSet("avatars", Reel2bitsDefaults.avatar_extensions_allowed)
 
 # Parameters needed:
 #  nickname(==username), email, fullname, password, confirm, agreement, locale(dropped here for now)
@@ -395,34 +399,57 @@ def accounts_update_credentials():
                     - $ref: '#/definitions/Source'
                     - $ref: '#/definitions/AccountPleroma'
     """
-    user = current_token.user
+    current_user = current_token.user
 
-    r_lang = request.json.get("lang", None)
-    r_fullname = request.json.get("fullname", None)
-    r_bio = request.json.get("bio", None)
-
-    r_user = User.query.filter(User.id == user.id).first()
-    if not r_user:
+    if not current_user:
         # WTF ?
-        abort(500)
+        return jsonify({"error": "User not found"}), 404
 
-    if r_lang:
-        r_user.locale = r_lang
-    if r_fullname:
-        r_user.display_name = r_fullname
-    if r_bio:
-        r_user.actor[0].summary = r_bio
+    # Update fields like bio, language, etc.
+    if request.json:
+        r_lang = request.json.get("lang", None)
+        r_fullname = request.json.get("fullname", None)
+        r_bio = request.json.get("bio", None)
+
+        if r_lang:
+            current_user.locale = r_lang
+        if r_fullname:
+            current_user.display_name = r_fullname
+        if r_bio:
+            current_user.actor[0].summary = r_bio
+    elif request.files:
+        # Update things like user background, profile picture, etc.
+        if "avatar" in request.files:
+            avatar_uploaded = request.files["avatar"]
+            avatar_uploaded.seek(0, os.SEEK_END)
+            avatar_size = avatar_uploaded.tell()
+            avatar_uploaded.seek(0)
+            if avatar_size > Reel2bitsDefaults.avatar_size_limit:
+                return jsonify({"error": "artwork too big, 2MB maximum"}), 413  # Request Entity Too Large
+
+            # Delete old avatar if any
+            if current_user.avatar_filename:
+                old_avatar = os.path.join(current_app.config["UPLOADED_AVATARS_DEST"], current_user.path_avatar())
+                if os.path.isfile(old_avatar):
+                    os.unlink(old_avatar)
+                else:
+                    print(f"Error: cannot delete old avatar: {current_user.id} / {current_user.avatar_filename}")
+
+            # Save new avatar
+            avatar_filename = get_hashed_filename(avatar_uploaded.filename)
+            avatars.save(avatar_uploaded, folder=current_user.slug, name=avatar_filename)
+            current_user.avatar_filename = avatar_filename
 
     # commit changes
     db.session.commit()
 
     # log action
-    add_user_log(user.id, user.id, "user", "info", "Edited user profile")
+    add_user_log(current_user.id, current_user.id, "user", "info", "Edited user profile")
 
     # trigger a profile update
-    send_update_profile(r_user)
+    send_update_profile(current_user)
 
-    return jsonify(to_json_account(r_user))
+    return jsonify(to_json_account(current_user))
 
 
 @bp_api_v1_accounts.route("/api/v1/accounts/<int:user_id>/statuses", methods=["GET"])

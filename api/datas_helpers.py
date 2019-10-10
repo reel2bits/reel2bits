@@ -30,6 +30,10 @@ def to_json_relationship(of_user, against_user):
 
 def to_json_account(user, relationship=False):
     url_feed = url_for("bp_feeds.tracks", user_id=user.id, _external=False)
+    if user.path_avatar():
+        url_avatar = url_for("get_uploads_stuff", thing="avatars", stuff=user.path_avatar(), _external=True)
+    else:
+        url_avatar = "/static/userpic_placeholder.svg"
 
     obj = dict(
         id=user.id,
@@ -45,8 +49,8 @@ def to_json_account(user, relationship=False):
         ).count(),
         note=user.actor[0].summary,
         url=user.actor[0].url,
-        avatar=("" or "/static/userpic_placeholder.svg"),
-        avatar_static=("" or "/static/userpic_placeholder.svg"),
+        avatar=url_avatar,
+        avatar_static=url_avatar,
         header="",
         header_static="",
         emojis=[],
@@ -76,10 +80,10 @@ def to_json_account(user, relationship=False):
 
 def to_json_track(track, account):
     si = track.sound_infos.first()
-    url_orig = url_for("get_uploads_stuff", thing="sounds", stuff=track.path_sound(orig=True), _external=False)
-    url_transcode = url_for("get_uploads_stuff", thing="sounds", stuff=track.path_sound(orig=False), _external=False)
+    url_orig = url_for("get_uploads_stuff", thing="sounds", stuff=track.path_sound(orig=True), _external=True)
+    url_transcode = url_for("get_uploads_stuff", thing="sounds", stuff=track.path_sound(orig=False), _external=True)
     if track.path_artwork():
-        url_artwork = url_for("get_uploads_stuff", thing="artwork_sounds", stuff=track.path_artwork(), _external=False)
+        url_artwork = url_for("get_uploads_stuff", thing="artwork_sounds", stuff=track.path_artwork(), _external=True)
     else:
         url_artwork = None
 
@@ -152,9 +156,9 @@ def to_json_track(track, account):
 
 
 def to_json_album(album, account):
-    url_feed = url_for("bp_feeds.album", user_id=album.user.id, album_id=album.id, _external=False)
+    url_feed = url_for("bp_feeds.album", user_id=album.user.id, album_id=album.id, _external=True)
     if album.path_artwork():
-        url_artwork = url_for("get_uploads_stuff", thing="artwork_albums", stuff=album.path_artwork(), _external=False)
+        url_artwork = url_for("get_uploads_stuff", thing="artwork_albums", stuff=album.path_artwork(), _external=True)
     else:
         url_artwork = None
 

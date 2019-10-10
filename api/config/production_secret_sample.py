@@ -18,6 +18,7 @@ class Config(BaseConfig):
     UPLOADED_SOUNDS_DEST = "/Users/dashie/dev/reel2bits/uploads/sounds"
     UPLOADED_ARTWORKALBUMS_DEST = "/Users/dashie/dev/reel2bits/uploads/artwork_albums"
     UPLOADED_ARTWORKSOUNDS_DEST = "/Users/dashie/dev/reel2bits/uploads/artwork_sounds"
+    UPLOADED_AVATARS_DEST = "/Users/dashie/dev/reel2bits/uploads/avatars"
 
     # Where is the audiowaveform binary located
     AUDIOWAVEFORM_BIN = "/usr/local/bin/audiowaveform"

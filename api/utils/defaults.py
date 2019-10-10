@@ -61,5 +61,7 @@ class Reel2bitsDefaults(object):
 
     # 2MB
     artwork_size_limit = 2000000
+    avatar_size_limit = artwork_size_limit
 
     artwork_extensions_allowed = tuple("jpg jpe jpeg png gif JPG JPE JPEG PNG GIF".split())
+    avatar_extensions_allowed = artwork_extensions_allowed
