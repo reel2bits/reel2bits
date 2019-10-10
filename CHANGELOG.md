@@ -36,7 +36,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Timelines now uses a `paginated=true/false` GET parameter, if false, the timeline is rendered unpaginated for mastoapi compatibility
 - Old unused APIToken table removed
 - User language setting in profile now override browser one
-
+- URL scheme generation should be more robust
+- Added Icon(avatar) to Actor to make avatar federate
 ### Fixed
 - Waveform JSON generation through a .dat now use the right pixels per second; avoid huge waveforms datas for long tracks (#179)
 - Flake ID generation have been rewritten and should be good now
