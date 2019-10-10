@@ -67,6 +67,45 @@
                 Save
               </translate>
             </b-button>
+
+            <hr>
+
+            <div class="row">
+              <div class="col-sm-6">
+                <p v-translate translate-context="Content/UserSettings/Text/Avatar picker" class="visibility-notice">
+                  The recommended minimum size for avatar pictures is 112x112 pixels. JPEG, PNG or GIF only.
+                </p>
+                <p v-translate translate-context="Content/UserSettings/Title/Avatar picker">
+                  Current avatar
+                </p>
+                <img
+                  :src="currentAvatar"
+                  class="current-avatar"
+                  width="112"
+                  height="112"
+                >
+              </div>
+              <div class="col-sm-6">
+                <p v-translate translate-context="Content/UserSettings/Title/Avatar picker">
+                  Set new avatar
+                </p>
+                <b-button
+                  v-show="pickAvatarBtnVisible"
+                  id="pick-avatar"
+                >
+                  <translate translate-context="Content/UserSettings/Button/Avatar picker">
+                    Upload an image
+                  </translate>
+                </b-button>
+
+                <image-cropper
+                  trigger="#pick-avatar"
+                  :submit-handler="submitAvatar"
+                  @open="pickAvatarBtnVisible=false"
+                  @close="pickAvatarBtnVisible=true"
+                />
+              </div>
+            </div>
           </b-form>
         </b-tab>
 
@@ -164,8 +203,12 @@ ul.nav-tabs {
 import { validationMixin } from 'vuelidate'
 import { required, maxLength } from 'vuelidate/lib/validators'
 import locales from '../../locales.js'
+import ImageCropper from '../../components/image_cropper/image_cropper.vue'
 
 export default {
+  components: {
+    ImageCropper
+  },
   mixins: [validationMixin],
   data: () => ({
     user: {
@@ -177,7 +220,8 @@ export default {
     saveOk: false,
     changePasswordInputs: [ '', '', '' ],
     changedPassword: false,
-    changePasswordError: false
+    changePasswordError: false,
+    pickAvatarBtnVisible: true
   }),
   validations: {
     user: {
@@ -203,6 +247,13 @@ export default {
         securityTab: this.$pgettext('Content/UserSettings/Tabs/Label', 'Security'),
         accountTab: this.$pgettext('Content/UserSettings/Tabs/Label', 'Account'),
         deleteAccountModalTitle: this.$pgettext('Content/UserSettings/Modal/Title', 'Account deletion')
+      }
+    },
+    currentAvatar () {
+      if (this.currentUser && this.currentUser.profile_image_url) {
+        return this.currentUser.profile_image_url
+      } else {
+        return '/static/userpic_placeholder.svg'
       }
     }
   },
@@ -297,6 +348,28 @@ export default {
             variant: 'danger'
           })
         })
+    },
+    submitAvatar (cropper, file) {
+      const that = this
+      return new Promise((resolve, reject) => {
+        function updateAvatar (avatar) {
+          that.$store.state.api.backendInteractor.updateAvatar({ avatar })
+            .then((user) => {
+              that.$store.commit('addNewUsers', [user])
+              that.$store.commit('setCurrentUser', user)
+              resolve()
+            })
+            .catch((err) => {
+              reject(new Error(that.$t('upload.error.base') + ' ' + err.message))
+            })
+        }
+
+        if (cropper) {
+          cropper.getCroppedCanvas().toBlob(updateAvatar, file.type)
+        } else {
+          updateAvatar(file)
+        }
+      })
     }
   }
 }

@@ -110,6 +110,7 @@ class BaseConfig(object):
     UPLOADED_SOUNDS_DEST = os.getenv("UPLOADED_SOUNDS_DEST", "/home/reel2bits/uploads/sounds")
     UPLOADED_ARTWORKALBUMS_DEST = os.getenv("UPLOADED_ARTWORKALBUMS_DEST", "/home/reel2bits/uploads/artwork_albums")
     UPLOADED_ARTWORKSOUNDS_DEST = os.getenv("UPLOADED_ARTWORKSOUNDS_DEST", "/home/reel2bits/uploads/artwork_sounds")
+    UPLOADED_AVATARS_DEST = os.getenv("UPLOADED_AVATARS_DEST", "/home/reel2bits/uploads/avatars")
 
     # Where is audiowaveform located
     AUDIOWAVEFORM_BIN = os.getenv("AUDIOWAVEFORM_BIN", "/usr/local/bin/audiowaveform")

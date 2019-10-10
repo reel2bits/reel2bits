@@ -690,6 +690,27 @@ const updateArtwork = ({ kind, objId, userId, picture, credentials }) => {
   })
 }
 
+const updateAvatar = ({ credentials, avatar }) => {
+  const form = new FormData()
+
+  let filename = 'blob.invalid'
+  if (avatar.type === 'image/jpeg') {
+    filename = 'blob.jpg'
+  } else if (avatar.type === 'image/png') {
+    filename = 'blob.png'
+  } else if (avatar.type === 'image/gif') {
+    filename = 'blob.gif'
+  }
+  form.append('avatar', avatar, filename)
+
+  return fetch(MASTODON_PROFILE_UPDATE_URL, {
+    headers: authHeaders(credentials),
+    method: 'PATCH',
+    body: form
+  }).then((data) => data.json())
+    .then((data) => parseUser(data))
+}
+
 const apiService = {
   verifyCredentials,
   register,
@@ -722,7 +743,8 @@ const apiService = {
   deleteUser,
   fetchGenres,
   fetchTags,
-  updateArtwork
+  updateArtwork,
+  updateAvatar
 }
 
 export default apiService

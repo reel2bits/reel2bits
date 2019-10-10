@@ -167,6 +167,22 @@ class User(db.Model, UserMixin):
         )
         return (c[0] or 0) + (c[1] or 0)
 
+    def path_avatar(self):
+        if self.avatar_filename:
+            return os.path.join(self.slug, self.avatar_filename)
+        else:
+            return None
+
+    # Delete files file when COMMIT DELETE
+    def __commit_delete__(self):
+        print("COMMIT DELETE: Deleting files")
+        if self.avatar_filename:
+            fname = os.path.join(current_app.config["UPLOADED_AVATARS_DEST"], self.avatar_filename())
+            if os.path.isfile(fname):
+                os.unlink(fname)
+            else:
+                print(f"!!! COMMIT DELETE USER cannot delete avatar file {fname}")
+
 
 event.listen(User.name, "set", User.generate_slug, retval=False)
 

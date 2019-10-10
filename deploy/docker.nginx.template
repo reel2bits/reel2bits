@@ -62,4 +62,8 @@ server {
     location /_protected/media/artwork_albums {
         alias ${UPLOADED_ARTWORKALBUMS_DEST};
     }
+
+    location /_protected/media/avatars {
+        alias ${UPLOADED_AVATARS_DEST};
+    }
 }

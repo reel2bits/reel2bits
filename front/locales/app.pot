@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: front 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-10-09 18:10+0200\n"
+"POT-Creation-Date: 2019-10-10 09:42+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -92,23 +92,23 @@ msgctxt "Footer/*/Link/AboutThisInstance"
 msgid "About this instance"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:204
+#: front/src/components/user_settings/user_settings.vue:248
 msgctxt "Content/UserSettings/Tabs/Label"
 msgid "Account"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:205
+#: front/src/components/user_settings/user_settings.vue:249
 msgctxt "Content/UserSettings/Modal/Title"
 msgid "Account deletion"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:284
-#: front/src/components/user_settings/user_settings.vue:294
+#: front/src/components/user_settings/user_settings.vue:335
+#: front/src/components/user_settings/user_settings.vue:345
 msgctxt "Content/UserSettings/Toast/Error/Title"
 msgid "Account deletion"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:283
+#: front/src/components/user_settings/user_settings.vue:334
 msgctxt "Content/UserSettings/Toast/Error/Message"
 msgid "Action in progress"
 msgstr ""
@@ -158,7 +158,7 @@ msgctxt "Content/Register/Toast/Error/Message"
 msgid "An error occured"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:293
+#: front/src/components/user_settings/user_settings.vue:344
 msgctxt "Content/UserSettings/Toast/Error/Message"
 msgid "An error occured while deleting the account"
 msgstr ""
@@ -193,7 +193,7 @@ msgctxt "Content/TrackShow/Modal/Delete/Content"
 msgid "Are you sure you want to delete '%{ title }' ?"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:144
+#: front/src/components/user_settings/user_settings.vue:183
 msgctxt "Content/UserSettings/Modal/Delete/Content"
 msgid ""
 "Are you sure you want to delete your account ?\n"
@@ -212,7 +212,7 @@ msgctxt "Content/Register/Input.Label/Bio"
 msgid "Bio (optional):"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:200
+#: front/src/components/user_settings/user_settings.vue:244
 msgctxt "Content/UserSettings/Input.Label/Bio"
 msgid "Bio (optional):"
 msgstr ""
@@ -411,7 +411,7 @@ msgctxt "Content/PasswordResetToken/Button/Change password"
 msgid "Change password"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:114
+#: front/src/components/user_settings/user_settings.vue:153
 msgctxt "Content/UserSettings/Button/Change password"
 msgid "Change password"
 msgstr ""
@@ -426,7 +426,7 @@ msgctxt "Content/TrackShow/Track metadata"
 msgid "Codec"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:197
+#: front/src/components/user_settings/user_settings.vue:241
 msgctxt "Content/UserSettings/Input.Label/PasswordNewConfirm"
 msgid "Confirm new password:"
 msgstr ""
@@ -471,7 +471,12 @@ msgctxt "Content/TrackUpload/Title/Artwork picker"
 msgid "Current artwork"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:195
+#: front/src/components/user_settings/user_settings.vue:77
+msgctxt "Content/UserSettings/Title/Avatar picker"
+msgid "Current avatar"
+msgstr ""
+
+#: front/src/components/user_settings/user_settings.vue:239
 msgctxt "Content/UserSettings/Input.Label/Password"
 msgid "Current password:"
 msgstr ""
@@ -501,7 +506,7 @@ msgctxt "Content/TrackShow/Button"
 msgid "Delete"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:139
+#: front/src/components/user_settings/user_settings.vue:178
 msgctxt "Content/UserSettings/Button"
 msgid "Delete my account"
 msgstr ""
@@ -546,7 +551,7 @@ msgctxt "Content/Register/Input.Label/Fullname"
 msgid "Display name:"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:198
+#: front/src/components/user_settings/user_settings.vue:242
 msgctxt "Content/UserSettings/Input.Label/Fullname"
 msgid "Display name:"
 msgstr ""
@@ -656,12 +661,12 @@ msgctxt "Content/Register/Input.Placeholder/Username"
 msgid "Enter username"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:125
+#: front/src/components/user_settings/user_settings.vue:164
 msgctxt "Content/UserSettings/Alert/Password change error"
 msgid "Error changing password"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:265
+#: front/src/components/user_settings/user_settings.vue:316
 msgctxt "Content/UserSettings/Toast/Error/Message"
 msgid "Error changing password"
 msgstr ""
@@ -711,7 +716,7 @@ msgctxt "Content/UserProfile/Error"
 msgid "Error loading user: %{errorMsg}"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:235
+#: front/src/components/user_settings/user_settings.vue:286
 msgctxt "Content/UserSettings/Toast/Error/Message"
 msgid "Error saving settings"
 msgstr ""
@@ -874,7 +879,7 @@ msgctxt "Content/Logs(user)/Table/Heading"
 msgid "Item ID"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:194
+#: front/src/components/user_settings/user_settings.vue:238
 msgctxt "Content/UserSettings/Input.Label/Lang"
 msgid "Language:"
 msgstr ""
@@ -1019,7 +1024,7 @@ msgctxt "Header/*/DropDown/Create/NewAlbum text"
 msgid "New Album"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:196
+#: front/src/components/user_settings/user_settings.vue:240
 msgctxt "Content/UserSettings/Input.Label/PasswordNew"
 msgid "New password:"
 msgstr ""
@@ -1084,18 +1089,18 @@ msgctxt "Content/TrackShow/Track infos dls"
 msgid "original"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:254
-#: front/src/components/user_settings/user_settings.vue:266
+#: front/src/components/user_settings/user_settings.vue:305
+#: front/src/components/user_settings/user_settings.vue:317
 msgctxt "Content/UserSettings/Toast/Error/Title"
 msgid "Password"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:120
+#: front/src/components/user_settings/user_settings.vue:159
 msgctxt "Content/UserSettings/Alert/Password changed"
 msgid "Password changed"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:253
+#: front/src/components/user_settings/user_settings.vue:304
 msgctxt "Content/UserSettings/Toast/Error/Message"
 msgid "Password changed !"
 msgstr ""
@@ -1157,7 +1162,7 @@ msgctxt "Content/Register/Input.Placeholder/Bio"
 msgid "quack quack I'm a cat"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:201
+#: front/src/components/user_settings/user_settings.vue:245
 msgctxt "Content/UserSettings/Input.Placeholder/Bio"
 msgid "quack quack I'm a cat"
 msgstr ""
@@ -1242,7 +1247,7 @@ msgctxt "Content/ImageCropper/Button/Label"
 msgid "Save without cropping"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:225
+#: front/src/components/user_settings/user_settings.vue:276
 msgctxt "Content/UserSettings/Toast/Error/Message"
 msgid "Saved !"
 msgstr ""
@@ -1257,7 +1262,7 @@ msgctxt "Header/*/Input/Search placeholder"
 msgid "Search"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:203
+#: front/src/components/user_settings/user_settings.vue:247
 msgctxt "Content/UserSettings/Tabs/Label"
 msgid "Security"
 msgstr ""
@@ -1282,8 +1287,13 @@ msgctxt "Content/TrackUpload/Title/Artwork picker"
 msgid "Set new artwork"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:226
-#: front/src/components/user_settings/user_settings.vue:236
+#: front/src/components/user_settings/user_settings.vue:88
+msgctxt "Content/UserSettings/Title/Avatar picker"
+msgid "Set new avatar"
+msgstr ""
+
+#: front/src/components/user_settings/user_settings.vue:277
+#: front/src/components/user_settings/user_settings.vue:287
 msgctxt "Content/UserSettings/Toast/Error/Title"
 msgid "Settings"
 msgstr ""
@@ -1361,6 +1371,11 @@ msgstr ""
 #: front/src/views/albums/Edit.vue:129 src/views/tracks/Upload.vue:101
 msgctxt "Content/TrackUpload/Text/Artwork picker"
 msgid "The recommended minimum size for artworks pictures is 112x112 pixels. JPEG, PNG or GIF only."
+msgstr ""
+
+#: front/src/components/user_settings/user_settings.vue:74
+msgctxt "Content/UserSettings/Text/Avatar picker"
+msgid "The recommended minimum size for avatar pictures is 112x112 pixels. JPEG, PNG or GIF only."
 msgstr ""
 
 #: front/src/components/timeline_tabs/timeline_tabs.vue:19
@@ -1535,6 +1550,11 @@ msgctxt "Content/TrackUpload/Button/Artwork picker"
 msgid "Upload an image"
 msgstr ""
 
+#: front/src/components/user_settings/user_settings.vue:95
+msgctxt "Content/UserSettings/Button/Avatar picker"
+msgid "Upload an image"
+msgstr ""
+
 #: front/src/views/tracks/Upload.vue:414
 msgctxt "Content/TracksUpload/Toast/Error/Message"
 msgid "Upload failed"
@@ -1565,7 +1585,7 @@ msgctxt "Content/UserProfile/Toast/Error/Title"
 msgid "User Profile"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:202
+#: front/src/components/user_settings/user_settings.vue:246
 msgctxt "Content/UserSettings/Tabs/Label"
 msgid "User settings"
 msgstr ""
@@ -1615,7 +1635,7 @@ msgctxt "Content/Register/Input.Placeholder/Fullname"
 msgid "your display name"
 msgstr ""
 
-#: front/src/components/user_settings/user_settings.vue:199
+#: front/src/components/user_settings/user_settings.vue:243
 msgctxt "Content/UserSettings/Input.Placeholder/Fullname"
 msgid "your display name"
 msgstr ""
