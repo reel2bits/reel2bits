@@ -155,7 +155,9 @@ class BaseConfig(object):
 
     # We use some _external=True for url_for(), we need to have
     # the right scheme used
-    PREFERRED_URL_SCHEME = REEL2BITS_PROTOCOL
+    @property
+    def PREFERRED_URL_SCHEME(self):
+        return self.REEL2BITS_PROTOCOL
 
     # or default=REEL2BITS_URL + "/front/"
     REEL2BITS_SPA_HTML = os.getenv("REEL2BITS_SPA_HTML", "../front/dist/index.html")
