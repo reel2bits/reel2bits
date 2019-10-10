@@ -148,7 +148,10 @@ class BaseConfig(object):
 
     REEL2BITS_PROTOCOL = REEL2BITS_PROTOCOL.lower()
     REEL2BITS_HOSTNAME = REEL2BITS_HOSTNAME.lower()
-    REEL2BITS_URL = f"{REEL2BITS_PROTOCOL}://{REEL2BITS_HOSTNAME}"
+
+    @property
+    def REEL2BITS_URL(self):
+        return f"{self.REEL2BITS_PROTOCOL}://{self.REEL2BITS_HOSTNAME}"
 
     # We use some _external=True for url_for(), we need to have
     # the right scheme used
