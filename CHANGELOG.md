@@ -25,6 +25,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - An user can now delete his own account, triggering the right deletions and AP broadcasts
 - Added `/.well-known/host-meta` and `/api/v1/instance` for more mastodon API compatibility
 - Albums and Tracks can now have a custom artwork
+- Users can now choose an avatar
 
 ### Changed
 - PNG waveforms are not computed anymore because unused (#179)
