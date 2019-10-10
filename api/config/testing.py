@@ -22,6 +22,6 @@ class Config(BaseConfig):
     BCRYPT_LOG_ROUNDS = 4
     CELERY_BROKER_URL = "redis://redis:6379/0"
     CELERY_RESULT_BACKEND = "redis://redis:6379/0"
-    AP_DOMAIN = "localhost.localdomain"
-    SERVER_NAME = AP_DOMAIN
+    REEL2BITS_HOSTNAME = "localhost.localdomain"
+    SERVER_NAME = REEL2BITS_HOSTNAME
     AP_ENABLED = True
