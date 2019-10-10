@@ -1,4 +1,4 @@
-from flask import url_for
+from flask import url_for, current_app
 from models import Album, Sound
 import json
 
@@ -33,7 +33,7 @@ def to_json_account(user, relationship=False):
     if user.path_avatar():
         url_avatar = url_for("get_uploads_stuff", thing="avatars", stuff=user.path_avatar(), _external=True)
     else:
-        url_avatar = "/static/userpic_placeholder.svg"
+        url_avatar = f"{current_app.config['REEL2BITS_URL']}/static/userpic_placeholder.svg"
 
     obj = dict(
         id=user.id,

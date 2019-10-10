@@ -1,7 +1,7 @@
 import datetime
 import os
 
-from flask import current_app
+from flask import current_app, url_for
 from flask_security import SQLAlchemyUserDatastore, UserMixin, RoleMixin
 from flask_security.utils import verify_password
 from flask_sqlalchemy import SQLAlchemy
@@ -626,6 +626,11 @@ class Actor(db.Model):
         return self.followings.filter(Follower.target_id == target.id).first()
 
     def to_dict(self):
+        if self.user.path_avatar():
+            url_avatar = url_for("get_uploads_stuff", thing="avatars", stuff=self.user.path_avatar(), _external=True)
+        else:
+            url_avatar = f"{current_app.config['REEL2BITS_URL']}/static/userpic_placeholder.svg"
+
         return {
             "@context": ap.DEFAULT_CTX,
             "id": self.url,
@@ -639,6 +644,7 @@ class Actor(db.Model):
             "manuallyApprovesFollowers": self.manually_approves_followers,
             "publicKey": {"id": self.private_key_id(), "owner": self.url, "publicKeyPem": self.public_key},
             "endpoints": {"sharedInbox": self.shared_inbox_url},
+            "icon": {"type": "Image", "url": url_avatar},
         }
 
 
