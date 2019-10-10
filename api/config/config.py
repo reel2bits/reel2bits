@@ -150,6 +150,10 @@ class BaseConfig(object):
     REEL2BITS_HOSTNAME = REEL2BITS_HOSTNAME.lower()
     REEL2BITS_URL = f"{REEL2BITS_PROTOCOL}://{REEL2BITS_HOSTNAME}"
 
+    # We use some _external=True for url_for(), we need to have
+    # the right scheme used
+    PREFERRED_URL_SCHEME = REEL2BITS_PROTOCOL
+
     # or default=REEL2BITS_URL + "/front/"
     REEL2BITS_SPA_HTML = os.getenv("REEL2BITS_SPA_HTML", "../front/dist/index.html")
 
