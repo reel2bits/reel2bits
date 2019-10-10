@@ -141,7 +141,7 @@ export const parseStatus = (data) => {
   output.title = data.reel2bits.title
   output.account = parseUser(data.account)
   output.description = data.content
-  output.picture_url = (data.picture_url || '/static/artwork_placeholder.svg')
+  output.picture_url = (data.reel2bits.picture_url || '/static/artwork_placeholder.svg')
   output.media_orig = data.reel2bits.media_orig
   output.media_transcoded = data.reel2bits.media_transcoded
   output.url_feed = data.reel2bits.url_feed
