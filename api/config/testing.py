@@ -24,4 +24,5 @@ class Config(BaseConfig):
     CELERY_RESULT_BACKEND = "redis://redis:6379/0"
     REEL2BITS_HOSTNAME = "localhost.localdomain"
     SERVER_NAME = REEL2BITS_HOSTNAME
+    REEL2BITS_PROTOCOL = "http"
     AP_ENABLED = True
