@@ -187,7 +187,7 @@ class BaseConfig(object):
             self.REEL2BITS_HOSTNAME = f"{REEL2BITS_HOSTNAME_PREFIX}.{REEL2BITS_HOSTNAME_SUFFIX}"
             REEL2BITS_PROTOCOL = os.getenv("REEL2BITS_PROTOCOL", "https")
         else:
-            if not self.REEL2BITS_HOSTNAME:
+            if not hasattr(self, "REEL2BITS_HOSTNAME"):
                 self.REEL2BITS_HOSTNAME = os.getenv("REEL2BITS_HOSTNAME", None)
             if self.REEL2BITS_HOSTNAME:
                 REEL2BITS_PROTOCOL = os.getenv("REEL2BITS_PROTOCOL", "https")
