@@ -114,4 +114,10 @@ Then launch the whole thing:
 
     docker-compose up -d
 
+Test email sending (Important if you configured the app to have user confirm their email !):
+
+.. code-block:: bash
+
+    docker-compose run --rm api flask test-email --email=EMAIL_TO_SEND_TEST_TO
+
 Now, you just need to configure your :ref:`reverse-proxy <reverse-proxy-setup>`. Don't worry, it's quite easy.

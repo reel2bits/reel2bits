@@ -25,3 +25,7 @@ By default all commands are non-breaking, meaning you can launch them at any tim
 - ``flask db-datas 003-set-user-quota``: Set the default user quota
 - ``flask db-datas 004-update-file-sizes``: Recompute all track files and transcodings sizes
 - ``flask db-datas 005-update-user-quotas``: Recompute all users quotas
+
+System
+------
+- ``flask test-email``: Test sending an email to check it works properly
