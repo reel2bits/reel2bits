@@ -23,6 +23,9 @@ import commands
 from utils.flake_id import FlakeId
 import html
 from utils.meta_tags import get_default_head_tags, get_request_head_tags
+from flask_mail import Message
+import click
+import sys
 
 from models import db, Config, user_datastore, create_actor
 from utils.various import InvalidUsage, is_admin, add_user_log, join_url
@@ -475,6 +478,20 @@ def create_app(config_filename="config.development.Config", app_name=None, regis
     def config():
         """Dump config"""
         pp(app.config)
+
+    @app.cli.command(name="test-email")
+    @click.option("--email", prompt=True, help="Email to send the test to")
+    def test_email(email):
+        """
+        Test email sending.
+        """
+        msg = Message(subject="reel2bits test email", recipients=[email], sender=app.config["MAIL_DEFAULT_SENDER"])
+        msg.body = render_template("email/test_email.txt")
+        msg.html = render_template("email/test_email.html")
+        try:
+            mail.send(msg)
+        except:  # noqa: E772
+            print(f"Error sending mail: {sys.exc_info()[0]}")
 
     app.cli.add_command(commands.db_datas)
     app.cli.add_command(commands.users)
