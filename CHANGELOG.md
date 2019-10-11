@@ -30,6 +30,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added `/.well-known/host-meta` and `/api/v1/instance` for more mastodon API compatibility
 - Albums and Tracks can now have a custom artwork
 - Users can now choose an avatar
+- OEmbed, meta tags, Twitter Card and OpenGraph
 
 ### Changed
 - PNG waveforms are not computed anymore because unused (#179)
