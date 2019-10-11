@@ -125,30 +125,6 @@ class BaseConfig(object):
     # ActivityPub stuff
     AP_ENABLED = bool_env("AP_ENABLED", False)
 
-    REEL2BITS_HOSTNAME = None
-    REEL2BITS_HOSTNAME_SUFFIX = os.getenv("REEL2BITS_HOSTNAME_SUFFIX", None)
-    REEL2BITS_HOSTNAME_PREFIX = os.getenv("REEL2BITS_HOSTNAME_PREFIX", None)
-    if REEL2BITS_HOSTNAME_PREFIX and REEL2BITS_HOSTNAME_SUFFIX:
-        # we're in traefik case, in development
-        REEL2BITS_HOSTNAME = f"{REEL2BITS_HOSTNAME_PREFIX}.{REEL2BITS_HOSTNAME_SUFFIX}"
-        REEL2BITS_PROTOCOL = os.getenv("REEL2BITS_PROTOCOL", "https")
-    else:
-        REEL2BITS_HOSTNAME = os.getenv("REEL2BITS_HOSTNAME", None)
-        if REEL2BITS_HOSTNAME:
-            REEL2BITS_PROTOCOL = os.getenv("REEL2BITS_PROTOCOL", "https")
-        else:
-            REEL2BITS_URL = os.getenv("REEL2BITS_URL")
-            _parsed = urlsplit(REEL2BITS_URL)
-            REEL2BITS_HOSTNAME = _parsed.netloc
-            REEL2BITS_PROTOCOL = _parsed.scheme
-
-        # set SERVER_NAME if : !DEBUG, !TESTING, and hostname defined
-        # if not DEBUG and not TESTING and REEL2BITS_HOSTNAME:
-        #     SERVER_NAME = REEL2BITS_HOSTNAME
-
-    REEL2BITS_PROTOCOL = REEL2BITS_PROTOCOL.lower()
-    REEL2BITS_HOSTNAME = REEL2BITS_HOSTNAME.lower()
-
     @property
     def REEL2BITS_URL(self):
         return f"{self.REEL2BITS_PROTOCOL}://{self.REEL2BITS_HOSTNAME}"
@@ -194,3 +170,34 @@ class BaseConfig(object):
 
     SECURITY_CLI_USERS_NAME = False
     SECURITY_CLI_ROLES_NAME = False
+
+    def post_load(self):
+        self.resolve_hostnames()
+
+    def resolve_hostnames(self):
+        """
+        This is not really practical, but having this is in a function is the only way of
+        getting the right variables overriden by the config.xxx_secret.py files
+        and then compute the right things with what have been given.
+        """
+        REEL2BITS_HOSTNAME_SUFFIX = os.getenv("REEL2BITS_HOSTNAME_SUFFIX", None)
+        REEL2BITS_HOSTNAME_PREFIX = os.getenv("REEL2BITS_HOSTNAME_PREFIX", None)
+        if REEL2BITS_HOSTNAME_PREFIX and REEL2BITS_HOSTNAME_SUFFIX:
+            # we're in traefik case, in development
+            self.REEL2BITS_HOSTNAME = f"{REEL2BITS_HOSTNAME_PREFIX}.{REEL2BITS_HOSTNAME_SUFFIX}"
+            REEL2BITS_PROTOCOL = os.getenv("REEL2BITS_PROTOCOL", "https")
+        else:
+            if not self.REEL2BITS_HOSTNAME:
+                self.REEL2BITS_HOSTNAME = os.getenv("REEL2BITS_HOSTNAME", None)
+            if self.REEL2BITS_HOSTNAME:
+                REEL2BITS_PROTOCOL = os.getenv("REEL2BITS_PROTOCOL", "https")
+            else:
+                REEL2BITS_URL = os.getenv("REEL2BITS_URL")
+                _parsed = urlsplit(REEL2BITS_URL)
+                self.REEL2BITS_HOSTNAME = _parsed.netloc
+                REEL2BITS_PROTOCOL = _parsed.scheme
+
+        self.REEL2BITS_PROTOCOL = REEL2BITS_PROTOCOL.lower()
+        self.REEL2BITS_HOSTNAME = self.REEL2BITS_HOSTNAME.lower()
+        self.REEL2BITS_HOSTNAME_SUFFIX = REEL2BITS_HOSTNAME_SUFFIX
+        self.REEL2BITS_HOSTNAME_PREFIX = REEL2BITS_HOSTNAME_PREFIX
