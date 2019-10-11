@@ -150,6 +150,14 @@ Then populate the database with default values (seeds):
     # in the 'api' folder
     flask db-datas 000-seeds
 
+Test email sending
+------------------
+
+This step is tmportant if you configured the app to have user confirm their email !
+
+.. code-block:: bash
+
+    flask test-email --email=EMAIL_TO_SEND_TEST_TO
 
 Create an admin account
 -----------------------
