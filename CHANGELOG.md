@@ -31,6 +31,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Albums and Tracks can now have a custom artwork
 - Users can now choose an avatar
 - OEmbed, meta tags, Twitter Card and OpenGraph
+- `flask test-email` command to send a test email
 
 ### Changed
 - PNG waveforms are not computed anymore because unused (#179)
@@ -39,6 +40,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - User language setting in profile now override browser one
 - URL scheme generation should be more robust
 - Added Icon(avatar) to Actor to make avatar federate
+- `flask users list` command now show confirmed at field
+
 ### Fixed
 - Waveform JSON generation through a .dat now use the right pixels per second; avoid huge waveforms datas for long tracks (#179)
 - Flake ID generation have been rewritten and should be good now
