@@ -32,9 +32,11 @@ def list(remote):
         table.set_cols_align(["l", "l", "l", "l", "l"])
         table.add_rows([["ID", "username", "display name", "tracks", "instance"]])
     else:
-        table.set_cols_dtype(["i", "t", "t", "a", "i", "i", "i", "t"])
-        table.set_cols_align(["l", "l", "l", "l", "r", "l", "l", "l"])
-        table.add_rows([["ID", "username", "display name", "active", "quota", "remain", "tracks", "roles"]])
+        table.set_cols_dtype(["i", "t", "t", "a", "a", "i", "i", "i", "t"])
+        table.set_cols_align(["l", "l", "l", "l", "l", "r", "l", "l", "l"])
+        table.add_rows(
+            [["ID", "username", "display name", "active", "confirmed at", "quota", "remain", "tracks", "roles"]]
+        )
 
     for user in users.all():
         if user.local:
@@ -44,6 +46,7 @@ def list(remote):
                     user.name,
                     user.actor[0].preferred_username,
                     ("Yes" if user.active else "No"),
+                    user.confirmed_at,
                     f"{user.quota_count} / {user.quota}",
                     (user.quota - user.quota_count),
                     user.sounds.count(),
