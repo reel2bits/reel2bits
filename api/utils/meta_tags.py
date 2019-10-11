@@ -56,8 +56,7 @@ def get_default_head_tags(path):
 
 
 def get_twitter_card_metas(type, id):
-    # Uses type and ID
-    embed_url = None
+    embed_url = url_for("bp_api_embed.iframe", kind=type, id=id, _external=True)
     return [
         {"tag": "meta", "property": "twitter:card", "content": "player"},
         {"tag": "meta", "property": "twitter:player", "content": embed_url},
@@ -112,8 +111,8 @@ def get_user_track_tags(view_name, view_arguments):
 
     metas.append({"tag": "link", "rel": "alternate", "type": "application/json+oembed", "href": oembed_url})
 
-    # TODO twitter card thing
-    # metas += get_twitter_card_metas(type='track', id=track.id)
+    metas += get_twitter_card_metas(type="track", id=track.id)
+
     return metas
 
 
@@ -152,14 +151,13 @@ def get_user_album_tags(view_name, view_arguments):
 
     metas.append({"tag": "link", "rel": "alternate", "type": "application/json+oembed", "href": oembed_url})
 
-    # TODO twitter card thing
-    # metas += get_twitter_card_metas(type='album', id=album.id)
+    metas += get_twitter_card_metas(type="album", id=album.id)
 
     return metas
 
 
 def get_user_profile_tags(view_name, view_arguments):
-    user = get_user()
+    user = get_user(view_arguments)
     if not user:
         return []
 
@@ -185,8 +183,7 @@ def get_user_profile_tags(view_name, view_arguments):
 
     metas.append({"tag": "link", "rel": "alternate", "type": "application/json+oembed", "href": oembed_url})
 
-    # TODO twitter card thing
-    # metas += get_twitter_card_metas(type='artist', id=user.id)
+    metas += get_twitter_card_metas(type="user", id=user.id)
 
     return metas
 
