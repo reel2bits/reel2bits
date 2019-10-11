@@ -338,6 +338,16 @@ def create_app(config_filename="config.development.Config", app_name=None, regis
 
         app.register_blueprint(bp_api_pleroma_admin)
 
+        # OEmbed
+        from controllers.api.oembed import bp_api_oembed
+
+        app.register_blueprint(bp_api_oembed)
+
+        # Iframe
+        from controllers.api.embed import bp_api_embed
+
+        app.register_blueprint(bp_api_embed)
+
         swagger = Swagger(app, template=template)  # noqa: F841 lgtm [py/unused-local-variable]
 
         # SPA catchalls for meta tags
