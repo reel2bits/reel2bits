@@ -29,7 +29,7 @@ def to_json_relationship(of_user, against_user):
 
 
 def to_json_account(user, relationship=False):
-    url_feed = url_for("bp_feeds.tracks", user_id=user.id, _external=False)
+    url_feed = url_for("bp_feeds.tracks", user_id=user.id, _external=True)
     if user.path_avatar():
         url_avatar = url_for("get_uploads_stuff", thing="avatars", stuff=user.path_avatar(), _external=True)
     else:
