@@ -16,7 +16,7 @@ from models import user_datastore  # noqa: E402
 
 @pytest.yield_fixture(scope="session")
 def app():
-    app = create_app("config.testing.Config")
+    app = create_app(config_filename="config.testing.Config")
     ctx = app.app_context()
     ctx.push()
 
