@@ -21,6 +21,8 @@ import requests
 from utils.defaults import Reel2bitsDefaults
 import commands
 from utils.flake_id import FlakeId
+import html
+from utils.meta_tags import get_default_head_tags, get_request_head_tags
 
 from models import db, Config, user_datastore, create_actor
 from utils.various import InvalidUsage, is_admin, add_user_log, join_url
@@ -102,6 +104,9 @@ def create_app(config_filename="config.development.Config", app_name=None, regis
         print(" *** Cannot import config ***")
         cfg = import_string("config.config.BaseConfig")
         print(" *** Default config loaded, expect problems ***")
+    if hasattr(cfg, "post_load"):
+        print(" *** Doing some magic")
+        cfg.post_load()
     app.config.from_object(cfg)
 
     app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
@@ -333,7 +338,22 @@ def create_app(config_filename="config.development.Config", app_name=None, regis
 
         app.register_blueprint(bp_api_pleroma_admin)
 
+        # OEmbed
+        from controllers.api.oembed import bp_api_oembed
+
+        app.register_blueprint(bp_api_oembed)
+
+        # Iframe
+        from controllers.api.embed import bp_api_embed
+
+        app.register_blueprint(bp_api_embed)
+
         swagger = Swagger(app, template=template)  # noqa: F841 lgtm [py/unused-local-variable]
+
+        # SPA catchalls for meta tags
+        from controllers.spa import bp_spa
+
+        app.register_blueprint(bp_spa)
 
     @app.route("/uploads/<string:thing>/<path:stuff>", methods=["GET"])
     def get_uploads_stuff(thing, stuff):
@@ -350,7 +370,17 @@ def create_app(config_filename="config.development.Config", app_name=None, regis
             return resp
 
     def render_tags(tags):
-        return tags
+        """
+        Given a dict like {'tag': 'meta', 'hello': 'world'}
+        return a html ready tag like
+        <meta hello="world" />
+        """
+        for tag in tags:
+
+            yield "<{tag} {attrs} />".format(
+                tag=tag.pop("tag"),
+                attrs=" ".join(['{}="{}"'.format(a, html.escape(str(v))) for a, v in sorted(tag.items()) if v]),
+            )
 
     @app.errorhandler(404)
     def page_not_found(msg):
@@ -361,9 +391,28 @@ def create_app(config_filename="config.development.Config", app_name=None, regis
         html = get_spa_html(app.config["REEL2BITS_SPA_HTML"])
         head, tail = html.split("</head>", 1)
 
-        tags = ""  # TODO OG/OEmbed
+        request_tags = get_request_head_tags(request)
 
-        head += "\n" + "\n".join(render_tags(tags)) + "\n</head>"
+        default_tags = get_default_head_tags(request.path)
+        unique_attributes = ["name", "property"]
+
+        final_tags = request_tags
+        skip = []
+
+        for t in final_tags:
+            for attr in unique_attributes:
+                if attr in t:
+                    skip.append(t[attr])
+        for t in default_tags:
+            existing = False
+            for attr in unique_attributes:
+                if t.get(attr) in skip:
+                    existing = True
+                    break
+            if not existing:
+                final_tags.append(t)
+
+        head += "\n" + "\n".join(render_tags(final_tags)) + "\n</head>"
         return head + tail
 
     @app.errorhandler(403)

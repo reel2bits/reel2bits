@@ -464,6 +464,7 @@ Running tests
 
 To run tests for backend::
 
+    APP_SETTINGS="config.testing.Config"
     python setup.py test
 
 

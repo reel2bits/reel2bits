@@ -95,6 +95,7 @@ aliases:
               cd api
               mkdir test-reports
               export AUTHLIB_INSECURE_TRANSPORT=1
+              export APP_SETTINGS="config.testing.Config"
               python setup.py test
         - run:
             name: Full migrations
