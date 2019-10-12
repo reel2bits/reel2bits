@@ -32,6 +32,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Users can now choose an avatar
 - OEmbed, meta tags, Twitter Card and OpenGraph
 - `flask test-email` command to send a test email
+- Setting `SENTRY_DSN` in backend will activate Sentry in frontend
 
 ### Changed
 - PNG waveforms are not computed anymore because unused (#179)
