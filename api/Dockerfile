@@ -9,7 +9,8 @@ COPY ./requirements.txt .
 
 RUN pip3 install --upgrade pip  && \
     pip3 install setuptools wheel && \
-    pip3 install --no-cache-dir -r /requirements.txt
+    pip3 install --no-cache-dir -r /requirements.txt && \
+    pip3 install sentry-sdk
 
 COPY --from=audiowaveform-builder /bin/audiowaveform /usr/local/bin
 
