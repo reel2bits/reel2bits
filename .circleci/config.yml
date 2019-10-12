@@ -69,12 +69,7 @@ aliases:
         - run:
             command: |
               cd front
-              npm install -g webpack-cli
               yarn install --frozen-lockfile
-              cd node_modules/wavesurfer.js/
-              npm install
-              npm run build
-              cd -
 
         - save_cache:
             key: v1-node-depdencies-{{ checksum "front/yarn.lock" }}
