@@ -8,7 +8,7 @@
       />
     </div>
     <div class="col-md-4">
-      <Sidebar />
+      <!--<Sidebar />-->
     </div>
   </div>
 </template>

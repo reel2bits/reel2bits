@@ -36,3 +36,19 @@ body {
 #topsearch:placeholder-shown {
     text-align: center;
 }
+
+
+.badge-primary {
+    background-color: $shade-0;
+    border: 1px solid $primary;
+    color: $primary; 
+    font-weight: normal;
+    text-transform: uppercase;
+}
+.badge-secondary {
+    background-color: $shade-0;
+    border: 1px solid $secondary;
+    color: $secondary; 
+    font-weight: normal;
+    text-transform: uppercase;
+}
