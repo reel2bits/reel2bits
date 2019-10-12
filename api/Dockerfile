@@ -17,7 +17,7 @@ COPY --from=audiowaveform-builder /bin/audiowaveform /usr/local/bin
 RUN apk del .build-deps
 
 ENTRYPOINT ["./docker/entrypoint.sh"]
-CMD ["waitress-serve --host 0.0.0.0 --port 8000 --call 'app:create_app'"]
+CMD ["./docker/server.sh"]
 
 COPY . /app
 WORKDIR /app
