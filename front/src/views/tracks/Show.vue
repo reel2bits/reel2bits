@@ -6,7 +6,7 @@
       </b-alert>
     </div>
   </div>
-  <div v-else class="row">
+  <div v-else class="row mt-4">
     <div class="col-md-8">
       <b-alert v-if="deleteError" variant="danger" show
                dismissible
@@ -14,16 +14,16 @@
       >
         {{ deleteError }}
       </b-alert>
-      <div class="d-flex my-4">
+      <div class="d-flex mb-3">
         <img :src="track.picture_url" class="d-flex mr-3"
              style="width:112px; height:112px;"
         >
         <div class="flex-fill">
-          <div class="d-flex">
-            <h1 class="flex-fill h5" :title="track.title">
-              {{ track.title | truncate(45) }}
+          <div class="row px-0 mx-0">
+            <h1 class="col px-0 mx-0 h5 text-truncate" :title="track.title">
+              {{ track.title }}
             </h1>
-            <div class="d-flex" :title="track.uploaded_on">
+            <div class="col-3 px-0 mx-0 text-right" :title="track.uploaded_on">
               {{ publishedAgo }}
             </div>
           </div>
@@ -75,7 +75,7 @@
                 </b-modal>
               </div>
             </div>
-            <div class="ml-auto align-self-end">
+            <div class="ml-auto row align-items-center mr-0">
               <span v-if="isPlaying" class="text-secondary px-2">{{ playerTimeCur }}</span> <span class="text-muted">{{ playerTimeTot }}</span>
             </div>
           </div>
@@ -83,33 +83,31 @@
       </div>
 
       <!-- genre and tags -->
-      <div class="d-flex p-2">
-        <div class="p-2">
-          <i class="fa fa-folder-o" aria-hidden="true" />
-          <translate v-if="!track.genre" translate-context="Content/TrackShow/Track genre">
-            No genre defined
-          </translate>
-          <template v-else>
-            {{ track.genre }}
-          </template>
-        </div>
-
-        <div class="p-2">
-          <i class="fa fa-tags" aria-hidden="true" />
-          <template v-if="track.tags.length > 0">
-            <b-badge v-for="tag in track.tags" :key="tag" pill
-                     class="tags_pill" variant="info"
-            >
-              {{ tag }}
-            </b-badge>
-          </template>
-          <translate v-else translate-context="Content/TrackShow/Track tags">
-            No tags
-          </translate>
+      <div>
+        <p class="mb-1">
+          {{ track.description }}
+        </p>
+        <div>
+        <template v-if="track.genre">
+          <b-badge variant="secondary"
+            class="mr-1"
+          >
+            <i class="fa fa-tag" aria-hidden="true" /> {{ track.genre }}
+          </b-badge>
+        </template><template v-if="track.tags.length > 0">
+          <b-badge v-for="tag in track.tags" :key="tag" variant="primary"
+            class="mr-1"
+          >
+            <!--<i class="fa fa-hashtag" aria-hidden="true" />-->#{{ tag }} 
+          </b-badge>
+        </template>
+        <!--<translate v-else translate-context="Content/TrackShow/Track tags">
+          No tags
+        </translate> -->
         </div>
       </div>
 
-      <div>
+      <!--<div>
         <p class="h6">
           {{ track.title }}
         </p>
@@ -133,12 +131,13 @@
             Download links:
           </translate><a :href="track.media_orig"><translate translate-context="Content/TrackShow/Track infos dls">original</translate></a><span v-if="track.processing.transcode_needed">, <a :href="track.media_transcoded"><translate translate-context="Content/TrackShow/Track infos dls">transcoded mp3</translate></a></span>.
         </p>
-      </div>
+      </div> -->
 
       <!-- Tabs -->
       <div v-if="processingDone">
+        <!-- disabled for now
         <ul class="nav mt-5 pb-2">
-          <!-- disabled for now
+          
           <li class="nav-item pr-3">
             <a class="nav-link" href="#">
               <translate translate-context="Content/TrackShow/Track federation tab title" :translate-params="{count: track.comments}">
@@ -160,23 +159,23 @@
               </translate>
             </a>
           </li>
-          -->
+          
           <li class="nav-item px-3 border-left">
             <a v-translate translate-context="Content/TrackShow/Track metadatas tab title" class="nav-link active"
                href="#"
-            >Metadatas</a>
+            >Metadata</a>
           </li>
-        </ul>
+        </ul>-->
         <div class="border-top border-bottom py-4 my-4">
           <div class="row">
             <div class="col-sm-6">
               <h4 v-translate translate-context="Content/TrackShow/Track metadatas headline">
-                Metadatas of the original file
+                Metadata of the original file
               </h4>
               <table class="table table-sm my-0">
                 <tbody>
                   <tr>
-                    <th scope="row" class="col-md-2 border-0 font-weight-normal">
+                    <th scope="row" class="col-md-3 border-0 font-weight-normal">
                       <translate translate-context="Content/TrackShow/Track metadata">
                         Type
                       </translate>
@@ -240,7 +239,7 @@
             </div>
             <div v-if="track.processing.transcode_needed" class="col-sm-6">
               <h4 v-translate translate-context="Content/TrackShow/Track metadatas headline">
-                Metadatas of the transcoded file
+                Metadata of the transcoded file
               </h4>
               <table class="table table-sm my-0">
                 <tbody>
@@ -290,7 +289,7 @@
     </div>
 
     <div v-if="track" class="col-md-4 d-flex flex-column">
-      <Sidebar />
+      <Sidebar :user="user" />
     </div>
   </div>
 </template>
@@ -356,6 +355,9 @@ export default {
     }
   },
   computed: {
+    user () {
+      return this.$store.getters.findUser(this.userId)
+    },
     ...mapState({
       signedIn: state => !!state.users.currentUser,
       sourceUrl: state => state.instance.sourceUrl

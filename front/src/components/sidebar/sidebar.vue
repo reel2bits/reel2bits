@@ -6,10 +6,12 @@
       <template>
         <div class="card mb-4">
           <div class="card-body py-3 px-3">
-            <translate translate-context="Content/UserProfile/Sidebar/RSS Feed" :translate-params="{quotaSlashRepr: humanQuota}">
-              All user tracks:
-            </translate>
-            <a :href="displayUser.reel2bits.url_feed" target="_blank"><i class="fa fa-rss" aria-hidden="true" /></a>
+            <a :href="displayUser.reel2bits.url_feed" target="_blank">
+              <i class="fa fa-podcast" aria-hidden="true"></i>
+              <translate translate-context="Content/UserProfile/Sidebar/RSS Feed" :translate-params="{quotaSlashRepr: humanQuota}">
+                Feed of all tracks by @{{displayUser.screen_name}}
+              </translate>
+            </a>
           </div>
         </div>
       </template>
@@ -20,6 +22,8 @@
             <translate translate-context="Content/UserProfile/Sidebar/Quota" :translate-params="{quotaSlashRepr: humanQuota}">
               Quota: %{ quotaSlashRepr }
             </translate>
+            <b-progress :value=50 :max=128 variant="secondary"
+              class="mt-2"></b-progress>
           </div>
         </div>
       </template>
