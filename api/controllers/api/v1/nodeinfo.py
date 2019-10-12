@@ -51,6 +51,11 @@ def nodeinfo(version):
         },
     }
 
+    if current_app.config["SENTRY_DSN"]:
+        resp["metadata"]["sentryDsn"] = current_app.config["SENTRY_DSN"]
+    else:
+        resp["metadata"]["sentryDsn"] = None
+
     if current_app.config["AP_ENABLED"]:
         resp["protocols"].append("activitypub")
 
