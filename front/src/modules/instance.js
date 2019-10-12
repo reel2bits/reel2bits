@@ -11,7 +11,8 @@ const defaultState = {
   redirectRootNoLogin: '/main/all',
   redirectRootLogin: '/main/friends',
   restrictedNicknames: [],
-  trackSizeLimit: 13107200 // bytes, default: 100mb
+  trackSizeLimit: 13107200, // bytes, default: 100mb
+  sentryDsn: null
 }
 
 const instance = {
