@@ -3,6 +3,8 @@ import Vuex from 'vuex'
 import VueRouter from 'vue-router'
 import BootstrapVue from 'bootstrap-vue'
 import VueStringFilter from 'vue-string-filter'
+import * as Sentry from '@sentry/browser'
+import * as Integrations from '@sentry/integrations'
 
 import interfaceModule from './modules/interface.js'
 import instanceModule from './modules/instance.js'
@@ -83,6 +85,15 @@ const persistedStateOptions = {
   })
 
   afterStoreSetup({ store })
+    .then(() => {
+      if (store.state.instance.sentryDsn) {
+        console.log('Enabling Sentry error handling with DSN', store.state.instance.sentryDsn)
+        Sentry.init({
+          dsn: store.state.instance.sentryDsn,
+          integrations: [new Integrations.Vue({ Vue, attachProps: true, logErrors: true })]
+        })
+      }
+    })
 })()
 
 // These are inlined by webpack's DefinePlugin
