@@ -14,4 +14,7 @@ if [ -d "frontend" ]; then
     cp -r frontend/* /frontend/
     export REEL2BITS_SPA_HTML=/frontend/index.html
 fi
+
+sleep 0.1
+
 exec "$@"
