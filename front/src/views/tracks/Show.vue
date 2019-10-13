@@ -88,19 +88,19 @@
           {{ track.description }}
         </p>
         <div>
-        <template v-if="track.genre">
-          <b-badge variant="secondary"
-            class="mr-1"
-          >
-            <i class="fa fa-tag" aria-hidden="true" /> {{ track.genre }}
-          </b-badge>
-        </template><template v-if="track.tags.length > 0">
-          <b-badge v-for="tag in track.tags" :key="tag" variant="primary"
-            class="mr-1"
-          >
-            <!--<i class="fa fa-hashtag" aria-hidden="true" />-->#{{ tag }} 
-          </b-badge>
-        </template>
+          <template v-if="track.genre">
+            <b-badge variant="secondary"
+                     class="mr-1"
+            >
+              <i class="fa fa-tag" aria-hidden="true" /> {{ track.genre }}
+            </b-badge>
+          </template><template v-if="track.tags.length > 0">
+            <b-badge v-for="tag in track.tags" :key="tag" variant="primary"
+                     class="mr-1"
+            >
+              <!--<i class="fa fa-hashtag" aria-hidden="true" />-->#{{ tag }}
+            </b-badge>
+          </template>
         <!--<translate v-else translate-context="Content/TrackShow/Track tags">
           No tags
         </translate> -->
@@ -137,7 +137,7 @@
       <div v-if="processingDone">
         <!-- disabled for now
         <ul class="nav mt-5 pb-2">
-          
+
           <li class="nav-item pr-3">
             <a class="nav-link" href="#">
               <translate translate-context="Content/TrackShow/Track federation tab title" :translate-params="{count: track.comments}">
@@ -159,7 +159,7 @@
               </translate>
             </a>
           </li>
-          
+
           <li class="nav-item px-3 border-left">
             <a v-translate translate-context="Content/TrackShow/Track metadatas tab title" class="nav-link active"
                href="#"

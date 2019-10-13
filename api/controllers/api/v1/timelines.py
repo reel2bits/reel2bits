@@ -36,7 +36,8 @@ def home():
             description: Returns array of Status
     """
     # TODO don't forget to handle if paginated=true paginate else mastoapi
-    return jsonify([])
+    resp = {"page": 1, "page_size": 20, "totalItems": 0, "items": [], "totalPages": 1}
+    return jsonify(resp)
 
 
 @bp_api_v1_timelines.route("/api/v1/timelines/public", methods=["GET"])

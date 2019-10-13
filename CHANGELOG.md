@@ -33,6 +33,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - OEmbed, meta tags, Twitter Card and OpenGraph
 - `flask test-email` command to send a test email
 - Setting `SENTRY_DSN` in backend will activate Sentry in frontend
+- There is now an admin setting for a static announcement
 
 ### Changed
 - PNG waveforms are not computed anymore because unused (#179)

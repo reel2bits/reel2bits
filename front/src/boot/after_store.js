@@ -20,6 +20,7 @@ const getNodeInfo = async ({ store }) => {
       store.dispatch('setInstanceOption', { name: 'trackSizeLimit', value: metadata.uploadLimits.track })
       store.dispatch('setInstanceOption', { name: 'restrictedNicknames', value: metadata.restrictedNicknames })
       store.dispatch('setInstanceOption', { name: 'sentryDsn', value: metadata.sentryDsn })
+      store.dispatch('setInstanceOption', { name: 'announcement', value: metadata.announcement })
 
       const software = data.software
       store.dispatch('setInstanceOption', { name: 'backendVersion', value: software.version })
