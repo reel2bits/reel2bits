@@ -1,6 +1,7 @@
 <template>
   <div class="row mt-4">
     <div class="col-md-8">
+      <Announcement />
       <TimelineTabs active="publicAndExternal" />
 
       <Timeline
@@ -17,11 +18,14 @@
 import TimelineTabs from '../timeline_tabs/timeline_tabs.vue'
 import Timeline from '../timeline/timeline.vue'
 import Sidebar from '../sidebar/sidebar.vue'
+import Announcement from '../announcement/announcement.vue'
+
 const PublicAndExternalTimeline = {
   components: {
     TimelineTabs,
     Timeline,
-    Sidebar
+    Sidebar,
+    Announcement
   }
 }
 

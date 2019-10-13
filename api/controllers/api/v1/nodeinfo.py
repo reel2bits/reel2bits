@@ -56,6 +56,8 @@ def nodeinfo(version):
     else:
         resp["metadata"]["sentryDsn"] = None
 
+    resp["metadata"]["announcement"] = _config.announcement
+
     if current_app.config["AP_ENABLED"]:
         resp["protocols"].append("activitypub")
 

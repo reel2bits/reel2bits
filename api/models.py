@@ -41,6 +41,7 @@ class Config(db.Model):
     app_name = db.Column(db.String(255), default=None)
     app_description = db.Column(db.Text)
     user_quota = db.Column(db.Integer, default=Reel2bitsDefaults.user_quotas_default)
+    announcement = db.Column(db.Text, nullable=True)
 
 
 # #### User ####

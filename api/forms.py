@@ -39,6 +39,7 @@ class ModelForm(BaseModelForm):
 class ConfigForm(Form):
     app_name = StringField(lazy_gettext("Instance Name"), [DataRequired(), Length(max=255)])
     app_description = TextAreaField(lazy_gettext("Instance description"))
+    announcement = TextAreaField(lazy_gettext("Instance announcement"))
 
     submit = SubmitField(lazy_gettext("Update config"))
 
