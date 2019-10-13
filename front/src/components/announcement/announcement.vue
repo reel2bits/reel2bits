@@ -1,6 +1,6 @@
 <template>
   <div v-if="announcement">
-    <b-alert variant="info">
+    <b-alert show variant="info">
       {{ announcement }}
     </b-alert>
   </div>
