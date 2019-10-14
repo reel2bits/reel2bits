@@ -138,7 +138,7 @@
     </div>
 
     <div v-if="album" class="col-md-4 d-flex flex-column">
-      <Sidebar />
+      <Sidebar :user="album.account" />
     </div>
   </div>
 </template>

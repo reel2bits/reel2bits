@@ -289,7 +289,7 @@
     </div>
 
     <div v-if="track" class="col-md-4 d-flex flex-column">
-      <Sidebar :user="user" />
+      <Sidebar :user="track.account" />
     </div>
   </div>
 </template>
