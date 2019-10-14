@@ -124,7 +124,7 @@ def oauth_token():
             "client_secret": request.json["client_secret"],
             "grant_type": request.json["grant_type"],
             # This is an admin-fe workaround because scopes aren't specified
-            "scope": request.json.get("scope", "read write follow push"),
+            "scope": request.json.get("scope", "read write follow"),
         }
         if request.json.get("password"):
             d["password"] = request.json["password"]
