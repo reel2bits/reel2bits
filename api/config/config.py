@@ -161,6 +161,12 @@ class BaseConfig(object):
     def MAIL_DEFAULT_SENDER(self):
         return os.getenv("MAIL_DEFAULT_SENDER", f"postmaster@{self.AP_DOMAIN}")
 
+    @property
+    def SECURITY_EMAIL_SENDER(self):
+        return os.getenv("MAIL_DEFAULT_SENDER", f"postmaster@{self.AP_DOMAIN}")
+
+    SECURITY_EMAIL_SUBJECT_REGISTER = os.getenv("SECURITY_EMAIL_SUBJECT_REGISTER", "Welcome to reel2bits")
+
     # Old stuff while we still have parts of the frontend in the backend
     SECURITY_POST_LOGIN_VIEW = "/home"
     SECURITY_POST_LOGOUT_VIEW = "/home"
