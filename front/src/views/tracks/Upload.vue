@@ -2,8 +2,8 @@
   <div class="row my-4 justify-content-center">
     <div class="col-5">
       <b-alert v-if="fetchErrors.length > 0" variant="danger" show
-                dismissible
-                @dismissed="fetchErrors=[]"
+               dismissible
+               @dismissed="fetchErrors=[]"
       >
         <span v-for="error in fetchErrors" :key="error">{{ error }}</span>
       </b-alert>
