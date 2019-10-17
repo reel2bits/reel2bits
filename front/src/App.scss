@@ -52,3 +52,24 @@ body {
     font-weight: normal;
     text-transform: uppercase;
 }
+
+
+//Some dirty hacks to style vue-tags-input
+.ti-tag {
+    @extend .badge;
+}
+
+.ti-valid {
+    @extend .badge-primary;
+    background: none !important;
+    color: $brand-1 !important;
+}
+
+.ti-input {
+    @extend .form-control;
+    border-color: $input-border-color !important;
+}
+
+.vue-tags-input {
+    max-width: 100% !important;
+}
