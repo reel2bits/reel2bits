@@ -76,7 +76,7 @@
     "eslint-plugin-standard": "^4.0.1",
     "eslint-plugin-vue": "^5.0.0",
     "eventsource-polyfill": "^0.9.6",
-    "karma": "^4.3.0",
+    "karma": "^4.4.0",
     "karma-coverage": "^2.0.1",
     "karma-firefox-launcher": "^1.1.0",
     "karma-mocha": "^1.2.0",
