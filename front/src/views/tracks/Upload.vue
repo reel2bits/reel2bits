@@ -1,6 +1,6 @@
 <template>
   <div class="row my-4 justify-content-center">
-    <div class="col-5">
+    <div class="col-6">
       <b-alert v-if="fetchErrors.length > 0" variant="danger" show
                dismissible
                @dismissed="fetchErrors=[]"
@@ -8,50 +8,61 @@
         <span v-for="error in fetchErrors" :key="error">{{ error }}</span>
       </b-alert>
 
-      <h4 v-translate translate-context="Content/TrackUpload/Headline" class="text-center">
-        Upload a new track
-      </h4>
-
-      <template v-if="currentUser.reel2bits.quota_limit > 0">
-        <b-alert show :variant="currentUserQuotaLevel">
-          {{ currentUserQuota }}
-        </b-alert>
-      </template>
-
+      <h1 v-translate translate-context="Content/TrackUpload/Headline" class="mb-3">
+        New track
+      </h1>
+      
       <b-form class="upload-track-form" enctype="multipart/form-data" @submit.prevent="upload(track)">
-        <b-form-group
-          id="ig-file"
-          :description="fileDescription"
-          :label="labels.fileLabel"
-          label-for="file"
-        >
-          <b-form-file
-            :accept="acceptedMimeTypes"
-            name="file"
-            :disabled="isPending"
-            required
-            @change="uploadFile($event)"
-          />
-        </b-form-group>
+          <b-form-group
+            id="ig-file"
+            :label="labels.fileLabel"
+            label-for="file"
+            
+          >
+            <div class="row">
+              <div class="col-8">
+                <b-form-file
+                  :accept="acceptedMimeTypes"
+                  name="file"
+                  :disabled="isPending"
+                  required
+                  @change="uploadFile($event)"
+                />
+              </div>
+              <div class="col-4 text-dark">
+                {{fileDescription}}
+                <template v-if="currentUser.reel2bits.quota_limit > 0">
+                  {{ currentUserQuota }}
+                </template>
+              </div>
+            </div>
+          </b-form-group>
+        
 
         <b-form-group
           id="ig-title"
           :class="{ 'form-group--error': $v.track.title.$error }"
           :label="labels.titleLabel"
           label-for="title"
-          :description="labels.titleDescription"
         >
-          <b-form-input
-            id="title"
-            v-model.trim="$v.track.title.$model"
-            :disabled="isPending"
-            :placeholder="labels.titlePlaceholder"
-            :state="$v.track.title.$dirty ? !$v.track.title.$error : null"
-            aria-describedby="title-live-feedback"
-          />
-          <b-form-invalid-feedback id="title-live-feedback">
-            <span v-if="!$v.track.title.maxLength" v-translate translate-context="Content/TrackUpload/Feedback/Title/LengthLimit">Length is limited to 250 characters</span>
-          </b-form-invalid-feedback>
+          <div class="row">
+            <div class="col-8">
+              <b-form-input
+                id="title"
+                v-model.trim="$v.track.title.$model"
+                :disabled="isPending"
+                :placeholder="labels.titlePlaceholder"
+                :state="$v.track.title.$dirty ? !$v.track.title.$error : null"
+                aria-describedby="title-live-feedback"
+              />
+              <b-form-invalid-feedback id="title-live-feedback">
+                <span v-if="!$v.track.title.maxLength" v-translate translate-context="Content/TrackUpload/Feedback/Title/LengthLimit">Length is limited to 250 characters</span>
+              </b-form-invalid-feedback>
+            </div>
+            <div class="col-4 text-dark">
+              {{labels.titleDescription}}
+            </div>
+          </div>
         </b-form-group>
 
         <b-form-group
@@ -59,47 +70,64 @@
           :label="labels.descriptionLabel"
           label-for="description"
         >
+          <div class="row"><div class="col-8">
           <b-form-textarea
             id="description"
             v-model="track.description"
             :disabled="isPending"
             :placeholder="labels.descriptionPlaceholder"
           />
+          </div></div>
         </b-form-group>
 
-        Artwork:
-        <b-card class="mb-3">
-          <p v-translate translate-context="Content/TrackUpload/Text/Artwork picker" class="visibility-notice">
-            The recommended minimum size for artworks pictures is 112x112 pixels. JPEG, PNG or GIF only.
-          </p>
-          <p v-translate translate-context="Content/TrackUpload/Title/Artwork picker">
-            Current artwork
-          </p>
-          <img
-            :src="currentArtworkUrl"
-            class="current-artwork"
-            width="112"
-            height="112"
-          >
-          <p v-translate translate-context="Content/TrackUpload/Title/Artwork picker">
-            Set new artwork
-          </p>
-          <b-button
-            v-show="pickArtworkBtnVisible"
-            id="pick-artwork"
-          >
-            <translate translate-context="Content/TrackUpload/Button/Artwork picker">
-              Upload an image
-            </translate>
-          </b-button>
+        <p class="mb-2">Artwork:</p>
+        <div class="row">
+          <div class="col-8">
+            <b-card class="mb-3">
+              <div class="row">
+                <div class="col">
+                  <p v-translate translate-context="Content/TrackUpload/Title/Artwork picker"
+                    class="mb-1">
+                    Upload an image
+                  </p>
+                  <b-button
+                    v-show="pickArtworkBtnVisible"
+                    id="pick-artwork"
+                    variant="outline-primary"
+                  >
+                    <translate translate-context="Content/TrackUpload/Button/Artwork picker">
+                      Browse
+                    </translate>
+                  </b-button>
 
-          <image-cropper
-            trigger="#pick-artwork"
-            :submit-handler="submitArtwork"
-            @open="pickArtworkBtnVisible=false"
-            @close="pickArtworkBtnVisible=true"
-          />
-        </b-card>
+                  <image-cropper
+                    trigger="#pick-artwork"
+                    :submit-handler="submitArtwork"
+                    @open="pickArtworkBtnVisible=false"
+                    @close="pickArtworkBtnVisible=true"
+                  />
+                </div>
+                <div class="col-auto">
+                  <p v-translate translate-context="Content/TrackUpload/Title/Artwork picker"
+                    class="mb-1">
+                    Preview
+                  </p>
+                  <img
+                    :src="currentArtworkUrl"
+                    class="current-artwork"
+                    width="112"
+                    height="112"
+                  >
+                </div>
+              </div>
+            </b-card>
+          </div>
+          <div class="col-4 text-dark">
+            <p v-translate translate-context="Content/TrackUpload/Text/Artwork picker" class="visibility-notice">
+              The recommended minimum size for artworks pictures is 112x112 pixels. JPEG, PNG or GIF only.
+            </p>
+          </div>
+        </div>
 
         <b-form-group
           id="ig-genre"
@@ -107,19 +135,21 @@
           :label="labels.genreLabel"
           label-for="genre"
         >
-          <vue-simple-suggest
-            v-model="$v.track.genre.$model"
-            :list="getGenres"
-            :filter-by-query="true"
-            :styles="autoCompleteStyle"
-            :destyled="true"
-            :min-length="genresAutoComplete.minLength"
-            :max-suggestions="genresAutoComplete.maxSuggestions"
-          />
+          <div class="row"><div class="col-8">
+            <vue-simple-suggest
+              v-model="$v.track.genre.$model"
+              :list="getGenres"
+              :filter-by-query="true"
+              :styles="autoCompleteStyle"
+              :destyled="true"
+              :min-length="genresAutoComplete.minLength"
+              :max-suggestions="genresAutoComplete.maxSuggestions"
+            />
 
-          <b-form-invalid-feedback id="genre-live-feedback">
-            <span v-if="!$v.track.genre.maxLength" v-translate translate-context="Content/TrackUpload/Feedback/Genre/LengthLimit">Length is limited to 250 characters</span>
-          </b-form-invalid-feedback>
+            <b-form-invalid-feedback id="genre-live-feedback">
+              <span v-if="!$v.track.genre.maxLength" v-translate translate-context="Content/TrackUpload/Feedback/Genre/LengthLimit">Length is limited to 250 characters</span>
+            </b-form-invalid-feedback>
+          </div></div>
         </b-form-group>
 
         <b-form-group
@@ -128,25 +158,31 @@
           :label="labels.tagLabel"
           label-for="tag"
         >
-          <vue-tags-input
-            v-model="curTag"
-            :tags="track.tags"
-            :autocomplete-items="autocompleteTags"
-            :add-only-from-autocomplete="false"
-            :allow-edit-tags="true"
-            :max-tags="10"
-            :validation="tagsValidations"
-            :maxlength="25"
-            @tags-changed="updateTags"
-          />
+          <div class="row">
+            <div class="col-8">
+              <vue-tags-input
+                v-model="curTag"
+                :tags="track.tags"
+                :autocomplete-items="autocompleteTags"
+                :add-only-from-autocomplete="false"
+                :allow-edit-tags="true"
+                :max-tags="10"
+                :validation="tagsValidations"
+                :maxlength="25"
+                @tags-changed="updateTags"
+              />
+            </div>
+            <div class="col-4 text-dark">
+              Press Enter to confirm the tag
+            </div>
+          </div>
         </b-form-group>
 
         <template v-if="trackUploadError">
-          <br>
-          <b-alert v-if="trackUploadError" variant="danger" show>
+          <b-alert v-if="trackUploadError" variant="danger" class="my-4" 
+            show>
             {{ trackUploadError }}
           </b-alert>
-          <br>
         </template>
 
         <b-form-group
@@ -154,12 +190,14 @@
           :label="labels.albumLabel"
           label-for="album"
         >
-          <b-form-select
-            id="album"
-            v-model="track.album"
-            :disabled="isPending"
-            :options="albumChoices"
-          />
+          <div class="row"><div class="col-8">
+            <b-form-select
+              id="album"
+              v-model="track.album"
+              :disabled="isPending"
+              :options="albumChoices"
+            />
+          </div></div>
         </b-form-group>
 
         <b-form-group
@@ -167,41 +205,48 @@
           :label="labels.licenseLabel"
           label-for="license"
         >
-          <b-form-select
-            id="license"
-            v-model="track.licence"
-            :disabled="isPending"
-            :options="licenceChoices"
-          />
+          <div class="row"><div class="col-8">
+            <b-form-select
+              id="license"
+              v-model="track.licence"
+              :disabled="isPending"
+              :options="licenceChoices"
+            />
+          </div></div>
         </b-form-group>
 
         <b-form-group
           id="ig-private"
           label-for="private"
-          :description="labels.privateDescription"
         >
-          <b-form-checkbox
-            id="private"
-            v-model="track.private"
-            v-translate
-            name="private"
-            value="y"
-            unchecked-value=""
-            :disabled="isPending" translate-context="Content/TrackUpload/Input.Label/Private track"
-          >
-            this track is private
-          </b-form-checkbox>
+          <div class="row">
+            <div class="col-8">
+              <b-form-checkbox
+                id="private"
+                v-model="track.private"
+                v-translate
+                name="private"
+                value="y"
+                unchecked-value=""
+                :disabled="isPending" translate-context="Content/TrackUpload/Input.Label/Private track"
+              >
+                this track is private
+              </b-form-checkbox>
+            </div>
+            <div class="col-4 text-dark">
+              {{labels.privateDescription}}
+            </div>
+          </div>
         </b-form-group>
 
-        <br>
-
-        <b-button v-translate :disabled="isPending" type="submit"
-                  variant="primary" translate-context="Content/TrackUpload/Button/Upload"
-        >
-          Upload
-        </b-button>
-
-        <br>
+        <div class="border-top pt-3">
+          <b-button v-translate :disabled="isPending" type="submit"
+                    variant="primary" translate-context="Content/TrackUpload/Button/Upload"
+                    class="mt-2"
+          >
+            Upload
+          </b-button>
+        </div>
 
         <b-alert v-if="serverValidationErrors.length > 0" variant="danger" show>
           <span v-for="error in serverValidationErrors" :key="error">{{ error }}</span>
@@ -320,7 +365,7 @@ export default {
         fileLabel: this.$pgettext('Content/TrackUpload/Input.Label/File', 'Track file:'),
         albumLabel: this.$pgettext('Content/TrackUpload/Input.Label/Album', 'Album:'),
         licenseLabel: this.$pgettext('Content/TrackUpload/Input.Label/License', 'License:'),
-        privateDescription: this.$pgettext('Content/TrackUpload/Input.Label/Private', 'A private track won\'t federate. You can use this as your unpublished drafts. Note that you can\'t replace audio file after upload.')
+        privateDescription: this.$pgettext('Content/TrackUpload/Input.Label/Private', 'A private track won\'t federate')
       }
     },
     fileDescription () {
@@ -339,7 +384,7 @@ export default {
     currentUserQuota () {
       if (this.currentUser.reel2bits.quota_limit > 0) {
         let max = fileSizeFormatService.fileSizeFormat(this.currentUser.reel2bits.quota_limit)
-        let msg = this.$pgettext('Content/TrackUpload/Alert/Quota', 'Current quota: %{cur} of %{max}. %{rem} remaining.')
+        let msg = this.$pgettext('Content/TrackUpload/Alert/Quota', 'Quota: %{rem} left')
         let cur = fileSizeFormatService.fileSizeFormat(this.currentUser.reel2bits.quota_count)
         let rem = fileSizeFormatService.fileSizeFormat(this.currentUser.reel2bits.quota_limit - this.currentUser.reel2bits.quota_count)
         return this.$gettextInterpolate(msg, { max: max.num + ' ' + max.unit, cur: cur.num + ' ' + cur.unit, rem: rem.num + ' ' + rem.unit })

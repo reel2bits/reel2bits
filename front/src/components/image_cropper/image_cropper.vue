@@ -16,17 +16,19 @@
           :disabled="submitting"
           @click="submit()"
           v-text="saveText"
+          variant="primary"
         />
         <b-button
           :disabled="submitting"
           @click="destroy"
           v-text="cancelText"
+          variant="link"
         />
-        <b-button
+        <!--<b-button
           :disabled="submitting"
           @click="submit(false)"
           v-text="saveWithoutCroppingText"
-        />
+        />-->
         <i
           v-if="submitting"
           class="icon-spin4 animate-spin"

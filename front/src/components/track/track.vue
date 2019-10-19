@@ -55,8 +55,8 @@
               </translate>
             </b-button>
           </div>
-          <div class="ml-auto align-self-end">
-            <span v-if="isPlaying" class="text-secondary px-2">{{ playerTimeCur }}</span> <span class="text-muted">{{ playerTimeTot }}</span>
+          <div class="ml-auto row align-items-center mr-0">
+              <span v-if="isPlaying" class="text-secondary px-2">{{ playerTimeCur }}</span> <span class="text-muted">{{ playerTimeTot }}</span>
           </div>
         </div>
       </div>

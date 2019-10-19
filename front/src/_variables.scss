@@ -9,6 +9,10 @@ $shade-50:   #C8D1F4;
 $shade-75:   #0E4F5F;
 $shade-100:  #06161A;
 
+$r2b-green:   #8BE048;
+$r2b-purple:  #7951E6;
+$r2b-yellow:  #FFE900;
+
 //Redifining Bootstrap colours
 
 $blue:    $brand-1;
@@ -29,7 +33,19 @@ $black:    $shade-100;
 $primary:       $brand-1;
 $secondary:     $brand-2;
 $light:         $shade-0;
-$dark:          $shade-100;
+$dark:          $shade-75;
+
+$cyan:    $brand-1;
+$blue:    $brand-1;
+$indigo:  $r2b-purple;
+$purple:  $r2b-purple;
+$pink:    $brand-2;
+$red:     $brand-2;
+$orange:  $r2b-yellow;
+$yellow:  $r2b-yellow;
+$green:   $r2b-green;
+$teal:    $r2b-green;
+
 
 //Redifining Bootstrap typography
 
@@ -51,6 +67,7 @@ $input-btn-padding-x: 1rem;
 $input-btn-padding-y: .62rem;
 $input-btn-padding-y-sm: .11rem;
 
+$input-color: $shade-100;
 $input-border-color: $shade-50;
 $card-border-color:  $shade-25;
 

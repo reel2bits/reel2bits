@@ -55,7 +55,7 @@ body {
 
 
 //Some dirty hacks to style vue-tags-input
-.ti-tag {
+.vue-tags-input.ti-tag {
     @extend .badge;
 }
 
