@@ -14,15 +14,15 @@
       <div class="image-cropper-buttons-wrapper">
         <b-button
           :disabled="submitting"
+          variant="primary"
           @click="submit()"
           v-text="saveText"
-          variant="primary"
         />
         <b-button
           :disabled="submitting"
+          variant="link"
           @click="destroy"
           v-text="cancelText"
-          variant="link"
         />
         <!--<b-button
           :disabled="submitting"

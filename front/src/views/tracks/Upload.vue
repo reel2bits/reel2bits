@@ -11,33 +11,31 @@
       <h1 v-translate translate-context="Content/TrackUpload/Headline" class="mb-3">
         New track
       </h1>
-      
+
       <b-form class="upload-track-form" enctype="multipart/form-data" @submit.prevent="upload(track)">
-          <b-form-group
-            id="ig-file"
-            :label="labels.fileLabel"
-            label-for="file"
-            
-          >
-            <div class="row">
-              <div class="col-8">
-                <b-form-file
-                  :accept="acceptedMimeTypes"
-                  name="file"
-                  :disabled="isPending"
-                  required
-                  @change="uploadFile($event)"
-                />
-              </div>
-              <div class="col-4 text-dark">
-                {{fileDescription}}
-                <template v-if="currentUser.reel2bits.quota_limit > 0">
-                  {{ currentUserQuota }}
-                </template>
-              </div>
+        <b-form-group
+          id="ig-file"
+          :label="labels.fileLabel"
+          label-for="file"
+        >
+          <div class="row">
+            <div class="col-8">
+              <b-form-file
+                :accept="acceptedMimeTypes"
+                name="file"
+                :disabled="isPending"
+                required
+                @change="uploadFile($event)"
+              />
             </div>
-          </b-form-group>
-        
+            <div class="col-4 text-dark">
+              {{ fileDescription }}
+              <template v-if="currentUser.reel2bits.quota_limit > 0">
+                {{ currentUserQuota }}
+              </template>
+            </div>
+          </div>
+        </b-form-group>
 
         <b-form-group
           id="ig-title"
@@ -60,7 +58,7 @@
               </b-form-invalid-feedback>
             </div>
             <div class="col-4 text-dark">
-              {{labels.titleDescription}}
+              {{ labels.titleDescription }}
             </div>
           </div>
         </b-form-group>
@@ -70,24 +68,29 @@
           :label="labels.descriptionLabel"
           label-for="description"
         >
-          <div class="row"><div class="col-8">
-          <b-form-textarea
-            id="description"
-            v-model="track.description"
-            :disabled="isPending"
-            :placeholder="labels.descriptionPlaceholder"
-          />
-          </div></div>
+          <div class="row">
+            <div class="col-8">
+              <b-form-textarea
+                id="description"
+                v-model="track.description"
+                :disabled="isPending"
+                :placeholder="labels.descriptionPlaceholder"
+              />
+            </div>
+          </div>
         </b-form-group>
 
-        <p class="mb-2">Artwork:</p>
+        <p class="mb-2">
+          Artwork:
+        </p>
         <div class="row">
           <div class="col-8">
             <b-card class="mb-3">
               <div class="row">
                 <div class="col">
                   <p v-translate translate-context="Content/TrackUpload/Title/Artwork picker"
-                    class="mb-1">
+                     class="mb-1"
+                  >
                     Upload an image
                   </p>
                   <b-button
@@ -109,7 +112,8 @@
                 </div>
                 <div class="col-auto">
                   <p v-translate translate-context="Content/TrackUpload/Title/Artwork picker"
-                    class="mb-1">
+                     class="mb-1"
+                  >
                     Preview
                   </p>
                   <img
@@ -135,21 +139,23 @@
           :label="labels.genreLabel"
           label-for="genre"
         >
-          <div class="row"><div class="col-8">
-            <vue-simple-suggest
-              v-model="$v.track.genre.$model"
-              :list="getGenres"
-              :filter-by-query="true"
-              :styles="autoCompleteStyle"
-              :destyled="true"
-              :min-length="genresAutoComplete.minLength"
-              :max-suggestions="genresAutoComplete.maxSuggestions"
-            />
+          <div class="row">
+            <div class="col-8">
+              <vue-simple-suggest
+                v-model="$v.track.genre.$model"
+                :list="getGenres"
+                :filter-by-query="true"
+                :styles="autoCompleteStyle"
+                :destyled="true"
+                :min-length="genresAutoComplete.minLength"
+                :max-suggestions="genresAutoComplete.maxSuggestions"
+              />
 
-            <b-form-invalid-feedback id="genre-live-feedback">
-              <span v-if="!$v.track.genre.maxLength" v-translate translate-context="Content/TrackUpload/Feedback/Genre/LengthLimit">Length is limited to 250 characters</span>
-            </b-form-invalid-feedback>
-          </div></div>
+              <b-form-invalid-feedback id="genre-live-feedback">
+                <span v-if="!$v.track.genre.maxLength" v-translate translate-context="Content/TrackUpload/Feedback/Genre/LengthLimit">Length is limited to 250 characters</span>
+              </b-form-invalid-feedback>
+            </div>
+          </div>
         </b-form-group>
 
         <b-form-group
@@ -179,8 +185,9 @@
         </b-form-group>
 
         <template v-if="trackUploadError">
-          <b-alert v-if="trackUploadError" variant="danger" class="my-4" 
-            show>
+          <b-alert v-if="trackUploadError" variant="danger" class="my-4"
+                   show
+          >
             {{ trackUploadError }}
           </b-alert>
         </template>
@@ -190,14 +197,16 @@
           :label="labels.albumLabel"
           label-for="album"
         >
-          <div class="row"><div class="col-8">
-            <b-form-select
-              id="album"
-              v-model="track.album"
-              :disabled="isPending"
-              :options="albumChoices"
-            />
-          </div></div>
+          <div class="row">
+            <div class="col-8">
+              <b-form-select
+                id="album"
+                v-model="track.album"
+                :disabled="isPending"
+                :options="albumChoices"
+              />
+            </div>
+          </div>
         </b-form-group>
 
         <b-form-group
@@ -205,14 +214,16 @@
           :label="labels.licenseLabel"
           label-for="license"
         >
-          <div class="row"><div class="col-8">
-            <b-form-select
-              id="license"
-              v-model="track.licence"
-              :disabled="isPending"
-              :options="licenceChoices"
-            />
-          </div></div>
+          <div class="row">
+            <div class="col-8">
+              <b-form-select
+                id="license"
+                v-model="track.licence"
+                :disabled="isPending"
+                :options="licenceChoices"
+              />
+            </div>
+          </div>
         </b-form-group>
 
         <b-form-group
@@ -234,7 +245,7 @@
               </b-form-checkbox>
             </div>
             <div class="col-4 text-dark">
-              {{labels.privateDescription}}
+              {{ labels.privateDescription }}
             </div>
           </div>
         </b-form-group>
