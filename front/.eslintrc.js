@@ -50,6 +50,7 @@ module.exports = {
         'max': 3,
         "allowFirstLine": true
       }
-    }]
+    }],
+    'vue/require-default-prop': 0
   }
 }
