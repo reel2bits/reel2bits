@@ -155,7 +155,8 @@ export default {
     }
   },
   watch: {
-    'track': 'reloadTrack' // if track change, reload wavesurfer
+    'track': 'reloadTrack', // if track change, reload wavesurfer
+    '$store.state.player.track': 'stopPlaying'
   },
   created () {
     console.log('initiating wavesurfer')
@@ -198,6 +199,10 @@ export default {
         this.$emit('updateLogoSpinDuration', false)
       })
 
+      this.wavesurfer.on('finish', () => {
+        this.$store.commit('playerStoppedPlaying')
+      })
+
       this.loadWavesurfer()
     })
   },
@@ -207,6 +212,11 @@ export default {
   },
   methods: {
     togglePlay: function () {
+      if (this.wavesurfer.isPlaying()) {
+        this.$store.commit('playerStoppedPlaying')
+      } else {
+        this.$store.commit('playerStartedPlaying', this.track)
+      }
       this.wavesurfer.playPause()
       // console.log(this.track.media_transcoded)
     },
@@ -233,10 +243,18 @@ export default {
       // If autoplay, play
       if (autoplay) {
         this.wavesurfer.play()
+        this.$store.commit('playerStartedPlaying', this.track)
       }
     },
     reloadTrack () {
       this.loadWavesurfer(true)
+    },
+    stopPlaying () {
+      console.log('asked playing !!!')
+      // If the current state playing track is not the same as local one, stop playback
+      if (this.$store.state.player.track !== this.track) {
+        this.wavesurfer.stop()
+      }
     }
   }
 }
