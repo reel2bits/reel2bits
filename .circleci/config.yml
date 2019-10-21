@@ -166,14 +166,6 @@ aliases:
               sudo apt-get update
               sudo apt-get install -y rsync
         - deploy:
-            name: deploy front
-            command: |
-              if [ "${CIRCLE_BRANCH}" = "master" ]; then
-                rsync -avc -e "ssh -o StrictHostKeyChecking=no -p 23" --delete front/dist/ r2bdev@videaudio.cadance.licorn.eu:/
-              else
-                echo "Not master, no deployment"
-              fi
-        - deploy:
             name: zip and sync artifacts
             command: |
               cd front
