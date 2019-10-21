@@ -27,7 +27,7 @@ setup(
         "unidecode==1.1.1",
         "Flask_Babelex==0.9.3",
         "texttable==1.6.1",
-        "python-slugify==3.0.6",
+        "python-slugify==4.0.0",
         "python-magic==0.4.15",
         "redis==3.3.11",
         "celery==4.3.0",
