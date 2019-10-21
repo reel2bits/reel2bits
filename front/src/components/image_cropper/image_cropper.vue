@@ -14,19 +14,21 @@
       <div class="image-cropper-buttons-wrapper">
         <b-button
           :disabled="submitting"
+          variant="primary"
           @click="submit()"
           v-text="saveText"
         />
         <b-button
           :disabled="submitting"
+          variant="link"
           @click="destroy"
           v-text="cancelText"
         />
-        <b-button
+        <!--<b-button
           :disabled="submitting"
           @click="submit(false)"
           v-text="saveWithoutCroppingText"
-        />
+        />-->
         <i
           v-if="submitting"
           class="icon-spin4 animate-spin"
