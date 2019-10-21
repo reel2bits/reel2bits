@@ -1,12 +1,24 @@
 <template>
   <div class="d-flex mb-3">
-    <img :src="track.picture_url" class="d-flex mr-3"
-         style="width:112px; height:112px;"
-    >
+    <b-link v-if="clickableTitle" :to="{ name: 'tracks-show', params: { username: track.account.screen_name, trackId: track.slug } }">
+      <img :src="track.picture_url" class="d-flex mr-3"
+           style="width:112px; height:112px;"
+      >
+    </b-link>
+    <template v-else>
+      <img :src="track.picture_url" class="d-flex mr-3"
+           style="width:112px; height:112px;"
+      >
+    </template>
     <div class="flex-fill">
       <div class="row px-0 mx-0">
         <h1 class="col px-0 mx-0 h5 text-truncate" :title="track.title">
-          {{ track.title }}
+          <b-link v-if="clickableTitle" :to="{ name: 'tracks-show', params: { username: track.account.screen_name, trackId: track.slug } }" class="text-body text-decoration-none">
+            {{ track.title }}
+          </b-link>
+          <template v-else>
+            {{ track.title }}
+          </template>
         </h1>
         <div class="col-3 px-0 mx-0 text-right" :title="track.uploaded_on">
           {{ publishedAgo }}
@@ -38,7 +50,7 @@
               Download
             </translate>
           </b-button>
-          <div v-if="isOwner">
+          <div v-if="isOwner && editTrack">
             <b-button variant="link" class="text-decoration-none"
                       @click.prevent="editTrack"
             >
@@ -83,13 +95,21 @@ import { mapState } from 'vuex'
 export default {
   props: {
     track: {
-      type: Object
+      type: Object,
+      required: true
     },
     editTrack: {
-      type: Function
+      type: Function,
+      required: false
     },
     deleteTrack: {
-      type: Function
+      type: Function,
+      required: false
+    },
+    clickableTitle: {
+      type: Boolean,
+      required: false,
+      default: false
     }
   },
   data () {

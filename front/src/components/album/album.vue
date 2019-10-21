@@ -90,13 +90,15 @@ import moment from 'moment'
 import WaveSurfer from 'wavesurfer.js'
 import playerUtils from '../../services/player_utils/player_utils.js'
 import draggable from 'vuedraggable'
+import ContentAudioPlayer from '../../components/content_audio_player/content_audio_player.vue'
 
 const Album = {
   props: [
     'album'
   ],
   components: {
-    draggable
+    draggable,
+    ContentAudioPlayer
   },
   data: () => ({
     tracksList: [],
