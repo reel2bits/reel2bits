@@ -33,7 +33,7 @@
         <b-button v-if="isPlaying" class="playPause" @click.prevent="togglePlay">
           <i class="fa fa-pause" aria-hidden="true" />
         </b-button>
-        <div id="waveform" class="flex-fill" />
+        <div :id="wavesurferContainer" class="flex-fill" />
       </div>
       <div v-else-if="processingDone" class="alert alert-dark">
         <translate translate-context="Content/TrackShow/Alert/Not available">
@@ -149,6 +149,9 @@ export default {
     }),
     isOwner () {
       return this.track.account.screen_name === this.currentUser.screen_name
+    },
+    wavesurferContainer () {
+      return `waveform-${this.track.slug}`
     }
   },
   watch: {
@@ -158,7 +161,7 @@ export default {
     console.log('initiating wavesurfer')
     this.$nextTick(() => {
       let opts = {
-        container: '#waveform',
+        container: `#${this.wavesurferContainer}`,
         height: 40,
         progressColor: '#C728B6',
         waveColor: '#C8D1F4',
