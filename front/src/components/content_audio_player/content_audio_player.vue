@@ -43,16 +43,16 @@
 
       <div class="pt-0 d-flex">
         <div class="btn-group" role="group" :aria-label="labels.ariaTrackActions">
-          <b-button :href="track.media_orig" variant="link"
+          <b-button v-if="track.media_orig" :href="track.media_orig" variant="link"
                     class="text-decoration-none pl-0"
           >
             <i class="fa fa-cloud-download" aria-hidden="true" /> <translate translate-context="Content/TrackShow/Button">
               Download
             </translate>
           </b-button>
-          <div v-if="isOwner && editTrack">
+          <div v-if="isOwner && editLink">
             <b-button variant="link" class="text-decoration-none"
-                      @click.prevent="editTrack"
+                      @click.prevent="editLink"
             >
               <i class="fa fa-pencil" aria-hidden="true" /> <translate translate-context="Content/TrackShow/Button">
                 Edit
@@ -65,7 +65,7 @@
                 Delete
               </translate>
             </b-button>
-            <b-modal id="modal-delete" :title="labels.deleteModalTitle" @ok="deleteTrack">
+            <b-modal id="modal-delete" :title="labels.deleteModalTitle" @ok="deleteLink">
               <p v-translate="{title: track.title}" class="my-4" translate-context="Content/TrackShow/Modal/Delete/Content">
                 Are you sure you want to delete '%{ title }' ?
               </p>
@@ -98,11 +98,11 @@ export default {
       type: Object,
       required: true
     },
-    editTrack: {
+    editLink: {
       type: Function,
       required: false
     },
-    deleteTrack: {
+    deleteLink: {
       type: Function,
       required: false
     },
@@ -119,8 +119,8 @@ export default {
       playerTimeTot: '00:00',
       labels () {
         return {
-          ariaTrackActions: this.$pgettext('Content/TrackShow/Aria/Track actions', 'Track actions'),
-          deleteModalTitle: this.$pgettext('Content/TrackShow/Modal/Delete/Title', 'Deleting track')
+          ariaTrackActions: this.$pgettext('Content/TrackShow/Aria/actions', 'actions'),
+          deleteModalTitle: this.$pgettext('Content/TrackShow/Modal/Delete/Title', 'Deleting item')
         }
       }
     }
@@ -150,6 +150,9 @@ export default {
     isOwner () {
       return this.track.account.screen_name === this.currentUser.screen_name
     }
+  },
+  watch: {
+    'track': 'reloadTrack' // if track change, reload wavesurfer
   },
   created () {
     console.log('initiating wavesurfer')
@@ -192,17 +195,7 @@ export default {
         this.$emit('updateLogoSpinDuration', false)
       })
 
-      if (this.track.waveform) {
-        console.log('smoothing the waveform')
-        let max = Math.max.apply(Math, this.track.waveform.data)
-        this.wavesurfer.load(this.track.media_transcoded, this.track.waveform.data.map(p => p / max))
-      } else {
-        this.wavesurfer.load(this.track.media_transcoded)
-      }
-
-      // Workaround because of wavesurfer issue which can't fire event or do anything unless
-      // you hit play, when using pre-processed waveform...
-      this.playerTimeTot = moment.utc(this.track.metadatas.duration * 1000).format('mm:ss')
+      this.loadWavesurfer()
     })
   },
   destroyed () {
@@ -213,6 +206,34 @@ export default {
     togglePlay: function () {
       this.wavesurfer.playPause()
       // console.log(this.track.media_transcoded)
+    },
+    loadWavesurfer (autoplay = false) {
+      console.log(`loading track ${this.track.id}`)
+      // Stop wavesurfer and empty waveform
+      this.wavesurfer.stop()
+      this.wavesurfer.empty()
+
+      // Load new file and waveform
+      if (this.track.waveform) {
+        console.log('waveform available: true')
+        let max = Math.max.apply(Math, this.track.waveform.data)
+        this.wavesurfer.load(this.track.media_transcoded, this.track.waveform.data.map(p => p / max))
+      } else {
+        console.log('waveform available: false')
+        this.wavesurfer.load(this.track.media_transcoded)
+      }
+
+      // Workaround because of wavesurfer issue which can't fire event or do anything unless
+      // you hit play, when using pre-processed waveform...
+      this.playerTimeTot = moment.utc(this.track.metadatas.duration * 1000).format('mm:ss')
+
+      // If autoplay, play
+      if (autoplay) {
+        this.wavesurfer.play()
+      }
+    },
+    reloadTrack () {
+      this.loadWavesurfer(true)
     }
   }
 }

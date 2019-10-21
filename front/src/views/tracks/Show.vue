@@ -14,8 +14,8 @@
       >
         {{ deleteError }}
       </b-alert>
-      <ContentAudioPlayer v-if="!trackError && track && processingDone" :track="track" :edit-track="editTrack"
-                          :delete-track="deleteTrack"
+      <ContentAudioPlayer v-if="!trackError && track && processingDone" :track="track" :edit-link="editTrack"
+                          :delete-link="deleteTrack"
       />
 
       <!-- genre and tags -->

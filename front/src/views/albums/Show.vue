@@ -17,71 +17,9 @@
 
       <h4>{{ album.title }}</h4>
 
-      <div class="d-flex my-4">
-        <img :src="album.picture_url" class="d-flex mr-3"
-             style="width:112px; height:112px;"
-        >
-        <div class="flex-fill">
-          <div v-if="currentTrack" class="d-flex">
-            <h1 class="flex-fill h5" :title="currentTrack.title">
-              <b-link :to="{ name: 'tracks-show', params: { username: album.account.screen_name, trackId: currentTrack.slug } }">
-                {{ currentTrack.title | truncate(45) }}
-              </b-link>
-            </h1>
-            <div class="d-flex" :title="currentTrack.uploaded_on">
-              {{ publishedAgo }}
-            </div>
-          </div>
-
-          <div v-if="currentTrack" class="d-flex my-2">
-            <b-button v-if="!isPlaying" class="playPause" variant="primary"
-                      @click.prevent="togglePlay"
-            >
-              <i class="fa fa-play" aria-hidden="true" />
-            </b-button>
-            <b-button v-if="isPlaying" class="playPause" @click.prevent="togglePlay">
-              <i class="fa fa-pause" aria-hidden="true" />
-            </b-button>
-            <div id="waveform" class="flex-fill" />
-          </div>
-
-          <div class="pt-0 d-flex">
-            <div class="btn-group" role="group" :aria-label="labels.ariaAlbumActions">
-              <div>
-                <span :title="labels.titleRss">
-                  <i class="fa fa-rss" aria-hidden="true" />
-                  <a :href="album.url_feed" target="_blank">RSS feed</a>
-                </span>
-
-                <span v-if="isOwner">
-                  <b-button variant="link" class="text-decoration-none"
-                            @click.prevent="editAlbum"
-                  >
-                    <i class="fa fa-pencil" aria-hidden="true" /> <translate translate-context="Content/AlbumShow/Button">
-                      Edit
-                    </translate>
-                  </b-button>
-                  <b-button v-b-modal.modal-delete variant="link"
-                            class="text-decoration-none"
-                  >
-                    <i class="fa fa-times" aria-hidden="true" /> <translate translate-context="Content/AlbumShow/Button">
-                      Delete
-                    </translate>
-                  </b-button>
-                  <b-modal id="modal-delete" :title="labels.deleteModalTitle" @ok="deleteAlbum">
-                    <p v-translate="{title: album.title}" class="my-4" translate-context="Content/AlbumShow/Modal/Delete/Content">
-                      Are you sure you want to delete '%{ title }' ?
-                    </p>
-                  </b-modal>
-                </span>
-              </div>
-            </div>
-            <div class="ml-auto align-self-end">
-              <span class="text-secondary">{{ playerTimeCur }}</span> <span class="text-muted">{{ playerTimeTot }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      <ContentAudioPlayer v-if="currentTrack" :track="currentTrack" :edit-link="editAlbum"
+                          :delete-link="deleteAlbum"
+      />
 
       <!-- genre and tags -->
       <div class="d-flex p-2">
@@ -126,7 +64,7 @@
               <i v-if="isOwner" class="fa fa-align-justify handle" />
               <i v-if="currentTrack.id == element.id" class="fa fa-play" />
             </span>
-            <span class="text" @click.prevent="loadWavesurferById(element.id, true)">
+            <span class="text" @click.prevent="changeCurrentTrack(element.id)">
               {{ element.title }}
             </span>
             <span class="pull-right">
@@ -164,14 +102,14 @@ span.tags_pill {
 import { mapState } from 'vuex'
 import moment from 'moment'
 import Sidebar from '../../components/sidebar/sidebar.vue'
-import playerUtils from '../../services/player_utils/player_utils.js'
 import draggable from 'vuedraggable'
-import WaveSurfer from 'wavesurfer.js'
+import ContentAudioPlayer from '../../components/content_audio_player/content_audio_player.vue'
 
 export default {
   components: {
     draggable,
-    Sidebar
+    Sidebar,
+    ContentAudioPlayer
   },
   data: () => ({
     album: null,
@@ -179,12 +117,9 @@ export default {
     deleteError: null,
     isOwner: false,
     userId: null,
-    wavesurfer: null,
     tracksList: [],
     currentOrder: [],
-    currentTrack: null,
-    playerTimeCur: '00:00',
-    playerTimeTot: '00:00'
+    currentTrack: null
   }),
   computed: {
     ...mapState({
@@ -199,14 +134,8 @@ export default {
     publishedAgo () {
       return moment(this.album.uploaded_on).fromNow()
     },
-    isPlaying () {
-      if (!this.wavesurfer) return false
-      return this.wavesurfer.isPlaying()
-    },
     labels () {
       return {
-        ariaAlbumActions: this.$pgettext('Content/TrackAlbum/Aria/Album actions', 'Album actions'),
-        deleteModalTitle: this.$pgettext('Content/TrackAlbum/Modal/Delete/Title', 'Deleting album'),
         titleRss: this.$pgettext('Content/TrackAlbum/Content/RSS links tooltip', 'This album as a Podcast compliant RSS Feed')
       }
     }
@@ -233,58 +162,6 @@ export default {
         // Get the first
         this.currentTrack = this.album.tracks[0]
         console.log(`elected ${this.currentTrack.album_order} as first item`)
-        // Create the wavesurfer player and init
-        this.$nextTick(() => {
-          let opts = {
-            container: '#waveform',
-            height: 40,
-            progressColor: '#C728B6',
-            waveColor: '#C8D1F4',
-            cursorColor: '#313DF2',
-            backend: 'WebAudio'
-          }
-          // TODO: WebAudio (default) seems a bit slow to start the playback with ~1/2s delay
-          if (!this.currentTrack.waveform) {
-            opts['normalize'] = true
-          }
-          this.wavesurfer = WaveSurfer.create(opts)
-
-          // Wavesurfer hooks
-          this.wavesurfer.on('ready', () => {
-            // This will never trigger with pre-processed waveform
-            // https://github.com/katspaugh/wavesurfer.js/issues/1244
-            this.playerTimeTot = playerUtils.secondsTimeSpanToMS(this.wavesurfer.getDuration())
-          })
-
-          this.wavesurfer.on('audioprocess', () => {
-            console.log('wavesurfer audioprocessing')
-            this.playerTimeCur = playerUtils.secondsTimeSpanToMS(this.wavesurfer.getCurrentTime())
-          })
-
-          this.wavesurfer.on('seek', () => {
-            console.log('wavesurfer seeking')
-            this.playerTimeCur = playerUtils.secondsTimeSpanToMS(this.wavesurfer.getCurrentTime())
-          })
-
-          this.wavesurfer.on('play', () => {
-            this.$emit('updateLogoSpinDuration', true)
-          })
-
-          this.wavesurfer.on('pause', () => {
-            this.$emit('updateLogoSpinDuration', false)
-          })
-
-          this.wavesurfer.on('finish', () => {
-            // Switch to next song
-            let idx = this.album.tracks.indexOf(this.currentTrack)
-            if (this.album.tracks.length >= idx + 1) {
-              this.loadWavesurfer(this.album.tracks[idx + 1], true)
-            }
-          })
-
-          // Load the track
-          this.loadWavesurfer(this.currentTrack, false)
-        })
       })
   },
   methods: {
@@ -314,46 +191,16 @@ export default {
       }
       this.$router.push({ name: 'user-profile', params: { name: this.$store.state.users.currentUser.screen_name } })
     },
-    togglePlay: function () {
-      this.wavesurfer.playPause()
-      // console.log(this.track.media_transcoded)
-    },
-    loadWavesurfer (track, autoplay) {
-      console.log(`loading track ${track.id}`)
-      // Stop wavesurfer and empty waveform
-      this.wavesurfer.stop()
-      this.wavesurfer.empty()
-
-      // Set the new current track
-      this.currentTrack = track
-
-      // Load new file and waveform
-      if (track.waveform) {
-        let max = Math.max.apply(Math, track.waveform.data)
-        this.wavesurfer.load(track.media_transcoded, track.waveform.data.map(p => p / max))
-      } else {
-        this.wavesurfer.load(track.media_transcoded)
-      }
-
-      // Workaround because of wavesurfer issue which can't fire event or do anything unless
-      // you hit play, when using pre-processed waveform...
-      this.playerTimeTot = moment.utc(this.currentTrack.metadatas.duration * 1000).format('mm:ss')
-
-      // If autoplay, play
-      if (autoplay) {
-        this.wavesurfer.play()
-      }
-    },
-    loadWavesurferById (trackId, autoplay) {
-      console.log(`loading track by id ${trackId}`)
+    changeCurrentTrack (trackId) {
+      console.log(`changing track by id ${trackId}`)
       // Find track
       let track = this.album.tracks.find(t => t.id === trackId)
       if (track) {
         console.log(track)
-        this.loadWavesurfer(track, autoplay)
+        this.currentTrack = track
       } else {
         this.$bvToast.toast(null, {
-          title: this.$pgettext('Content/TrackAlbum/Toast/Error/Title', 'Cannot find track.'),
+          title: this.$pgettext('Content/Album/Toast/Error/Title', 'Cannot find track.'),
           autoHideDelay: 5000,
           appendToast: false,
           variant: 'danger'
