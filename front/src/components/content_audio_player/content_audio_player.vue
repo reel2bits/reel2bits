@@ -43,7 +43,7 @@
 
       <div class="pt-0 d-flex">
         <div class="btn-group" role="group" :aria-label="labels.ariaTrackActions">
-          <b-button v-if="track.media_orig" :href="track.media_orig" variant="link"
+          <b-button v-if="track.media_orig && processingDone" :href="track.media_orig" variant="link"
                     class="text-decoration-none pl-0"
           >
             <i class="fa fa-cloud-download" aria-hidden="true" /> <translate translate-context="Content/TrackShow/Button">
@@ -72,7 +72,7 @@
             </b-modal>
           </div>
         </div>
-        <div class="ml-auto row align-items-center mr-0">
+        <div v-if="processingDone" class="ml-auto row align-items-center mr-0">
           <span v-if="isPlaying" class="text-secondary px-2">{{ playerTimeCur }}</span> <span class="text-muted">{{ playerTimeTot }}</span>
         </div>
       </div>
@@ -160,6 +160,9 @@ export default {
   },
   created () {
     console.log('initiating wavesurfer')
+    if (!this.processingDone) {
+      return // no wavesurfer initialisation if processing isn't done
+    }
     this.$nextTick(() => {
       let opts = {
         container: `#${this.wavesurferContainer}`,
@@ -207,7 +210,9 @@ export default {
     })
   },
   destroyed () {
-    this.wavesurfer.stop()
+    if (this.wavesurfer) {
+      this.wavesurfer.stop()
+    }
     this.$emit('updateLogoSpinDuration', false)
   },
   methods: {
