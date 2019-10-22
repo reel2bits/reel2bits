@@ -36,6 +36,13 @@
             </div>
           </div>
         </b-form-group>
+        <template v-if="trackUploadError">
+          <b-alert v-if="trackUploadError" variant="danger" class="my-4"
+                   show
+          >
+            {{ trackUploadError }}
+          </b-alert>
+        </template>
 
         <b-form-group
           id="ig-title"
@@ -183,14 +190,6 @@
             </div>
           </div>
         </b-form-group>
-
-        <template v-if="trackUploadError">
-          <b-alert v-if="trackUploadError" variant="danger" class="my-4"
-                   show
-          >
-            {{ trackUploadError }}
-          </b-alert>
-        </template>
 
         <b-form-group
           id="ig-album"

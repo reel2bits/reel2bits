@@ -12,7 +12,9 @@
         <div v-for="status in tracks" :key="status.id" :status="status"
              class="mb-3 pt-1 pb-4 border-bottom"
         >
-          <Track v-if="status.type==='track'" :key="status.id" :track="status" />
+          <ContentAudioPlayer v-if="status.type==='track'" :key="status.id" :track="status"
+                              :clickable-title="true"
+          />
           <Album v-if="status.type==='album'" :key="status.id" :album="status" />
         </div>
       </div>
@@ -50,12 +52,12 @@ div.status {
 </style>
 
 <script>
-import Track from '../track/track.vue'
+import ContentAudioPlayer from '../../components/content_audio_player/content_audio_player.vue'
 import Album from '../album/album.vue'
 
 const Timeline = {
   components: {
-    Track,
+    ContentAudioPlayer,
     Album
   },
   props: [

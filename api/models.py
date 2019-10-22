@@ -40,7 +40,7 @@ class Config(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     app_name = db.Column(db.String(255), default=None)
     app_description = db.Column(db.Text)
-    user_quota = db.Column(db.Integer, default=Reel2bitsDefaults.user_quotas_default)
+    user_quota = db.Column(db.BigInteger, default=Reel2bitsDefaults.user_quotas_default)
     announcement = db.Column(db.Text, nullable=True)
 
 
@@ -101,9 +101,9 @@ class User(db.Model, UserMixin):
     # It is overriden when registering with the app config one, here it is only
     # if there is no quota defined, and in cas of, to avoid issues.
     # Both are in bytes
-    quota = db.Column(db.Integer(), default=Reel2bitsDefaults.user_quotas_default)
+    quota = db.Column(db.BigInteger(), default=Reel2bitsDefaults.user_quotas_default)
     # This should be updated on each upload and deletes
-    quota_count = db.Column(db.Integer(), default=0)
+    quota_count = db.Column(db.BigInteger(), default=0)
 
     avatar_filename = db.Column(db.String(255), unique=False, nullable=True)
 
@@ -335,8 +335,8 @@ class Sound(db.Model):
     # 0 nothing / default / waiting, 1 processing, 2 done, 3 error
 
     # both are bytes
-    file_size = db.Column(db.Integer)
-    transcode_file_size = db.Column(db.Integer)
+    file_size = db.Column(db.BigInteger)
+    transcode_file_size = db.Column(db.BigInteger)
 
     flake_id = db.Column(UUID(as_uuid=True), unique=False, nullable=True)
 

@@ -5,6 +5,7 @@ import subprocess
 from os.path import splitext
 import random
 import string
+import json
 
 from flask import current_app
 from flask_security import current_user
@@ -88,7 +89,15 @@ def duration_human(seconds):
         return "%.2f sec" % seconds + "s" * (seconds != 1)
 
 
-def generate_audio_dat_file(filename):
+# Pixels per seconds, the higher, the more points in the waveform
+# the more the waveform is "big in size"
+# We don't do zoom or edit or anything requiring more than one pixel per second
+# So we just generate one PPS
+PPS = 1
+# This gets *20 if the track duration is less than 30 minutes
+
+
+def generate_audio_dat_file(filename, duration):
     binary = current_app.config["AUDIOWAVEFORM_BIN"]
     if not os.path.exists(binary) or not os.path.exists(filename):
         add_log("AUDIOWAVEFORM", "ERROR", "Filename {0} or binary {1} invalid".format(filename, binary))
@@ -99,7 +108,8 @@ def generate_audio_dat_file(filename):
     audio_dat = "{0}.dat".format(fname)
 
     # pixels-per-second is needed here or it will be ignored in the json waveform generation
-    cmd = [binary, "-i", filename, "-o", audio_dat, "--pixels-per-second", "10", "-b", "8"]
+    pps = PPS * 20 if duration <= 30 * 60 else PPS
+    cmd = [binary, "-i", filename, "-o", audio_dat, "--pixels-per-second", str(pps), "-b", "8"]
 
     try:
         process = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -110,6 +120,11 @@ def generate_audio_dat_file(filename):
         add_log("AUDIOWAVEFORM_DAT", "ERROR", "Process error: {0}".format(e))
         return None
 
+    if duration <= 30 * 60:
+        print("duration is <=30min, applying PPS*20:", pps)
+    else:
+        print("duration is >30min, using PPS:", pps)
+
     print("- Command ran with: {0}".format(process.args))
 
     if process.stderr.startswith(b"Can't generate"):
@@ -119,7 +134,7 @@ def generate_audio_dat_file(filename):
     return audio_dat
 
 
-def get_waveform(filename):
+def get_waveform(filename, duration):
     binary = current_app.config["AUDIOWAVEFORM_BIN"]
     if not os.path.exists(binary) or not os.path.exists(filename):
         add_log("AUDIOWAVEFORM", "ERROR", "Filename {0} or binary {1} invalid".format(filename, binary))
@@ -130,7 +145,8 @@ def get_waveform(filename):
     tmpjson = "{0}.json".format(fname)
 
     # pixels-persecond is same value as in generate_audio_dat_file
-    cmd = [binary, "-i", filename, "--pixels-per-second", "10", "-b", "8", "-o", tmpjson]
+    pps = PPS * 20 if duration <= 30 * 60 else PPS
+    cmd = [binary, "-i", filename, "--pixels-per-second", str(pps), "-b", "8", "-o", tmpjson]
 
     """
     Failed: Can't generate "xxx" from "xxx"
@@ -160,6 +176,11 @@ def get_waveform(filename):
         add_log("AUDIOWAVEFORM", "ERROR", "Process error: {0}".format(e))
         return None
 
+    if duration <= 30 * 60:
+        print("duration is <=30min, applying PPS*20:", pps)
+    else:
+        print("duration is >30min, using PPS:", pps)
+
     print("- Command ran with: {0}".format(process.args))
 
     if process.stderr.startswith(b"Can't generate"):
@@ -167,14 +188,24 @@ def get_waveform(filename):
         return None
 
     with open(tmpjson, "r") as f:
-        json = f.readlines()
+        waveform_json = f.readlines()
 
     os.unlink(tmpjson)
 
-    if isinstance(json, list):
-        json = json[0].rstrip()
+    if isinstance(waveform_json, list):
+        waveform_json = waveform_json[0].rstrip()
 
-    return json
+    waveform_json = json.loads(waveform_json)
+
+    # normalize the peak datas
+    data = waveform_json["data"]
+    max_val = float(max(data))
+    new_data = []
+    for x in data:
+        new_data.append(x / max_val)
+    waveform_json["data"] = new_data
+
+    return json.dumps(waveform_json)
 
 
 def create_png_waveform(fn_audio, fn_png):

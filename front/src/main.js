@@ -16,6 +16,7 @@ import tracksModule from './modules/tracks.js'
 import albumsModule from './modules/albums.js'
 import oauthModule from './modules/oauth.js'
 import authFlowModule from './modules/auth_flow.js'
+import playerModule from './modules/player.js'
 
 import GetTextPlugin from 'vue-gettext'
 import locales from './locales.js'
@@ -78,7 +79,8 @@ const persistedStateOptions = {
       tracks: tracksModule,
       albums: albumsModule,
       oauth: oauthModule,
-      authFlow: authFlowModule
+      authFlow: authFlowModule,
+      player: playerModule
     },
     plugins: [persistedState],
     strict: false

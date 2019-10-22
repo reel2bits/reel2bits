@@ -496,5 +496,6 @@ def create_app(config_filename="config.development.Config", app_name=None, regis
     app.cli.add_command(commands.db_datas)
     app.cli.add_command(commands.users)
     app.cli.add_command(commands.roles)
+    app.cli.add_command(commands.tracks)
 
     return app
