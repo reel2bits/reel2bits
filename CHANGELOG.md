@@ -43,6 +43,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - URL scheme generation should be more robust
 - Added Icon(avatar) to Actor to make avatar federate
 - `flask users list` command now show confirmed at field
+- Quotas and file sizes are now BigInt
 
 ### Fixed
 - Waveform JSON generation through a .dat now use the right pixels per second; avoid huge waveforms datas for long tracks (#179)

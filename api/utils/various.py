@@ -5,6 +5,7 @@ import subprocess
 from os.path import splitext
 import random
 import string
+import json
 
 from flask import current_app
 from flask_security import current_user
@@ -88,6 +89,13 @@ def duration_human(seconds):
         return "%.2f sec" % seconds + "s" * (seconds != 1)
 
 
+# Pixels per seconds, the higher, the more points in the waveform
+# the more the waveform is "big in size"
+# eg. PPS=100 = 17M waveform for a 1h54 track
+#     PPS=10  = 3.8M waveform for a 1h54 track
+PPS = 10
+
+
 def generate_audio_dat_file(filename):
     binary = current_app.config["AUDIOWAVEFORM_BIN"]
     if not os.path.exists(binary) or not os.path.exists(filename):
@@ -99,7 +107,7 @@ def generate_audio_dat_file(filename):
     audio_dat = "{0}.dat".format(fname)
 
     # pixels-per-second is needed here or it will be ignored in the json waveform generation
-    cmd = [binary, "-i", filename, "-o", audio_dat, "--pixels-per-second", "10", "-b", "8"]
+    cmd = [binary, "-i", filename, "-o", audio_dat, "--pixels-per-second", str(PPS), "-b", "8"]
 
     try:
         process = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -130,7 +138,7 @@ def get_waveform(filename):
     tmpjson = "{0}.json".format(fname)
 
     # pixels-persecond is same value as in generate_audio_dat_file
-    cmd = [binary, "-i", filename, "--pixels-per-second", "10", "-b", "8", "-o", tmpjson]
+    cmd = [binary, "-i", filename, "--pixels-per-second", str(PPS), "-b", "8", "-o", tmpjson]
 
     """
     Failed: Can't generate "xxx" from "xxx"
@@ -167,14 +175,24 @@ def get_waveform(filename):
         return None
 
     with open(tmpjson, "r") as f:
-        json = f.readlines()
+        waveform_json = f.readlines()
 
     os.unlink(tmpjson)
 
-    if isinstance(json, list):
-        json = json[0].rstrip()
+    if isinstance(waveform_json, list):
+        waveform_json = waveform_json[0].rstrip()
 
-    return json
+    waveform_json = json.loads(waveform_json)
+
+    # normalize the peak datas
+    data = waveform_json["data"]
+    max_val = float(max(data))
+    new_data = []
+    for x in data:
+        new_data.append(x / max_val)
+    waveform_json["data"] = new_data
+
+    return json.dumps(waveform_json)
 
 
 def create_png_waveform(fn_audio, fn_png):

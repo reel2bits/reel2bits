@@ -229,8 +229,7 @@ export default {
       // Load new file and waveform
       if (this.track.waveform) {
         console.log('waveform available: true')
-        let max = Math.max.apply(Math, this.track.waveform.data)
-        this.wavesurfer.load(this.track.media_transcoded, this.track.waveform.data.map(p => p / max))
+        this.wavesurfer.load(this.track.media_transcoded, this.track.waveform.data)
       } else {
         console.log('waveform available: false')
         this.wavesurfer.load(this.track.media_transcoded)

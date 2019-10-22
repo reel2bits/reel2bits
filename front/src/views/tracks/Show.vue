@@ -203,6 +203,19 @@
           This song is not yet processed.
         </b-alert>
 
+        <b-button v-b-modal.modal-delete variant="link"
+                  class="text-decoration-none"
+        >
+          <i class="fa fa-times" aria-hidden="true" /> <translate translate-context="Content/TrackShow/Button">
+            Delete this track
+          </translate>
+        </b-button>
+        <b-modal id="modal-delete" :title="labels.deleteModalTitle" @ok="deleteTrack">
+          <p v-translate="{title: track.title}" class="my-4" translate-context="Content/TrackShow/Modal/Delete/Content">
+            Are you sure you want to delete '%{ title }' ?
+          </p>
+        </b-modal>
+
         <template v-if="track.processing.transcode_state === 3">
           <p>
             <translate translate-context="Content/TrackShow/ErrorOccured text">
@@ -279,7 +292,12 @@ export default {
           key: 'message',
           label: this.$pgettext('Content/Track(Logs)/Table/Heading', 'Message')
         }
-      ]
+      ],
+      labels () {
+        return {
+          deleteModalTitle: this.$pgettext('Content/TrackShow/Modal/Delete/Title', 'Deleting item')
+        }
+      }
     }
   },
   computed: {
