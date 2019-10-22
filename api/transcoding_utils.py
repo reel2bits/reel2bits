@@ -111,10 +111,6 @@ def get_basic_infos(fname):
     return infos
 
 
-def get_waveform_infos(fname):
-    return get_waveform(fname)
-
-
 def work_transcode(sound_id):
     sound = Sound.query.get(sound_id)
     if not sound:
@@ -230,10 +226,10 @@ def work_metadatas(sound_id, force=False):
             fname_t = fname
 
         print("- GENERATING AUDIO DAT FILE")
-        dat_file_name = generate_audio_dat_file(fname_t)
+        dat_file_name = generate_audio_dat_file(fname_t, _infos.duration)
 
         print("- WORKING WAVEFORM on {0}, {1}".format(sound.id, sound.filename))
-        waveform_infos = get_waveform_infos(dat_file_name)
+        waveform_infos = get_waveform(dat_file_name, _infos.duration)
         print("- Our file got waveform infos: {0}".format(waveform_infos))
         _infos.waveform = waveform_infos
         if not waveform_infos:
