@@ -91,9 +91,9 @@ def duration_human(seconds):
 
 # Pixels per seconds, the higher, the more points in the waveform
 # the more the waveform is "big in size"
-# eg. PPS=100 = 17M waveform for a 1h54 track
-#     PPS=10  = 3.8M waveform for a 1h54 track
-PPS = 10
+# We don't do zoom or edit or anything requiring more than one pixel per second
+# So we just generate one PPS
+PPS = 1
 
 
 def generate_audio_dat_file(filename):
