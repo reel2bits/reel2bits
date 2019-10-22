@@ -87,7 +87,6 @@ button.playPause {
 </style>
 
 <script>
-import playerUtils from '../../services/player_utils/player_utils.js'
 import WaveSurfer from 'wavesurfer.js'
 import moment from 'moment'
 import { mapState } from 'vuex'
@@ -170,7 +169,7 @@ export default {
         progressColor: '#C728B6',
         waveColor: '#C8D1F4',
         cursorColor: '#313DF2',
-        backend: 'WebAudio'
+        backend: 'WebAudio' // WebAudio or fallback MediaElement
       }
       // TODO: WebAudio (default) seems a bit slow to start the playback with ~1/2s delay
       if (!this.track.waveform) {
@@ -181,17 +180,17 @@ export default {
       this.wavesurfer.on('ready', () => {
         // This will never trigger with pre-processed waveform
         // https://github.com/katspaugh/wavesurfer.js/issues/1244
-        this.playerTimeTot = playerUtils.secondsTimeSpanToMS(this.wavesurfer.getDuration())
+        this.playerTimeTot = moment.utc(this.wavesurfer.getDuration() * 1000).format('HH:mm:ss')
       })
 
       this.wavesurfer.on('audioprocess', () => {
         console.log('wavesurfer audioprocessing')
-        this.playerTimeCur = playerUtils.secondsTimeSpanToMS(this.wavesurfer.getCurrentTime())
+        this.playerTimeCur = moment.utc(this.wavesurfer.getCurrentTime() * 1000).format('HH:mm:ss')
       })
 
       this.wavesurfer.on('seek', () => {
         console.log('wavesurfer seeking')
-        this.playerTimeCur = playerUtils.secondsTimeSpanToMS(this.wavesurfer.getCurrentTime())
+        this.playerTimeCur = moment.utc(this.wavesurfer.getCurrentTime() * 1000).format('HH:mm:ss')
       })
 
       this.wavesurfer.on('play', () => {
@@ -242,7 +241,7 @@ export default {
 
       // Workaround because of wavesurfer issue which can't fire event or do anything unless
       // you hit play, when using pre-processed waveform...
-      this.playerTimeTot = moment.utc(this.track.metadatas.duration * 1000).format('mm:ss')
+      this.playerTimeTot = moment.utc(this.track.metadatas.duration * 1000).format('HH:mm:ss')
 
       // If autoplay, play
       if (autoplay) {
