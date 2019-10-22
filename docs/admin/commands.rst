@@ -30,3 +30,7 @@ System
 ------
 - ``flask test-email``: Test sending an email to check it works properly
 - ``flask config``: Dump the whole configuration after interpreting it with interpolated variables
+
+Tracks
+------
+- ``flask tracks regenerate-waveform``: Regenerate a waveform or all

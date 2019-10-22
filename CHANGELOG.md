@@ -34,6 +34,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `flask test-email` command to send a test email
 - Setting `SENTRY_DSN` in backend will activate Sentry in frontend
 - There is now an admin setting for a static announcement
+- CLI command to regenerate a specific waveform or all
 
 ### Changed
 - PNG waveforms are not computed anymore because unused (#179)
@@ -44,6 +45,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added Icon(avatar) to Actor to make avatar federate
 - `flask users list` command now show confirmed at field
 - Quotas and file sizes are now BigInt
+- Waveform generation now use 1 PixelPerSecond if duration is >30min, else it's 10
 
 ### Fixed
 - Waveform JSON generation through a .dat now use the right pixels per second; avoid huge waveforms datas for long tracks (#179)
