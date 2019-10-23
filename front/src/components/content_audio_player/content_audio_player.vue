@@ -17,85 +17,85 @@
         </translate>
       </span>
     </div>
-  <div class="d-flex mb-3">
-    <b-link v-if="clickableTitle" :to="{ name: 'tracks-show', params: { username: track.account.screen_name, trackId: track.slug } }">
-      <img :src="track.picture_url" class="d-flex mr-3"
-           style="width:112px; height:112px;"
-      >
-    </b-link>
-    <template v-else>
-      <img :src="track.picture_url" class="d-flex mr-3"
-           style="width:112px; height:112px;"
-      >
-    </template>
-    <div class="flex-fill">
-      <div class="row px-0 mx-0">
-        <h1 class="col px-0 mx-0 h5 text-truncate" :title="track.title">
-          <b-link v-if="clickableTitle" :to="{ name: 'tracks-show', params: { username: track.account.screen_name, trackId: track.slug } }" class="text-body text-decoration-none">
-            {{ track.title }}
-          </b-link>
-          <template v-else>
-            {{ track.title }}
-          </template>
-        </h1>
-          <div v-if="!someoneUploadedOn" class="col-3 px-0 mx-0 text-right" :title="track.uploaded_on">
-          {{ publishedAgo }}
-        </div>
-      </div>
-      <div v-if="processingDone" class="d-flex my-2">
-        <b-button v-if="!isPlaying" class="playPause" variant="primary"
-                  @click.prevent="togglePlay"
+    <div class="d-flex mb-3">
+      <b-link v-if="clickableTitle" :to="{ name: 'tracks-show', params: { username: track.account.screen_name, trackId: track.slug } }">
+        <img :src="track.picture_url" class="d-flex mr-3"
+             style="width:112px; height:112px;"
         >
-          <i class="fa fa-play" aria-hidden="true" />
-        </b-button>
-        <b-button v-if="isPlaying" class="playPause" @click.prevent="togglePlay">
-          <i class="fa fa-pause" aria-hidden="true" />
-        </b-button>
-        <div :id="wavesurferContainer" class="flex-fill" />
-      </div>
-      <div v-else-if="processingDone" class="alert alert-dark">
-        <translate translate-context="Content/TrackShow/Alert/Not available">
-          Track not yet available.
-        </translate>
-      </div>
-
-      <div class="pt-0 d-flex">
-        <div class="btn-group" role="group" :aria-label="labels.ariaTrackActions">
-          <b-button v-if="track.media_orig && processingDone" :href="track.media_orig" variant="link"
-                    class="text-decoration-none pl-0"
-          >
-            <i class="fa fa-cloud-download" aria-hidden="true" /> <translate translate-context="Content/TrackShow/Button">
-              Download
-            </translate>
-          </b-button>
-          <div v-if="isOwner && editLink">
-            <b-button variant="link" class="text-decoration-none"
-                      @click.prevent="editLink"
-            >
-              <i class="fa fa-pencil" aria-hidden="true" /> <translate translate-context="Content/TrackShow/Button">
-                Edit
-              </translate>
-            </b-button>
-            <b-button v-b-modal.modal-delete variant="link"
-                      class="text-decoration-none"
-            >
-              <i class="fa fa-times" aria-hidden="true" /> <translate translate-context="Content/TrackShow/Button">
-                Delete
-              </translate>
-            </b-button>
-            <b-modal id="modal-delete" :title="labels.deleteModalTitle" @ok="deleteLink">
-              <p v-translate="{title: track.title}" class="my-4" translate-context="Content/TrackShow/Modal/Delete/Content">
-                Are you sure you want to delete '%{ title }' ?
-              </p>
-            </b-modal>
+      </b-link>
+      <template v-else>
+        <img :src="track.picture_url" class="d-flex mr-3"
+             style="width:112px; height:112px;"
+        >
+      </template>
+      <div class="flex-fill">
+        <div class="row px-0 mx-0">
+          <h1 class="col px-0 mx-0 h5 text-truncate" :title="track.title">
+            <b-link v-if="clickableTitle" :to="{ name: 'tracks-show', params: { username: track.account.screen_name, trackId: track.slug } }" class="text-body text-decoration-none">
+              {{ track.title }}
+            </b-link>
+            <template v-else>
+              {{ track.title }}
+            </template>
+          </h1>
+          <div v-if="!someoneUploadedOn" class="col-3 px-0 mx-0 text-right" :title="track.uploaded_on">
+            {{ publishedAgo }}
           </div>
         </div>
-        <div v-if="processingDone" class="ml-auto row align-items-center mr-0">
-          <span v-if="isPlaying" class="text-secondary px-2">{{ playerTimeCur }}</span> <span class="text-muted">{{ playerTimeTot }}</span>
+        <div v-if="processingDone" class="d-flex my-2">
+          <b-button v-if="!isPlaying" class="playPause" variant="primary"
+                    @click.prevent="togglePlay"
+          >
+            <i class="fa fa-play" aria-hidden="true" />
+          </b-button>
+          <b-button v-if="isPlaying" class="playPause" @click.prevent="togglePlay">
+            <i class="fa fa-pause" aria-hidden="true" />
+          </b-button>
+          <div :id="wavesurferContainer" class="flex-fill" />
+        </div>
+        <div v-else-if="processingDone" class="alert alert-dark">
+          <translate translate-context="Content/TrackShow/Alert/Not available">
+            Track not yet available.
+          </translate>
+        </div>
+
+        <div class="pt-0 d-flex">
+          <div class="btn-group" role="group" :aria-label="labels.ariaTrackActions">
+            <b-button v-if="track.media_orig && processingDone" :href="track.media_orig" variant="link"
+                      class="text-decoration-none pl-0"
+            >
+              <i class="fa fa-cloud-download" aria-hidden="true" /> <translate translate-context="Content/TrackShow/Button">
+                Download
+              </translate>
+            </b-button>
+            <div v-if="isOwner && editLink">
+              <b-button variant="link" class="text-decoration-none"
+                        @click.prevent="editLink"
+              >
+                <i class="fa fa-pencil" aria-hidden="true" /> <translate translate-context="Content/TrackShow/Button">
+                  Edit
+                </translate>
+              </b-button>
+              <b-button v-b-modal.modal-delete variant="link"
+                        class="text-decoration-none"
+              >
+                <i class="fa fa-times" aria-hidden="true" /> <translate translate-context="Content/TrackShow/Button">
+                  Delete
+                </translate>
+              </b-button>
+              <b-modal id="modal-delete" :title="labels.deleteModalTitle" @ok="deleteLink">
+                <p v-translate="{title: track.title}" class="my-4" translate-context="Content/TrackShow/Modal/Delete/Content">
+                  Are you sure you want to delete '%{ title }' ?
+                </p>
+              </b-modal>
+            </div>
+          </div>
+          <div v-if="processingDone" class="ml-auto row align-items-center mr-0">
+            <span v-if="isPlaying" class="text-secondary px-2">{{ playerTimeCur }}</span> <span class="text-muted">{{ playerTimeTot }}</span>
+          </div>
         </div>
       </div>
     </div>
-  </div>
   </div>
 </template>
 
@@ -125,6 +125,11 @@ export default {
       required: false
     },
     clickableTitle: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
+    someoneUploadedOn: {
       type: Boolean,
       required: false,
       default: false
@@ -232,7 +237,7 @@ export default {
     })
   },
   destroyed () {
-    if (this.wavesurfer) {
+    if (this.wavesurfer && this.wavesurfer.isPlaying()) {
       this.wavesurfer.stop()
     }
     this.$emit('updateLogoSpinDuration', false)
