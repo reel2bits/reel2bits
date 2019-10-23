@@ -85,7 +85,7 @@
     "karma-spec-reporter": "0.0.32",
     "karma-webpack": "^4.0.0-rc.3",
     "mocha": "^6.2.2",
-    "sass": "^1.23.0",
+    "sass": "^1.23.1",
     "sass-loader": "git://github.com/webpack-contrib/sass-loader",
     "shelljs": "^0.8.3",
     "sinon": "^7.5.0",
