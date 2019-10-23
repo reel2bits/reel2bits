@@ -91,10 +91,25 @@ def duration_human(seconds):
 
 # Pixels per seconds, the higher, the more points in the waveform
 # the more the waveform is "big in size"
-# We don't do zoom or edit or anything requiring more than one pixel per second
-# So we just generate one PPS
-PPS = 1
-# This gets *20 if the track duration is less than 30 minutes
+def determine_pps(duration):
+    # duration is less than 1 sec
+    if duration < 1:
+        pps = int(duration * 1000 * 4)
+    # duration is less than 30sec
+    elif 1 < duration <= 60 / 2:
+        pps = 1000
+    # duration is more than 30sec but less than 2min
+    elif 60 / 2 < duration <= 2 * 60:
+        pps = 20
+    # duration is more than 2min but less than 30min
+    elif 2 * 60 < duration <= 30 * 60:
+        pps = 10
+    # everything else
+    else:
+        pps = 1
+    print(f"duration: {duration}, pps: {pps}")
+    # just in case, cap the PPS to a max of 9999
+    return pps if pps < 10000 else 9999
 
 
 def generate_audio_dat_file(filename, duration):
@@ -108,7 +123,7 @@ def generate_audio_dat_file(filename, duration):
     audio_dat = "{0}.dat".format(fname)
 
     # pixels-per-second is needed here or it will be ignored in the json waveform generation
-    pps = PPS * 20 if duration <= 30 * 60 else PPS
+    pps = determine_pps(duration)
     cmd = [binary, "-i", filename, "-o", audio_dat, "--pixels-per-second", str(pps), "-b", "8"]
 
     try:
@@ -119,11 +134,6 @@ def generate_audio_dat_file(filename, duration):
     except subprocess.CalledProcessError as e:
         add_log("AUDIOWAVEFORM_DAT", "ERROR", "Process error: {0}".format(e))
         return None
-
-    if duration <= 30 * 60:
-        print("duration is <=30min, applying PPS*20:", pps)
-    else:
-        print("duration is >30min, using PPS:", pps)
 
     print("- Command ran with: {0}".format(process.args))
 
@@ -145,7 +155,7 @@ def get_waveform(filename, duration):
     tmpjson = "{0}.json".format(fname)
 
     # pixels-persecond is same value as in generate_audio_dat_file
-    pps = PPS * 20 if duration <= 30 * 60 else PPS
+    pps = determine_pps(duration)
     cmd = [binary, "-i", filename, "--pixels-per-second", str(pps), "-b", "8", "-o", tmpjson]
 
     """
@@ -175,11 +185,6 @@ def get_waveform(filename, duration):
     except subprocess.CalledProcessError as e:
         add_log("AUDIOWAVEFORM", "ERROR", "Process error: {0}".format(e))
         return None
-
-    if duration <= 30 * 60:
-        print("duration is <=30min, applying PPS*20:", pps)
-    else:
-        print("duration is >30min, using PPS:", pps)
 
     print("- Command ran with: {0}".format(process.args))
 

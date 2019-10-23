@@ -45,7 +45,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added Icon(avatar) to Actor to make avatar federate
 - `flask users list` command now show confirmed at field
 - Quotas and file sizes are now BigInt
-- Waveform generation now use 1 PixelPerSecond if duration is >30min, else it's 10
+- Waveform generation now use dynamic PixelsPerSecond depending of the track duration
 
 ### Fixed
 - Waveform JSON generation through a .dat now use the right pixels per second; avoid huge waveforms datas for long tracks (#179)
