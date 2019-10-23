@@ -1,4 +1,22 @@
 <template>
+  <div>
+    <div v-if="someoneUploadedOn" class="flex-fill my-2">
+      <b-link :to="{ name: 'user-profile', params: { name: track.account.screen_name } }" class="text-decoration-none">
+        <img :src="track.account.profile_image_url" :alt="userAvatarAlt"
+             class="rounded-circle mr-1"
+             width="24"
+             height="24"
+        >
+      </b-link>
+      <span class="align-middle">
+        <b-link :to="{ name: 'user-profile', params: { name: track.account.screen_name } }" class="text-decoration-none">
+          {{ track.account.name }}
+        </b-link>
+        <translate translate-context="Content/Track/Single track in timelines, part of 'XXX >>uploaded a track<< YYY times ago'" :translate-params="{publishedAgo: publishedAgo}" :title="track.uploaded_on">
+          uploaded a track %{publishedAgo}
+        </translate>
+      </span>
+    </div>
   <div class="d-flex mb-3">
     <b-link v-if="clickableTitle" :to="{ name: 'tracks-show', params: { username: track.account.screen_name, trackId: track.slug } }">
       <img :src="track.picture_url" class="d-flex mr-3"
@@ -20,7 +38,7 @@
             {{ track.title }}
           </template>
         </h1>
-        <div class="col-3 px-0 mx-0 text-right" :title="track.uploaded_on">
+          <div v-if="!someoneUploadedOn" class="col-3 px-0 mx-0 text-right" :title="track.uploaded_on">
           {{ publishedAgo }}
         </div>
       </div>
@@ -77,6 +95,7 @@
         </div>
       </div>
     </div>
+  </div>
   </div>
 </template>
 
@@ -151,6 +170,10 @@ export default {
     },
     wavesurferContainer () {
       return `waveform-${this.track.slug}`
+    },
+    userAvatarAlt () {
+      let msg = this.$pgettext('Content/Track/Image/User Avatar alt', '%{username} avatar')
+      return this.$gettextInterpolate(msg, { username: this.track.account.screen_name })
     }
   },
   watch: {

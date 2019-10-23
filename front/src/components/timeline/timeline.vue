@@ -13,7 +13,7 @@
              class="mb-3 pt-1 pb-4 border-bottom"
         >
           <ContentAudioPlayer v-if="status.type==='track'" :key="status.id" :track="status"
-                              :clickable-title="true"
+                              :clickable-title="true" :someone-uploaded-on="true"
           />
           <Album v-if="status.type==='album'" :key="status.id" :album="status" />
         </div>
