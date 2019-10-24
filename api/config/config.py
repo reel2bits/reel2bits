@@ -112,6 +112,11 @@ class BaseConfig(object):
     UPLOADED_ARTWORKSOUNDS_DEST = os.getenv("UPLOADED_ARTWORKSOUNDS_DEST", "/home/reel2bits/uploads/artwork_sounds")
     UPLOADED_AVATARS_DEST = os.getenv("UPLOADED_AVATARS_DEST", "/home/reel2bits/uploads/avatars")
 
+    # 33554432  256 megabytes
+    # 67108864  512 megabytes
+    # 134217728   1 gibabyte
+    UPLOAD_TRACK_MAX_SIZE = os.getenv("UPLOAD_TRACK_MAX_SIZE", 67108864)
+
     # Where is audiowaveform located
     AUDIOWAVEFORM_BIN = os.getenv("AUDIOWAVEFORM_BIN", "/usr/local/bin/audiowaveform")
 

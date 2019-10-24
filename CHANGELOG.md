@@ -35,6 +35,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Setting `SENTRY_DSN` in backend will activate Sentry in frontend
 - There is now an admin setting for a static announcement
 - CLI command to regenerate a specific waveform or all
+- Max file upload size can now be overriden in config
 
 ### Changed
 - PNG waveforms are not computed anymore because unused (#179)
