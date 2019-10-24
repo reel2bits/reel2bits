@@ -56,9 +56,6 @@ class Reel2bitsDefaults(object):
         {"bytes": 6710886400},  # 50 gb
     ]
 
-    # 100 megabytes
-    track_size_limit = 104857600
-
     # 2MB
     artwork_size_limit = 2000000
     avatar_size_limit = artwork_size_limit

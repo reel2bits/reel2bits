@@ -12,7 +12,7 @@ from flask_security import Security
 from flask_security import signals as FlaskSecuritySignals
 from flask_uploads import configure_uploads, UploadSet, AUDIO, patch_request_class
 from app_oauth import config_oauth
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 from cachetools import cached, TTLCache
 from flasgger import Swagger
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -272,7 +272,7 @@ def create_app(config_filename="config.development.Config", app_name=None, regis
     configure_uploads(app, avatars)
 
     # Total max size upload for the whole app
-    patch_request_class(app, Reel2bitsDefaults.track_size_limit)
+    patch_request_class(app, app.config["UPLOAD_TRACK_MAX_SIZE"])
 
     app.flake_id = FlakeId()
 
@@ -359,6 +359,7 @@ def create_app(config_filename="config.development.Config", app_name=None, regis
         app.register_blueprint(bp_spa)
 
     @app.route("/uploads/<string:thing>/<path:stuff>", methods=["GET"])
+    @cross_origin(origins="*", methods=["GET", "HEAD", "OPTIONS"], expose_headers="content-length", send_wildcard=True)
     def get_uploads_stuff(thing, stuff):
         if app.testing or app.debug:
             directory = safe_join(app.config["UPLOADS_DEFAULT_DEST"], thing)
