@@ -284,7 +284,9 @@ export default {
       console.log('asked playing !!!')
       // If the current state playing track is not the same as local one, stop playback
       if (this.$store.state.player.track !== this.track) {
-        this.wavesurfer.stop()
+        if (this.isPlaying()) {
+          this.wavesurfer.stop()
+        }
       }
     }
   }
