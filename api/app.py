@@ -23,16 +23,10 @@ import commands
 from utils.flake_id import FlakeId
 import html
 from utils.meta_tags import get_default_head_tags, get_request_head_tags
-from flask_mail import Message
-import click
-import sys
 
 from models import db, Config, user_datastore, create_actor
 from utils.various import InvalidUsage, is_admin, add_user_log, join_url
 
-import texttable
-
-from pprint import pprint as pp
 from little_boxes import activitypub as ap
 from activitypub.backend import Reel2BitsBackend
 
@@ -56,8 +50,6 @@ try:
 except ImportError:
     print(" * No Sentry Flask/Celery support available")
     HAS_SENTRY = False
-
-mail = Mail()
 
 GIT_VERSION = ""
 gitpath = os.path.join(os.getcwd(), "../.git")
@@ -146,7 +138,7 @@ def create_app(config_filename="config.development.Config", app_name=None, regis
     if app.debug:
         logging.getLogger("flask_cors.extension").level = logging.DEBUG
 
-    mail.init_app(app)
+    mail = Mail(app)  # noqa: F841
     migrate = Migrate(app, db)  # noqa: F841 lgtm [py/unused-local-variable]
     babel = Babel(app)  # noqa: F841
     app.babel = babel
@@ -457,46 +449,11 @@ def create_app(config_filename="config.development.Config", app_name=None, regis
         response.headers["X-Powered-By"] = "reel2bits"
         return response
 
-    # Other commands
-    @app.cli.command()
-    def routes():
-        """Dump all routes of defined app"""
-        table = texttable.Texttable()
-        table.set_deco(texttable.Texttable().HEADER)
-        table.set_cols_dtype(["t", "t", "t"])
-        table.set_cols_align(["l", "l", "l"])
-        table.set_cols_width([50, 30, 80])
-
-        table.add_rows([["Prefix", "Verb", "URI Pattern"]])
-
-        for rule in sorted(app.url_map.iter_rules(), key=lambda x: str(x)):
-            methods = ",".join(rule.methods)
-            table.add_row([rule.endpoint, methods, rule])
-
-        print(table.draw())
-
-    @app.cli.command()
-    def config():
-        """Dump config"""
-        pp(app.config)
-
-    @app.cli.command(name="test-email")
-    @click.option("--email", prompt=True, help="Email to send the test to")
-    def test_email(email):
-        """
-        Test email sending.
-        """
-        msg = Message(subject="reel2bits test email", recipients=[email], sender=app.config["MAIL_DEFAULT_SENDER"])
-        msg.body = render_template("email/test_email.txt")
-        msg.html = render_template("email/test_email.html")
-        try:
-            mail.send(msg)
-        except:  # noqa: E772
-            print(f"Error sending mail: {sys.exc_info()[0]}")
-
+    # Register CLI commands
     app.cli.add_command(commands.db_datas)
     app.cli.add_command(commands.users)
     app.cli.add_command(commands.roles)
     app.cli.add_command(commands.tracks)
+    app.cli.add_command(commands.system)
 
     return app

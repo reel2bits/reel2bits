@@ -3,7 +3,7 @@ from __future__ import print_function
 from models import db, Sound, User
 from flask_mail import Message
 from flask import render_template, url_for
-from app import mail, create_app, make_celery
+from app import create_app, make_celery
 from transcoding_utils import work_transcode, work_metadatas
 from little_boxes import activitypub as ap
 from little_boxes.linked_data_sig import generate_signature
@@ -144,18 +144,22 @@ def upload_workflow(self, sound_id):
     msg.body = render_template("email/song_processed.txt", sound=sound, track_url=track_url)
     msg.html = render_template("email/song_processed.html", sound=sound, track_url=track_url)
     err = None
-    try:
-        mail.send(msg)
-    except ConnectionRefusedError as e:
-        # TODO: do something about that maybe
-        print(f"Error sending mail: {e}")
-        err = e
-    except smtplib.SMTPRecipientsRefused as e:
-        print(f"Error sending mail: {e}")
-        err = e
-    except smtplib.SMTPException as e:
-        print(f"Error sending mail: {e}")
-        err = e
+    mail = current_app.extensions.get("mail")
+    if not mail:
+        err = "mail extension is none"
+    else:
+        try:
+            mail.send(msg)
+        except ConnectionRefusedError as e:
+            # TODO: do something about that maybe
+            print(f"Error sending mail: {e}")
+            err = e
+        except smtplib.SMTPRecipientsRefused as e:
+            print(f"Error sending mail: {e}")
+            err = e
+        except smtplib.SMTPException as e:
+            print(f"Error sending mail: {e}")
+            err = e
     if err:
         add_log("global", "ERROR", f"Error sending email for track {sound.id}: {err}")
         add_user_log(sound.id, sound.user.id, "sounds", "error", "An error occured while sending email")

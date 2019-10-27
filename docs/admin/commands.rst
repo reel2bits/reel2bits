@@ -28,8 +28,9 @@ By default all commands are non-breaking, meaning you can launch them at any tim
 
 System
 ------
-- ``flask test-email``: Test sending an email to check it works properly
-- ``flask config``: Dump the whole configuration after interpreting it with interpolated variables
+- ``flask system test-email``: Test sending an email to check it works properly
+- ``flask system config``: Dump the whole configuration after interpreting it with interpolated variables
+- ``flask system routes``: Print all known routes of the backend
 
 Tracks
 ------

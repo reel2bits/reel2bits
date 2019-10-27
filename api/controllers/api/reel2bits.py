@@ -6,7 +6,6 @@ from authlib.flask.oauth2 import current_token
 from flask_security.utils import hash_password, verify_password
 from flask_mail import Message
 import smtplib
-from app import mail
 from utils.defaults import Reel2bitsDefaults
 from datas_helpers import default_genres
 
@@ -180,21 +179,25 @@ def reset_password():
     msg.body = render_template("email/password_reset.txt", token_link=token_link, user=user)
     msg.html = render_template("email/password_reset.html", token_link=token_link, user=user)
     err = None
-    try:
-        mail.send(msg)
-    except ConnectionRefusedError as e:
-        # TODO: do something about that maybe
-        print(f"Error sending mail: {e}")
-        err = e
-    except smtplib.SMTPRecipientsRefused as e:
-        print(f"Error sending mail: {e}")
-        err = e
-    except smtplib.SMTPException as e:
-        print(f"Error sending mail: {e}")
-        err = e
-    if err:
-        add_log("global", "ERROR", f"Error sending email for password reset user {user.id}: {err}")
-        add_user_log(user.id, user.id, "user", "error", "An error occured while sending email")
+    mail = current_app.extensions.get("mail")
+    if not mail:
+        err = "mail extension is none"
+    else:
+        try:
+            mail.send(msg)
+        except ConnectionRefusedError as e:
+            # TODO: do something about that maybe
+            print(f"Error sending mail: {e}")
+            err = e
+        except smtplib.SMTPRecipientsRefused as e:
+            print(f"Error sending mail: {e}")
+            err = e
+        except smtplib.SMTPException as e:
+            print(f"Error sending mail: {e}")
+            err = e
+        if err:
+            add_log("global", "ERROR", f"Error sending email for password reset user {user.id}: {err}")
+            add_user_log(user.id, user.id, "user", "error", "An error occured while sending email")
 
     return jsonify({"status": "ok"}), 204
 
