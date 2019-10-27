@@ -25,7 +25,6 @@ from sqlalchemy import or_
 from flask_mail import Message
 from flask import render_template
 import smtplib
-from app import mail
 from utils.defaults import Reel2bitsDefaults
 from flask_uploads import UploadSet
 import os
@@ -834,18 +833,22 @@ def account_delete():
     msg.body = render_template("email/account_deleted.txt", username=username)
     msg.html = render_template("email/account_deleted.html", username=username)
     err = None
-    try:
-        mail.send(msg)
-    except ConnectionRefusedError as e:
-        # TODO: do something about that maybe
-        print(f"Error sending mail: {e}")
-        err = e
-    except smtplib.SMTPRecipientsRefused as e:
-        print(f"Error sending mail: {e}")
-        err = e
-    except smtplib.SMTPException as e:
-        print(f"Error sending mail: {e}")
-        err = e
+    mail = current_app.extensions.get("mail")
+    if not mail:
+        err = "mail extension is none"
+    else:
+        try:
+            mail.send(msg)
+        except ConnectionRefusedError as e:
+            # TODO: do something about that maybe
+            print(f"Error sending mail: {e}")
+            err = e
+        except smtplib.SMTPRecipientsRefused as e:
+            print(f"Error sending mail: {e}")
+            err = e
+        except smtplib.SMTPException as e:
+            print(f"Error sending mail: {e}")
+            err = e
     if err:
         add_log("global", "ERROR", f"Error sending email for account deletion of {username} ({user_id}): {err}")
 

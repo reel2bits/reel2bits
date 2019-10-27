@@ -57,8 +57,6 @@ except ImportError:
     print(" * No Sentry Flask/Celery support available")
     HAS_SENTRY = False
 
-mail = Mail()
-
 GIT_VERSION = ""
 gitpath = os.path.join(os.getcwd(), "../.git")
 if os.path.isdir(gitpath):
@@ -146,7 +144,7 @@ def create_app(config_filename="config.development.Config", app_name=None, regis
     if app.debug:
         logging.getLogger("flask_cors.extension").level = logging.DEBUG
 
-    mail.init_app(app)
+    mail = Mail(app)  # noqa: F841
     migrate = Migrate(app, db)  # noqa: F841 lgtm [py/unused-local-variable]
     babel = Babel(app)  # noqa: F841
     app.babel = babel
