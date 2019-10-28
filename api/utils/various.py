@@ -204,10 +204,12 @@ def get_waveform(filename, duration):
 
     # normalize the peak datas
     data = waveform_json["data"]
+    # number of decimals to use when rounding the peak value
+    digits = 2
     max_val = float(max(data))
     new_data = []
     for x in data:
-        new_data.append(x / max_val)
+        new_data.append(round(x / max_val, digits))
     waveform_json["data"] = new_data
 
     return json.dumps(waveform_json)
