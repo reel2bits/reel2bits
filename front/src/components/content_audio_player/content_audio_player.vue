@@ -145,14 +145,11 @@ export default {
           ariaTrackActions: this.$pgettext('Content/TrackShow/Aria/actions', 'actions'),
           deleteModalTitle: this.$pgettext('Content/TrackShow/Modal/Delete/Title', 'Deleting item')
         }
-      }
+      },
+      isPlaying: false
     }
   },
   computed: {
-    isPlaying () {
-      if (!this.wavesurfer) return false
-      return this.wavesurfer.isPlaying()
-    },
     svgDuration () {
       if (!this.wavesurfer) return '0'
       if (this.wavesurfer.isPlaying()) {
@@ -222,10 +219,12 @@ export default {
       })
 
       this.wavesurfer.on('play', () => {
+        this.isPlaying = true
         this.$emit('updateLogoSpinDuration', true)
       })
 
       this.wavesurfer.on('pause', () => {
+        this.isPlaying = false
         this.$emit('updateLogoSpinDuration', false)
       })
 
@@ -293,7 +292,7 @@ export default {
       console.log('asked playing !!!')
       // If the current state playing track is not the same as local one, stop playback
       if (this.$store.state.player.track !== this.track) {
-        if (this.isPlaying) {
+        if (this.wavesurfer.isPlaying()) {
           this.wavesurfer.stop()
         }
       }
