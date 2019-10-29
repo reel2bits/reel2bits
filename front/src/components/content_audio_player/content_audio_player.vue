@@ -197,7 +197,7 @@ export default {
         progressColor: '#C728B6',
         waveColor: '#C8D1F4',
         cursorColor: '#313DF2',
-        backend: 'WebAudio' // WebAudio or fallback MediaElement
+        backend: 'MediaElementWebAudio' // Not another one, benefits of MediaElement speed with WebAudio functionalities
       }
       // TODO: WebAudio (default) seems a bit slow to start the playback with ~1/2s delay
       if (!this.track.waveform) {
@@ -259,12 +259,21 @@ export default {
       this.wavesurfer.empty()
 
       // Load new file and waveform
+      // Create an <audio> Element
+      let audio = document.createElement('audio')
+      // Don't forget to set the id to an unique one
+      audio.setAttribute('id', `audio-${this.wavesurferContainer}`)
+      // Set the source
+      audio.src = this.track.media_transcoded
+      // Set crossOrigin to anonymous to avoid CORS restrictions
+      audio.crossOrigin = 'anonymous'
+
       if (this.track.waveform) {
         console.log('waveform available: true')
-        this.wavesurfer.load(this.track.media_transcoded, this.track.waveform.data)
+        this.wavesurfer.load(audio, this.track.waveform.data)
       } else {
         console.log('waveform available: false')
-        this.wavesurfer.load(this.track.media_transcoded)
+        this.wavesurfer.load(audio)
       }
 
       // Workaround because of wavesurfer issue which can't fire event or do anything unless
