@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request, abort, current_app, render_template
 from models import db, User, PasswordResetToken, Sound, SoundTag, Actor, Follower
 from utils.various import add_user_log, generate_random_token, add_log
+from datas_helpers import to_json_account, to_json_relationship, default_genres
 from app_oauth import require_oauth
 from authlib.flask.oauth2 import current_token
 from flask_security.utils import hash_password, verify_password
@@ -8,7 +9,6 @@ from flask_mail import Message
 import smtplib
 import re
 from utils.defaults import Reel2bitsDefaults
-from datas_helpers import default_genres
 from little_boxes.webfinger import get_actor_url
 from little_boxes.urlutils import InvalidURLError
 from little_boxes import activitypub as ap
@@ -279,6 +279,7 @@ def search():
 
     # This is the old search endpoint and needs to be improved
     # Especially tracks and accounts needs to be returned in the right format, with the data helpers
+    # Users should be searched only from known Actors
 
     results = {"accounts": [], "sounds": [], "mode": None, "from": None}
 
@@ -294,34 +295,14 @@ def search():
 
     if s.startswith("https://"):
         results["mode"] = "uri"
-        if current_user:
-            users = (
-                db.session.query(Actor, Follower)
-                .outerjoin(
-                    Follower, and_(Actor.id == Follower.target_id, Follower.actor_id == current_user.actor[0].id)
-                )
-                .filter(Actor.url == s)
-                .filter(not_(Actor.id == current_user.actor[0].id))
-                .all()
-            )
-        else:
-            users = db.session.query(Actor).filter(Actor.url == s).all()
+        users = Actor.query.filter(Actor.meta_deleted.is_(False), Actor.url == s).all()
     elif is_user_at_account:
         results["mode"] = "acct"
         user = is_user_at_account.group("user")
         instance = is_user_at_account.group("instance")
-        if current_user:
-            users = (
-                db.session.query(Actor, Follower)
-                .outerjoin(
-                    Follower, and_(Actor.id == Follower.target_id, Follower.actor_id == current_user.actor[0].id)
-                )
-                .filter(Actor.preferred_username == user, Actor.domain == instance)
-                .filter(not_(Actor.id == current_user.actor[0].id))
-                .all()
-            )
-        else:
-            users = db.session.query(Actor).filter(Actor.preferred_username == user, Actor.domain == instance).all()
+        users = Actor.query.filter(
+            Actor.meta_deleted.is_(False), Actor.preferred_username == user, Actor.domain == instance
+        ).all()
     else:
         results["mode"] = "username"
         # Match actor username in database
@@ -342,40 +323,11 @@ def search():
 
     # Handle the results
     if len(users) > 0:
-        for user in users:
+        for actor in users:
+            relationship = False
             if current_user:
-                if user[1]:
-                    follows = user[1].actor_id == current_user.actor[0].id
-                else:
-                    follows = False
-            else:
-                follows = None
-
-            if type(user) is Actor:
-                # Unauthenticated results
-                accounts.append(
-                    {
-                        "username": user.name,
-                        "name": user.preferred_username,
-                        "summary": user.summary,
-                        "instance": user.domain,
-                        "url": user.url,
-                        "remote": not user.is_local(),
-                        "follow": follows,
-                    }
-                )
-            else:
-                accounts.append(
-                    {
-                        "username": user[0].name,
-                        "name": user[0].preferred_username,
-                        "summary": user[0].summary,
-                        "instance": user[0].domain,
-                        "url": user[0].url,
-                        "remote": not user[0].is_local(),
-                        "follow": follows,
-                    }
-                )
+                relationship = to_json_relationship(current_user, actor.user)
+            accounts.append(to_json_account(actor.user, relationship))
 
     if len(accounts) <= 0:
         # Do a webfinger
@@ -399,6 +351,9 @@ def search():
                 else:
                     follow_status = False
 
+                # FIXME that should uses to_json_account(actor.user, None)
+                # Either store in database the fetched user+actor, then fetch it and use it
+                # or idk
                 domain = urlparse(iri["url"])
                 user = {
                     "username": iri["name"],

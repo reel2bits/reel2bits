@@ -213,6 +213,7 @@ class Reel2BitsBackend(ap.Backend):
             return None
 
         # Check if owned
+        # FIXME: should we add Actor.meta_deleted.is_(False) ?
         if iri.startswith(base_url):
             actor = Actor.query.filter(Actor.url == iri).first()
             if actor:
