@@ -278,6 +278,7 @@ def search():
         return jsonify({"error": "No search string provided"}), 400
 
     # This is the old search endpoint and needs to be improved
+    # Especially tracks and accounts needs to be returned in the right format, with the data helpers
 
     results = {"accounts": [], "sounds": [], "mode": None, "from": None}
 
