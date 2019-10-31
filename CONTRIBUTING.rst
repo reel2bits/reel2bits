@@ -23,6 +23,7 @@ Backend:
 - `Celery <http://www.celeryproject.org/>`_
 - ActivityPub (through `little-boxes <https://little-boxes.readthedocs.io/en/latest/>`_ library)
 - `PostgreSQL <https://www.postgresql.org/>`_
+- `MJML <https://mjml.io/>`_ (npm install mjml -g) for Email layout templates
 
 Frontend
 
