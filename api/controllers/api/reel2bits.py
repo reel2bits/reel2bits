@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request, abort, current_app, render_template
-from models import db, User, PasswordResetToken, Sound, SoundTag, Actor, Follower
+from models import db, User, PasswordResetToken, Sound, SoundTag, Actor, Follower, create_remote_actor
 from utils.various import add_user_log, generate_random_token, add_log
 from datas_helpers import to_json_account, to_json_relationship, default_genres
 from app_oauth import require_oauth
@@ -12,7 +12,6 @@ from utils.defaults import Reel2bitsDefaults
 from little_boxes.webfinger import get_actor_url
 from little_boxes.urlutils import InvalidURLError
 from little_boxes import activitypub as ap
-from urllib.parse import urlparse
 from sqlalchemy import or_, and_, not_
 
 bp_api_reel2bits = Blueprint("bp_api_reel2bits", __name__)
@@ -294,9 +293,11 @@ def search():
     is_user_at_account = RE_ACCOUNT.match(s)
 
     if s.startswith("https://"):
+        # Try to match the URI from Activities in database
         results["mode"] = "uri"
         users = Actor.query.filter(Actor.meta_deleted.is_(False), Actor.url == s).all()
     elif is_user_at_account:
+        # It matches user@some.where.tld, try to match it locally
         results["mode"] = "acct"
         user = is_user_at_account.group("user")
         instance = is_user_at_account.group("instance")
@@ -304,6 +305,7 @@ def search():
             Actor.meta_deleted.is_(False), Actor.preferred_username == user, Actor.domain == instance
         ).all()
     else:
+        # It's a FTS search
         results["mode"] = "username"
         # Match actor username in database
         if current_user:
@@ -321,7 +323,7 @@ def search():
                 db.session.query(Actor).filter(or_(Actor.preferred_username.contains(s), Actor.name.contains(s))).all()
             )
 
-    # Handle the results
+    # Handle the found users
     if len(users) > 0:
         for actor in users:
             relationship = False
@@ -331,6 +333,9 @@ def search():
 
     if len(accounts) <= 0:
         # Do a webfinger
+        # TODO FIXME: We should do this only if https:// or user@account submitted
+        # And rework it slightly differently since we needs to backend.fetch_iri() for https:// who
+        # can match a Sound and not only an Actor
         current_app.logger.debug(f"webfinger for {s}")
         try:
             remote_actor_url = get_actor_url(s, debug=current_app.debug)
@@ -338,35 +343,23 @@ def search():
             backend = ap.get_backend()
             iri = backend.fetch_iri(remote_actor_url)
             if iri:
+                # We have fetched an unknown Actor
+                # Save it in database and return it properly
                 current_app.logger.debug(f"got remote actor URL {remote_actor_url}")
-                # Fixme handle unauthenticated users plus duplicates follows
-                follow_rel = (
-                    db.session.query(Actor.id, Follower.id)
-                    .outerjoin(Follower, Actor.id == Follower.target_id)
-                    .filter(Actor.url == remote_actor_url)
-                    .first()
-                )
-                if follow_rel:
-                    follow_status = follow_rel[1] is not None
-                else:
-                    follow_status = False
 
-                # FIXME that should uses to_json_account(actor.user, None)
-                # Either store in database the fetched user+actor, then fetch it and use it
-                # or idk
-                domain = urlparse(iri["url"])
-                user = {
-                    "username": iri["name"],
-                    "name": iri["preferredUsername"],
-                    "instance": domain.netloc,
-                    "url": iri["url"],
-                    "remote": True,
-                    "summary": iri["summary"],
-                    "follow": follow_status,
-                }
-                accounts.append(user)
+                act = ap.parse_activity(iri)
+
+                fetched_actor, fetched_user = create_remote_actor(act)
+                db.session.add(fetched_user)
+                db.session.add(fetched_actor)
+                db.session.commit()
+
+                relationship = False
+                if current_user:
+                    relationship = to_json_relationship(current_user, fetched_user)
+                accounts.append(to_json_account(fetched_user, relationship))
                 results["mode"] = "webfinger"
-                # Use iri to populate results["accounts"]
+
         except (InvalidURLError, ValueError):
             current_app.logger.exception(f"Invalid webfinger URL: {s}")
 

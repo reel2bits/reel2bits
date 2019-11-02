@@ -703,13 +703,11 @@ def create_remote_actor(activity_actor: ap.BaseActivity):
     :return: an Actor object
     """
     actor = Actor()
-    print(activity_actor)
     actor.preferred_username = activity_actor.preferredUsername
     domain = urlparse(activity_actor.url)
     actor.domain = domain.netloc
     actor.type = "Person"
-    # FIXME: test for .name, it won't exist if not set (at least for mastodon)
-    actor.name = activity_actor.preferredUsername  # mastodon don't have .name
+    actor.name = activity_actor.name
     actor.manually_approves_followers = False
     actor.url = activity_actor.id  # FIXME: or .id ??? [cf backend.py:52-53]
     actor.shared_inbox_url = activity_actor._data.get("endpoints", {}).get("sharedInbox")
@@ -720,7 +718,20 @@ def create_remote_actor(activity_actor: ap.BaseActivity):
     actor.followers_url = activity_actor.followers
     actor.following_url = activity_actor.following
 
-    return actor
+    user = User()
+    user.email = None
+    user.name = activity_actor.preferredUsername
+    user.password = None
+    user.active = False
+    user.confirmed_at = None
+    user.display_name = activity_actor.name
+    user.local = False
+
+    actor.user = user
+
+    # TODO: Avatar
+
+    return actor, user
 
 
 def update_remote_actor(actor_id: int, activity_actor: ap.BaseActivity) -> None:

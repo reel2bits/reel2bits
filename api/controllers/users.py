@@ -155,7 +155,8 @@ def follow():
                 flash(gettext("User not found"), "error")
                 return redirect(url_for("bp_main.home"))
             act = ap.parse_activity(iri)
-            actor_target = create_remote_actor(act)
+            actor_target, user_target = create_remote_actor(act)
+            db.session.add(user_target)
             db.session.add(actor_target)
 
         # 2.7 Check if we already have a relation
@@ -217,7 +218,8 @@ def unfollow():
                 flash(gettext("User not found"), "error")
                 return redirect(url_for("bp_main.home"))
             act = ap.parse_activity(iri)
-            actor_target = create_remote_actor(act)
+            actor_target, user_target = create_remote_actor(act)
+            db.session.add(user_target)
             db.session.add(actor_target)
 
         # 2.5 Get the relation of the follow
