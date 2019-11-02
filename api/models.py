@@ -703,7 +703,6 @@ def create_remote_actor(activity_actor: ap.BaseActivity):
     :return: an Actor object
     """
     actor = Actor()
-    print(activity_actor)
     actor.preferred_username = activity_actor.preferredUsername
     domain = urlparse(activity_actor.url)
     actor.domain = domain.netloc
@@ -720,7 +719,20 @@ def create_remote_actor(activity_actor: ap.BaseActivity):
     actor.followers_url = activity_actor.followers
     actor.following_url = activity_actor.following
 
-    return actor
+    user = User()
+    user.email = None
+    user.name = actor.preferred_username
+    user.password = None
+    user.active = False
+    user.confirmed_at = None
+    user.display_name = actor.name
+    user.local = False
+
+    actor.user = user
+
+    # TODO: Avatar
+
+    return actor, user
 
 
 def update_remote_actor(actor_id: int, activity_actor: ap.BaseActivity) -> None:

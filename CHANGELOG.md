@@ -48,6 +48,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Quotas and file sizes are now BigInt
 - Waveform generation now use dynamic PixelsPerSecond depending of the track duration
 - Waveform generation now rounds the peaks to two digits
+- Remote Actor now have an associated User
 
 ### Fixed
 - Waveform JSON generation through a .dat now use the right pixels per second; avoid huge waveforms datas for long tracks (#179)
