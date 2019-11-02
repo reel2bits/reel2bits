@@ -52,6 +52,11 @@ address, posting via an official social media account, or acting as an appointed
 representative at an online or offline event. Representation of a project may be
 further defined and clarified by project maintainers.
 
+Depending on the violation, the project team may decide that violations of 
+this code of conduct that have happened outside of the scope of the community 
+may deem an individual unwelcome, and take appropriate action to maintain 
+the comfort and safety of its members.
+
 ## Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
