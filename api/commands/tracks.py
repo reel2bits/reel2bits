@@ -5,6 +5,7 @@ from flask import current_app
 from os.path import splitext
 from utils.various import get_waveform, generate_audio_dat_file
 import os
+from tasks import federate_new_sound
 
 
 @click.group()
@@ -61,3 +62,20 @@ def list(slug, all):
         os.unlink(dat_file_name)
 
     db.session.commit()
+
+
+@tracks.command(name="create-missing-activities")
+@with_appcontext
+def create_missing_activities():
+    """
+    Create all missing Actvities for all local tracks.
+    """
+    sounds = Sound.query.filter(Sound.activity_id.is_(None)).all()
+    if not sounds or len(sounds) == 0:
+        print("No tracks are missing activities")
+        exit
+
+    for sound in sounds:
+        print(f"Processing activity for {sound.id}, {sound.slug}")
+        sound.activity_id = federate_new_sound(sound)
+        db.session.commit()
