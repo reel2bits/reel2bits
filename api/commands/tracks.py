@@ -69,14 +69,16 @@ def create_missing_activities():
     """
     Create all missing Actvities for all local tracks.
     """
-    sounds = Sound.query.filter(Sound.activity_id.is_(None)).all()
-    if not sounds or len(sounds) == 0:
-        print("No tracks are missing activities")
-        exit
+    current_app.config["SERVER_NAME"] = current_app.config["REEL2BITS_HOSTNAME"]
+    with current_app.app_context():
+        sounds = Sound.query.filter(Sound.activity_id.is_(None)).all()
+        if not sounds or len(sounds) == 0:
+            print("No tracks are missing activities")
+            exit
 
-    for sound in sounds:
-        print(f"Processing activity for {sound.id}, {sound.slug}")
-        from tasks import federate_new_sound  # avoid import loop
+        for sound in sounds:
+            print(f"Processing activity for {sound.id}, {sound.slug}")
+            from tasks import federate_new_sound  # avoid import loop
 
-        sound.activity_id = federate_new_sound(sound)
-        db.session.commit()
+            sound.activity_id = federate_new_sound(sound)
+            db.session.commit()
