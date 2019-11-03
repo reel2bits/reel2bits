@@ -278,7 +278,9 @@ def search():
 
     # This is the old search endpoint and needs to be improved
     # Especially tracks and accounts needs to be returned in the right format, with the data helpers
-    # Users should be searched only from known Actors
+    # Users should be searched from known Actors or fetched
+    # URI should be searched from known activities or fetched
+    # FTS, well, FTS needs to be implemented
 
     results = {"accounts": [], "sounds": [], "mode": None, "from": None}
 
