@@ -19,7 +19,7 @@ def tracks():
 @click.option("--slug", help="Specify slug to regenerate waveform")
 @click.option("--all", default=False, is_flag=True, help="Process all tracks")
 @with_appcontext
-def list(slug, all):
+def regenerate_waveform(slug, all):
     """
     Regenerate all waveforms or a single track.
     """
@@ -40,7 +40,10 @@ def list(slug, all):
     for sound in sounds:
         print(f"Processing waveform for {sound.id}, {sound.slug}")
 
-        fname = os.path.join(current_app.config["UPLOADED_SOUNDS_DEST"], sound.user.slug, sound.filename)
+        if sound.transcode_needed:
+            fname = os.path.join(current_app.config["UPLOADED_SOUNDS_DEST"], sound.user.slug, sound.filename_transcoded)
+        else:
+            fname = os.path.join(current_app.config["UPLOADED_SOUNDS_DEST"], sound.user.slug, sound.filename)
 
         sound_infos = sound.sound_infos.first()
         if not sound_infos or not sound_infos.done_basic:
