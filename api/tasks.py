@@ -36,9 +36,6 @@ def setup_periodic_tasks(sender, **kwargs):
 
 
 def federate_new_sound(sound: Sound) -> int:
-    if not current_app.config["AP_ENABLED"]:
-        return None
-
     actor = sound.user.actor[0]
     cc = [actor.followers_url]
     href = url_for("get_uploads_stuff", thing="sounds", stuff=sound.path_sound())
@@ -85,9 +82,6 @@ def federate_delete_sound(sound: Sound) -> None:
 
 
 def federate_delete_actor(actor: Actor) -> None:
-    if not current_app.config["AP_ENABLED"]:
-        return
-
     # TODO FIXME: to who is the delete sent ?
 
     actor = actor.to_dict()
@@ -126,13 +120,12 @@ def upload_workflow(self, sound_id):
         work_transcode(sound_id)
         print("TRANSCODE finished")
 
-    # Federate if public and AP enabled
-    if current_app.config["AP_ENABLED"]:
-        if not sound.private:
-            print("UPLOAD WORKFLOW federating sound")
-            # Federate only if sound is public
-            sound.activity_id = federate_new_sound(sound)
-            db.session.commit()
+    # Federate if public
+    if not sound.private:
+        print("UPLOAD WORKFLOW federating sound")
+        # Federate only if sound is public
+        sound.activity_id = federate_new_sound(sound)
+        db.session.commit()
 
     track_url = f"https://{current_app.config['AP_DOMAIN']}/{sound.user.name}/track/{sound.slug}"
 
@@ -450,6 +443,8 @@ def post_to_inbox(activity: ap.BaseActivity) -> None:
     finish_inbox_processing.delay(activity.id)
 
 
+# If AP_ENABLED=False we still runs this bit to save the activites in the database
+# Except we don't run the finish part which broadcast the activity since not enabled
 def post_to_outbox(activity: ap.BaseActivity) -> str:
     current_app.logger.debug(f"post_to_outbox {activity}")
 
@@ -464,14 +459,13 @@ def post_to_outbox(activity: ap.BaseActivity) -> str:
 
     backend.save(Box.OUTBOX, activity)
 
-    finish_post_to_outbox.delay(activity.id)
+    # Broadcast only if AP is enabled
+    if current_app.config["AP_ENABLED"]:
+        finish_post_to_outbox.delay(activity.id)
     return activity.id
 
 
 def send_update_profile(user: User) -> None:
-    if not current_app.config["AP_ENABLED"]:
-        return  # not federating if not enabled
-
     # FIXME: not sure at all about that
     actor = user.actor[0]
     raw_update = dict(
@@ -483,9 +477,6 @@ def send_update_profile(user: User) -> None:
 
 
 def send_update_sound(sound: Sound) -> None:
-    if not current_app.config["AP_ENABLED"]:
-        return  # not federating if not enabled
-
     # FIXME: not sure at all about that
     # Should not even work
     actor = sound.user.actor[0]
