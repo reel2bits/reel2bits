@@ -5,7 +5,6 @@ from flask import current_app
 from os.path import splitext
 from utils.various import get_waveform, generate_audio_dat_file
 import os
-from tasks import federate_new_sound
 
 
 @click.group()
@@ -77,5 +76,7 @@ def create_missing_activities():
 
     for sound in sounds:
         print(f"Processing activity for {sound.id}, {sound.slug}")
+        from tasks import federate_new_sound  # avoid import loop
+
         sound.activity_id = federate_new_sound(sound)
         db.session.commit()
