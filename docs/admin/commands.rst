@@ -35,3 +35,4 @@ System
 Tracks
 ------
 - ``flask tracks regenerate-waveform``: Regenerate a waveform or all
+- ``flask tracks create-missing-activities``: Create missing Track Activity (useful if migrating from pre-frontv2)

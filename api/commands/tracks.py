@@ -61,3 +61,22 @@ def list(slug, all):
         os.unlink(dat_file_name)
 
     db.session.commit()
+
+
+@tracks.command(name="create-missing-activities")
+@with_appcontext
+def create_missing_activities():
+    """
+    Create all missing Actvities for all local tracks.
+    """
+    sounds = Sound.query.filter(Sound.activity_id.is_(None), Sound.local.is_(True)).all()
+    if not sounds or len(sounds) == 0:
+        print("No tracks are missing activities")
+        exit
+
+    for sound in sounds:
+        print(f"Processing activity for {sound.id}, {sound.slug}")
+        from tasks import federate_new_sound  # avoid import loop
+
+        sound.activity_id = federate_new_sound(sound)
+        db.session.commit()
