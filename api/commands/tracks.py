@@ -70,7 +70,7 @@ def create_missing_activities():
     """
     Create all missing Actvities for all local tracks.
     """
-    sounds = Sound.query.filter(Sound.activity_id.is_(None)).all()
+    sounds = Sound.query.filter(Sound.activity_id.is_(None), Sound.local.is_(True)).all()
     if not sounds or len(sounds) == 0:
         print("No tracks are missing activities")
         exit
