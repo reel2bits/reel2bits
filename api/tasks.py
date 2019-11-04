@@ -1,6 +1,6 @@
 from __future__ import print_function
 
-from models import db, Sound, User
+from models import db, Sound, User, Config
 from flask_mail import Message
 from flask import render_template, url_for
 from app import create_app, make_celery
@@ -134,8 +134,16 @@ def upload_workflow(self, sound_id):
         recipients=[sound.user.email],
         sender=current_app.config["MAIL_DEFAULT_SENDER"],
     )
-    msg.body = render_template("email/song_processed.txt", sound=sound, track_url=track_url)
-    msg.html = render_template("email/song_processed.html", sound=sound, track_url=track_url)
+
+    _config = Config.query.first()
+    if not _config:
+        print("ERROR: cannot get instance Config from database")
+    instance = {"name": None, "url": None}
+    if _config:
+        instance["name"] = _config.app_name
+    instance["url"] = current_app.config["REEL2BITS_URL"]
+    msg.body = render_template("email/song_processed.txt", sound=sound, track_url=track_url, instance=instance)
+    msg.html = render_template("email/song_processed.html", sound=sound, track_url=track_url, instance=instance)
     err = None
     mail = current_app.extensions.get("mail")
     if not mail:
