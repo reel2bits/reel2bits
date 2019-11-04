@@ -26,9 +26,10 @@ def test_email(email):
     if not mail:
         print("ERROR: mail extensions is None !!!")
         exit(-1)
+    instance = {"name": None, "url": None}
     msg = Message(subject="reel2bits test email", recipients=[email], sender=current_app.config["MAIL_DEFAULT_SENDER"])
-    msg.body = render_template("email/test_email.txt")
-    msg.html = render_template("email/test_email.html")
+    msg.body = render_template("email/test_email.txt", instance=instance)
+    msg.html = render_template("email/test_email.html", instance=instance)
     try:
         mail.send(msg)
     except:  # noqa: E772

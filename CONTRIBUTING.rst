@@ -23,6 +23,7 @@ Backend:
 - Celery
 - ActivityPub (through little-boxes library)
 - PostgreSQL
+- MJML (npm install mjml -g) for Email layout templates
 
 Frontend
 
