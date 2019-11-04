@@ -17,18 +17,18 @@ Quick summary of the various stacks / libraries we use
 
 Backend:
 
-- Flask
-- SQLAlchemy
-- Gettext
-- Celery
-- ActivityPub (through little-boxes library)
-- PostgreSQL
+- `Flask <https://flask.palletsprojects.com/en/1.1.x/>`_
+- `SQLAlchemy <https://www.sqlalchemy.org/>`_
+- `Gettext <https://www.gnu.org/software/gettext/>`_
+- `Celery <http://www.celeryproject.org/>`_
+- ActivityPub (through `little-boxes <https://little-boxes.readthedocs.io/en/latest/>`_ library)
+- `PostgreSQL <https://www.postgresql.org/>`_
 
 Frontend
 
-- VueJS
-- Bootstrap-vue
-- Gettext
+- `VueJS <https://vuejs.org/>`_
+- `Bootstrap-vue <https://bootstrap-vue.js.org/>`_
+- `Gettext <https://www.gnu.org/software/gettext/>`_
 
 A quick path to contribute on the front-end
 -------------------------------------------
