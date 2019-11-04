@@ -1,5 +1,8 @@
+{% extends "layout_email.jinja2" %}
+{% block mail_content %}
 <p>Hello {{ sound.user.name }}!</p>
 
 <p>Your track <b>{{ sound.title }}</b> have been processed and is now available.</p>
 
 Direct link to the track: <a href="{{ track_url }}">{{ sound.get_title() }}</a>
+{% endblock %}

@@ -3,3 +3,6 @@ Hello {{ sound.user.name }}!
 Your track "{{ sound.title }}" have been processed and is now available.
 
 Direct link to the track: {{ track_url }}
+
+------------
+This email have been sent to you from the reel2bits instance '{{ instance['name'] }}' located at {{ instance['url'] }}.
