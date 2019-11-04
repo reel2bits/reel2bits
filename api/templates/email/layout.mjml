@@ -14,8 +14,7 @@
       <mj-section padding-top="0">
         <mj-column>
           <mj-divider padding-top="0" border-width="1px" border-color="#C8D1F4"></mj-divider>
-          <mj-text font-size="18px" color="#06161A">Email content</mj-text>
-
+          <mj-text font-size="18px" color="#06161A">{% block content %}{% endblock %}</mj-text>
         </mj-column>
       </mj-section>
     </mj-wrapper>
