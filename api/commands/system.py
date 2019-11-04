@@ -5,6 +5,7 @@ from flask_mail import Message
 from flask import render_template, current_app
 import texttable
 from pprint import pprint as pp
+from models import Config
 
 
 @click.group()
@@ -26,7 +27,14 @@ def test_email(email):
     if not mail:
         print("ERROR: mail extensions is None !!!")
         exit(-1)
+    _config = Config.query.first()
+    if not _config:
+        print("ERROR: cannot get instance Config from database")
     instance = {"name": None, "url": None}
+    if _config:
+        instance["name"] = _config.app_name
+    instance["url"] = current_app.config["REEL2BITS_URL"]
+
     msg = Message(subject="reel2bits test email", recipients=[email], sender=current_app.config["MAIL_DEFAULT_SENDER"])
     msg.body = render_template("email/test_email.txt", instance=instance)
     msg.html = render_template("email/test_email.html", instance=instance)

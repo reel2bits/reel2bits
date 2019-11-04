@@ -560,3 +560,12 @@ Check::
 Lazy autofix (check if nothing gots wrong)::
 
     npm run lint-fix
+
+MJML for emails
+---------------
+
+Rebuilding the email html template::
+
+    cd api/templates/email
+    mmjml layout.mjml > ../layout_email.jinja2
+    cd -
