@@ -1,6 +1,6 @@
-Please confirm your email through the link below:
+{{ _('Click the link below to reset your password:') }}
 
-{{ confirmation_link }}
+{{ reset_link }}
 
 ------------
 This email have been sent to you from the reel2bits instance '{{ instance['name'] }}' located at {{ instance['url'] }}.

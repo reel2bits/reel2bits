@@ -1,0 +1,4 @@
+{% extends "layout_email.jinja2" %}
+{% block mail_content %}
+<p> {{ user.email }} {{ _("can not access mail account") }}</p>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends "layout_email.jinja2" %}
+{% block mail_content %}
+<p>{{ _('Welcome %(email)s!', email=user.email) }}</p>
+
+{% if security.confirmable %}
+<p>{{ _('You can confirm your email through the link below:') }}</p>
+
+<p><a href="{{ confirmation_link }}">{{ _('Confirm my account') }}</a></p>
+{% endif %}
+{% endblock %}
