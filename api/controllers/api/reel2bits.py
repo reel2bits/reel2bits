@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request, abort, current_app, render_template
-from models import db, User, PasswordResetToken, Sound, SoundTag, Actor, Follower, create_remote_actor
+from models import db, User, PasswordResetToken, Sound, SoundTag, Actor, Follower, create_remote_actor, Config
 from utils.various import add_user_log, generate_random_token, add_log
 from datas_helpers import to_json_account, to_json_relationship, default_genres
 from app_oauth import require_oauth
@@ -183,8 +183,16 @@ def reset_password():
     # Send email
     token_link = f"https://{current_app.config['AP_DOMAIN']}/password-reset/{prt.token}"
     msg = Message(subject="Password reset", recipients=[user.email], sender=current_app.config["MAIL_DEFAULT_SENDER"])
-    msg.body = render_template("email/password_reset.txt", token_link=token_link, user=user)
-    msg.html = render_template("email/password_reset.html", token_link=token_link, user=user)
+
+    _config = Config.query.first()
+    if not _config:
+        print("ERROR: cannot get instance Config from database")
+    instance = {"name": None, "url": None}
+    if _config:
+        instance["name"] = _config.app_name
+    instance["url"] = current_app.config["REEL2BITS_URL"]
+    msg.body = render_template("email/password_reset.txt", token_link=token_link, user=user, instance=instance)
+    msg.html = render_template("email/password_reset.html", token_link=token_link, user=user, instance=instance)
     err = None
     mail = current_app.extensions.get("mail")
     if not mail:

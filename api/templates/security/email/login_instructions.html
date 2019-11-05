@@ -1,0 +1,8 @@
+{% extends "layout_email.jinja2" %}
+{% block mail_content %}
+<p>{{ _('Welcome %(email)s!', email=user.email) }}</p>
+
+<p>{{ _('You can log into your account through the link below:') }}</p>
+
+<p><a href="{{ login_link }}">{{ _('Login now') }}</a></p>
+{% endblock %}

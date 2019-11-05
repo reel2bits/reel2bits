@@ -29,10 +29,10 @@ build() {
     echo "-- build audiowaveform; building AudioWaveform..."
     git clone https://github.com/bbcrd/audiowaveform.git /tmp/audiowaveform
     cd /tmp/audiowaveform
-    wget https://github.com/google/googletest/archive/release-1.8.0.tar.gz -O gmock-1.8.0.tar.gz
-    tar xzf gmock-1.8.0.tar.gz
-    ln -s googletest-release-1.8.0/googletest googletest
-    ln -s googletest-release-1.8.0/googlemock googlemock
+    wget https://github.com/google/googletest/archive/release-1.10.0.tar.gz -O gmock-1.10.0.tar.gz
+    tar xzf gmock-1.10.0.tar.gz
+    ln -s googletest-release-1.10.0/googletest googletest
+    ln -s googletest-release-1.10.0/googlemock googlemock
     mkdir build
     cd build
     cmake ..

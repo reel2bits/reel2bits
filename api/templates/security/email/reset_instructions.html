@@ -1,0 +1,4 @@
+{% extends "layout_email.jinja2" %}
+{% block mail_content %}
+<p><a href="{{ reset_link }}">{{ _('Click here to reset your password') }}</a></p>
+{% endblock %}

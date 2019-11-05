@@ -12,6 +12,7 @@ from models import (
     Follower,
     PasswordResetToken,
     Actor,
+    Config,
 )
 from flask_security.utils import hash_password
 from flask_security import confirmable as FSConfirmable
@@ -830,8 +831,16 @@ def account_delete():
     msg = Message(
         subject="Account successfully deleted", recipients=[email], sender=current_app.config["MAIL_DEFAULT_SENDER"]
     )
-    msg.body = render_template("email/account_deleted.txt", username=username)
-    msg.html = render_template("email/account_deleted.html", username=username)
+
+    _config = Config.query.first()
+    if not _config:
+        print("ERROR: cannot get instance Config from database")
+    instance = {"name": None, "url": None}
+    if _config:
+        instance["name"] = _config.app_name
+    instance["url"] = current_app.config["REEL2BITS_URL"]
+    msg.body = render_template("email/account_deleted.txt", username=username, instance=instance)
+    msg.html = render_template("email/account_deleted.html", username=username, instance=instance)
     err = None
     mail = current_app.extensions.get("mail")
     if not mail:

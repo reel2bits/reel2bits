@@ -1,6 +1,8 @@
-Hello {{ username }}!
+{{ _('Welcome %(email)s!', email=user.email) }}
 
-Your account have been successfully deleted.
+{{ _('You can log into your account through the link below:') }}
+
+{{ login_link }}
 
 ------------
 This email have been sent to you from the reel2bits instance '{{ instance['name'] }}' located at {{ instance['url'] }}.

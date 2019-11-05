@@ -1,0 +1,7 @@
+{% extends "layout_email.jinja2" %}
+{% block mail_content %}
+<p>{{ _('Your password has been changed.') }}</p>
+{% if security.recoverable %}
+<p>{{ _('If you did not change your password,') }} <a href="{{ url_for_security('forgot_password', _external=True) }}">{{ _('click here to reset it') }}</a>.</p>
+{% endif %}
+{% endblock %}

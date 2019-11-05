@@ -1,6 +1,4 @@
-Hello {{ username }}!
-
-Your account have been successfully deleted.
+{{ user.email }} {{ _("can not access mail account") }}
 
 ------------
 This email have been sent to you from the reel2bits instance '{{ instance['name'] }}' located at {{ instance['url'] }}.

@@ -205,6 +205,17 @@ def create_app(config_filename="config.development.Config", app_name=None, regis
         db.session.add(actor)
         db.session.commit()
 
+    @security.mail_context_processor
+    def mail_ctx_proc():
+        _config = Config.query.first()
+        if not _config:
+            print("ERROR: cannot get instance Config from database")
+        instance = {"name": None, "url": None}
+        if _config:
+            instance["name"] = _config.app_name
+        instance["url"] = app.config["REEL2BITS_URL"]
+        return dict(instance=instance)
+
     @babel.localeselector
     def get_locale():
         # if a user is logged in, use the locale from the user settings

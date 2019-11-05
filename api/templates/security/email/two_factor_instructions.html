@@ -1,0 +1,6 @@
+{% extends "layout_email.jinja2" %}
+{% block mail_content %}
+<p>{{ _("Welcome") }} {{ user.username }}!</p>
+
+<p>{{ _("You can log into your account using the following code:") }} {{ token }}</p>
+{% endblock %}
