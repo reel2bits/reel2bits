@@ -13,3 +13,9 @@ repos:
             entry: flake8
             types: [python]
             exclude: 'front/'
+          - id: jslint
+            name: jslint
+            language: system
+            entry: yarn lint
+            types: [vue, javascript]
+            exclude: 'api/'
