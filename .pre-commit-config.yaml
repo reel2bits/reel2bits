@@ -6,16 +6,16 @@ repos:
             language: system
             entry: python3 -m black
             types: [python]
-            exclude: 'front/'
+            files: ^api/
           - id: flake8
             name: flake8
             language: system
             entry: flake8
             types: [python]
-            exclude: 'front/'
+            files: ^api/
           - id: jslint
             name: jslint
             language: system
             entry: yarn lint
             types: [vue, javascript]
-            exclude: 'api/'
+            files: ^front/
