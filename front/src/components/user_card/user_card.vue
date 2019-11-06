@@ -60,8 +60,7 @@
           </p>
         </div>
       </div>
-      <p class="card-text">
-        {{ user.description }}
+      <p class="card-text" v-html="user.description">
       </p>
       <ul class="nav nav-fill">
         <li class="nav-item border-right">
