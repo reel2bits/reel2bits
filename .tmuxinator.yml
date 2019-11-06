@@ -1,0 +1,22 @@
+# .tmuxinator.yml
+
+name: dev
+root: .
+
+windows:
+  - backend:
+      - export FLASK_ENV=development
+      - export AUTHLIB_INSECURE_TRANSPORT=1
+      - export APP_SETTINGS='config.development_secret.Config'
+      - cd api
+      - flask run
+  - workers:
+      - export FLASK_ENV=development
+      - export AUTHLIB_INSECURE_TRANSPORT=1
+      - export APP_SETTINGS='config.development_secret.Config'
+      - cd api
+      - celery worker -A tasks.celery --loglevel=error
+  - frontend:
+      - cd front
+      - yarn dev
+
