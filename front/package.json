@@ -48,7 +48,7 @@
     "wavesurfer.js": "^3.2.0"
   },
   "devDependencies": {
-    "@babel/polyfill": "^7.6.0",
+    "@babel/polyfill": "^7.7.0",
     "@vue/cli-plugin-babel": "^4.0.5",
     "@vue/cli-plugin-eslint": "^4.0.5",
     "@vue/cli-service": "^3.12.0",
