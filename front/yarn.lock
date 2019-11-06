@@ -10560,10 +10560,10 @@ vue-router@^3.1.3:
   resolved "https://registry.yarnpkg.com/vue-router/-/vue-router-3.1.3.tgz#e6b14fabc0c0ee9fda0e2cbbda74b350e28e412b"
   integrity sha512-8iSa4mGNXBjyuSZFCCO4fiKfvzqk+mhL0lnKuGcQtO1eoj8nq3CmbEG8FwK5QqoqwDgsjsf1GDuisDX4cdb/aQ==
 
-vue-simple-suggest@^1.10.0:
-  version "1.10.0"
-  resolved "https://registry.yarnpkg.com/vue-simple-suggest/-/vue-simple-suggest-1.10.0.tgz#47e496dc1f1c60ec6caa564dcfec99a04946e2bd"
-  integrity sha512-AZAZp5xy9XWdPixSoOMNXw+gPn0uOMqNWavGxM7d91Xh7QqsJMC4LHHhaIxJMaS1KMENuvDrlEc66aZPp3HmtQ==
+vue-simple-suggest@^1.10.1:
+  version "1.10.1"
+  resolved "https://registry.yarnpkg.com/vue-simple-suggest/-/vue-simple-suggest-1.10.1.tgz#c536405c7324b624dd03626e26890ee102d59e69"
+  integrity sha512-oPpCF0KBhySOBEyxxFjsYh1DBMVypb6c7C4atLK3h8Bt8sdu+7kLgDHl2CcGGjqpMSFnmTFFDauPleYPNsaaDg==
 
 vue-string-filter@^1.3.0:
   version "1.3.0"
