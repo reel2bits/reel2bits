@@ -93,9 +93,23 @@ def federate_delete_actor(actor: Actor) -> None:
     post_to_outbox(delete)
 
 
-def create_sound_for_remote_track(activity_id: int) -> int:
-    # FIXME(dashie): create a Sound based on Activity.id
-    pass
+def create_sound_for_remote_track(activity: Activity) -> int:
+    sound = Sound()
+    sound.title = None  # TODO get from Activity
+    sound.tags = []  # TODO get from Activity
+    sound.genre = ""  # TODO get from Activity
+    sound.licence = 0  # TODO get from Activity
+    sound.private = False
+    sound.filename = ""  # TODO use URL from Activity
+    sound.artwork_filename = ""  # TODO get from Activity
+    sound.transcode_needed = False  # Will be checked in fetch_remote_track
+    sound.transcode_state = 0
+    sound.user_id = activity.user.id
+    sound.activity_id = activity.id
+
+    db.session.add(sound)
+    db.session.commit()
+    return sound.id
 
 
 @celery.task(bind=True, max_retries=3)

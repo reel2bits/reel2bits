@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request, abort, current_app, render_template
-from models import db, User, PasswordResetToken, Sound, SoundTag, Actor, Follower, create_remote_actor, Config
+from models import db, User, PasswordResetToken, Sound, SoundTag, Actor, Follower, create_remote_actor, Config, Activity
 from utils.various import add_user_log, generate_random_token, add_log
 from datas_helpers import to_json_account, to_json_relationship, default_genres, to_json_track
 from app_oauth import require_oauth
@@ -385,14 +385,14 @@ def search():
         if iri:
             # FIXME: Is INBOX the right choice here ?
             backend.save(Box.INBOX, iri)
-        # Fetch again, but it will get it from database
-        iri = backend.fetch_iri(s)
-        if not iri:
-            current_app.logger.exception("WTF IRI not saved")
+        # Fetch again, but get it from database
+        activity = Activity.query.filter(Activity.url == iri).first()
+        if not activity:
+            current_app.logger.exception("WTF Activity is not saved")
         else:
             from tasks import create_sound_for_remote_track, fetch_remote_track
 
-            sound_id = create_sound_for_remote_track(iri.id)
+            sound_id = create_sound_for_remote_track(activity)
             sound = Sound.query.filter(Sound.id == sound_id).one()
             fetch_remote_track.delay(sound.id)
             relationship = False
