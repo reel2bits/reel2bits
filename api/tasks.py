@@ -51,6 +51,12 @@ def federate_new_sound(sound: Sound) -> int:
         url={"type": "Link", "href": href, "mediaType": "audio/mp3"},
     )
 
+    # TODO, add to the Activity (don't forget the context):
+    # tags (array of string)
+    # genre (string)
+    # licence (dict{licid: 0, name: string})
+    # artwork (???)
+
     audio = ap.Audio(**raw_audio)
     create = audio.build_create()
     # Post to outbox and save Activity id into Sound relation
@@ -95,13 +101,14 @@ def federate_delete_actor(actor: Actor) -> None:
 
 def create_sound_for_remote_track(activity: Activity) -> int:
     sound = Sound()
-    sound.title = None  # TODO get from Activity
-    sound.tags = []  # TODO get from Activity
-    sound.genre = ""  # TODO get from Activity
-    sound.licence = 0  # TODO get from Activity
+    sound.title = activity["object"]["name"]
+    sound.description = activity["object"]["content"]
+    sound.tags = []  # TODO get from Activity when federating
+    sound.genre = ""  # TODO get from Activity when federating
+    sound.licence = 0  # TODO get from Activity when federating
     sound.private = False
-    sound.filename = ""  # TODO use URL from Activity
-    sound.artwork_filename = ""  # TODO get from Activity
+    sound.filename = activity["object"]["url"]["href"]
+    sound.artwork_filename = ""  # TODO get from Activity when federating
     sound.transcode_needed = False  # Will be checked in fetch_remote_track
     sound.transcode_state = 0
     sound.user_id = activity.user.id
