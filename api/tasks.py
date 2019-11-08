@@ -93,13 +93,13 @@ def federate_delete_actor(actor: Actor) -> None:
     post_to_outbox(delete)
 
 
-def create_sound_for_remote_track(self, activity_id):
+def create_sound_for_remote_track(activity_id: int) -> int:
     # FIXME(dashie): create a Sound based on Activity.id
     pass
 
 
 @celery.task(bind=True, max_retries=3)
-def fetch_remote_track(self, sound_id):
+def fetch_remote_track(self, sound_id: int):
     print(f"Started fetching remote track {sound_id}")
     # FIXME(dashie): do things
     print(f"Finished fetching remote track {sound_id}")

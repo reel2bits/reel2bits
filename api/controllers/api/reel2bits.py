@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request, abort, current_app, render_template
 from models import db, User, PasswordResetToken, Sound, SoundTag, Actor, Follower, create_remote_actor, Config
 from utils.various import add_user_log, generate_random_token, add_log
-from datas_helpers import to_json_account, to_json_relationship, default_genres
+from datas_helpers import to_json_account, to_json_relationship, default_genres, to_json_track
 from app_oauth import require_oauth
 from authlib.flask.oauth2 import current_token
 from flask_security.utils import hash_password, verify_password
@@ -390,7 +390,15 @@ def search():
         if not iri:
             current_app.logger.exception("WTF IRI not saved")
         else:
-            # Do something with it, but we don't have a pipeline for remote Sound Activities yet...
-            current_app.logger.info("We might have fetched a Sound Activity but we have nothing to handle it yet")
+            from tasks import create_sound_for_remote_track, fetch_remote_track
+
+            sound_id = create_sound_for_remote_track(iri.id)
+            sound = Sound.query.filter(Sound.id == sound_id).one()
+            fetch_remote_track.delay(sound.id)
+            relationship = False
+            if current_user:
+                relationship = to_json_relationship(current_user, sound.user)
+            acct = to_json_account(sound.user, relationship)
+            sounds.append(to_json_track(sound, acct))
 
     return jsonify({"who": s, "results": results})
