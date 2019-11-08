@@ -12,6 +12,7 @@ from utils.defaults import Reel2bitsDefaults
 from little_boxes.webfinger import get_actor_url
 from little_boxes.urlutils import InvalidURLError
 from little_boxes import activitypub as ap
+from activitypub.vars import Box
 from sqlalchemy import or_, and_, not_
 
 bp_api_reel2bits = Blueprint("bp_api_reel2bits", __name__)
@@ -297,6 +298,7 @@ def search():
 
     # Search for sounds
     # TODO: Implement FTS to get sounds search
+    sounds = []
 
     # Search for accounts
     accounts = []
@@ -373,8 +375,22 @@ def search():
         except (InvalidURLError, ValueError):
             current_app.logger.exception(f"Invalid AP URL: {s}")
             # Then test fetching as a "normal" Activity ?
-
     # Finally fill the results dict
     results["accounts"] = accounts
+
+    # FIXME: handle exceptions
+    if results["mode"] == "uri" and len(sounds) <= 0:
+        backend = ap.get_backend()
+        iri = backend.fetch_iri(s)
+        if iri:
+            # FIXME: Is INBOX the right choice here ?
+            backend.save(Box.INBOX, iri)
+        # Fetch again, but it will get it from database
+        iri = backend.fetch_iri(s)
+        if not iri:
+            current_app.logger.exception("WTF IRI not saved")
+        else:
+            # Do something with it, but we don't have a pipeline for remote Sound Activities yet...
+            current_app.logger.info("We might have fetched a Sound Activity but we have nothing to handle it yet")
 
     return jsonify({"who": s, "results": results})
