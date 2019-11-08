@@ -39,6 +39,10 @@ def federate_new_sound(sound: Sound) -> int:
     actor = sound.user.actor[0]
     cc = [actor.followers_url]
     href = url_for("get_uploads_stuff", thing="sounds", stuff=sound.path_sound())
+    if sound.path_artwork():
+        url_artwork = url_for("get_uploads_stuff", thing="artwork_sounds", stuff=sound.path_artwork(), _external=True)
+    else:
+        url_artwork = None
 
     raw_audio = dict(
         attributedTo=actor.url,
@@ -49,14 +53,12 @@ def federate_new_sound(sound: Sound) -> int:
         content=sound.description,
         mediaType="text/plain",
         url={"type": "Link", "href": href, "mediaType": "audio/mp3"},
+        tags=[t.name for t in sound.tags],
+        genre=sound.genre,
+        licence=sound.licence_info(),
+        artwork=url_artwork,
     )
     raw_audio["@context"] = DEFAULT_CTX
-
-    # TODO, add to the Activity (don't forget the context):
-    # tags (array of string)
-    # genre (string)
-    # licence (dict{licid: 0, name: string})
-    # artwork (???)
 
     audio = ap.Audio(**raw_audio)
     create = audio.build_create()
