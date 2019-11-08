@@ -33,7 +33,7 @@ DEFAULT_CTX = [
         # Our custom stuff
         "reel2bits": {
             "@context": {
-                # haha lol
+                # This page intentionally left blank.
             }
         },
         "licence": "reel2bits:licence",
