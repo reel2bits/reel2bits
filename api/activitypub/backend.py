@@ -5,9 +5,15 @@ from models import db, Activity, create_remote_actor, Actor, update_remote_actor
 from urllib.parse import urlparse
 from .vars import Box
 from version import VERSION
+from typing import Any
+
+DEFAULT_CTX = [ap.AP_DEFAULT_CTX]
 
 
 class Reel2BitsBackend(ap.Backend):
+    def ap_context(self) -> Any:
+        return DEFAULT_CTX
+
     def debug_mode(self) -> bool:
         return current_app.config["DEBUG"]
 
