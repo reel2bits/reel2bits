@@ -93,6 +93,18 @@ def federate_delete_actor(actor: Actor) -> None:
     post_to_outbox(delete)
 
 
+def create_sound_for_remote_track(self, activity_id):
+    # FIXME(dashie): create a Sound based on Activity.id
+    pass
+
+
+@celery.task(bind=True, max_retries=3)
+def fetch_remote_track(self, sound_id):
+    print(f"Started fetching remote track {sound_id}")
+    # FIXME(dashie): do things
+    print(f"Finished fetching remote track {sound_id}")
+
+
 @celery.task(bind=True, max_retries=3)
 def upload_workflow(self, sound_id):
     print("UPLOAD WORKFLOW started")
