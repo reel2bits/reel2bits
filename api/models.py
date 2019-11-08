@@ -13,7 +13,8 @@ from sqlalchemy_searchable import make_searchable
 from sqlalchemy_utils.types.choice import ChoiceType
 from sqlalchemy_utils.types.url import URLType
 from little_boxes.key import Key as LittleBoxesKey
-from activitypub.utils import ap_url, DEFAULT_CTX
+from activitypub.utils import ap_url
+from activitypub.vars import DEFAULT_CTX
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy import text as sa_text
 from little_boxes import activitypub as ap
