@@ -371,7 +371,8 @@ def search():
                 results["mode"] = "webfinger"
 
         except (InvalidURLError, ValueError):
-            current_app.logger.exception(f"Invalid webfinger URL: {s}")
+            current_app.logger.exception(f"Invalid AP URL: {s}")
+            # Then test fetching as a "normal" Activity ?
 
     # Finally fill the results dict
     results["accounts"] = accounts
