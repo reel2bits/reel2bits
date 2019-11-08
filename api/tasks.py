@@ -1,6 +1,6 @@
 from __future__ import print_function
 
-from models import db, Sound, User, Config
+from models import db, Sound, User, Config, SoundTag
 from flask_mail import Message
 from flask import render_template, url_for
 from app import create_app, make_celery
@@ -107,16 +107,25 @@ def create_sound_for_remote_track(activity: Activity) -> int:
     sound = Sound()
     sound.title = activity["object"]["name"]
     sound.description = activity["object"]["content"]
-    sound.tags = []  # TODO get from Activity when federating
-    sound.genre = ""  # TODO get from Activity when federating
-    sound.licence = 0  # TODO get from Activity when federating
     sound.private = False
     sound.filename = activity["object"]["url"]["href"]
-    sound.artwork_filename = ""  # TODO get from Activity when federating
     sound.transcode_needed = False  # Will be checked in fetch_remote_track
     sound.transcode_state = 0
     sound.user_id = activity.user.id
     sound.activity_id = activity.id
+    # custom from AP
+    sound.artwork_filename = activity["object"]["artwork"]
+    sound.genre = activity["object"]["genre"]
+    sound.licence = activity["object"]["licence"]["id"]
+
+    # Tags handling. Since it's a new track, no need to do magic tags recalculation.
+    tags = [t.strip() for t in activity["object"]["tags"]]
+    for tag in tags:
+        dbt = SoundTag.query.filter(SoundTag.name == tag).first()
+        if not dbt:
+            dbt = SoundTag(name=tag)
+            db.session.add(dbt)
+        sound.tags.append(dbt)
 
     db.session.add(sound)
     db.session.commit()
