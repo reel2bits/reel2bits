@@ -53,6 +53,7 @@ def federate_new_sound(sound: Sound) -> int:
         content=sound.description,
         mediaType="text/plain",
         url={"type": "Link", "href": href, "mediaType": "audio/mp3"},
+        # custom items
         tags=[t.name for t in sound.tags],
         genre=sound.genre,
         licence=sound.licence_info(),
