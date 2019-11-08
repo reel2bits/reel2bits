@@ -13,7 +13,7 @@ from sqlalchemy_searchable import make_searchable
 from sqlalchemy_utils.types.choice import ChoiceType
 from sqlalchemy_utils.types.url import URLType
 from little_boxes.key import Key as LittleBoxesKey
-from activitypub.utils import ap_url
+from activitypub.utils import ap_url, DEFAULT_CTX
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy import text as sa_text
 from little_boxes import activitypub as ap
@@ -22,6 +22,7 @@ from authlib.flask.oauth2.sqla import OAuth2ClientMixin, OAuth2AuthorizationCode
 import time
 import uuid
 from utils.defaults import Reel2bitsDefaults
+
 
 db = SQLAlchemy()
 make_searchable(db.metadata)
@@ -633,7 +634,7 @@ class Actor(db.Model):
             url_avatar = f"{current_app.config['REEL2BITS_URL']}/static/userpic_placeholder.svg"
 
         return {
-            "@context": ap.DEFAULT_CTX,
+            "@context": DEFAULT_CTX,
             "id": self.url,
             "type": self.type.code,
             "preferredUsername": self.preferred_username,
