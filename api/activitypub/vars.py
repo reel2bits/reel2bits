@@ -30,5 +30,15 @@ DEFAULT_CTX = [
         "schema": "http://schema.org#",
         "PropertyValue": "schema:PropertyValue",
         "value": "schema:value",
+        # Our custom stuff
+        "reel2bits": {
+            "@context": {
+                # haha lol
+            }
+        },
+        "licence": "reel2bits:licence",
+        "genre": "reel2bits:genre",
+        "tags": "reel2bits:tags",
+        "artwork": "reel2bits:artwork",
     },
 ]
