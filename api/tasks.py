@@ -17,7 +17,7 @@ from little_boxes.errors import ActivityNotFoundError
 from little_boxes.errors import NotAnActivityError
 from little_boxes.key import Key
 from models import Activity, Actor
-from activitypub.vars import HEADERS, Box
+from activitypub.vars import HEADERS, Box, DEFAULT_CTX
 import smtplib
 from utils.various import add_log, add_user_log
 
@@ -50,6 +50,7 @@ def federate_new_sound(sound: Sound) -> int:
         mediaType="text/plain",
         url={"type": "Link", "href": href, "mediaType": "audio/mp3"},
     )
+    raw_audio["@context"] = DEFAULT_CTX
 
     # TODO, add to the Activity (don't forget the context):
     # tags (array of string)
@@ -528,6 +529,7 @@ def send_update_sound(sound: Sound) -> None:
     object["content"] = sound.description
 
     raw_update = dict(to=[follower.actor.url for follower in actor.followers], actor=actor.to_dict(), object=object)
+    raw_update["@context"] = DEFAULT_CTX
     current_app.logger.debug(f"recipients: {raw_update['to']}")
     update = ap.Update(**raw_update)
     post_to_outbox(update)

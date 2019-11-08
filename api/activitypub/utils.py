@@ -1,27 +1,9 @@
 from flask import current_app
-from little_boxes.activitypub import ActivityType, CTX_AS, CTX_SECURITY
+from little_boxes.activitypub import ActivityType
 from little_boxes import activitypub as ap
 from typing import Dict, Any
 
 ObjectType = Dict[str, Any]
-
-DEFAULT_CTX = [
-    CTX_AS,
-    CTX_SECURITY,
-    {
-        # AS ext
-        "Hashtag": "as:Hashtag",
-        "sensitive": "as:sensitive",
-        "manuallyApprovesFollowers": "as:manuallyApprovesFollowers",
-        # toot
-        "toot": "http://joinmastodon.org/ns#",
-        "featured": "toot:featured",
-        # schema
-        "schema": "http://schema.org#",
-        "PropertyValue": "schema:PropertyValue",
-        "value": "schema:value",
-    },
-]
 
 
 def ap_url(klass, username):

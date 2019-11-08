@@ -1,4 +1,5 @@
 from enum import Enum
+from little_boxes.activitypub import CTX_AS, CTX_SECURITY
 
 
 class Box(Enum):
@@ -12,4 +13,22 @@ HEADERS = [
     "application/ld+json;profile=https://www.w3.org/ns/activitystreams",
     'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
     "application/ld+json",
+]
+
+DEFAULT_CTX = [
+    CTX_AS,
+    CTX_SECURITY,
+    {
+        # AS ext
+        "Hashtag": "as:Hashtag",
+        "sensitive": "as:sensitive",
+        "manuallyApprovesFollowers": "as:manuallyApprovesFollowers",
+        # toot
+        "toot": "http://joinmastodon.org/ns#",
+        "featured": "toot:featured",
+        # schema
+        "schema": "http://schema.org#",
+        "PropertyValue": "schema:PropertyValue",
+        "value": "schema:value",
+    },
 ]
