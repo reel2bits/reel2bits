@@ -48,6 +48,8 @@ def webfinger():
 
     if resource.startswith("https://"):
         actor = db.session.query(Actor).filter_by(url=resource).first()
+        if not actor:
+            return Response("", status=404, content_type="application/jrd+json; charset=utf-8")
         user = actor.user
         domain = actor.domain
     else:
