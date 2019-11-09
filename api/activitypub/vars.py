@@ -31,11 +31,7 @@ DEFAULT_CTX = [
         "PropertyValue": "schema:PropertyValue",
         "value": "schema:value",
         # Our custom stuff
-        "reel2bits": {
-            "@context": {
-                # This page intentionally left blank.
-            }
-        },
+        "reel2bits": "http://reel2bits.org/ns#",
         "licence": "reel2bits:licence",
         "genre": "reel2bits:genre",
         "tags": "reel2bits:tags",
