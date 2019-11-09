@@ -20,7 +20,7 @@ from app_oauth import authorization, require_oauth
 from authlib.flask.oauth2 import current_token
 from datas_helpers import to_json_track, to_json_account, to_json_relationship
 from utils.various import forbidden_username, add_user_log, add_log, get_hashed_filename
-from tasks import send_update_profile, federate_delete_actor
+from tasks import send_update_profile, federate_delete_actor, post_to_outbox
 import re
 from sqlalchemy import or_
 from flask_mail import Message
@@ -29,6 +29,7 @@ import smtplib
 from utils.defaults import Reel2bitsDefaults
 from flask_uploads import UploadSet
 import os
+import little_boxes.activitypub as ap
 
 
 bp_api_v1_accounts = Blueprint("bp_api_v1_accounts", __name__)
@@ -624,8 +625,16 @@ def follow(user_id):
         return jsonify([to_json_relationship(current_user, user)])
     else:
         # We need to initiate a follow request
-        # FIXME TODO
-        abort(501)
+        # Check if not already following
+        rel = Follower.query.filter(Follower.actor_id == actor_me.id, Follower.target_id == actor_them.id).first()
+
+        if not rel:
+            # Initiate a Follow request from actor_me to actor_target
+            follow = ap.Follow(actor=actor_me.url, object=actor_them.url)
+            post_to_outbox(follow)
+            return jsonify(""), 202
+        else:
+            return jsonify({"error": "already following"}), 409
 
 
 @bp_api_v1_accounts.route("/api/v1/accounts/<int:user_id>/unfollow", methods=["POST"])
@@ -663,9 +672,33 @@ def unfollow(user_id):
         actor_me.unfollow(actor_them)
         return jsonify([to_json_relationship(current_user, user)])
     else:
-        # We need to initiate a follow request
-        # FIXME TODO
-        abort(501)
+        # Get the relation of the follow
+        follow_relation = Follower.query.filter(
+            Follower.actor_id == actor_me.id, Follower.target_id == actor_them.id
+        ).first()
+        if not follow_relation:
+            return jsonify({"error": "follow relation not found"}), 404
+
+        # Fetch the related Activity of the Follow relation
+        accept_activity = Activity.query.filter(Activity.url == follow_relation.activity_url).first()
+        if not accept_activity:
+            current_app.logger.error(f"cannot find accept activity {follow_relation.activity_url}")
+            return jsonify({"error": "cannot found the accept activity"}), 500
+        # Then the Activity ID of the ACcept will be the object id
+        activity = ap.parse_activity(payload=accept_activity.payload)
+
+        # get the final activity (the Follow one)
+        follow_activity = Activity.query.filter(Activity.url == activity.get_object_id()).first()
+        if not follow_activity:
+            current_app.logger.error(f"cannot find follow activity {activity.get_object_id()}")
+            return jsonify({"error": "cannot find follow activity"}), 500
+
+        ap_follow_activity = ap.parse_activity(payload=follow_activity.payload)
+
+        # initiate an Undo of the Follow request
+        unfollow = ap_follow_activity.build_undo()
+        post_to_outbox(unfollow)
+        return jsonify(""), 202
 
 
 @bp_api_v1_accounts.route("/api/v1/accounts/<int:user_id>/followers", methods=["GET"])
