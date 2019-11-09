@@ -560,6 +560,7 @@ def send_update_sound(sound: Sound) -> None:
     object["licence"] = sound.licence_info()
     object["artwork"] = url_artwork
 
+    # if no followers, to=[], maybe it should includes the #Public as is the object already including it ?
     raw_update = dict(to=[follower.actor.url for follower in actor.followers], actor=actor.to_dict(), object=object)
     raw_update["@context"] = DEFAULT_CTX
     current_app.logger.debug(f"recipients: {raw_update['to']}")

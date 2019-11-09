@@ -11,6 +11,7 @@ from os.path import splitext
 import os
 from sqlalchemy import and_
 from utils.defaults import Reel2bitsDefaults
+from tasks import send_update_sound
 
 
 bp_api_tracks = Blueprint("bp_api_tracks", __name__)
@@ -296,6 +297,9 @@ def edit(username, soundslug):
         sound.album_order = 0
 
     db.session.commit()
+
+    # trigger a sound update
+    send_update_sound(sound)
 
     relationship = False
     if current_token and current_token.user:
