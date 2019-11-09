@@ -105,21 +105,21 @@ def federate_delete_actor(actor: Actor) -> None:
 
 def create_sound_for_remote_track(activity: Activity) -> int:
     sound = Sound()
-    sound.title = activity["object"]["name"]
-    sound.description = activity["object"]["content"]
+    sound.title = activity.get("object", {}).get("name", None)
+    sound.description = activity.get("object", {}).get("content", None)
     sound.private = False
-    sound.filename = activity["object"]["url"]["href"]
+    sound.filename = activity.get("object", {}).get("url", {}).get("href", None)
     sound.transcode_needed = False  # Will be checked in fetch_remote_track
     sound.transcode_state = 0
     sound.user_id = activity.user.id
     sound.activity_id = activity.id
     # custom from AP
-    sound.artwork_filename = activity["object"]["artwork"]
-    sound.genre = activity["object"]["genre"]
-    sound.licence = activity["object"]["licence"]["id"]
+    sound.artwork_filename = activity.get("object", {}).get("artwork", None)
+    sound.genre = activity.get("object", {}).get("genre", None)
+    sound.licence = activity.get("object", {}).get("licence", {}).get("id", 0)
 
     # Tags handling. Since it's a new track, no need to do magic tags recalculation.
-    tags = [t.strip() for t in activity["object"]["tags"]]
+    tags = [t.strip() for t in activity.get("object", {}).get("tags", [])]
     for tag in tags:
         dbt = SoundTag.query.filter(SoundTag.name == tag).first()
         if not dbt:
