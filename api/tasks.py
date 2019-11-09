@@ -65,6 +65,8 @@ def federate_new_sound(sound: Sound) -> int:
     )
     raw_audio["@context"] = DEFAULT_CTX
 
+    # FIXME(dashie): apparently the @context is ignored by the Audio() or build_create()
+
     audio = ap.Audio(**raw_audio)
     create = audio.build_create()
     # Post to outbox and save Activity id into Sound relation
