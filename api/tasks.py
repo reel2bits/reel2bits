@@ -38,7 +38,9 @@ def setup_periodic_tasks(sender, **kwargs):
 def federate_new_sound(sound: Sound) -> int:
     actor = sound.user.actor[0]
     cc = [actor.followers_url]
-    href = url_for("get_uploads_stuff", thing="sounds", stuff=sound.path_sound())
+    url_orig = url_for("get_uploads_stuff", thing="sounds", stuff=sound.path_sound(orig=True), _external=True)
+    url_transcode = url_for("get_uploads_stuff", thing="sounds", stuff=sound.path_sound(orig=False), _external=True)
+
     if sound.path_artwork():
         url_artwork = url_for("get_uploads_stuff", thing="artwork_sounds", stuff=sound.path_artwork(), _external=True)
     else:
@@ -52,12 +54,14 @@ def federate_new_sound(sound: Sound) -> int:
         name=sound.title,
         content=sound.description,
         mediaType="text/plain",
-        url={"type": "Link", "href": href, "mediaType": "audio/mp3"},
+        url={"type": "Link", "href": url_orig, "mediaType": "audio/mp3"},
         # custom items
         tags=[t.name for t in sound.tags],
         genre=sound.genre,
         licence=sound.licence_info(),
         artwork=url_artwork,
+        transcoded=sound.transcode_needed,
+        transcode_url=(url_transcode if sound.transcode_needed else None),
     )
     raw_audio["@context"] = DEFAULT_CTX
 
@@ -108,8 +112,11 @@ def create_sound_for_remote_track(activity: Activity) -> int:
     sound.title = activity.get("object", {}).get("name", None)
     sound.description = activity.get("object", {}).get("content", None)
     sound.private = False
-    sound.filename = activity.get("object", {}).get("url", {}).get("href", None)
-    sound.transcode_needed = False  # Will be checked in fetch_remote_track
+    sound.transcode_needed = activity.get("object", {}).get("transcoded", False)
+    if sound.transcode_needed:
+        sound.filename = activity.get("object", {}).get("transcode_url", None)
+    else:
+        sound.filename = activity.get("object", {}).get("url", {}).get("href", None)
     sound.transcode_state = 0
     sound.user_id = activity.user.id
     sound.activity_id = activity.id
@@ -117,6 +124,9 @@ def create_sound_for_remote_track(activity: Activity) -> int:
     sound.artwork_filename = activity.get("object", {}).get("artwork", None)
     sound.genre = activity.get("object", {}).get("genre", None)
     sound.licence = activity.get("object", {}).get("licence", {}).get("id", 0)
+
+    if not sound.filename:
+        return None  # reject if no file available
 
     # Tags handling. Since it's a new track, no need to do magic tags recalculation.
     tags = [t.strip() for t in activity.get("object", {}).get("tags", [])]
