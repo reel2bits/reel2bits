@@ -2,6 +2,7 @@ from flask import current_app
 from little_boxes.activitypub import ActivityType
 from little_boxes import activitypub as ap
 from typing import Dict, Any
+from .vars import DEFAULT_CTX
 
 ObjectType = Dict[str, Any]
 
@@ -95,7 +96,7 @@ def build_ordered_collection(items, actor_id, page, limit=50, switch_side=False)
 
     if total_items <= 0:
         return {
-            "@context": ap.COLLECTION_CTX,
+            "@context": DEFAULT_CTX,
             "id": f"{actor_id}/followers",
             "totalItems": 0,
             "type": ap.ActivityType.ORDERED_COLLECTION.value,
@@ -104,7 +105,7 @@ def build_ordered_collection(items, actor_id, page, limit=50, switch_side=False)
 
     if not page:
         resp = {
-            "@context": ap.COLLECTION_CTX,
+            "@context": DEFAULT_CTX,
             "id": f"{actor_id}/followers",
             "totalItems": total_items,
             "type": ap.ActivityType.ORDERED_COLLECTION.value,
@@ -116,7 +117,7 @@ def build_ordered_collection(items, actor_id, page, limit=50, switch_side=False)
                 "type": ap.ActivityType.ORDERED_COLLECTION_PAGE.value,
             },
         }
-        if len(items) == limit:
+        if total_items == limit:
             resp["first"]["next"] = f"{actor_id}/followers?page=1"
 
         return resp
