@@ -39,12 +39,12 @@ def federate_new_sound(sound: Sound) -> int:
     actor = sound.user.actor[0]
     cc = [actor.followers_url]
     url_orig = url_for("get_uploads_stuff", thing="sounds", stuff=sound.path_sound(orig=True), _external=True)
-    url_transcode = url_for("get_uploads_stuff", thing="sounds", stuff=sound.path_sound(orig=False), _external=True)
+    # url_transcode = url_for("get_uploads_stuff", thing="sounds", stuff=sound.path_sound(orig=False), _external=True)
 
-    if sound.path_artwork():
-        url_artwork = url_for("get_uploads_stuff", thing="artwork_sounds", stuff=sound.path_artwork(), _external=True)
-    else:
-        url_artwork = None
+    # if sound.path_artwork():
+    #     url_artwork = url_for("get_uploads_stuff", thing="artwork_sounds", stuff=sound.path_artwork(), _external=True)
+    # else:
+    #     url_artwork = None
 
     raw_audio = dict(
         attributedTo=actor.url,
@@ -56,18 +56,19 @@ def federate_new_sound(sound: Sound) -> int:
         mediaType="text/plain",
         url={"type": "Link", "href": url_orig, "mediaType": "audio/mp3"},
         # custom items
-        tags=[t.name for t in sound.tags],
-        genre=sound.genre,
-        licence=sound.licence_info(),
-        artwork=url_artwork,
-        transcoded=sound.transcode_needed,
-        transcode_url=(url_transcode if sound.transcode_needed else None),
+        # tags=[t.name for t in sound.tags],
+        # genre=sound.genre,
+        # licence=sound.licence_info(),
+        # artwork=url_artwork,
+        # transcoded=sound.transcode_needed,
+        # transcode_url=(url_transcode if sound.transcode_needed else None),
     )
     raw_audio["@context"] = DEFAULT_CTX
 
     # FIXME(dashie): apparently the @context is ignored by the Audio() or build_create()
 
     audio = ap.Audio(**raw_audio)
+    print("BUILD CREATE FEDERATE_NEW_SOUND")
     create = audio.build_create()
     # Post to outbox and save Activity id into Sound relation
     activity_id = post_to_outbox(create)
@@ -384,7 +385,7 @@ def finish_post_to_outbox(self, iri: str) -> None:
         activity = ap.fetch_remote_activity(iri)
         backend = ap.get_backend()
 
-        current_app.logger.info(f"finish_post_to_outbox {activity}")
+        current_app.logger.info(f"finish_post_to_outbox {activity!r}")
 
         recipients = activity.recipients()
 
@@ -512,9 +513,10 @@ def post_to_inbox(activity: ap.BaseActivity) -> None:
 # If AP_ENABLED=False we still runs this bit to save the activites in the database
 # Except we don't run the finish part which broadcast the activity since not enabled
 def post_to_outbox(activity: ap.BaseActivity) -> str:
-    current_app.logger.debug(f"post_to_outbox {activity}")
+    current_app.logger.debug(f"post_to_outbox {activity!r}")
 
     if activity.has_type(ap.CREATE_TYPES):
+        print("BUILD CREATE POST TO OUTBOX")
         activity = activity.build_create()
 
     backend = ap.get_backend()
