@@ -218,7 +218,7 @@ def upload_workflow(self, sound_id):
         return
 
     # First, if the sound isn't local, we need to fetch it
-    if not sound.activity.local:
+    if sound.activity and not sound.activity.local:
         fetched = fetch_remote_track(sound)
         if not fetched:
             print("UPLOAD WORKFLOW had errors")
