@@ -249,7 +249,7 @@ def upload_workflow(self, sound_id):
         print("TRANSCODE finished")
 
     # The rest only applies if the track is local
-    if not sound.remote_uri and not sound.activity.local:
+    if not sound.remote_uri:
         # Federate if public
         if not sound.private:
             print("UPLOAD WORKFLOW federating sound")
