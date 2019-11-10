@@ -245,7 +245,7 @@ class Reel2BitsBackend(ap.Backend):
             # create a remote Audio and process it
             from tasks import create_sound_for_remote_track, upload_workflow
 
-            sound_id = create_sound_for_remote_track(create)
+            sound_id = create_sound_for_remote_track(obj)
             upload_workflow.delay(sound_id)
         else:
             current_app.logger.error(f"got an unhandled Activity Type {obj.ACTIVITY_TYPE!r} in the inbox")
