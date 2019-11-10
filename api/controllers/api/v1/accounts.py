@@ -496,7 +496,7 @@ def user_statuses(user_id):
 
     q = q.filter(Activity.payload["to"].astext.contains("https://www.w3.org/ns/activitystreams#Public"))
 
-    q = q.filter(Activity.actor == user.actor[0].id)
+    q = q.filter(Activity.actor_id == user.actor[0].id)
 
     q = q.join(Sound, Sound.activity_id == Activity.id)
     q = q.order_by(Activity.creation_date.desc())
@@ -839,7 +839,7 @@ def account_delete():
         db.session.delete(prt)
 
     # set all activities as deleted
-    activities = Activity.query.filter(Activity.actor == current_user.actor[0].id)
+    activities = Activity.query.filter(Activity.actor_id == current_user.actor[0].id)
     for activity in activities.all():
         activity.meta_deleted = True
 
