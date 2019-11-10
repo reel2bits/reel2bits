@@ -154,12 +154,8 @@ def create_sound_for_remote_track(activity: Activity) -> int:
 def fetch_remote_track(self, sound: Sound):
     print(f"Started fetching remote track {sound.id}")
     # Track
-    if (
-        not sound.remote_uri
-        or not sound.remote_uri.startswith("http://")
-        or not sound.remote_uri.startswith("https://")
-    ):
-        print(f"ERROR: cannot fetch track {sound.remote_uri!r} because of invalid protocol")
+    if not sound.remote_uri:
+        print(f"ERROR: cannot fetch track {sound.id!r} because of no remote_uri")
         return False
 
     track_url_path = urllib.parse.urlparse(sound.remote_uri).path
@@ -180,12 +176,8 @@ def fetch_remote_track(self, sound: Sound):
 
     # Artwork
     # TODO(dashie)
-    if (
-        not sound.remote_artwork_uri
-        or not sound.remote_artwork_uri.startswith("http://")
-        or not sound.remote_artwork_uri.startswith("https://")
-    ):
-        print(f"ERROR: cannot fetch artwork {sound.remote_artwork_uri!r} because of invalid protocol")
+    if not sound.remote_artwork_uri:
+        print(f"ERROR: cannot fetch artwork of {sound.id!r} because of no remote_artwork_uri")
         return False
 
     artwork_url_path = urllib.parse.urlparse(sound.remote_artwork_uri).path
