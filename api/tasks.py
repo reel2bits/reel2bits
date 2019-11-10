@@ -20,6 +20,8 @@ from models import Activity, Actor
 from activitypub.vars import HEADERS, Box, DEFAULT_CTX
 import smtplib
 from utils.various import add_log, add_user_log
+import urllib
+import os
 
 # TRANSCODING
 
@@ -150,9 +152,58 @@ def create_sound_for_remote_track(activity: Activity) -> int:
 @celery.task(bind=True, max_retries=3)
 def fetch_remote_track(self, sound: Sound):
     print(f"Started fetching remote track {sound.id}")
-    if not sound.remote_uri.startswith("http://") or not sound.remote_uri.startswith("https://"):
-        print(f"ERROR: cannot fetch {sound.remote_uri!r} because of invalid protocol")
+    # Track
+    if (
+        not sound.remote_uri
+        or not sound.remote_uri.startswith("http://")
+        or not sound.remote_uri.startswith("https://")
+    ):
+        print(f"ERROR: cannot fetch track {sound.remote_uri!r} because of invalid protocol")
         return False
+
+    track_url_path = urllib.parse.urlparse(sound.remote_uri).path
+    track_filename = os.path.basename(os.path.normpath(track_url_path))
+    final_track_filename = os.path.join(current_app.config["UPLOADED_SOUNDS_DEST"], f"remote_{track_filename}")
+
+    track_resp = requests.get(sound.remote_uri, stream=True)
+
+    # maybe we should try except and handle that...
+    track_resp.raise_for_status()
+
+    with open(final_track_filename, "wb") as handle:
+        for block in track_resp.iter_content(1024):
+            handle.write(block)
+
+    sound.filename = f"remote_{track_filename}"
+    db.session.commit()
+
+    # Artwork
+    # TODO(dashie)
+    if (
+        not sound.remote_artwork_uri
+        or not sound.remote_artwork_uri.startswith("http://")
+        or not sound.remote_artwork_uri.startswith("https://")
+    ):
+        print(f"ERROR: cannot fetch artwork {sound.remote_artwork_uri!r} because of invalid protocol")
+        return False
+
+    artwork_url_path = urllib.parse.urlparse(sound.remote_artwork_uri).path
+    artwork_filename = os.path.basename(os.path.normpath(artwork_url_path))
+    final_artwork_filename = os.path.join(
+        current_app.config["UPLOADED_ARTWORKSOUNDS_DEST"], f"remote_{artwork_filename}"
+    )
+
+    artwork_resp = requests.get(sound.remote_artwork_uri, stream=True)
+
+    # maybe we should try except and handle that...
+    artwork_resp.raise_for_status()
+
+    with open(final_artwork_filename, "wb") as handle:
+        for block in artwork_resp.iter_content(1024):
+            handle.write(block)
+
+    sound.artwork_filename = f"remote_{artwork_filename}"
+    db.session.commit()
 
     print(f"Finished fetching remote track {sound.id}")
 

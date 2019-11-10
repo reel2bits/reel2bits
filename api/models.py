@@ -332,6 +332,7 @@ class Sound(db.Model):
     album_order = db.Column(db.Integer, nullable=True)
 
     artwork_filename = db.Column(db.String(255), unique=False, nullable=True)
+    remote_artwork_uri = db.Column(db.String(255), unique=False, nullable=True)
 
     transcode_needed = db.Column(db.Boolean(), default=False, nullable=True)
     transcode_state = db.Column(db.Integer(), default=0, nullable=False)
