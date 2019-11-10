@@ -359,10 +359,13 @@ class Sound(db.Model):
         return el.total_seconds()
 
     def path_sound(self, orig=False):
+        username = self.user.slug
+        if self.remote_uri:
+            username = f"remote_{self.user.slug}"
         if self.transcode_needed and self.transcode_state == self.TRANSCODE_DONE and not orig:
-            return os.path.join(self.user.slug, self.filename_transcoded)
+            return os.path.join(username, self.filename_transcoded)
         else:
-            return os.path.join(self.user.slug, self.filename)
+            return os.path.join(username, self.filename)
 
     def path_artwork(self):
         if self.artwork_filename:

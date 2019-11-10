@@ -160,7 +160,9 @@ def fetch_remote_track(self, sound: Sound):
 
     track_url_path = urllib.parse.urlparse(sound.remote_uri).path
     track_filename = os.path.basename(os.path.normpath(track_url_path))
-    final_track_filename = os.path.join(current_app.config["UPLOADED_SOUNDS_DEST"], f"remote_{track_filename}")
+    final_track_filename = os.path.join(
+        current_app.config["UPLOADED_SOUNDS_DEST"], f"remote_{sound.user.slug}", f"remote_{track_filename}"
+    )
 
     track_resp = requests.get(sound.remote_uri, stream=True)
 
@@ -183,7 +185,7 @@ def fetch_remote_track(self, sound: Sound):
     artwork_url_path = urllib.parse.urlparse(sound.remote_artwork_uri).path
     artwork_filename = os.path.basename(os.path.normpath(artwork_url_path))
     final_artwork_filename = os.path.join(
-        current_app.config["UPLOADED_ARTWORKSOUNDS_DEST"], f"remote_{artwork_filename}"
+        current_app.config["UPLOADED_ARTWORKSOUNDS_DEST"], f"remote_{sound.user.slug}", f"remote_{artwork_filename}"
     )
 
     artwork_resp = requests.get(sound.remote_artwork_uri, stream=True)
