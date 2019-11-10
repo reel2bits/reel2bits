@@ -324,6 +324,7 @@ class Sound(db.Model):
     description = db.Column(db.UnicodeText(), nullable=True)
     private = db.Column(db.Boolean(), default=False, nullable=True)
     slug = db.Column(db.String(255), unique=True, nullable=True)
+    remote_uri = db.Column(db.String(255), unique=False, nullable=True)
     filename = db.Column(db.String(255), unique=False, nullable=True)
     filename_transcoded = db.Column(db.String(255), unique=False, nullable=True)
 

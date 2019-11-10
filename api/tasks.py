@@ -117,9 +117,9 @@ def create_sound_for_remote_track(activity: Activity) -> int:
     sound.private = False
     sound.transcode_needed = activity.payload.get("object", {}).get("transcoded", False)
     if sound.transcode_needed:
-        sound.filename = activity.payload.get("object", {}).get("transcode_url", None)
+        sound.remote_uri = activity.payload.get("object", {}).get("transcode_url", None)
     else:
-        sound.filename = activity.payload.get("object", {}).get("url", {}).get("href", None)
+        sound.remote_uri = activity.payload.get("object", {}).get("url", {}).get("href", None)
     sound.transcode_state = 0
 
     # Get user through actor
@@ -148,10 +148,13 @@ def create_sound_for_remote_track(activity: Activity) -> int:
 
 
 @celery.task(bind=True, max_retries=3)
-def fetch_remote_track(self, sound_id: int):
-    print(f"Started fetching remote track {sound_id}")
-    # FIXME(dashie): do things
-    print(f"Finished fetching remote track {sound_id}")
+def fetch_remote_track(self, sound: Sound):
+    print(f"Started fetching remote track {sound.id}")
+    if not sound.remote_uri.startswith("http://") or not sound.remote_uri.startswith("https://"):
+        print(f"ERROR: cannot fetch {sound.remote_uri!r} because of invalid protocol")
+        return False
+
+    print(f"Finished fetching remote track {sound.id}")
 
 
 @celery.task(bind=True, max_retries=3)
@@ -165,7 +168,11 @@ def upload_workflow(self, sound_id):
 
     # First, if the sound isn't local, we need to fetch it
     if not sound.activity.local:
-        fetch_remote_track(sound.id)
+        fetched = fetch_remote_track(sound)
+        if not fetched:
+            print("UPLOAD WORKFLOW had errors")
+            add_log("global", "ERROR", f"Error fetching remote track {sound.id}")
+            return
 
     print("METADATAS started")
     metadatas = work_metadatas(sound_id)
