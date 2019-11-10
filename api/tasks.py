@@ -163,7 +163,7 @@ def fetch_remote_track(self, sound_id: int):
     track_url_path = urllib.parse.urlparse(sound.remote_uri).path
     track_filename = os.path.basename(os.path.normpath(track_url_path))
 
-    os.makedirs(os.path.join(current_app.config["UPLOADED_SOUNDS_DEST"], f"remote_{sound.user.slug}"))
+    os.makedirs(os.path.join(current_app.config["UPLOADED_SOUNDS_DEST"], f"remote_{sound.user.slug}"), exist_ok=True)
 
     final_track_filename = os.path.join(
         current_app.config["UPLOADED_SOUNDS_DEST"], f"remote_{sound.user.slug}", f"remote_{track_filename}"
@@ -190,7 +190,9 @@ def fetch_remote_track(self, sound_id: int):
     artwork_url_path = urllib.parse.urlparse(sound.remote_artwork_uri).path
     artwork_filename = os.path.basename(os.path.normpath(artwork_url_path))
 
-    os.makedirs(os.path.join(current_app.config["UPLOADED_ARTWORKSOUNDS_DEST"], f"remote_{sound.user.slug}"))
+    os.makedirs(
+        os.path.join(current_app.config["UPLOADED_ARTWORKSOUNDS_DEST"], f"remote_{sound.user.slug}"), exist_ok=True
+    )
 
     final_artwork_filename = os.path.join(
         current_app.config["UPLOADED_ARTWORKSOUNDS_DEST"], f"remote_{sound.user.slug}", f"remote_{artwork_filename}"
@@ -238,7 +240,7 @@ def upload_workflow(self, sound_id):
         db.session.commit()
         print("UPLOAD WORKFLOW had errors")
         add_log("global", "ERROR", f"Error processing track {sound.id}")
-        add_user_log(sound.id, sound.user.id, "sounds", "error", "An error occured while processing your track")
+        add_user_log(sound.id, sound.user_id, "sounds", "error", "An error occured while processing your track")
         return
 
     if metadatas:
