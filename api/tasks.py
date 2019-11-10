@@ -151,8 +151,10 @@ def create_sound_for_remote_track(activity: Activity) -> int:
 
 
 @celery.task(bind=True, max_retries=3)
-def fetch_remote_track(self, sound: Sound):
-    print(f"Started fetching remote track {sound.id}")
+def fetch_remote_track(self, sound_id: int):
+    print(f"Started fetching remote track {sound_id}")
+    sound = Sound.query.get(sound_id)
+
     # Track
     if not sound.remote_uri:
         print(f"ERROR: cannot fetch track {sound.id!r} because of no remote_uri")
@@ -214,7 +216,7 @@ def upload_workflow(self, sound_id):
 
     # First, if the sound isn't local, we need to fetch it
     if sound.activity and not sound.activity.local:
-        fetch_remote_track(sound)
+        fetch_remote_track(sound_id)
         if not sound.filename.startswith("remote_"):
             print("UPLOAD WORKFLOW had errors")
             add_log("global", "ERROR", f"Error fetching remote track {sound.id}")
