@@ -241,6 +241,8 @@ class Reel2BitsBackend(ap.Backend):
     def inbox_create(self, as_actor: ap.Person, create: ap.Create) -> None:
         self._handle_replies(as_actor, create)
         obj = create.get_object()
+        current_app.logger.debug(f"inbox_create {obj.ACTIVITY_TYPE} {obj!r} as {as_actor!r}")
+
         if obj.ACTIVITY_TYPE == ap.ActivityType.AUDIO:
             # create a remote Audio and process it
             from tasks import create_sound_for_remote_track, upload_workflow
