@@ -253,6 +253,8 @@ class Reel2BitsBackend(ap.Backend):
                 return
 
             sound_id = create_sound_for_remote_track(act)
+            # TODO(dashie): fetch_remote_track should be done inside the upload_workflow to not have to do celery tasks dependencies
+            # Plus it's better to do it like that, one function to do everything, locally or remotely.
             upload_workflow.delay(sound_id)
         else:
             current_app.logger.error(f"got an unhandled Activity Type {obj.ACTIVITY_TYPE!r} in the inbox")
