@@ -134,7 +134,7 @@ def create_sound_for_remote_track(activity: Activity) -> int:
         return None  # reject if no file available
 
     # Tags handling. Since it's a new track, no need to do magic tags recalculation.
-    tags = [t.strip() for t in activity.get("object", {}).get("tags", [])]
+    tags = [t.strip() for t in activity.payload.get("object", {}).get("tags", [])]
     for tag in tags:
         dbt = SoundTag.query.filter(SoundTag.name == tag).first()
         if not dbt:
