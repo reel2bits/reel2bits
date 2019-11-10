@@ -174,7 +174,7 @@ class Reel2BitsBackend(ap.Backend):
         base_url = current_app.config["BASE_URL"]
         act.local = activity.id.startswith(base_url)
 
-        act.actor = actor.id
+        act.actor_id = actor.id
 
         db.session.add(act)
 
