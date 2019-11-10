@@ -655,7 +655,8 @@ class Activity(db.Model):
     __tablename__ = "activity"
     id = db.Column(db.Integer, primary_key=True)
 
-    actor = db.Column(db.Integer, db.ForeignKey("actor.id"))
+    actor_id = db.Column(db.Integer, db.ForeignKey("actor.id"), nullable=True)
+    actor = db.relationship("Actor", backref=db.backref("actor"))
 
     uuid = db.Column(UUID(as_uuid=True), server_default=sa_text("uuid_generate_v4()"), unique=True)
     url = db.Column(URLType(), unique=True, nullable=True)
