@@ -238,6 +238,9 @@ class Reel2BitsBackend(ap.Backend):
         current_app.logger.debug(f"asked to fetch {iri}")
         return self._fetch_iri(iri)
 
+    def inbox_create(self, as_actor: ap.Person, create: ap.Create) -> None:
+        self._handle_replies(as_actor, create)
+
     def inbox_update(self, as_actor: ap.Person, update: ap.Update) -> None:
         obj = update.get_object()
         current_app.logger.debug(f"inbox_update {obj.ACTIVITY_TYPE} {obj!r} as {as_actor!r}")
