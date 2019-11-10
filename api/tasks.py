@@ -132,7 +132,7 @@ def create_sound_for_remote_track(activity: Activity) -> int:
     sound.genre = activity.payload.get("object", {}).get("genre", None)
     sound.licence = activity.payload.get("object", {}).get("licence", {}).get("id", 0)
 
-    if not sound.filename:
+    if not sound.remote_uri:
         return None  # reject if no file available
 
     # Tags handling. Since it's a new track, no need to do magic tags recalculation.
