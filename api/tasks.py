@@ -163,6 +163,10 @@ def upload_workflow(self, sound_id):
         print("- Cant find sound ID {id} in database".format(id=sound_id))
         return
 
+    # First, if the sound isn't local, we need to fetch it
+    if not sound.activity.local:
+        fetch_remote_track(sound.id)
+
     print("METADATAS started")
     metadatas = work_metadatas(sound_id)
     print("METADATAS finished")

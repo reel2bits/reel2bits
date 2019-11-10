@@ -390,11 +390,12 @@ def search():
         if not activity:
             current_app.logger.exception("WTF Activity is not saved")
         else:
-            from tasks import create_sound_for_remote_track, fetch_remote_track
+            from tasks import create_sound_for_remote_track, upload_workflow
 
             sound_id = create_sound_for_remote_track(activity)
             sound = Sound.query.filter(Sound.id == sound_id).one()
-            fetch_remote_track.delay(sound.id)
+            upload_workflow.delay(sound.id)
+
             relationship = False
             if current_user:
                 relationship = to_json_relationship(current_user, sound.user)
