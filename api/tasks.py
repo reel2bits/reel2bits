@@ -112,21 +112,21 @@ def federate_delete_actor(actor: Actor) -> None:
 
 def create_sound_for_remote_track(activity: Activity) -> int:
     sound = Sound()
-    sound.title = activity.get("object", {}).get("name", None)
-    sound.description = activity.get("object", {}).get("content", None)
+    sound.title = activity.payload.get("object", {}).get("name", None)
+    sound.description = activity.payload.get("object", {}).get("content", None)
     sound.private = False
-    sound.transcode_needed = activity.get("object", {}).get("transcoded", False)
+    sound.transcode_needed = activity.payload.get("object", {}).get("transcoded", False)
     if sound.transcode_needed:
-        sound.filename = activity.get("object", {}).get("transcode_url", None)
+        sound.filename = activity.payload.get("object", {}).get("transcode_url", None)
     else:
-        sound.filename = activity.get("object", {}).get("url", {}).get("href", None)
+        sound.filename = activity.payload.get("object", {}).get("url", {}).get("href", None)
     sound.transcode_state = 0
     sound.user_id = activity.user.id
     sound.activity_id = activity.id
     # custom from AP
-    sound.artwork_filename = activity.get("object", {}).get("artwork", None)
-    sound.genre = activity.get("object", {}).get("genre", None)
-    sound.licence = activity.get("object", {}).get("licence", {}).get("id", 0)
+    sound.artwork_filename = activity.payload.get("object", {}).get("artwork", None)
+    sound.genre = activity.payload.get("object", {}).get("genre", None)
+    sound.licence = activity.payload.get("object", {}).get("licence", {}).get("id", 0)
 
     if not sound.filename:
         return None  # reject if no file available
