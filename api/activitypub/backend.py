@@ -5,7 +5,6 @@ from models import db, Activity, create_remote_actor, Actor, update_remote_actor
 from urllib.parse import urlparse
 from .vars import Box
 from version import VERSION
-from tasks import create_sound_for_remote_track, upload_workflow
 
 
 class Reel2BitsBackend(ap.Backend):
@@ -244,6 +243,8 @@ class Reel2BitsBackend(ap.Backend):
         obj = create.get_object()
         if obj.ACTIVITY_TYPE == ap.ActivityType.AUDIO:
             # create a remote Audio and process it
+            from tasks import create_sound_for_remote_track, upload_workflow
+
             sound_id = create_sound_for_remote_track(create)
             upload_workflow.delay(sound_id)
         else:
