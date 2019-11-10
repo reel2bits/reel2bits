@@ -248,50 +248,52 @@ def upload_workflow(self, sound_id):
         work_transcode(sound_id)
         print("TRANSCODE finished")
 
-    # Federate if public
-    if not sound.private:
-        print("UPLOAD WORKFLOW federating sound")
-        # Federate only if sound is public
-        sound.activity_id = federate_new_sound(sound)
-        db.session.commit()
+    # The rest only applies if the track is local
+    if not sound.remote_uri and not sound.activity.local:
+        # Federate if public
+        if not sound.private:
+            print("UPLOAD WORKFLOW federating sound")
+            # Federate only if sound is public
+            sound.activity_id = federate_new_sound(sound)
+            db.session.commit()
 
-    track_url = f"https://{current_app.config['AP_DOMAIN']}/{sound.user.name}/track/{sound.slug}"
+        track_url = f"https://{current_app.config['AP_DOMAIN']}/{sound.user.name}/track/{sound.slug}"
 
-    msg = Message(
-        subject="Song processing finished",
-        recipients=[sound.user.email],
-        sender=current_app.config["MAIL_DEFAULT_SENDER"],
-    )
+        msg = Message(
+            subject="Song processing finished",
+            recipients=[sound.user.email],
+            sender=current_app.config["MAIL_DEFAULT_SENDER"],
+        )
 
-    _config = Config.query.first()
-    if not _config:
-        print("ERROR: cannot get instance Config from database")
-    instance = {"name": None, "url": None}
-    if _config:
-        instance["name"] = _config.app_name
-    instance["url"] = current_app.config["REEL2BITS_URL"]
-    msg.body = render_template("email/song_processed.txt", sound=sound, track_url=track_url, instance=instance)
-    msg.html = render_template("email/song_processed.html", sound=sound, track_url=track_url, instance=instance)
-    err = None
-    mail = current_app.extensions.get("mail")
-    if not mail:
-        err = "mail extension is none"
-    else:
-        try:
-            mail.send(msg)
-        except ConnectionRefusedError as e:
-            # TODO: do something about that maybe
-            print(f"Error sending mail: {e}")
-            err = e
-        except smtplib.SMTPRecipientsRefused as e:
-            print(f"Error sending mail: {e}")
-            err = e
-        except smtplib.SMTPException as e:
-            print(f"Error sending mail: {e}")
-            err = e
-    if err:
-        add_log("global", "ERROR", f"Error sending email for track {sound.id}: {err}")
-        add_user_log(sound.id, sound.user.id, "sounds", "error", "An error occured while sending email")
+        _config = Config.query.first()
+        if not _config:
+            print("ERROR: cannot get instance Config from database")
+        instance = {"name": None, "url": None}
+        if _config:
+            instance["name"] = _config.app_name
+        instance["url"] = current_app.config["REEL2BITS_URL"]
+        msg.body = render_template("email/song_processed.txt", sound=sound, track_url=track_url, instance=instance)
+        msg.html = render_template("email/song_processed.html", sound=sound, track_url=track_url, instance=instance)
+        err = None
+        mail = current_app.extensions.get("mail")
+        if not mail:
+            err = "mail extension is none"
+        else:
+            try:
+                mail.send(msg)
+            except ConnectionRefusedError as e:
+                # TODO: do something about that maybe
+                print(f"Error sending mail: {e}")
+                err = e
+            except smtplib.SMTPRecipientsRefused as e:
+                print(f"Error sending mail: {e}")
+                err = e
+            except smtplib.SMTPException as e:
+                print(f"Error sending mail: {e}")
+                err = e
+        if err:
+            add_log("global", "ERROR", f"Error sending email for track {sound.id}: {err}")
+            add_user_log(sound.id, sound.user.id, "sounds", "error", "An error occured while sending email")
 
     print("UPLOAD WORKFLOW finished")
 
