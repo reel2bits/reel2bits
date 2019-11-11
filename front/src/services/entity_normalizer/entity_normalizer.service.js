@@ -139,6 +139,7 @@ export const parseStatus = (data) => {
 
   output.id = String(data.id)
   output.title = data.reel2bits.title
+  // We use .account instead of .user, we only have .account on our api, no .user since no ostatus
   output.account = parseUser(data.account)
   output.description = data.content
   output.picture_url = (data.reel2bits.picture_url || '/static/artwork_placeholder.svg')

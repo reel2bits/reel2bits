@@ -9,7 +9,7 @@
         >
       </b-link>
       <span class="align-middle">
-        <b-link :to="{ name: 'user-profile', params: { name: track.account.screen_name } }" class="text-decoration-none">
+        <b-link :to="userProfileLink" class="text-decoration-none">
           {{ track.account.name }}
         </b-link>
         <translate translate-context="Content/Track/Single track in timelines, part of 'XXX >>uploaded a track<< YYY times ago'" :translate-params="{publishedAgo: publishedAgo}" :title="track.uploaded_on">
@@ -109,6 +109,7 @@ button.playPause {
 import WaveSurfer from 'wavesurfer.js'
 import moment from 'moment'
 import { mapState } from 'vuex'
+import generateProfileLink from 'src/services/user_profile_link_generator/user_profile_link_generator.js'
 
 export default {
   props: {
@@ -176,6 +177,9 @@ export default {
     userAvatarAlt () {
       let msg = this.$pgettext('Content/Track/Image/User Avatar alt', '%{username} avatar')
       return this.$gettextInterpolate(msg, { username: this.track.account.screen_name })
+    },
+    userProfileLink () {
+      return this.generateUserProfileLink(this.track.account.id, this.track.account.screen_name)
     }
   },
   watch: {
@@ -242,6 +246,9 @@ export default {
     this.$emit('updateLogoSpinDuration', false)
   },
   methods: {
+    generateUserProfileLink (id, name) {
+      return generateProfileLink(id, name, this.$store.state.instance.restrictedNicknames)
+    },
     togglePlay: function () {
       if (this.wavesurfer.isPlaying()) {
         this.$store.commit('playerStoppedPlaying')
