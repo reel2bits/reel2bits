@@ -7,12 +7,12 @@
         </div>
         <div class="align-self-center">
           <h2 class="h2 m-0">
-            <b-link :to="{ name: 'user-profile', params: { name: user.screen_name } }" class="text-decoration-none text-body">
+            <b-link :to="userProfileLink(user)" class="text-decoration-none text-body">
               {{ user.name }}
             </b-link>
           </h2>
           <p class="h3 font-weight-normal m-0">
-            <b-link :to="{ name: 'user-profile', params: { name: user.screen_name } }" class="text-decoration-none text-body">
+            <b-link :to="userProfileLink(user)" class="text-decoration-none text-body">
               @{{ user.screen_name }}
             </b-link>
           </p>
@@ -113,6 +113,8 @@
 
 <script>
 import { requestFollow, requestUnfollow } from '../../services/follow_manipulate/follow_manipulate.js'
+import generateProfileLink from 'src/services/user_profile_link_generator/user_profile_link_generator'
+
 const UserCard = {
   props: [
     'user'
@@ -151,6 +153,12 @@ const UserCard = {
       requestUnfollow(this.user, store).then(() => {
         this.followRequestInProgress = false
       })
+    },
+    userProfileLink (user) {
+      return generateProfileLink(
+        user.id, user.screen_name,
+        this.$store.state.instance.restrictedNicknames
+      )
     }
   }
 }
