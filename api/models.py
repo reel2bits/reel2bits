@@ -176,6 +176,17 @@ class User(db.Model, UserMixin):
         else:
             return None
 
+    def acct(self):
+        if self.local:
+            return self.name
+        else:
+            name = self.name
+            if not len(self.actor) > 0:
+                print(f"user {self.id} has no actor")
+                return self.name  # *shrug*
+            instance = self.actor[0].domain
+            return f"{name}@{instance}"
+
     # Delete files file when COMMIT DELETE
     def __commit_delete__(self):
         print("COMMIT DELETE: Deleting files")
