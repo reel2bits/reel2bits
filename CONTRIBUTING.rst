@@ -98,7 +98,7 @@ Everything happens in ``master`` branch. Therefore, when submitting Merge Reques
 Working with docker
 ^^^^^^^^^^^^^^^^^^^
 
-In development, we use the docker-compose file named ``dev.yml``, and this is why all our docker-compose commands will look like this::
+In development, we use the docker-compose file named ``dev.yml``, residing in the reel2bits directory, and this is why all our docker-compose commands will look like this::
 
     docker-compose -f dev.yml logs
 
