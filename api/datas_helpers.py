@@ -37,6 +37,7 @@ def to_json_account(user, relationship=False):
 
     obj = dict(
         id=user.id,
+        flakeId=user.flake_id,
         username=user.name,
         acct=user.acct(),
         display_name=user.display_name,

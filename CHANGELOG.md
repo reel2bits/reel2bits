@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
     - 004-update-file-sizes
     - 005-update-user-quotas
     - 006-generate-albums-uuids
+    - 007-generate-users-uuids
 - **Breaking:** Commands to run: `flask db-datas 005-update-user-quotas` to precompute the user quotas
 - **Breaking:** New config options to set:
     - `UPLOADED_ARTWORKALBUMS_DEST`
@@ -49,6 +50,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Waveform generation now use dynamic PixelsPerSecond depending of the track duration
 - Waveform generation now rounds the peaks to two digits
 - Remote Actor now have an associated User
+- User now have flake_id (migration needed + data command)
 
 ### Fixed
 - Waveform JSON generation through a .dat now use the right pixels per second; avoid huge waveforms datas for long tracks (#179)

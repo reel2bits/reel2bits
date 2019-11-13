@@ -16,6 +16,7 @@ export const parseUser = (data) => {
   const mastoShort = masto && !data.hasOwnProperty('avatar')
 
   output.id = String(data.id)
+  output.flakeId = data.flakeId
 
   if (masto) {
     output.screen_name = data.acct

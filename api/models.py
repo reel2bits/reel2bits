@@ -96,6 +96,8 @@ class User(db.Model, UserMixin):
 
     timezone = db.Column(db.String(255), nullable=False, default="UTC")  # Managed and fed by pytz
 
+    flake_id = db.Column(UUID(as_uuid=True), unique=False, nullable=True)
+
     # should be removed since User.name is URL friendly
     slug = db.Column(db.String(255), nullable=True)
 

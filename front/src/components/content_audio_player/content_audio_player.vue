@@ -179,7 +179,7 @@ export default {
       return this.$gettextInterpolate(msg, { username: this.track.account.screen_name })
     },
     userProfileLink () {
-      return this.generateUserProfileLink(this.track.account.id, this.track.account.screen_name)
+      return this.generateUserProfileLink(this.track.account.flakeId, this.track.account.screen_name)
     }
   },
   watch: {

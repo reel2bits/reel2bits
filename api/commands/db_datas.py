@@ -144,3 +144,18 @@ def generate_albums_uuid():
         if not album.flake_id:
             album.flake_id = UUID(int=flake_gen.get())
     db.session.commit()
+
+
+@db_datas.command(name="007-generate-users-uuids")
+@with_appcontext
+def generate_users_uuid():
+    """
+    Generate tracks UUIDs when missing (41_7eb56606e9d6)
+
+    non breaking.
+    """
+    flake_gen = FlakeId()
+    for user in db.session.query(User).all():
+        if not user.flake_id:
+            user.flake_id = UUID(int=flake_gen.get())
+    db.session.commit()
