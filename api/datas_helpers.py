@@ -29,7 +29,7 @@ def to_json_relationship(of_user, against_user):
 
 
 def to_json_account(user, relationship=False):
-    url_feed = url_for("bp_feeds.tracks", user_id=user.id, _external=True)
+    url_feed = url_for("bp_feeds.tracks", user_id=user.flake_id, _external=True)
     if user.path_avatar():
         url_avatar = url_for("get_uploads_stuff", thing="avatars", stuff=user.path_avatar(), _external=True)
     else:
@@ -157,7 +157,7 @@ def to_json_track(track, account):
 
 
 def to_json_album(album, account):
-    url_feed = url_for("bp_feeds.album", user_id=album.user.id, album_id=album.id, _external=True)
+    url_feed = url_for("bp_feeds.album", user_id=album.user.flake_id, album_id=album.id, _external=True)
     if album.path_artwork():
         url_artwork = url_for("get_uploads_stuff", thing="artwork_albums", stuff=album.path_artwork(), _external=True)
     else:

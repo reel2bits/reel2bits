@@ -37,10 +37,10 @@ def utcdate(date):
     return date.replace(tzinfo=pytz.utc)
 
 
-@bp_feeds.route("/feeds/tracks/<int:user_id>", methods=["GET"])
-@bp_feeds.route("/feeds/tracks/<int:user_id>.atom", methods=["GET"])
+@bp_feeds.route("/feeds/tracks/<string:user_id>", methods=["GET"])
+@bp_feeds.route("/feeds/tracks/<string:user_id>.atom", methods=["GET"])
 def tracks(user_id):
-    user = User.query.filter(User.id == user_id).first()
+    user = User.query.filter(User.flake_id == user_id).first()
     if not user:
         abort(404)
 
@@ -75,10 +75,10 @@ def tracks(user_id):
     return feed.atom_str(pretty=True)
 
 
-@bp_feeds.route("/feeds/album/<int:user_id>/<int:album_id>", methods=["GET"])
-@bp_feeds.route("/feeds/album/<int:user_id>/<int:album_id>.atom", methods=["GET"])
+@bp_feeds.route("/feeds/album/<string:user_id>/<int:album_id>", methods=["GET"])
+@bp_feeds.route("/feeds/album/<string:user_id>/<int:album_id>.atom", methods=["GET"])
 def album(user_id, album_id):
-    user = User.query.filter(User.id == user_id).first()
+    user = User.query.filter(User.flake_id == user_id).first()
     if not user:
         abort(404)
     album = Album.query.filter(Album.id == album_id, Album.user_id == user.id, Album.private.is_(False)).first()
