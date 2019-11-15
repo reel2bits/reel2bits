@@ -176,10 +176,11 @@ def show(username_or_id, soundslug):
         current_user = None
 
     # Get the associated User from url fetch
-    if username_or_id.isdigit():
-        track_user = User.query.filter(User.id == username_or_id).first()
-    else:
-        track_user = User.query.filter(User.name == username_or_id, User.local.is_(True)).first()
+    # Try username
+    track_user = User.query.filter(User.name == username_or_id, User.local.is_(True)).first()
+    # Then ID
+    if not track_user:
+        track_user = User.query.filter(User.flake_id == username_or_id).first()
     if not track_user:
         return jsonify({"error": "User not found"}), 404
 
@@ -394,10 +395,11 @@ def logs(username_or_id, soundslug):
         current_user = None
 
     # Get the associated User from url fetch
-    if username_or_id.isdigit():
-        track_user = User.query.filter(User.id == username_or_id).first()
-    else:
-        track_user = User.query.filter(User.name == username_or_id, User.local.is_(True)).first()
+    # Try username
+    track_user = User.query.filter(User.name == username_or_id, User.local.is_(True)).first()
+    # Then ID
+    if not track_user:
+        track_user = User.query.filter(User.flake_id == username_or_id).first()
     if not track_user:
         return jsonify({"error": "User not found"}), 404
 
@@ -461,6 +463,8 @@ def retry_processing(username_or_id, soundslug):
         current_user = current_token.user
     else:
         current_user = None
+
+    # TODO(dashie) FIXME ensure only the track owner can reprocess a track
 
     # Get the associated User from url fetch
     if username_or_id.isdigit():
