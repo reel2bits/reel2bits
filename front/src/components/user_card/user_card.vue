@@ -63,7 +63,7 @@
       <p class="card-text" v-html="user.description" />
       <ul class="nav nav-fill">
         <li class="nav-item border-right">
-          <router-link :to="{ name: 'user-profile-tracks', params: { name: user.screen_name } }" class="text-decoration-none">
+          <router-link :to="linkToProfileSpecific(user, 'user-profile-tracks')" class="text-decoration-none">
             <p class="h3 font-weight-normal m-0">
               {{ user.statuses_count }}
             </p><p class="m-0">
@@ -74,7 +74,7 @@
           </router-link>
         </li>
         <li class="nav-item border-right">
-          <router-link :to="{ name: 'user-profile-albums', params: { name: user.screen_name } }" class="text-decoration-none">
+          <router-link :to="linkToProfileSpecific(user, 'user-profile-albums')" class="text-decoration-none">
             <p class="h3 font-weight-normal m-0">
               {{ user.reel2bits.albums_count }}
             </p><p class="m-0">
@@ -85,7 +85,7 @@
           </router-link>
         </li>
         <li class="nav-item border-right">
-          <router-link :to="{ name: 'user-profile-followers', params: { name: user.screen_name } }" class="text-decoration-none">
+          <router-link :to="linkToProfileSpecific(user, 'user-profile-followers')" class="text-decoration-none">
             <p class="h3 font-weight-normal m-0">
               {{ user.followers_count }}
             </p><p class="m-0">
@@ -96,7 +96,7 @@
           </router-link>
         </li>
         <li class="nav-item">
-          <router-link :to="{ name: 'user-profile-followings', params: { name: user.screen_name } }" class="text-decoration-none">
+          <router-link :to="linkToProfileSpecific(user, 'user-profile-followings')" class="text-decoration-none">
             <p class="h3 font-weight-normal m-0">
               {{ user.friends_count }}
             </p><p class="m-0">
@@ -159,6 +159,13 @@ const UserCard = {
         user.flakeId, user.screen_name,
         this.$store.state.instance.restrictedNicknames,
         'user-profile'
+      )
+    },
+    linkToProfileSpecific (user, suffix) {
+      return generateRemoteLink(
+        user.flakeId, user.screen_name,
+        this.$store.state.instance.restrictedNicknames,
+        suffix
       )
     }
   }
