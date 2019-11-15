@@ -116,9 +116,8 @@ def get(username_or_id, albumslug):
         current_user = None
 
     # Get the associated User from url fetch
-    if username_or_id.isdigit():
-        album_user = User.query.filter(User.id == username_or_id).first()
-    else:
+    album_user = User.query.filter(User.flake_id == username_or_id).first()
+    if not album_user:
         album_user = User.query.filter(User.name == username_or_id, User.local.is_(True)).first()
     if not album_user:
         return jsonify({"error": "User not found"}), 404

@@ -206,11 +206,8 @@ def account_get(username_or_id):
         schema:
             $ref: '#/definitions/Account'
     """
-    if username_or_id.isdigit():
-        # an int is DB ID
-        user = User.query.filter(User.id == int(username_or_id)).first()
-    else:
-        # a string is Local User
+    user = User.query.filter(User.flake_id == username_or_id).first()
+    if not user:
         user = User.query.filter(User.name == username_or_id, User.local.is_(True)).first()
 
     if not user:
