@@ -109,7 +109,7 @@ button.playPause {
 import WaveSurfer from 'wavesurfer.js'
 import moment from 'moment'
 import { mapState } from 'vuex'
-import generateProfileLink from 'src/services/user_profile_link_generator/user_profile_link_generator.js'
+import generateRemoteLink from 'src/services/remote_user_link_generator/remote_user_link_generator.js'
 
 export default {
   props: {
@@ -247,7 +247,7 @@ export default {
   },
   methods: {
     generateUserProfileLink (id, name) {
-      return generateProfileLink(id, name, this.$store.state.instance.restrictedNicknames)
+      return generateRemoteLink(id, name, this.$store.state.instance.restrictedNicknames, 'user-profile')
     },
     togglePlay: function () {
       if (this.wavesurfer.isPlaying()) {

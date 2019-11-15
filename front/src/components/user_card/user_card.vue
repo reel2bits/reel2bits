@@ -113,7 +113,7 @@
 
 <script>
 import { requestFollow, requestUnfollow } from '../../services/follow_manipulate/follow_manipulate.js'
-import generateProfileLink from 'src/services/user_profile_link_generator/user_profile_link_generator'
+import generateRemoteLink from 'src/services/remote_user_link_generator/remote_user_link_generator.js'
 
 const UserCard = {
   props: [
@@ -155,9 +155,10 @@ const UserCard = {
       })
     },
     userProfileLink (user) {
-      return generateProfileLink(
+      return generateRemoteLink(
         user.flakeId, user.screen_name,
-        this.$store.state.instance.restrictedNicknames
+        this.$store.state.instance.restrictedNicknames,
+        'user-profile'
       )
     }
   }
