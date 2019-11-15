@@ -23,6 +23,7 @@ from utils.various import forbidden_username, add_user_log, add_log, get_hashed_
 from tasks import send_update_profile, federate_delete_actor, post_to_outbox
 import re
 from sqlalchemy import or_
+import sqlalchemy.exc
 from flask_mail import Message
 from flask import render_template
 import smtplib
@@ -206,9 +207,12 @@ def account_get(username_or_id):
         schema:
             $ref: '#/definitions/Account'
     """
-    user = User.query.filter(User.flake_id == username_or_id).first()
+    user = User.query.filter(User.name == username_or_id, User.local.is_(True)).first()
     if not user:
-        user = User.query.filter(User.name == username_or_id, User.local.is_(True)).first()
+        try:
+            user = User.query.filter(User.flake_id == username_or_id).first()
+        except sqlalchemy.exc.DataError:
+            abort(404)
 
     if not user:
         abort(404)
