@@ -464,35 +464,24 @@ def retry_processing(username_or_id, soundslug):
     else:
         current_user = None
 
-    # TODO(dashie) FIXME ensure only the track owner can reprocess a track
+    if not current_user:
+        return jsonify({"error": "unauthorized"}), 401
 
     # Get the associated User from url fetch
-    if username_or_id.isdigit():
-        track_user = User.query.filter(User.id == username_or_id).first()
-    else:
-        track_user = User.query.filter(User.name == username_or_id, User.local.is_(True)).first()
+    # Try username
+    track_user = User.query.filter(User.name == username_or_id, User.local.is_(True)).first()
+    # Then ID
+    if not track_user:
+        track_user = User.query.filter(User.flake_id == username_or_id).first()
     if not track_user:
         return jsonify({"error": "User not found"}), 404
 
-    if current_user and (track_user.id == current_user.id):
-        print("user")
-        sound = Sound.query.filter(Sound.slug == soundslug, Sound.user_id == track_user.id).first()
-    else:
-        print("no user")
-        sound = Sound.query.filter(
-            Sound.slug == soundslug, Sound.user_id == track_user.id, Sound.transcode_state == Sound.TRANSCODE_DONE
-        ).first()
+    if current_user.id != track_user.id:
+        return jsonify({"error": "forbidden"}), 403
 
+    sound = Sound.query.filter(Sound.slug == soundslug, Sound.user_id == track_user.id).first()
     if not sound:
-        print("mmmh")
         return jsonify({"error": "not found"}), 404
-
-    if sound.private:
-        if current_user:
-            if sound.user_id != current_user.id:
-                return jsonify({"error": "forbidden"}), 403
-        else:
-            return jsonify({"error": "forbidden"}), 403
 
     if sound.transcode_state != Sound.TRANSCODE_ERROR:
         return jsonify({"error": "cannot reset transcode state if no error"}), 503

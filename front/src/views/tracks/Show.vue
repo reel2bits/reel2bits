@@ -367,7 +367,7 @@ export default {
     async retryProcessing () {
       if (!this.isOwner) { return }
       console.log('retrying processing...')
-      await this.$store.state.api.backendInteractor.trackRetryProcessing({ userId: this.userId, trackId: this.trackId })
+      await this.$store.state.api.backendInteractor.trackRetryProcessing({ userId: this.userName, trackId: this.trackId })
         .then(() => {
           console.log('ok')
           this.processingResetted = true
