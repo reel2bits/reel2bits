@@ -2,11 +2,18 @@
 
 import { includes } from 'lodash'
 
-const generateRemoteLink = (id, screenName, restrictedNicknames, suffix) => {
+const generateRemoteLink = (id, screenName, restrictedNicknames, suffix, trackId = null) => {
   const complicated = !screenName || (isExternal(screenName) || includes(restrictedNicknames, screenName))
-  return {
-    name: (complicated ? `external-${suffix}` : suffix),
-    params: (complicated ? { id } : { name: screenName })
+  if (trackId) {
+    return {
+      name: (complicated ? `external-${suffix}` : suffix),
+      params: (complicated ? { id: id, trackId: trackId } : { username: screenName, trackId: trackId })
+    }
+  } else {
+    return {
+      name: (complicated ? `external-${suffix}` : suffix),
+      params: (complicated ? { id: id } : { name: screenName })
+    }
   }
 }
 

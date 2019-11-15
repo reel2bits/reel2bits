@@ -18,7 +18,7 @@
       </span>
     </div>
     <div class="d-flex mb-3">
-      <b-link v-if="clickableTitle" :to="{ name: 'tracks-show', params: { username: track.account.screen_name, trackId: track.slug } }">
+      <b-link v-if="clickableTitle" :to="trackLink">
         <img :src="track.picture_url" class="d-flex mr-3"
              style="width:112px; height:112px;"
         >
@@ -31,7 +31,7 @@
       <div class="flex-fill">
         <div class="row px-0 mx-0">
           <h1 class="col px-0 mx-0 h5 text-truncate" :title="track.title">
-            <b-link v-if="clickableTitle" :to="{ name: 'tracks-show', params: { username: track.account.screen_name, trackId: track.slug } }" class="text-body text-decoration-none">
+            <b-link v-if="clickableTitle" :to="trackLink" class="text-body text-decoration-none">
               {{ track.title }}
             </b-link>
             <template v-else>
@@ -180,6 +180,9 @@ export default {
     },
     userProfileLink () {
       return this.generateUserProfileLink(this.track.account.flakeId, this.track.account.screen_name)
+    },
+    trackLink () {
+      return this.generateTrackLink(this.track.account.flakeId, this.track.account.screen_name, this.track.slug)
     }
   },
   watch: {
@@ -248,6 +251,9 @@ export default {
   methods: {
     generateUserProfileLink (id, name) {
       return generateRemoteLink(id, name, this.$store.state.instance.restrictedNicknames, 'user-profile')
+    },
+    generateTrackLink (id, name, trackId) {
+      return generateRemoteLink(id, name, this.$store.state.instance.restrictedNicknames, 'tracks-show', trackId)
     },
     togglePlay: function () {
       if (this.wavesurfer.isPlaying()) {
