@@ -263,7 +263,6 @@ export default {
       deleteError: null,
       processing_done: false,
       isOwner: false,
-      userId: null,
       processingResetted: false,
       trackLogs: [],
       trackLogsFields: [
@@ -284,7 +283,7 @@ export default {
   },
   computed: {
     user () {
-      return this.$store.getters.findUser(this.userId)
+      return this.$store.getters.findUser(this.userName || this.userId)
     },
     ...mapState({
       signedIn: state => !!state.users.currentUser,
@@ -295,6 +294,9 @@ export default {
     },
     userName () {
       return this.$route.params.username
+    },
+    userId () {
+      return this.$route.params.id
     },
     processingDone () {
       return (this.processing_done && this.track)
@@ -308,11 +310,6 @@ export default {
     }
   },
   created () {
-    const user = this.$store.getters.findUser(this.userName)
-    if (user) {
-      this.userId = user.id
-    } // else, oops
-
     // Fetch track or logs if error
     this.fetchTrack()
       .then((v) => {
@@ -326,8 +323,7 @@ export default {
   methods: {
     async fetchTrack () {
       console.log('fetching track...')
-      // || quick fix before we fully implement id or username thing
-      await this.$store.state.api.backendInteractor.trackFetch({ userId: this.userId || this.userName, trackId: this.trackId })
+      await this.$store.state.api.backendInteractor.trackFetch({ userId: this.userName || this.userId, trackId: this.trackId })
         .then((status) => {
           this.track = status
           this.processing_done = this.track.processing.done
@@ -341,7 +337,7 @@ export default {
     },
     async fetchTrackLogs () {
       console.log('fetching track logs...')
-      await this.$store.state.api.backendInteractor.fetchTrackLogs({ userId: this.userId, trackId: this.trackId })
+      await this.$store.state.api.backendInteractor.fetchTrackLogs({ userId: this.userName || this.userId, trackId: this.trackId })
         .then((data) => {
           this.trackLogs = data.logs
         })
@@ -369,6 +365,7 @@ export default {
       this.$router.push({ name: 'user-profile', params: { name: this.$store.state.users.currentUser.screen_name } })
     },
     async retryProcessing () {
+      if (!this.isOwner) { return }
       console.log('retrying processing...')
       await this.$store.state.api.backendInteractor.trackRetryProcessing({ userId: this.userId, trackId: this.trackId })
         .then(() => {
