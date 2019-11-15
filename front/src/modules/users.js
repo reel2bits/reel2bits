@@ -7,7 +7,7 @@ import oauthApi from '../backend/oauth/oauth.js'
 // Function from https://git.pleroma.social/pleroma/pleroma-fe/blob/develop/src/modules/users.js
 export const mergeOrAdd = (arr, obj, item) => {
   if (!item) { return false }
-  const oldItem = obj[item.id]
+  const oldItem = obj[item.flakeId]
   if (oldItem) {
     // We already have this, so only merge the new info.
     merge(oldItem, item)
@@ -15,7 +15,7 @@ export const mergeOrAdd = (arr, obj, item) => {
   } else {
     // This is a new item, prepare it
     arr.push(item)
-    vue.set(obj, item.id, item)
+    vue.set(obj, item.flakeId, item)
     if (item.screen_name && !item.screen_name.includes('@')) {
       vue.set(obj, item.screen_name.toLowerCase(), item)
     }

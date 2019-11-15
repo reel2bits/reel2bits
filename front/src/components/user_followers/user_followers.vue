@@ -10,8 +10,8 @@
       </div>
       <div class="row">
         <div v-if="users.length > 0" class="col-md-8">
-          <div v-for="u in users" :key="u.id" :user="u">
-            <UserCardList key="{{ u.id }}profileCard" :user="u" />
+          <div v-for="u in users" :key="u.flakeId" :user="u">
+            <UserCardList key="{{ u.flakeId }}profileCard" :user="u" />
           </div>
         </div>
       </div>
@@ -71,16 +71,16 @@ export default {
       console.debug('loading profile for ' + userNameOrId)
       const user = this.$store.getters.findUser(userNameOrId)
       if (user) {
-        this.userId = user.id
+        this.userId = user.flakeId
         console.warn('load::user::nothing to do')
       } else {
         this.$store.dispatch('fetchUser', userNameOrId)
-          .then(({ id }) => {
-            this.userId = id
-            console.warn('load::!user::fetchUser::id::nothing to do')
+          .then(({ flakeId }) => {
+            this.userId = flakeId
+            console.warn('load::!user::fetchUser::flakeId::nothing to do')
           })
           .catch((reason) => {
-            console.warn('load::!user::fetchUser::!id')
+            console.warn('load::!user::fetchUser::!flakeId')
             const errorMessage = get(reason, 'error.error')
             if (errorMessage) {
               this.error = errorMessage

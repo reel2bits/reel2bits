@@ -91,8 +91,8 @@ export default {
       return this.$route.name === 'external-user-profile'
     },
     isUs () {
-      return this.userId && this.$store.state.users.currentUser.id &&
-        this.userId === this.$store.state.users.currentUser.id
+      return this.userId && this.$store.state.users.currentUser.flakeId &&
+        this.userId === this.$store.state.users.currentUser.flakeId
     },
     isTimelineTracks () {
       return this.$route.name === 'user-profile-tracks' || this.$route.name === 'user-profile'
@@ -153,13 +153,13 @@ export default {
       console.debug('loading profile for ' + userNameOrId)
       const user = this.$store.getters.findUser(userNameOrId)
       if (user) {
-        this.userId = user.id
+        this.userId = user.flakeId
         console.warn('we already know the user')
       } else {
         this.$store.dispatch('fetchUser', userNameOrId)
-          .then(({ id }) => {
-            this.userId = id
-            console.warn('fetched by ID: ' + id)
+          .then(({ flakeId }) => {
+            this.userId = flakeId
+            console.warn('fetched by ID: ' + flakeId)
           })
           .catch((reason) => {
             console.warn('cannot fetch user: ' + reason)
