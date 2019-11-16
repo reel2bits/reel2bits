@@ -93,8 +93,10 @@ def federate_delete_sound(sound: Sound) -> None:
     if not sound.activity:
         # track never federated
         return
+    to = [follower.actor.url for follower in actor.followers]
+    to.append(ap.AS_PUBLIC)
     delete = ap.Delete(
-        actor=actor, object=ap.Tombstone(id=sound.activity.payload["id"] + "/activity").to_dict(embed=True)
+        to=to, actor=actor, object=ap.Tombstone(id=sound.activity.payload["id"] + "/activity").to_dict(embed=True)
     )
     # Federate
     post_to_outbox(delete)
@@ -107,7 +109,9 @@ def federate_delete_actor(actor: Actor) -> None:
     # Create delete
     # No need for '/activity' here ?
     # FIXME do that better
-    delete = ap.Delete(actor=actor, object=ap.Tombstone(id=actor["id"]).to_dict(embed=True))
+    to = [follower.actor.url for follower in actor.followers]
+    to.append(ap.AS_PUBLIC)
+    delete = ap.Delete(to=to, actor=actor, object=ap.Tombstone(id=actor["id"]).to_dict(embed=True))
     # Federate
     post_to_outbox(delete)
 
@@ -635,8 +639,9 @@ def send_update_sound(sound: Sound) -> None:
     object["licence"] = sound.licence_info()
     object["artwork"] = url_artwork
 
-    # if no followers, to=[], maybe it should includes the #Public as is the object already including it ?
-    raw_update = dict(to=[follower.actor.url for follower in actor.followers], actor=actor.to_dict(), object=object)
+    to = [follower.actor.url for follower in actor.followers]
+    to.append(ap.AS_PUBLIC)
+    raw_update = dict(to=to, actor=actor.to_dict(), object=object)
     raw_update["@context"] = DEFAULT_CTX
     current_app.logger.debug(f"recipients: {raw_update['to']}")
     update = ap.Update(**raw_update)
