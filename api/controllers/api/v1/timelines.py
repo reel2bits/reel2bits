@@ -195,7 +195,7 @@ def albums():
         - name: user
           in: query
           type: string
-          description: the user ID to get albums list
+          description: the user flake id to get albums list
     responses:
         200:
             description: Returns array of Status
@@ -206,7 +206,7 @@ def albums():
     if not user:
         abort(400)
 
-    user = User.query.filter(User.id == user).first()
+    user = User.query.filter(User.flake_id == user).first()
     if not user:
         return jsonify({"error": "User does not exist"}), 404
 
