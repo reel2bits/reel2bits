@@ -270,5 +270,7 @@ class Reel2BitsBackend(ap.Backend):
 
         if obj.ACTIVITY_TYPE == ap.ActivityType.PERSON:
             update_remote_actor(db_actor.id, obj)
+        elif obj.ACTIVITY_TYPE == ap.ActivityType.AUDIO:
+            raise NotImplementedError
         else:
             raise NotImplementedError
