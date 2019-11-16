@@ -26,7 +26,7 @@
     </div>
 
     <div class="col-md-4">
-      <UserCard key="{{ user.id}}profilePage" :user="user" />
+      <UserCard key="{{ user.flakeId }}profilePage" :user="user" />
       <Footer />
     </div>
   </div>
@@ -69,16 +69,19 @@ export default {
   methods: {
     load (userNameOrId) {
       console.debug('loading profile for ' + userNameOrId)
+
+      const loadById = (userId) => {
+        console.debug('fetched user id', userId)
+        this.userId = userId
+      }
+
       const user = this.$store.getters.findUser(userNameOrId)
       if (user) {
         this.userId = user.flakeId
         console.warn('load::user::nothing to do')
       } else {
         this.$store.dispatch('fetchUser', userNameOrId)
-          .then(({ flakeId }) => {
-            this.userId = flakeId
-            console.warn('load::!user::fetchUser::flakeId::nothing to do')
-          })
+          .then(({ flakeId }) => loadById(flakeId))
           .catch((reason) => {
             console.warn('load::!user::fetchUser::!flakeId')
             const errorMessage = get(reason, 'error.error')
@@ -96,9 +99,10 @@ export default {
             }
           })
       }
-      this.fetchRelationships()
+      this.fetchRelationships() // this shit should exec after all the bullshit
     },
     fetchRelationships () {
+      console.debug('fetching followers', this.userId)
       // Fetch followers
       const userId = this.userId
       this.$store.state.api.backendInteractor.fetchFollowers({ id: userId, page: 1 })

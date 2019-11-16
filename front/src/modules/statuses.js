@@ -188,7 +188,7 @@ const addNewStatuses = (state, { statuses, showImmediately = false, timeline, us
 
     if (result.new) {
       // We are mentioned in a post
-      if (status.type === 'status' && find(status.attentions, { id: user.id })) {
+      if (status.type === 'status' && find(status.attentions, { id: user.flakeId })) {
         const mentions = state.timelines.mentions
 
         // Add the mention to the mentions timeline
@@ -232,7 +232,7 @@ const addNewStatuses = (state, { statuses, showImmediately = false, timeline, us
     const status = find(allStatuses, { id: favorite.in_reply_to_status_id })
     if (status) {
       // This is our favorite, so the relevant bit.
-      if (favorite.user.id === user.id) {
+      if (favorite.user.flakeId === user.flakeId) {
         status.favorited = true
       } else {
         status.fave_num += 1
@@ -426,7 +426,7 @@ export const mutations = {
     const newStatus = state.allStatusesObject[status.id]
     newStatus.favorited = status.favorited
     newStatus.fave_num = status.fave_num
-    const index = findIndex(newStatus.favoritedBy, { id: user.id })
+    const index = findIndex(newStatus.favoritedBy, { id: user.flakeId })
     if (index !== -1 && !newStatus.favorited) {
       newStatus.favoritedBy.splice(index, 1)
     } else if (index === -1 && newStatus.favorited) {
@@ -458,7 +458,7 @@ export const mutations = {
     const newStatus = state.allStatusesObject[status.id]
     newStatus.repeated = status.repeated
     newStatus.repeat_num = status.repeat_num
-    const index = findIndex(newStatus.rebloggedBy, { id: user.id })
+    const index = findIndex(newStatus.rebloggedBy, { id: user.flakeId })
     if (index !== -1 && !newStatus.repeated) {
       newStatus.rebloggedBy.splice(index, 1)
     } else if (index === -1 && newStatus.repeated) {
@@ -508,14 +508,14 @@ export const mutations = {
     newStatus.rebloggedBy = rebloggedByUsers.filter(_ => _)
     // repeats stats can be incorrect based on polling condition, let's update them using the most recent data
     newStatus.repeat_num = newStatus.rebloggedBy.length
-    newStatus.repeated = !!newStatus.rebloggedBy.find(({ id }) => currentUser.id === id)
+    newStatus.repeated = !!newStatus.rebloggedBy.find(({ id }) => currentUser.flakeId === id)
   },
   addFavs (state, { id, favoritedByUsers, currentUser }) {
     const newStatus = state.allStatusesObject[id]
     newStatus.favoritedBy = favoritedByUsers.filter(_ => _)
     // favorites stats can be incorrect based on polling condition, let's update them using the most recent data
     newStatus.fave_num = newStatus.favoritedBy.length
-    newStatus.favorited = !!newStatus.favoritedBy.find(({ id }) => currentUser.id === id)
+    newStatus.favorited = !!newStatus.favoritedBy.find(({ id }) => currentUser.flakeId === id)
   },
   updateStatusWithPoll (state, { id, poll }) {
     const status = state.allStatusesObject[id]

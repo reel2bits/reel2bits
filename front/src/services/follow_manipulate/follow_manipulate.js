@@ -2,7 +2,7 @@
 
 const fetchUser = (attempt, user, store) => new Promise((resolve, reject) => {
   setTimeout(() => {
-    store.state.api.backendInteractor.fetchUser({ id: user.id })
+    store.state.api.backendInteractor.fetchUser({ id: user.flakeId })
       .then((user) => store.commit('addNewUsers', [user]))
       .then(() => resolve([user.following, user.requested, user.locked, attempt]))
       .catch((e) => reject(e))
@@ -19,7 +19,7 @@ const fetchUser = (attempt, user, store) => new Promise((resolve, reject) => {
 })
 
 export const requestFollow = (user, store) => new Promise((resolve, reject) => {
-  store.state.api.backendInteractor.followUser(user.id)
+  store.state.api.backendInteractor.followUser(user.flakeId)
     .then((updated) => {
       store.commit('updateUserRelationship', [updated])
 
@@ -44,7 +44,7 @@ export const requestFollow = (user, store) => new Promise((resolve, reject) => {
 })
 
 export const requestUnfollow = (user, store) => new Promise((resolve, reject) => {
-  store.state.api.backendInteractor.unfollowUser(user.id)
+  store.state.api.backendInteractor.unfollowUser(user.flakeId)
     .then((updated) => {
       store.commit('updateUserRelationship', [updated])
       resolve({
