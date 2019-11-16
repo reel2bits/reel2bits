@@ -26,7 +26,7 @@
     </div>
 
     <div class="col-md-4">
-      <UserCard key="{{ user.flakeId }}profilePage" :user="user" />
+      <UserCard v-if="user" key="{{ user.flakeId }}profilePage" :user="user" />
       <Footer />
     </div>
   </div>
@@ -73,17 +73,16 @@ export default {
       const loadById = (userId) => {
         console.debug('fetched user id', userId)
         this.userId = userId
+        this.fetchRelationships()
       }
 
       const user = this.$store.getters.findUser(userNameOrId)
       if (user) {
-        this.userId = user.flakeId
-        console.warn('load::user::nothing to do')
+        loadById(user.flakeId)
       } else {
         this.$store.dispatch('fetchUser', userNameOrId)
           .then(({ flakeId }) => loadById(flakeId))
           .catch((reason) => {
-            console.warn('load::!user::fetchUser::!flakeId')
             const errorMessage = get(reason, 'error.error')
             if (errorMessage) {
               this.error = errorMessage
@@ -99,7 +98,6 @@ export default {
             }
           })
       }
-      this.fetchRelationships() // this shit should exec after all the bullshit
     },
     fetchRelationships () {
       console.debug('fetching followers', this.userId)

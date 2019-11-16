@@ -23,6 +23,9 @@ import commands
 from utils.flake_id import FlakeId
 import html
 from utils.meta_tags import get_default_head_tags, get_request_head_tags
+from sqlalchemy import event
+from sqlalchemy.engine import Engine
+import time
 
 from models import db, Config, user_datastore, create_actor
 from utils.various import InvalidUsage, is_admin, add_user_log, join_url
@@ -132,6 +135,9 @@ def create_app(config_filename="config.development.Config", app_name=None, regis
         file_handler.setLevel(logging.INFO)
         file_handler.setFormatter(formatter)
         app.logger.addHandler(file_handler)
+
+    dbLogger = logging.getLogger("reel2bits.sqltime")
+    dbLogger.setLevel(logging.DEBUG)
 
     CORS(app, origins=["*"])
 
@@ -257,6 +263,21 @@ def create_app(config_filename="config.development.Config", app_name=None, regis
         response = jsonify(error.to_dict())
         response.status_code = error.status_code
         return response
+
+    @event.listens_for(Engine, "before_cursor_execute")
+    def before_cursor_execute(conn, cursor, statement, parameters, context, executemany):
+        if not app.debug:
+            return
+        conn.info.setdefault("query_start_time", []).append(time.time())
+        dbLogger.debug("Start Query: %s", statement)
+
+    @event.listens_for(Engine, "after_cursor_execute")
+    def after_cursor_execute(conn, cursor, statement, parameters, context, executemany):
+        if not app.debug:
+            return
+        total = time.time() - conn.info["query_start_time"].pop(-1)
+        dbLogger.debug("Query Complete!")
+        dbLogger.debug("Total Time: %f", total)
 
     # Tracks files upload set
     sounds = UploadSet("sounds", AUDIO)

@@ -454,9 +454,9 @@ def accounts_update_credentials():
     return jsonify(to_json_account(current_user))
 
 
-@bp_api_v1_accounts.route("/api/v1/accounts/<int:user_id>/statuses", methods=["GET"])
+@bp_api_v1_accounts.route("/api/v1/accounts/<string:username_or_id>/statuses", methods=["GET"])
 @require_oauth(optional=True)
-def user_statuses(user_id):
+def user_statuses(username_or_id):
     """
     User statuses.
     ---
@@ -486,7 +486,12 @@ def user_statuses(user_id):
     page = int(request.args.get("page", 1))
 
     # Get associated user
-    user = User.query.filter(User.id == user_id).first()
+    user = User.query.filter(User.name == username_or_id, User.local.is_(True)).first()
+    if not user:
+        try:
+            user = User.query.filter(User.flake_id == username_or_id).first()
+        except sqlalchemy.exc.DataError:
+            abort(404)
     if not user:
         abort(404)
 
@@ -590,9 +595,9 @@ def relationships():
     return jsonify(rels)
 
 
-@bp_api_v1_accounts.route("/api/v1/accounts/<int:user_id>/follow", methods=["POST"])
+@bp_api_v1_accounts.route("/api/v1/accounts/<string:username_or_id>/follow", methods=["POST"])
 @require_oauth("write")
-def follow(user_id):
+def follow(username_or_id):
     """
     Follow an account.
     ---
@@ -614,7 +619,12 @@ def follow(user_id):
     if not current_user:
         abort(400)
 
-    user = User.query.filter(User.id == user_id).first()
+    user = User.query.filter(User.name == username_or_id, User.local.is_(True)).first()
+    if not user:
+        try:
+            user = User.query.filter(User.flake_id == username_or_id).first()
+        except sqlalchemy.exc.DataError:
+            abort(404)
     if not user:
         abort(404)
 
@@ -638,9 +648,9 @@ def follow(user_id):
             return jsonify({"error": "already following"}), 409
 
 
-@bp_api_v1_accounts.route("/api/v1/accounts/<int:user_id>/unfollow", methods=["POST"])
+@bp_api_v1_accounts.route("/api/v1/accounts/<string:username_or_id>/unfollow", methods=["POST"])
 @require_oauth("write")
-def unfollow(user_id):
+def unfollow(username_or_id):
     """
     Unfollow an account.
     ---
@@ -662,7 +672,12 @@ def unfollow(user_id):
     if not current_user:
         abort(400)
 
-    user = User.query.filter(User.id == user_id).first()
+    user = User.query.filter(User.name == username_or_id, User.local.is_(True)).first()
+    if not user:
+        try:
+            user = User.query.filter(User.flake_id == username_or_id).first()
+        except sqlalchemy.exc.DataError:
+            abort(404)
     if not user:
         abort(404)
 
@@ -702,9 +717,9 @@ def unfollow(user_id):
         return jsonify(""), 202
 
 
-@bp_api_v1_accounts.route("/api/v1/accounts/<int:user_id>/followers", methods=["GET"])
+@bp_api_v1_accounts.route("/api/v1/accounts/<string:username_or_id>/followers", methods=["GET"])
 @require_oauth(optional=True)
-def followers(user_id):
+def followers(username_or_id):
     """
     Accounts which follow the given account.
     ---
@@ -731,7 +746,12 @@ def followers(user_id):
         schema:
             $ref: '#/definitions/Account'
     """
-    user = User.query.filter(User.id == user_id).first()
+    user = User.query.filter(User.name == username_or_id, User.local.is_(True)).first()
+    if not user:
+        try:
+            user = User.query.filter(User.flake_id == username_or_id).first()
+        except sqlalchemy.exc.DataError:
+            abort(404)
     if not user:
         abort(404)
 
@@ -756,9 +776,9 @@ def followers(user_id):
     return jsonify(resp)
 
 
-@bp_api_v1_accounts.route("/api/v1/accounts/<int:user_id>/following", methods=["GET"])
+@bp_api_v1_accounts.route("/api/v1/accounts/<string:username_or_id>/following", methods=["GET"])
 @require_oauth(optional=True)
-def following(user_id):
+def following(username_or_id):
     """
     Accounts followed by the given account.
     ---
@@ -785,7 +805,12 @@ def following(user_id):
         schema:
             $ref: '#/definitions/Account'
     """
-    user = User.query.filter(User.id == user_id).first()
+    user = User.query.filter(User.name == username_or_id, User.local.is_(True)).first()
+    if not user:
+        try:
+            user = User.query.filter(User.flake_id == username_or_id).first()
+        except sqlalchemy.exc.DataError:
+            abort(404)
     if not user:
         abort(404)
 
