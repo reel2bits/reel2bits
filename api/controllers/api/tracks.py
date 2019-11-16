@@ -12,6 +12,7 @@ import os
 from sqlalchemy import and_
 from utils.defaults import Reel2bitsDefaults
 from tasks import send_update_sound
+import sqlalchemy.exc
 
 
 bp_api_tracks = Blueprint("bp_api_tracks", __name__)
@@ -176,11 +177,12 @@ def show(username_or_id, soundslug):
         current_user = None
 
     # Get the associated User from url fetch
-    # Try username
     track_user = User.query.filter(User.name == username_or_id, User.local.is_(True)).first()
-    # Then ID
     if not track_user:
-        track_user = User.query.filter(User.flake_id == username_or_id).first()
+        try:
+            track_user = User.query.filter(User.flake_id == username_or_id).first()
+        except sqlalchemy.exc.DataError:
+            return jsonify({"error": "User not found"}), 404
     if not track_user:
         return jsonify({"error": "User not found"}), 404
 
@@ -395,11 +397,12 @@ def logs(username_or_id, soundslug):
         current_user = None
 
     # Get the associated User from url fetch
-    # Try username
     track_user = User.query.filter(User.name == username_or_id, User.local.is_(True)).first()
-    # Then ID
     if not track_user:
-        track_user = User.query.filter(User.flake_id == username_or_id).first()
+        try:
+            track_user = User.query.filter(User.flake_id == username_or_id).first()
+        except sqlalchemy.exc.DataError:
+            return jsonify({"error": "User not found"}), 404
     if not track_user:
         return jsonify({"error": "User not found"}), 404
 
@@ -468,11 +471,12 @@ def retry_processing(username_or_id, soundslug):
         return jsonify({"error": "unauthorized"}), 401
 
     # Get the associated User from url fetch
-    # Try username
     track_user = User.query.filter(User.name == username_or_id, User.local.is_(True)).first()
-    # Then ID
     if not track_user:
-        track_user = User.query.filter(User.flake_id == username_or_id).first()
+        try:
+            track_user = User.query.filter(User.flake_id == username_or_id).first()
+        except sqlalchemy.exc.DataError:
+            return jsonify({"error": "User not found"}), 404
     if not track_user:
         return jsonify({"error": "User not found"}), 404
 

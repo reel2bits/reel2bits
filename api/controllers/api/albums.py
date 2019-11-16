@@ -10,6 +10,7 @@ from sqlalchemy import and_
 from flask_uploads import UploadSet
 from utils.defaults import Reel2bitsDefaults
 import os
+import sqlalchemy.exc
 
 
 bp_api_albums = Blueprint("bp_api_albums", __name__)
@@ -116,9 +117,12 @@ def get(username_or_id, albumslug):
         current_user = None
 
     # Get the associated User from url fetch
-    album_user = User.query.filter(User.flake_id == username_or_id).first()
+    album_user = User.query.filter(User.name == username_or_id, User.local.is_(True)).first()
     if not album_user:
-        album_user = User.query.filter(User.name == username_or_id, User.local.is_(True)).first()
+        try:
+            album_user = User.query.filter(User.flake_id == username_or_id).first()
+        except sqlalchemy.exc.DataError:
+            return jsonify({"error": "User not found"}), 404
     if not album_user:
         return jsonify({"error": "User not found"}), 404
 

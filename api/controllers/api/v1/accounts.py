@@ -580,14 +580,14 @@ def relationships():
         schema:
             $ref: '#/definitions/Relationship'
     """
-    ids = request.args.getlist("id")
+    flake_ids = request.args.getlist("id")
     of_user = current_token.user
 
     rels = []
-    for id in ids:
-        against_user = User.query.filter(User.id == id).first()
+    for id in flake_ids:
+        against_user = User.query.filter(User.flake_id == id).first()
         if not against_user:
-            if len(ids) > 1:
+            if len(flake_ids) > 1:
                 next
             else:
                 return jsonify([])
