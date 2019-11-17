@@ -1,7 +1,7 @@
 from little_boxes import activitypub as ap
 from flask import current_app
 import requests
-from models import db, Activity, create_remote_actor, Actor, update_remote_actor
+from models import db, Activity, create_remote_actor, Actor, update_remote_actor, update_remote_track
 from urllib.parse import urlparse
 from .vars import Box
 from version import VERSION
@@ -271,6 +271,6 @@ class Reel2BitsBackend(ap.Backend):
         if obj.ACTIVITY_TYPE == ap.ActivityType.PERSON:
             update_remote_actor(db_actor.id, obj)
         elif obj.ACTIVITY_TYPE == ap.ActivityType.AUDIO:
-            raise NotImplementedError
+            update_remote_track(db_actor.id, obj)
         else:
             raise NotImplementedError

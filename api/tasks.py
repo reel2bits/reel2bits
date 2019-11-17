@@ -624,20 +624,21 @@ def send_update_sound(sound: Sound) -> None:
     # Should not even work
     actor = sound.user.actor[0]
 
-    if sound.path_artwork():
-        url_artwork = url_for("get_uploads_stuff", thing="artwork_sounds", stuff=sound.path_artwork(), _external=True)
-    else:
-        url_artwork = None
+    # if sound.path_artwork():
+    #     url_artwork = url_for("get_uploads_stuff", thing="artwork_sounds", stuff=sound.path_artwork(), _external=True)
+    # else:
+    #     url_artwork = None
 
     # Fetch object and update fields
     object = sound.activity.payload["object"]
     object["name"] = sound.title
     object["content"] = sound.description
     # custom things that can change
-    object["tags"] = [t.name for t in sound.tags]
-    object["genre"] = sound.genre
-    object["licence"] = sound.licence_info()
-    object["artwork"] = url_artwork
+    # object["tags"] = [t.name for t in sound.tags]
+    # object["genre"] = sound.genre
+    # object["licence"] = sound.licence_info()
+    # object["artwork"] = url_artwork
+    # FIXME something is not good, the jsonld lib cries
 
     to = [follower.actor.url for follower in actor.followers]
     to.append(ap.AS_PUBLIC)

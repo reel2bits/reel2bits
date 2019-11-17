@@ -779,3 +779,13 @@ def update_remote_actor(actor_id: int, activity_actor: ap.BaseActivity) -> None:
     actor.following_url = activity_actor.following
 
     db.session.commit()
+
+
+def update_remote_track(actor_id: int, obj: ap.BaseActivity) -> None:
+    """
+    :param actor_id: an Actor db ID
+    :param obj: a Little Boxes Audio object
+    :return: nothing
+    """
+    current_app.logger.debug(f"asked to update a track {obj!r}")
+    raise NotImplementedError
