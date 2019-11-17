@@ -1,4 +1,4 @@
-from utils.various import duration_human, get_hashed_filename
+from utils.various import duration_human, get_hashed_filename, strip_end
 import time
 
 
@@ -24,3 +24,16 @@ def test_get_hashed_filename():
     time.sleep(0.4)
     d = get_hashed_filename("foo bar baz.mp3")
     assert a != b != c != d
+
+
+def test_strip_end():
+    t = [
+        {"text": "/dsadadasdadas/activity", "suffix": "/activity", "result": "/dsadadasdadas"},
+        {
+            "text": "https://reel2bits2.dev.lan.sigpipe.me/outbox/ce56629b901c8ddc/activity",
+            "suffix": "/activity",
+            "result": "https://reel2bits2.dev.lan.sigpipe.me/outbox/ce56629b901c8ddc",
+        },
+    ]
+    for i in t:
+        assert strip_end(i["text"], i["suffix"]) == i["result"]

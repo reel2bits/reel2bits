@@ -338,3 +338,10 @@ def join_url(start, end):
         return start + "/" + end
 
     return start + end
+
+
+# Also present in models.py, thx circle import
+def strip_end(text, suffix):
+    if not text.endswith(suffix):
+        return text
+    return text[: len(text) - len(suffix)]

@@ -5,6 +5,7 @@ from models import db, Activity, create_remote_actor, Actor, update_remote_actor
 from urllib.parse import urlparse
 from .vars import Box
 from version import VERSION
+from utils.various import strip_end
 
 
 class Reel2BitsBackend(ap.Backend):
@@ -191,7 +192,7 @@ class Reel2BitsBackend(ap.Backend):
         # Fetch linked activity and mark it deleted
         # Somehow we needs to remove /activity here
         # FIXME do that better
-        activity_uri = activity.get_object_id().rstrip("/activity")
+        activity_uri = strip_end(activity.get_object_id(), "/activity")
         current_app.logger.debug(f"id: {activity_uri}")
         orig_activity = Activity.query.filter(Activity.url == activity_uri, Activity.type == "Create").first()
         orig_activity.meta_deleted = True
@@ -271,6 +272,6 @@ class Reel2BitsBackend(ap.Backend):
         if obj.ACTIVITY_TYPE == ap.ActivityType.PERSON:
             update_remote_actor(db_actor.id, obj)
         elif obj.ACTIVITY_TYPE == ap.ActivityType.AUDIO:
-            update_remote_track(db_actor.id, obj)
+            update_remote_track(db_actor.id, update)
         else:
             raise NotImplementedError

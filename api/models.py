@@ -781,11 +781,41 @@ def update_remote_actor(actor_id: int, activity_actor: ap.BaseActivity) -> None:
     db.session.commit()
 
 
-def update_remote_track(actor_id: int, obj: ap.BaseActivity) -> None:
+def strip_end(text, suffix):
+    if not text.endswith(suffix):
+        return text
+    return text[: len(text) - len(suffix)]
+
+
+def update_remote_track(actor_id: int, update: ap.Update) -> None:
     """
     :param actor_id: an Actor db ID
     :param obj: a Little Boxes Audio object
     :return: nothing
     """
+    obj = update.get_object()
     current_app.logger.debug(f"asked to update a track {obj!r}")
-    raise NotImplementedError
+    current_app.logger.debug(f"obj id {obj.id}")
+    act_id = strip_end(obj.id, "/activity")
+    original_activity = Activity.query.filter(Activity.url == act_id).first()
+    if not original_activity:
+        # TODO(dashie) we should fetch it if not found
+        current_app.logger.error("fetching unknown activity not yet implemented")
+        raise NotImplementedError
+
+    update_activity = Activity.query.filter(Activity.url == strip_end(update.id, "/activity"))
+    if not update_activity:
+        current_app.logger.error(f"cannot get update activity from db {update!r}")
+        return
+
+    track = Sound.query.filter(Sound.activity_id == original_activity.id).first()
+    if not track:
+        current_app.logger.error(f"update_remote_track: {original_activity!r} has no associated sound")
+        return
+
+    # Update what is allowed to change
+    # If not found they should fallback to the actual .thing of the object in db
+    track.title = update_activity.payload.get("object", {}).get("name", track.title)
+    track.description = update_activity.payload.get("object", {}).get("content", track.description)
+
+    db.session.commit()
