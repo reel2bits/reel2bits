@@ -803,7 +803,7 @@ def update_remote_track(actor_id: int, update: ap.Update) -> None:
         current_app.logger.error("fetching unknown activity not yet implemented")
         raise NotImplementedError
 
-    update_activity = Activity.query.filter(Activity.url == strip_end(update.id, "/activity"))
+    update_activity = Activity.query.filter(Activity.url == strip_end(update.id, "/activity")).first()
     if not update_activity:
         current_app.logger.error(f"cannot get update activity from db {update!r}")
         return
