@@ -1,7 +1,15 @@
 from little_boxes import activitypub as ap
 from flask import current_app
 import requests
-from models import db, Activity, create_remote_actor, Actor, update_remote_actor, update_remote_track
+from models import (
+    db,
+    Activity,
+    create_remote_actor,
+    Actor,
+    update_remote_actor,
+    update_remote_track,
+    delete_remote_track,
+)
 from urllib.parse import urlparse
 from .vars import Box
 from version import VERSION
@@ -273,5 +281,16 @@ class Reel2BitsBackend(ap.Backend):
             update_remote_actor(db_actor.id, obj)
         elif obj.ACTIVITY_TYPE == ap.ActivityType.AUDIO:
             update_remote_track(db_actor.id, update)
+        else:
+            raise NotImplementedError
+
+    def inbox_delete(self, as_actor: ap.Person, activity: ap.Delete) -> None:
+        obj = activity.get_object()
+        current_app.logger.debug(f"inbox_update {obj.ACTIVITY_TYPE} {obj!r} as {as_actor!r}")
+
+        if obj.ACTIVITY_TYPE == ap.ActivityType.PERSON:
+            raise NotImplementedError
+        elif obj.ACTIVITY_TYPE == ap.ActivityType.AUDIO:
+            delete_remote_track(activity)
         else:
             raise NotImplementedError

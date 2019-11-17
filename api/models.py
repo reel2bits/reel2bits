@@ -819,3 +819,24 @@ def update_remote_track(actor_id: int, update: ap.Update) -> None:
     track.description = update_activity.payload.get("object", {}).get("content", track.description)
 
     db.session.commit()
+
+
+def delete_remote_track(activity: ap.Delete) -> None:
+    obj = activity.get_object()
+    original_activity = Activity.query(Activity.url == strip_end(obj.id, "/activity")).first()
+    if not original_activity:
+        current_app.logger.error(f"unknown activity in db {activity!r}")
+        return
+
+    original_activity.meta_deleted = True
+
+    # TODO(dashie) all related activities to this object/track should be marked as meta_deleted=True too to return a Tombstone as required
+
+    sound = Sound.query.filter(Sound.activity_id == original_activity.id).first()
+    if not sound:
+        current_app.logger.error(f"activity object {obj!r} has no related sound in db")
+        db.session.commit()
+        return
+
+    db.session.delete(sound)
+    db.session.commit()
