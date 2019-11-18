@@ -844,7 +844,7 @@ def update_remote_track(actor_id: int, update: ap.Update) -> None:
 
 
 def delete_remote_track(obj_id: str) -> None:
-    original_activity = Activity.query(Activity.url == strip_end(obj_id, "/activity")).first()
+    original_activity = Activity.query.filter(Activity.url == strip_end(obj_id, "/activity")).first()
     if not original_activity:
         current_app.logger.error(f"unknown activity in db {obj_id!r}")
         return
