@@ -95,6 +95,8 @@ def public():
         tracks = []
         for t in q.items:
             if t.Sound:
+                if not t.Sound.transcode_state == Sound.TRANSCODE_DONE:
+                    continue
                 relationship = False
                 if current_token and current_token.user:
                     relationship = to_json_relationship(current_token.user, t.Sound.user)
