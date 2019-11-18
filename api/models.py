@@ -375,10 +375,14 @@ class Sound(db.Model):
         username = self.user.slug
         if self.remote_uri:
             username = f"remote_{self.user.slug}"
+        filename = self.filename
         if self.transcode_needed and self.transcode_state == self.TRANSCODE_DONE and not orig:
-            return os.path.join(username, self.filename_transcoded)
-        else:
-            return os.path.join(username, self.filename)
+            filename = self.filename_transcoded
+
+        if not username or not filename:
+            return None
+
+        return os.path.join(username, self.filename)
 
     def path_artwork(self):
         if self.artwork_filename:
@@ -406,18 +410,22 @@ class Sound(db.Model):
     # Delete files file when COMMIT DELETE
     def __commit_delete__(self):
         print("COMMIT DELETE: Deleting files")
-        fname = os.path.join(current_app.config["UPLOADED_SOUNDS_DEST"], self.path_sound(orig=True))
-        if os.path.isfile(fname):
-            os.unlink(fname)
-        else:
-            print(f"!!! COMMIT DELETE SOUND cannot delete orig file {fname}")
-
-        if self.transcode_needed:
-            fname = os.path.join(current_app.config["UPLOADED_SOUNDS_DEST"], self.path_sound(orig=False))
+        path_sound = self.path_sound(orig=True)
+        if path_sound:
+            fname = os.path.join(current_app.config["UPLOADED_SOUNDS_DEST"], path_sound)
             if os.path.isfile(fname):
                 os.unlink(fname)
             else:
-                print(f"!!! COMMIT DELETE SOUND cannot delete transcoded file {fname}")
+                print(f"!!! COMMIT DELETE SOUND cannot delete orig file {fname}")
+
+        if self.transcode_needed:
+            path_sound = self.path_sound(orig=False)
+            if path_sound:
+                fname = os.path.join(current_app.config["UPLOADED_SOUNDS_DEST"], path_sound)
+                if os.path.isfile(fname):
+                    os.unlink(fname)
+                else:
+                    print(f"!!! COMMIT DELETE SOUND cannot delete transcoded file {fname}")
 
         if self.artwork_filename:
             fname = os.path.join(current_app.config["UPLOADED_ARTWORKSOUNDS_DEST"], self.path_artwork())

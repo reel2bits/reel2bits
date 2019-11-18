@@ -107,12 +107,16 @@ def update_file_sizes():
     non breaking.
     """
     for track in Sound.query.filter(Sound.file_size.is_(None)).all():
-        track.file_size = os.path.getsize(
-            os.path.join(current_app.config["UPLOADED_SOUNDS_DEST"], track.path_sound(orig=True))
-        )
+        path_sound = track.path_sound(orig=True)
+        if not path_sound:
+            continue
+        track.file_size = os.path.getsize(os.path.join(current_app.config["UPLOADED_SOUNDS_DEST"], path_sound))
         if track.transcode_needed:
+            path_sound = track.path_sound(orig=False)
+            if not path_sound:
+                continue
             track.transcode_file_size = os.path.getsize(
-                os.path.join(current_app.config["UPLOADED_SOUNDS_DEST"], track.path_sound(orig=False))
+                os.path.join(current_app.config["UPLOADED_SOUNDS_DEST"], path_sound)
             )
     db.session.commit()
 

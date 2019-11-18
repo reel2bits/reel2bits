@@ -84,7 +84,10 @@ def get_user_track_tags(view_name, view_arguments):
 
     track_url = url_for("bp_spa.user_track", username=user.name, trackslug=user.name, _external=True)
     musician_url = url_for("bp_spa.user_profile", username=user.name, _external=True)
-    transcode_url = url_for("get_uploads_stuff", thing="sounds", stuff=track.path_sound(orig=False), _external=True)
+    path_sound = track.path_sound(orig=False)
+    if not path_sound:
+        return []
+    transcode_url = url_for("get_uploads_stuff", thing="sounds", stuff=path_sound, _external=True)
 
     metas = [
         {"tag": "meta", "property": "og:url", "content": track_url},

@@ -56,9 +56,10 @@ def tracks(user_id):
     feed = gen_feed(f"{user.name} tracks", author, feed_url, url, f"Tracks of {user.name}", logo)
 
     for track in q:
-        url_transcode = url_for(
-            "get_uploads_stuff", thing="sounds", stuff=track.path_sound(orig=False), _external=False
-        )
+        path_sound = track.path_sound(orig=False)
+        if not path_sound:
+            continue
+        url_transcode = url_for("get_uploads_stuff", thing="sounds", stuff=path_sound, _external=False)
         url = f"https://{current_app.config['AP_DOMAIN']}/{user.name}/track/{track.slug}"
 
         fe = feed.add_entry()
@@ -116,9 +117,10 @@ def album(user_id, album_id):
     )
 
     for track in album.sounds.filter(Sound.transcode_state == Sound.TRANSCODE_DONE):
-        url_transcode = url_for(
-            "get_uploads_stuff", thing="sounds", stuff=track.path_sound(orig=False), _external=False
-        )
+        path_sound = track.path_sound(orig=False)
+        if not path_sound:
+            continue
+        url_transcode = url_for("get_uploads_stuff", thing="sounds", stuff=path_sound, _external=False)
         url = f"https://{current_app.config['AP_DOMAIN']}/{user.name}/track/{track.slug}"
 
         fe = feed.add_entry()
