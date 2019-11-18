@@ -286,11 +286,17 @@ class Reel2BitsBackend(ap.Backend):
 
     def inbox_delete(self, as_actor: ap.Person, activity: ap.Delete) -> None:
         obj = activity.get_object()
-        current_app.logger.debug(f"inbox_update {obj.ACTIVITY_TYPE} {obj!r} as {as_actor!r}")
+        current_app.logger.debug(f"inbox_delete {obj.ACTIVITY_TYPE} {obj!r} as {as_actor!r}")
 
-        if obj.ACTIVITY_TYPE == ap.ActivityType.PERSON:
-            raise NotImplementedError
-        elif obj.ACTIVITY_TYPE == ap.ActivityType.AUDIO:
-            delete_remote_track(activity)
+        db_activity = Activity.query.filter(Activity.url == strip_end(obj.id, "/activity")).first()
+        if not db_activity:
+            current_app.logger.debug(f"inbox_delete no known activity for {obj!r}")
+            return
+
+        # Test types
+        # TODO how to check if it's an Actor which is deleted
+        object_type = db_activity.payload.get("object", {}).get("type", None)
+        if object_type == "Audio":
+            delete_remote_track(obj.id)
         else:
             raise NotImplementedError

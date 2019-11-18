@@ -843,11 +843,10 @@ def update_remote_track(actor_id: int, update: ap.Update) -> None:
     db.session.commit()
 
 
-def delete_remote_track(activity: ap.Delete) -> None:
-    obj = activity.get_object()
-    original_activity = Activity.query(Activity.url == strip_end(obj.id, "/activity")).first()
+def delete_remote_track(obj_id: str) -> None:
+    original_activity = Activity.query(Activity.url == strip_end(obj_id, "/activity")).first()
     if not original_activity:
-        current_app.logger.error(f"unknown activity in db {activity!r}")
+        current_app.logger.error(f"unknown activity in db {obj_id!r}")
         return
 
     original_activity.meta_deleted = True
@@ -856,7 +855,7 @@ def delete_remote_track(activity: ap.Delete) -> None:
 
     sound = Sound.query.filter(Sound.activity_id == original_activity.id).first()
     if not sound:
-        current_app.logger.error(f"activity object {obj!r} has no related sound in db")
+        current_app.logger.error(f"activity object {obj_id!r} has no related sound in db")
         db.session.commit()
         return
 
