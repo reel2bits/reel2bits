@@ -41,12 +41,15 @@ def federate_new_sound(sound: Sound) -> int:
     actor = sound.user.actor[0]
     cc = [actor.followers_url]
     url_orig = url_for("get_uploads_stuff", thing="sounds", stuff=sound.path_sound(orig=True), _external=True)
-    # url_transcode = url_for("get_uploads_stuff", thing="sounds", stuff=sound.path_sound(orig=False), _external=True)
+    url_transcode = url_for("get_uploads_stuff", thing="sounds", stuff=sound.path_sound(orig=False), _external=True)
 
-    # if sound.path_artwork():
-    #     url_artwork = url_for("get_uploads_stuff", thing="artwork_sounds", stuff=sound.path_artwork(), _external=True)
-    # else:
-    #     url_artwork = None
+    if sound.path_artwork():
+        url_artwork = url_for("get_uploads_stuff", thing="artwork_sounds", stuff=sound.path_artwork(), _external=True)
+    else:
+        url_artwork = None
+
+    licence = sound.licence_info()
+    licence["id"] = str(licence["id"])  # integers makes jsonld cry
 
     raw_audio = dict(
         attributedTo=actor.url,
@@ -58,12 +61,12 @@ def federate_new_sound(sound: Sound) -> int:
         mediaType="text/plain",
         url={"type": "Link", "href": url_orig, "mediaType": "audio/mp3"},
         # custom items
-        # tags=[t.name for t in sound.tags],
-        # genre=sound.genre,
-        # licence=sound.licence_info(),
-        # artwork=url_artwork,
-        # transcoded=sound.transcode_needed,
-        # transcode_url=(url_transcode if sound.transcode_needed else None),
+        tags=[t.name for t in sound.tags],
+        genre=sound.genre,
+        licence=licence,
+        artwork=url_artwork,
+        transcoded=sound.transcode_needed,
+        transcode_url=(url_transcode if sound.transcode_needed else None),
     )
     raw_audio["@context"] = DEFAULT_CTX
 
@@ -624,21 +627,22 @@ def send_update_sound(sound: Sound) -> None:
     # Should not even work
     actor = sound.user.actor[0]
 
-    # if sound.path_artwork():
-    #     url_artwork = url_for("get_uploads_stuff", thing="artwork_sounds", stuff=sound.path_artwork(), _external=True)
-    # else:
-    #     url_artwork = None
+    if sound.path_artwork():
+        url_artwork = url_for("get_uploads_stuff", thing="artwork_sounds", stuff=sound.path_artwork(), _external=True)
+    else:
+        url_artwork = None
 
     # Fetch object and update fields
     object = sound.activity.payload["object"]
     object["name"] = sound.title
     object["content"] = sound.description
     # custom things that can change
-    # object["tags"] = [t.name for t in sound.tags]
+    object["tags"] = [t.name for t in sound.tags]
     object["genre"] = sound.genre
-    # object["licence"] = sound.licence_info()
-    # object["artwork"] = url_artwork
-    # FIXME something is not good, the jsonld lib cries
+    licence = sound.licence_info()
+    licence["id"] = str(licence["id"])  # integers makes jsonld cry
+    object["licence"] = licence
+    object["artwork"] = url_artwork
 
     to = [follower.actor.url for follower in actor.followers]
     to.append(ap.AS_PUBLIC)
