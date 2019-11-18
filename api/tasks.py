@@ -635,7 +635,7 @@ def send_update_sound(sound: Sound) -> None:
     object["content"] = sound.description
     # custom things that can change
     # object["tags"] = [t.name for t in sound.tags]
-    # object["genre"] = sound.genre
+    object["genre"] = sound.genre
     # object["licence"] = sound.licence_info()
     # object["artwork"] = url_artwork
     # FIXME something is not good, the jsonld lib cries

@@ -817,6 +817,7 @@ def update_remote_track(actor_id: int, update: ap.Update) -> None:
     # If not found they should fallback to the actual .thing of the object in db
     track.title = update_activity.payload.get("object", {}).get("name", track.title)
     track.description = update_activity.payload.get("object", {}).get("content", track.description)
+    track.genre = update_activity.payload.get("object", {}).get("genre", track.genre)
 
     db.session.commit()
 
