@@ -95,6 +95,7 @@ def public():
         tracks = []
         for t in q.items:
             if t.Sound:
+                # TODO(dashie) FIXME can probably be moved out to the q.filter()
                 if not t.Sound.transcode_state == Sound.TRANSCODE_DONE:
                     continue
                 relationship = False

@@ -88,7 +88,7 @@ def federate_delete_sound(sound: Sound) -> None:
 
     # TODO FIXME: to who is the delete sent ?
 
-    actor = sound.user.actor[0].to_dict()
+    actor = sound.user.actor[0]
     # Get activity
     # Create delete
     # Somehow we needs to add /activity here
@@ -99,7 +99,9 @@ def federate_delete_sound(sound: Sound) -> None:
     to = [follower.actor.url for follower in actor.followers]
     to.append(ap.AS_PUBLIC)
     delete = ap.Delete(
-        to=to, actor=actor, object=ap.Tombstone(id=sound.activity.payload["id"] + "/activity").to_dict(embed=True)
+        to=to,
+        actor=actor.to_dict(),
+        object=ap.Tombstone(id=sound.activity.payload["id"] + "/activity").to_dict(embed=True),
     )
     # Federate
     post_to_outbox(delete)
