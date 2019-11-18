@@ -374,7 +374,7 @@ def process_new_activity(self, iri: str) -> None:
                 should_forward = False
 
         elif activity.has_type(ap.ActivityType.DELETE):
-            note = Activity.query.filter(Activity.id == activity.get_object().id).first()
+            note = Activity.query.filter(Activity.url == activity.get_object().id).first()
             if note and note["meta"].get("forwarded", False):
                 # If the activity was originally forwarded, forward the
                 # delete too
