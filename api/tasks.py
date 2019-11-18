@@ -137,7 +137,7 @@ def create_sound_for_remote_track(activity: Activity) -> int:
     sound.user_id = activity.actor.user.id
     sound.activity_id = activity.id
     # custom from AP
-    sound.artwork_filename = activity.payload.get("object", {}).get("artwork", None)
+    sound.remote_artwork_uri = activity.payload.get("object", {}).get("artwork", None)
     sound.genre = activity.payload.get("object", {}).get("genre", None)
     sound.licence = activity.payload.get("object", {}).get("licence", {}).get("id", 0)
 
