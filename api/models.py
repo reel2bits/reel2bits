@@ -6,7 +6,7 @@ from flask_security import SQLAlchemyUserDatastore, UserMixin, RoleMixin
 from flask_security.utils import verify_password
 from flask_sqlalchemy import SQLAlchemy
 from slugify import slugify
-from sqlalchemy import event, UniqueConstraint, PrimaryKeyConstraint
+from sqlalchemy import event, UniqueConstraint, PrimaryKeyConstraint, and_
 from sqlalchemy.ext.hybrid import Comparator, hybrid_property
 from sqlalchemy.sql import func
 from sqlalchemy_searchable import make_searchable
@@ -818,6 +818,27 @@ def update_remote_track(actor_id: int, update: ap.Update) -> None:
     track.title = update_activity.payload.get("object", {}).get("name", track.title)
     track.description = update_activity.payload.get("object", {}).get("content", track.description)
     track.genre = update_activity.payload.get("object", {}).get("genre", track.genre)
+    track.licence = int(update_activity.payload.get("object", {}).get("licence", {}).get("id", 0))
+
+    tags = update_activity.payload.get("object", {}).get("tags", None)
+    if tags:
+        # First remove tags which have been removed
+        for tag in track.tags:
+            if tag.name not in tags:
+                track.tags.remove(tag)
+
+        # Then add the new ones if new
+        for tag in tags:
+            if tag not in [a.name for a in track.tags]:
+                dbt = SoundTag.query.filter(SoundTag.name == tag).first()
+                if not dbt:
+                    dbt = SoundTag(name=tag)
+                    db.session.add(dbt)
+                track.tags.append(dbt)
+
+        # Purge orphaned tags
+        for otag in SoundTag.query.filter(and_(~SoundTag.sounds.any(), ~SoundTag.albums.any())).all():
+            db.session.delete(otag)
 
     db.session.commit()
 
