@@ -827,6 +827,10 @@ def update_remote_track(actor_id: int, update: ap.Update) -> None:
     track.description = update_activity.payload.get("object", {}).get("content", track.description)
     track.genre = update_activity.payload.get("object", {}).get("genre", track.genre)
     track.licence = int(update_activity.payload.get("object", {}).get("licence", {}).get("id", 0))
+    old_remote_artwork_uri = track.remote_artwork_uri
+    track.remote_artwork_uri = update_activity.payload.get("object", {}).get("artwork", track.remote_artwork_uri)
+    if old_remote_artwork_uri != track.remote_artwork_uri:
+        pass  # TODO(call delete and refetch of artwork)
 
     tags = update_activity.payload.get("object", {}).get("tags", None)
     if tags:
