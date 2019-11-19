@@ -385,8 +385,11 @@ class Sound(db.Model):
         return os.path.join(username, self.filename)
 
     def path_artwork(self):
+        username = self.user.slug
+        if self.remote_artwork_uri:
+            username = f"remote_{self.user.slug}"
         if self.artwork_filename:
-            return os.path.join(self.user.slug, self.artwork_filename)
+            return os.path.join(username, self.artwork_filename)
         else:
             return None
 
