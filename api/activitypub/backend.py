@@ -280,7 +280,10 @@ class Reel2BitsBackend(ap.Backend):
         if obj.ACTIVITY_TYPE == ap.ActivityType.PERSON:
             update_remote_actor(db_actor.id, obj)
         elif obj.ACTIVITY_TYPE == ap.ActivityType.AUDIO:
-            update_remote_track(db_actor.id, update)
+            sound_id = update_remote_track(db_actor.id, update)
+            from tasks import fetch_remote_artwork
+
+            fetch_remote_artwork.delay(sound_id, update=True)
         else:
             raise NotImplementedError
 

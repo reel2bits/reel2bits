@@ -798,7 +798,7 @@ def strip_end(text, suffix):
     return text[: len(text) - len(suffix)]
 
 
-def update_remote_track(actor_id: int, update: ap.Update) -> None:
+def update_remote_track(actor_id: int, update: ap.Update) -> int:
     """
     :param actor_id: an Actor db ID
     :param obj: a Little Boxes Audio object
@@ -856,6 +856,7 @@ def update_remote_track(actor_id: int, update: ap.Update) -> None:
             db.session.delete(otag)
 
     db.session.commit()
+    return track.id
 
 
 def delete_remote_track(obj_id: str) -> None:

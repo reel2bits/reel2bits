@@ -164,7 +164,6 @@ def fetch_remote_track(self, sound_id: int):
     print(f"Started fetching remote track {sound_id}")
     sound = Sound.query.get(sound_id)
 
-    # Track
     if not sound.remote_uri:
         print(f"ERROR: cannot fetch track {sound.id!r} because of no remote_uri")
         return False
@@ -190,11 +189,23 @@ def fetch_remote_track(self, sound_id: int):
     sound.filename = f"remote_{track_filename}"
     db.session.commit()
 
-    # Artwork
-    # TODO(dashie)
+
+@celery.task(bind=True, max_retries=3)
+def fetch_remote_artwork(self, sound_id: int, update=False):
+    print(f"Started fetching remote artwork {sound_id}")
+    sound = Sound.query.get(sound_id)
+
     if not sound.remote_artwork_uri:
         print(f"ERROR: cannot fetch artwork of {sound.id!r} because of no remote_artwork_uri")
         return False
+
+    if update:
+        # Delete the old artwork
+        fname = os.path.join(current_app.config["UPLOADED_ARTWORKSOUNDS_DEST"], sound.path_artwork())
+        if os.path.isfile(fname):
+            os.unlink(fname)
+        else:
+            print(f"!!! fetch_remote_artwork(update=True) cannot delete artwork file {fname}")
 
     artwork_url_path = urllib.parse.urlparse(sound.remote_artwork_uri).path
     artwork_filename = os.path.basename(os.path.normpath(artwork_url_path))
@@ -219,7 +230,7 @@ def fetch_remote_track(self, sound_id: int):
     sound.artwork_filename = f"remote_{artwork_filename}"
     db.session.commit()
 
-    print(f"Finished fetching remote track {sound.id}")
+    print(f"Finished fetching remote artwork {sound.id}")
 
 
 @celery.task(bind=True, max_retries=3)
@@ -234,6 +245,7 @@ def upload_workflow(self, sound_id):
     # First, if the sound isn't local, we need to fetch it
     if sound.activity and not sound.activity.local:
         fetch_remote_track(sound_id)
+        fetch_remote_artwork(sound_id)
         if not sound.filename.startswith("remote_"):
             print("UPLOAD WORKFLOW had errors")
             add_log("global", "ERROR", f"Error fetching remote track {sound.id}")
