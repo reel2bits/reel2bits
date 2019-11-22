@@ -37,10 +37,10 @@ def utcdate(date):
     return date.replace(tzinfo=pytz.utc)
 
 
-@bp_feeds.route("/feeds/tracks/<int:user_id>", methods=["GET"])
-@bp_feeds.route("/feeds/tracks/<int:user_id>.atom", methods=["GET"])
+@bp_feeds.route("/feeds/tracks/<string:user_id>", methods=["GET"])
+@bp_feeds.route("/feeds/tracks/<string:user_id>.atom", methods=["GET"])
 def tracks(user_id):
-    user = User.query.filter(User.id == user_id).first()
+    user = User.query.filter(User.flake_id == user_id).first()
     if not user:
         abort(404)
 
@@ -56,9 +56,10 @@ def tracks(user_id):
     feed = gen_feed(f"{user.name} tracks", author, feed_url, url, f"Tracks of {user.name}", logo)
 
     for track in q:
-        url_transcode = url_for(
-            "get_uploads_stuff", thing="sounds", stuff=track.path_sound(orig=False), _external=False
-        )
+        path_sound = track.path_sound(orig=False)
+        if not path_sound:
+            continue
+        url_transcode = url_for("get_uploads_stuff", thing="sounds", stuff=path_sound, _external=False)
         url = f"https://{current_app.config['AP_DOMAIN']}/{user.name}/track/{track.slug}"
 
         fe = feed.add_entry()
@@ -75,10 +76,10 @@ def tracks(user_id):
     return feed.atom_str(pretty=True)
 
 
-@bp_feeds.route("/feeds/album/<int:user_id>/<int:album_id>", methods=["GET"])
-@bp_feeds.route("/feeds/album/<int:user_id>/<int:album_id>.atom", methods=["GET"])
+@bp_feeds.route("/feeds/album/<string:user_id>/<int:album_id>", methods=["GET"])
+@bp_feeds.route("/feeds/album/<string:user_id>/<int:album_id>.atom", methods=["GET"])
 def album(user_id, album_id):
-    user = User.query.filter(User.id == user_id).first()
+    user = User.query.filter(User.flake_id == user_id).first()
     if not user:
         abort(404)
     album = Album.query.filter(Album.id == album_id, Album.user_id == user.id, Album.private.is_(False)).first()
@@ -116,9 +117,10 @@ def album(user_id, album_id):
     )
 
     for track in album.sounds.filter(Sound.transcode_state == Sound.TRANSCODE_DONE):
-        url_transcode = url_for(
-            "get_uploads_stuff", thing="sounds", stuff=track.path_sound(orig=False), _external=False
-        )
+        path_sound = track.path_sound(orig=False)
+        if not path_sound:
+            continue
+        url_transcode = url_for("get_uploads_stuff", thing="sounds", stuff=path_sound, _external=False)
         url = f"https://{current_app.config['AP_DOMAIN']}/{user.name}/track/{track.slug}"
 
         fe = feed.add_entry()

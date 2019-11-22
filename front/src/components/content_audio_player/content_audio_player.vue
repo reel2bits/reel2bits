@@ -9,7 +9,7 @@
         >
       </b-link>
       <span class="align-middle">
-        <b-link :to="{ name: 'user-profile', params: { name: track.account.screen_name } }" class="text-decoration-none">
+        <b-link :to="userProfileLink" class="text-decoration-none">
           {{ track.account.name }}
         </b-link>
         <translate translate-context="Content/Track/Single track in timelines, part of 'XXX >>uploaded a track<< YYY times ago'" :translate-params="{publishedAgo: publishedAgo}" :title="track.uploaded_on">
@@ -18,7 +18,7 @@
       </span>
     </div>
     <div class="d-flex mb-3">
-      <b-link v-if="clickableTitle" :to="{ name: 'tracks-show', params: { username: track.account.screen_name, trackId: track.slug } }">
+      <b-link v-if="clickableTitle" :to="trackLink">
         <img :src="track.picture_url" class="d-flex mr-3"
              style="width:112px; height:112px;"
         >
@@ -31,7 +31,7 @@
       <div class="flex-fill">
         <div class="row px-0 mx-0">
           <h1 class="col px-0 mx-0 h5 text-truncate" :title="track.title">
-            <b-link v-if="clickableTitle" :to="{ name: 'tracks-show', params: { username: track.account.screen_name, trackId: track.slug } }" class="text-body text-decoration-none">
+            <b-link v-if="clickableTitle" :to="trackLink" class="text-body text-decoration-none">
               {{ track.title }}
             </b-link>
             <template v-else>
@@ -109,6 +109,7 @@ button.playPause {
 import WaveSurfer from 'wavesurfer.js'
 import moment from 'moment'
 import { mapState } from 'vuex'
+import generateRemoteLink from 'src/services/remote_user_link_generator/remote_user_link_generator.js'
 
 export default {
   props: {
@@ -176,6 +177,12 @@ export default {
     userAvatarAlt () {
       let msg = this.$pgettext('Content/Track/Image/User Avatar alt', '%{username} avatar')
       return this.$gettextInterpolate(msg, { username: this.track.account.screen_name })
+    },
+    userProfileLink () {
+      return this.generateUserProfileLink(this.track.account.flakeId, this.track.account.screen_name)
+    },
+    trackLink () {
+      return this.generateTrackLink(this.track.account.flakeId, this.track.account.screen_name, this.track.slug)
     }
   },
   watch: {
@@ -242,6 +249,12 @@ export default {
     this.$emit('updateLogoSpinDuration', false)
   },
   methods: {
+    generateUserProfileLink (id, name) {
+      return generateRemoteLink(id, name, this.$store.state.instance.restrictedNicknames, 'user-profile')
+    },
+    generateTrackLink (id, name, trackId) {
+      return generateRemoteLink(id, name, this.$store.state.instance.restrictedNicknames, 'tracks-show', trackId)
+    },
     togglePlay: function () {
       if (this.wavesurfer.isPlaying()) {
         this.$store.commit('playerStoppedPlaying')

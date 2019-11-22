@@ -30,5 +30,13 @@ DEFAULT_CTX = [
         "schema": "http://schema.org#",
         "PropertyValue": "schema:PropertyValue",
         "value": "schema:value",
+        # Our custom stuff
+        "reel2bits": "http://reel2bits.org/ns#",
+        "licence": "reel2bits:licence",
+        "genre": "reel2bits:genre",
+        "tags": "reel2bits:tags",
+        "artwork": "reel2bits:artwork",
+        "transcoded": "reel2bits:transcoded",
+        "transcode_url": "reel2bits:transcode_url",
     },
 ]

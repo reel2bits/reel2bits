@@ -55,7 +55,7 @@ export default function createPersistedState ({
           const usersState = savedState.users || {}
           usersState.usersObject = {}
           const users = usersState.users || []
-          each(users, (user) => { usersState.usersObject[user.id] = user })
+          each(users, (user) => { usersState.usersObject[user.flakeId] = user })
           savedState.users = usersState
 
           store.replaceState(

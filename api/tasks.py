@@ -1,6 +1,6 @@
 from __future__ import print_function
 
-from models import db, Sound, User, Config
+from models import db, Sound, User, Config, SoundTag
 from flask_mail import Message
 from flask import render_template, url_for
 from app import create_app, make_celery
@@ -20,6 +20,8 @@ from models import Activity, Actor
 from activitypub.vars import HEADERS, Box, DEFAULT_CTX
 import smtplib
 from utils.various import add_log, add_user_log
+import urllib
+import os
 
 # TRANSCODING
 
@@ -38,7 +40,16 @@ def setup_periodic_tasks(sender, **kwargs):
 def federate_new_sound(sound: Sound) -> int:
     actor = sound.user.actor[0]
     cc = [actor.followers_url]
-    href = url_for("get_uploads_stuff", thing="sounds", stuff=sound.path_sound())
+    url_orig = url_for("get_uploads_stuff", thing="sounds", stuff=sound.path_sound(orig=True), _external=True)
+    url_transcode = url_for("get_uploads_stuff", thing="sounds", stuff=sound.path_sound(orig=False), _external=True)
+
+    if sound.path_artwork():
+        url_artwork = url_for("get_uploads_stuff", thing="artwork_sounds", stuff=sound.path_artwork(), _external=True)
+    else:
+        url_artwork = None
+
+    licence = sound.licence_info()
+    licence["id"] = str(licence["id"])  # integers makes jsonld cry
 
     raw_audio = dict(
         attributedTo=actor.url,
@@ -48,17 +59,21 @@ def federate_new_sound(sound: Sound) -> int:
         name=sound.title,
         content=sound.description,
         mediaType="text/plain",
-        url={"type": "Link", "href": href, "mediaType": "audio/mp3"},
+        url={"type": "Link", "href": url_orig, "mediaType": "audio/mp3"},
+        # custom items
+        tags=[t.name for t in sound.tags],
+        genre=sound.genre,
+        licence=licence,
+        artwork=url_artwork,
+        transcoded=sound.transcode_needed,
+        transcode_url=(url_transcode if sound.transcode_needed else None),
     )
     raw_audio["@context"] = DEFAULT_CTX
 
-    # TODO, add to the Activity (don't forget the context):
-    # tags (array of string)
-    # genre (string)
-    # licence (dict{licid: 0, name: string})
-    # artwork (???)
+    # FIXME(dashie): apparently the @context is ignored by the Audio() or build_create()
 
     audio = ap.Audio(**raw_audio)
+    print("BUILD CREATE FEDERATE_NEW_SOUND")
     create = audio.build_create()
     # Post to outbox and save Activity id into Sound relation
     activity_id = post_to_outbox(create)
@@ -73,7 +88,7 @@ def federate_delete_sound(sound: Sound) -> None:
 
     # TODO FIXME: to who is the delete sent ?
 
-    actor = sound.user.actor[0].to_dict()
+    actor = sound.user.actor[0]
     # Get activity
     # Create delete
     # Somehow we needs to add /activity here
@@ -81,8 +96,12 @@ def federate_delete_sound(sound: Sound) -> None:
     if not sound.activity:
         # track never federated
         return
+    to = [follower.actor.url for follower in actor.followers]
+    to.append(ap.AS_PUBLIC)
     delete = ap.Delete(
-        actor=actor, object=ap.Tombstone(id=sound.activity.payload["id"] + "/activity").to_dict(embed=True)
+        to=to,
+        actor=actor.to_dict(),
+        object=ap.Tombstone(id=sound.activity.payload["id"] + "/activity").to_dict(embed=True),
     )
     # Federate
     post_to_outbox(delete)
@@ -95,25 +114,45 @@ def federate_delete_actor(actor: Actor) -> None:
     # Create delete
     # No need for '/activity' here ?
     # FIXME do that better
-    delete = ap.Delete(actor=actor, object=ap.Tombstone(id=actor["id"]).to_dict(embed=True))
+    to = [follower.actor.url for follower in actor.followers]
+    to.append(ap.AS_PUBLIC)
+    delete = ap.Delete(to=to, actor=actor, object=ap.Tombstone(id=actor["id"]).to_dict(embed=True))
     # Federate
     post_to_outbox(delete)
 
 
 def create_sound_for_remote_track(activity: Activity) -> int:
     sound = Sound()
-    sound.title = activity["object"]["name"]
-    sound.description = activity["object"]["content"]
-    sound.tags = []  # TODO get from Activity when federating
-    sound.genre = ""  # TODO get from Activity when federating
-    sound.licence = 0  # TODO get from Activity when federating
+    sound.title = activity.payload.get("object", {}).get("name", None)
+    sound.description = activity.payload.get("object", {}).get("content", None)
     sound.private = False
-    sound.filename = activity["object"]["url"]["href"]
-    sound.artwork_filename = ""  # TODO get from Activity when federating
-    sound.transcode_needed = False  # Will be checked in fetch_remote_track
+    sound.transcode_needed = activity.payload.get("object", {}).get("transcoded", False)
+    if sound.transcode_needed:
+        sound.remote_uri = activity.payload.get("object", {}).get("transcode_url", None)
+    else:
+        sound.remote_uri = activity.payload.get("object", {}).get("url", {}).get("href", None)
     sound.transcode_state = 0
-    sound.user_id = activity.user.id
+
+    # Get user through actor
+    sound.user_id = activity.actor.user.id
     sound.activity_id = activity.id
+    # custom from AP
+    sound.remote_artwork_uri = activity.payload.get("object", {}).get("artwork", None)
+    sound.genre = activity.payload.get("object", {}).get("genre", None)
+    sound.licence = activity.payload.get("object", {}).get("licence", {}).get("id", 0)
+
+    if not sound.remote_uri:
+        print("Error: track has no remote_uri available")
+        return None  # reject if no file available
+
+    # Tags handling. Since it's a new track, no need to do magic tags recalculation.
+    tags = [t.strip() for t in activity.payload.get("object", {}).get("tags", [])]
+    for tag in tags:
+        dbt = SoundTag.query.filter(SoundTag.name == tag).first()
+        if not dbt:
+            dbt = SoundTag(name=tag)
+            db.session.add(dbt)
+        sound.tags.append(dbt)
 
     db.session.add(sound)
     db.session.commit()
@@ -123,8 +162,75 @@ def create_sound_for_remote_track(activity: Activity) -> int:
 @celery.task(bind=True, max_retries=3)
 def fetch_remote_track(self, sound_id: int):
     print(f"Started fetching remote track {sound_id}")
-    # FIXME(dashie): do things
-    print(f"Finished fetching remote track {sound_id}")
+    sound = Sound.query.get(sound_id)
+
+    if not sound.remote_uri:
+        print(f"ERROR: cannot fetch track {sound.id!r} because of no remote_uri")
+        return False
+
+    track_url_path = urllib.parse.urlparse(sound.remote_uri).path
+    track_filename = os.path.basename(os.path.normpath(track_url_path))
+
+    os.makedirs(os.path.join(current_app.config["UPLOADED_SOUNDS_DEST"], f"remote_{sound.user.slug}"), exist_ok=True)
+
+    final_track_filename = os.path.join(
+        current_app.config["UPLOADED_SOUNDS_DEST"], f"remote_{sound.user.slug}", f"remote_{track_filename}"
+    )
+
+    track_resp = requests.get(sound.remote_uri, stream=True)
+
+    # maybe we should try except and handle that...
+    track_resp.raise_for_status()
+
+    with open(final_track_filename, "wb") as handle:
+        for block in track_resp.iter_content(1024):
+            handle.write(block)
+
+    sound.filename = f"remote_{track_filename}"
+    db.session.commit()
+
+
+@celery.task(bind=True, max_retries=3)
+def fetch_remote_artwork(self, sound_id: int, update=False):
+    print(f"Started fetching remote artwork {sound_id}")
+    sound = Sound.query.get(sound_id)
+
+    if not sound.remote_artwork_uri:
+        print(f"ERROR: cannot fetch artwork of {sound.id!r} because of no remote_artwork_uri")
+        return False
+
+    if update:
+        # Delete the old artwork
+        fname = os.path.join(current_app.config["UPLOADED_ARTWORKSOUNDS_DEST"], sound.path_artwork())
+        if os.path.isfile(fname):
+            os.unlink(fname)
+        else:
+            print(f"!!! fetch_remote_artwork(update=True) cannot delete artwork file {fname}")
+
+    artwork_url_path = urllib.parse.urlparse(sound.remote_artwork_uri).path
+    artwork_filename = os.path.basename(os.path.normpath(artwork_url_path))
+
+    os.makedirs(
+        os.path.join(current_app.config["UPLOADED_ARTWORKSOUNDS_DEST"], f"remote_{sound.user.slug}"), exist_ok=True
+    )
+
+    final_artwork_filename = os.path.join(
+        current_app.config["UPLOADED_ARTWORKSOUNDS_DEST"], f"remote_{sound.user.slug}", f"remote_{artwork_filename}"
+    )
+
+    artwork_resp = requests.get(sound.remote_artwork_uri, stream=True)
+
+    # maybe we should try except and handle that...
+    artwork_resp.raise_for_status()
+
+    with open(final_artwork_filename, "wb") as handle:
+        for block in artwork_resp.iter_content(1024):
+            handle.write(block)
+
+    sound.artwork_filename = f"remote_{artwork_filename}"
+    db.session.commit()
+
+    print(f"Finished fetching remote artwork {sound.id}")
 
 
 @celery.task(bind=True, max_retries=3)
@@ -136,6 +242,15 @@ def upload_workflow(self, sound_id):
         print("- Cant find sound ID {id} in database".format(id=sound_id))
         return
 
+    # First, if the sound isn't local, we need to fetch it
+    if sound.activity and not sound.activity.local:
+        fetch_remote_track(sound_id)
+        fetch_remote_artwork(sound_id)
+        if not sound.filename.startswith("remote_"):
+            print("UPLOAD WORKFLOW had errors")
+            add_log("global", "ERROR", f"Error fetching remote track {sound.id}")
+            return
+
     print("METADATAS started")
     metadatas = work_metadatas(sound_id)
     print("METADATAS finished")
@@ -146,7 +261,7 @@ def upload_workflow(self, sound_id):
         db.session.commit()
         print("UPLOAD WORKFLOW had errors")
         add_log("global", "ERROR", f"Error processing track {sound.id}")
-        add_user_log(sound.id, sound.user.id, "sounds", "error", "An error occured while processing your track")
+        add_user_log(sound.id, sound.user_id, "sounds", "error", "An error occured while processing your track")
         return
 
     if metadatas:
@@ -154,50 +269,52 @@ def upload_workflow(self, sound_id):
         work_transcode(sound_id)
         print("TRANSCODE finished")
 
-    # Federate if public
-    if not sound.private:
-        print("UPLOAD WORKFLOW federating sound")
-        # Federate only if sound is public
-        sound.activity_id = federate_new_sound(sound)
-        db.session.commit()
+    # The rest only applies if the track is local
+    if not sound.remote_uri:
+        # Federate if public
+        if not sound.private:
+            print("UPLOAD WORKFLOW federating sound")
+            # Federate only if sound is public
+            sound.activity_id = federate_new_sound(sound)
+            db.session.commit()
 
-    track_url = f"https://{current_app.config['AP_DOMAIN']}/{sound.user.name}/track/{sound.slug}"
+        track_url = f"https://{current_app.config['AP_DOMAIN']}/{sound.user.name}/track/{sound.slug}"
 
-    msg = Message(
-        subject="Song processing finished",
-        recipients=[sound.user.email],
-        sender=current_app.config["MAIL_DEFAULT_SENDER"],
-    )
+        msg = Message(
+            subject="Song processing finished",
+            recipients=[sound.user.email],
+            sender=current_app.config["MAIL_DEFAULT_SENDER"],
+        )
 
-    _config = Config.query.first()
-    if not _config:
-        print("ERROR: cannot get instance Config from database")
-    instance = {"name": None, "url": None}
-    if _config:
-        instance["name"] = _config.app_name
-    instance["url"] = current_app.config["REEL2BITS_URL"]
-    msg.body = render_template("email/song_processed.txt", sound=sound, track_url=track_url, instance=instance)
-    msg.html = render_template("email/song_processed.html", sound=sound, track_url=track_url, instance=instance)
-    err = None
-    mail = current_app.extensions.get("mail")
-    if not mail:
-        err = "mail extension is none"
-    else:
-        try:
-            mail.send(msg)
-        except ConnectionRefusedError as e:
-            # TODO: do something about that maybe
-            print(f"Error sending mail: {e}")
-            err = e
-        except smtplib.SMTPRecipientsRefused as e:
-            print(f"Error sending mail: {e}")
-            err = e
-        except smtplib.SMTPException as e:
-            print(f"Error sending mail: {e}")
-            err = e
-    if err:
-        add_log("global", "ERROR", f"Error sending email for track {sound.id}: {err}")
-        add_user_log(sound.id, sound.user.id, "sounds", "error", "An error occured while sending email")
+        _config = Config.query.first()
+        if not _config:
+            print("ERROR: cannot get instance Config from database")
+        instance = {"name": None, "url": None}
+        if _config:
+            instance["name"] = _config.app_name
+        instance["url"] = current_app.config["REEL2BITS_URL"]
+        msg.body = render_template("email/song_processed.txt", sound=sound, track_url=track_url, instance=instance)
+        msg.html = render_template("email/song_processed.html", sound=sound, track_url=track_url, instance=instance)
+        err = None
+        mail = current_app.extensions.get("mail")
+        if not mail:
+            err = "mail extension is none"
+        else:
+            try:
+                mail.send(msg)
+            except ConnectionRefusedError as e:
+                # TODO: do something about that maybe
+                print(f"Error sending mail: {e}")
+                err = e
+            except smtplib.SMTPRecipientsRefused as e:
+                print(f"Error sending mail: {e}")
+                err = e
+            except smtplib.SMTPException as e:
+                print(f"Error sending mail: {e}")
+                err = e
+        if err:
+            add_log("global", "ERROR", f"Error sending email for track {sound.id}: {err}")
+            add_user_log(sound.id, sound.user.id, "sounds", "error", "An error occured while sending email")
 
     print("UPLOAD WORKFLOW finished")
 
@@ -269,7 +386,7 @@ def process_new_activity(self, iri: str) -> None:
                 should_forward = False
 
         elif activity.has_type(ap.ActivityType.DELETE):
-            note = Activity.query.filter(Activity.id == activity.get_object().id).first()
+            note = Activity.query.filter(Activity.url == activity.get_object().id).first()
             if note and note["meta"].get("forwarded", False):
                 # If the activity was originally forwarded, forward the
                 # delete too
@@ -360,7 +477,7 @@ def finish_post_to_outbox(self, iri: str) -> None:
         activity = ap.fetch_remote_activity(iri)
         backend = ap.get_backend()
 
-        current_app.logger.info(f"finish_post_to_outbox {activity}")
+        current_app.logger.info(f"finish_post_to_outbox {activity!r}")
 
         recipients = activity.recipients()
 
@@ -488,9 +605,10 @@ def post_to_inbox(activity: ap.BaseActivity) -> None:
 # If AP_ENABLED=False we still runs this bit to save the activites in the database
 # Except we don't run the finish part which broadcast the activity since not enabled
 def post_to_outbox(activity: ap.BaseActivity) -> str:
-    current_app.logger.debug(f"post_to_outbox {activity}")
+    current_app.logger.debug(f"post_to_outbox {activity!r}")
 
     if activity.has_type(ap.CREATE_TYPES):
+        print("BUILD CREATE POST TO OUTBOX")
         activity = activity.build_create()
 
     backend = ap.get_backend()
@@ -523,12 +641,26 @@ def send_update_sound(sound: Sound) -> None:
     # Should not even work
     actor = sound.user.actor[0]
 
+    if sound.path_artwork():
+        url_artwork = url_for("get_uploads_stuff", thing="artwork_sounds", stuff=sound.path_artwork(), _external=True)
+    else:
+        url_artwork = None
+
     # Fetch object and update fields
     object = sound.activity.payload["object"]
     object["name"] = sound.title
     object["content"] = sound.description
+    # custom things that can change
+    object["tags"] = [t.name for t in sound.tags]
+    object["genre"] = sound.genre
+    licence = sound.licence_info()
+    licence["id"] = str(licence["id"])  # integers makes jsonld cry
+    object["licence"] = licence
+    object["artwork"] = url_artwork
 
-    raw_update = dict(to=[follower.actor.url for follower in actor.followers], actor=actor.to_dict(), object=object)
+    to = [follower.actor.url for follower in actor.followers]
+    to.append(ap.AS_PUBLIC)
+    raw_update = dict(to=to, actor=actor.to_dict(), object=object)
     raw_update["@context"] = DEFAULT_CTX
     current_app.logger.debug(f"recipients: {raw_update['to']}")
     update = ap.Update(**raw_update)

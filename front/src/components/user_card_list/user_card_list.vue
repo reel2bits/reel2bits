@@ -125,7 +125,7 @@ const UserCardList = {
   }),
   computed: {
     isOtherUser () {
-      return this.user.id !== this.$store.state.users.currentUser.id
+      return this.user.flakeId !== this.$store.state.users.currentUser.flakeId
     },
     loggedIn () {
       return this.$store.state.users.currentUser
@@ -136,7 +136,7 @@ const UserCardList = {
     }
   },
   created () {
-    this.$store.dispatch('fetchUserRelationship', this.user.id)
+    this.$store.dispatch('fetchUserRelationship', this.user.flakeId)
   },
   methods: {
     followUser () {

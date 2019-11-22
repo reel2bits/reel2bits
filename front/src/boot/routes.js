@@ -51,7 +51,13 @@ export default (store) => {
     { name: 'oauth-callback', path: '/oauth-callback', component: OAuthCallback, props: (route) => ({ code: route.query.code }) },
     // External user profile (remote)
     { name: 'external-user-profile', path: '/users/:id', component: UserProfile },
-    // TODO add other external routes
+    { name: 'external-user-profile-tracks', path: '/users/:id/tracks', component: UserProfile },
+    { name: 'external-user-profile-albums', path: '/users/:id/albums', component: UserProfile },
+    { name: 'external-user-profile-drafts', path: '/users/:id/drafts', component: UserProfile },
+    { name: 'external-user-profile-followers', path: '/users/:id/followers', component: UserFollowers },
+    { name: 'external-user-profile-followings', path: '/users/:id/followings', component: UserFollowings },
+    { name: 'external-tracks-show', path: '/users/:id/track/:trackId', component: TracksShow },
+    { name: 'external-albums-show', path: '/users/:id/album/:albumId', component: AlbumsShow },
     // Internal user profile (local)
     { name: 'user-profile', path: '/(users/)?:name', component: UserProfile },
     { name: 'user-profile-tracks', path: '/(users/)?:name/tracks', component: UserProfile },

@@ -193,7 +193,11 @@ def work_metadatas(sound_id, force=False):
 
     # Generate Basic infos
 
-    fname = os.path.join(current_app.config["UPLOADED_SOUNDS_DEST"], sound.user.slug, sound.filename)
+    if not sound.remote_uri:
+        fname = os.path.join(current_app.config["UPLOADED_SOUNDS_DEST"], sound.user.slug, sound.filename)
+    else:
+        fname = os.path.join(current_app.config["UPLOADED_SOUNDS_DEST"], f"remote_{sound.user.slug}", sound.filename)
+
     basic_infos = None
     if not _infos.done_basic:
         basic_infos = get_basic_infos(fname)

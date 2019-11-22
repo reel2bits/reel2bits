@@ -11,6 +11,8 @@ from os.path import splitext
 import os
 from sqlalchemy import and_
 from utils.defaults import Reel2bitsDefaults
+from tasks import send_update_sound
+import sqlalchemy.exc
 
 
 bp_api_tracks = Blueprint("bp_api_tracks", __name__)
@@ -175,10 +177,12 @@ def show(username_or_id, soundslug):
         current_user = None
 
     # Get the associated User from url fetch
-    if username_or_id.isdigit():
-        track_user = User.query.filter(User.id == username_or_id).first()
-    else:
-        track_user = User.query.filter(User.name == username_or_id, User.local.is_(True)).first()
+    track_user = User.query.filter(User.name == username_or_id, User.local.is_(True)).first()
+    if not track_user:
+        try:
+            track_user = User.query.filter(User.flake_id == username_or_id).first()
+        except sqlalchemy.exc.DataError:
+            return jsonify({"error": "User not found"}), 404
     if not track_user:
         return jsonify({"error": "User not found"}), 404
 
@@ -297,6 +301,9 @@ def edit(username, soundslug):
 
     db.session.commit()
 
+    # trigger a sound update
+    send_update_sound(sound)
+
     relationship = False
     if current_token and current_token.user:
         relationship = to_json_relationship(current_token.user, sound.user)
@@ -390,10 +397,12 @@ def logs(username_or_id, soundslug):
         current_user = None
 
     # Get the associated User from url fetch
-    if username_or_id.isdigit():
-        track_user = User.query.filter(User.id == username_or_id).first()
-    else:
-        track_user = User.query.filter(User.name == username_or_id, User.local.is_(True)).first()
+    track_user = User.query.filter(User.name == username_or_id, User.local.is_(True)).first()
+    if not track_user:
+        try:
+            track_user = User.query.filter(User.flake_id == username_or_id).first()
+        except sqlalchemy.exc.DataError:
+            return jsonify({"error": "User not found"}), 404
     if not track_user:
         return jsonify({"error": "User not found"}), 404
 
@@ -458,33 +467,25 @@ def retry_processing(username_or_id, soundslug):
     else:
         current_user = None
 
+    if not current_user:
+        return jsonify({"error": "unauthorized"}), 401
+
     # Get the associated User from url fetch
-    if username_or_id.isdigit():
-        track_user = User.query.filter(User.id == username_or_id).first()
-    else:
-        track_user = User.query.filter(User.name == username_or_id, User.local.is_(True)).first()
+    track_user = User.query.filter(User.name == username_or_id, User.local.is_(True)).first()
+    if not track_user:
+        try:
+            track_user = User.query.filter(User.flake_id == username_or_id).first()
+        except sqlalchemy.exc.DataError:
+            return jsonify({"error": "User not found"}), 404
     if not track_user:
         return jsonify({"error": "User not found"}), 404
 
-    if current_user and (track_user.id == current_user.id):
-        print("user")
-        sound = Sound.query.filter(Sound.slug == soundslug, Sound.user_id == track_user.id).first()
-    else:
-        print("no user")
-        sound = Sound.query.filter(
-            Sound.slug == soundslug, Sound.user_id == track_user.id, Sound.transcode_state == Sound.TRANSCODE_DONE
-        ).first()
+    if current_user.id != track_user.id:
+        return jsonify({"error": "forbidden"}), 403
 
+    sound = Sound.query.filter(Sound.slug == soundslug, Sound.user_id == track_user.id).first()
     if not sound:
-        print("mmmh")
         return jsonify({"error": "not found"}), 404
-
-    if sound.private:
-        if current_user:
-            if sound.user_id != current_user.id:
-                return jsonify({"error": "forbidden"}), 403
-        else:
-            return jsonify({"error": "forbidden"}), 403
 
     if sound.transcode_state != Sound.TRANSCODE_ERROR:
         return jsonify({"error": "cannot reset transcode state if no error"}), 503
@@ -577,5 +578,8 @@ def artwork(username, trackslug):
     track.artwork_filename = artwork_filename
 
     db.session.commit()
+
+    # trigger a sound update
+    send_update_sound(track)
 
     return jsonify({"status": "ok", "path": track.path_artwork()})

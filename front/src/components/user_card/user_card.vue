@@ -7,12 +7,12 @@
         </div>
         <div class="align-self-center">
           <h2 class="h2 m-0">
-            <b-link :to="{ name: 'user-profile', params: { name: user.screen_name } }" class="text-decoration-none text-body">
+            <b-link :to="userProfileLink(user)" class="text-decoration-none text-body">
               {{ user.name }}
             </b-link>
           </h2>
           <p class="h3 font-weight-normal m-0">
-            <b-link :to="{ name: 'user-profile', params: { name: user.screen_name } }" class="text-decoration-none text-body">
+            <b-link :to="userProfileLink(user)" class="text-decoration-none text-body">
               @{{ user.screen_name }}
             </b-link>
           </p>
@@ -63,7 +63,7 @@
       <p class="card-text" v-html="user.description" />
       <ul class="nav nav-fill">
         <li class="nav-item border-right">
-          <router-link :to="{ name: 'user-profile-tracks', params: { name: user.screen_name } }" class="text-decoration-none">
+          <router-link :to="linkToProfileSpecific(user, 'user-profile-tracks')" class="text-decoration-none">
             <p class="h3 font-weight-normal m-0">
               {{ user.statuses_count }}
             </p><p class="m-0">
@@ -74,7 +74,7 @@
           </router-link>
         </li>
         <li class="nav-item border-right">
-          <router-link :to="{ name: 'user-profile-albums', params: { name: user.screen_name } }" class="text-decoration-none">
+          <router-link :to="linkToProfileSpecific(user, 'user-profile-albums')" class="text-decoration-none">
             <p class="h3 font-weight-normal m-0">
               {{ user.reel2bits.albums_count }}
             </p><p class="m-0">
@@ -85,7 +85,7 @@
           </router-link>
         </li>
         <li class="nav-item border-right">
-          <router-link :to="{ name: 'user-profile-followers', params: { name: user.screen_name } }" class="text-decoration-none">
+          <router-link :to="linkToProfileSpecific(user, 'user-profile-followers')" class="text-decoration-none">
             <p class="h3 font-weight-normal m-0">
               {{ user.followers_count }}
             </p><p class="m-0">
@@ -96,7 +96,7 @@
           </router-link>
         </li>
         <li class="nav-item">
-          <router-link :to="{ name: 'user-profile-followings', params: { name: user.screen_name } }" class="text-decoration-none">
+          <router-link :to="linkToProfileSpecific(user, 'user-profile-followings')" class="text-decoration-none">
             <p class="h3 font-weight-normal m-0">
               {{ user.friends_count }}
             </p><p class="m-0">
@@ -113,6 +113,8 @@
 
 <script>
 import { requestFollow, requestUnfollow } from '../../services/follow_manipulate/follow_manipulate.js'
+import generateRemoteLink from 'src/services/remote_user_link_generator/remote_user_link_generator.js'
+
 const UserCard = {
   props: [
     'user'
@@ -123,7 +125,7 @@ const UserCard = {
   }),
   computed: {
     isOtherUser () {
-      return this.user.id !== this.$store.state.users.currentUser.id
+      return this.user.flakeId !== this.$store.state.users.currentUser.flakeId
     },
     loggedIn () {
       return this.$store.state.users.currentUser
@@ -134,7 +136,7 @@ const UserCard = {
     }
   },
   created () {
-    this.$store.dispatch('fetchUserRelationship', this.user.id)
+    this.$store.dispatch('fetchUserRelationship', this.user.flakeId)
   },
   methods: {
     followUser () {
@@ -151,6 +153,20 @@ const UserCard = {
       requestUnfollow(this.user, store).then(() => {
         this.followRequestInProgress = false
       })
+    },
+    userProfileLink (user) {
+      return generateRemoteLink(
+        user.flakeId, user.screen_name,
+        this.$store.state.instance.restrictedNicknames,
+        'user-profile'
+      )
+    },
+    linkToProfileSpecific (user, suffix) {
+      return generateRemoteLink(
+        user.flakeId, user.screen_name,
+        this.$store.state.instance.restrictedNicknames,
+        suffix
+      )
     }
   }
 }

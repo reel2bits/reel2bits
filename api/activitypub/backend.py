@@ -1,10 +1,19 @@
 from little_boxes import activitypub as ap
 from flask import current_app
 import requests
-from models import db, Activity, create_remote_actor, Actor, update_remote_actor
+from models import (
+    db,
+    Activity,
+    create_remote_actor,
+    Actor,
+    update_remote_actor,
+    update_remote_track,
+    delete_remote_track,
+)
 from urllib.parse import urlparse
 from .vars import Box
 from version import VERSION
+from utils.various import strip_end
 
 
 class Reel2BitsBackend(ap.Backend):
@@ -174,7 +183,7 @@ class Reel2BitsBackend(ap.Backend):
         base_url = current_app.config["BASE_URL"]
         act.local = activity.id.startswith(base_url)
 
-        act.actor = actor.id
+        act.actor_id = actor.id
 
         db.session.add(act)
 
@@ -191,7 +200,7 @@ class Reel2BitsBackend(ap.Backend):
         # Fetch linked activity and mark it deleted
         # Somehow we needs to remove /activity here
         # FIXME do that better
-        activity_uri = activity.get_object_id().rstrip("/activity")
+        activity_uri = strip_end(activity.get_object_id(), "/activity")
         current_app.logger.debug(f"id: {activity_uri}")
         orig_activity = Activity.query.filter(Activity.url == activity_uri, Activity.type == "Create").first()
         orig_activity.meta_deleted = True
@@ -238,6 +247,27 @@ class Reel2BitsBackend(ap.Backend):
         current_app.logger.debug(f"asked to fetch {iri}")
         return self._fetch_iri(iri)
 
+    def inbox_create(self, as_actor: ap.Person, create: ap.Create) -> None:
+        self._handle_replies(as_actor, create)
+        obj = create.get_object()
+        current_app.logger.debug(f"inbox_create {obj.ACTIVITY_TYPE} {obj!r} as {as_actor!r}")
+
+        if obj.ACTIVITY_TYPE == ap.ActivityType.AUDIO:
+            # create a remote Audio and process it
+            from tasks import create_sound_for_remote_track, upload_workflow
+
+            act = Activity.query.filter(Activity.url == create.id).first()
+            if not act:
+                current_app.logger.error(f"cannot find activity with url == {create.id!r}")
+                return
+
+            sound_id = create_sound_for_remote_track(act)
+            # TODO(dashie): fetch_remote_track should be done inside the upload_workflow to not have to do celery tasks dependencies
+            # Plus it's better to do it like that, one function to do everything, locally or remotely.
+            upload_workflow.delay(sound_id)
+        else:
+            current_app.logger.error(f"got an unhandled Activity Type {obj.ACTIVITY_TYPE!r} in the inbox")
+
     def inbox_update(self, as_actor: ap.Person, update: ap.Update) -> None:
         obj = update.get_object()
         current_app.logger.debug(f"inbox_update {obj.ACTIVITY_TYPE} {obj!r} as {as_actor!r}")
@@ -249,5 +279,27 @@ class Reel2BitsBackend(ap.Backend):
 
         if obj.ACTIVITY_TYPE == ap.ActivityType.PERSON:
             update_remote_actor(db_actor.id, obj)
+        elif obj.ACTIVITY_TYPE == ap.ActivityType.AUDIO:
+            sound_id = update_remote_track(db_actor.id, update)
+            from tasks import fetch_remote_artwork
+
+            fetch_remote_artwork.delay(sound_id, update=True)
+        else:
+            raise NotImplementedError
+
+    def inbox_delete(self, as_actor: ap.Person, activity: ap.Delete) -> None:
+        obj = activity.get_object()
+        current_app.logger.debug(f"inbox_delete {obj.ACTIVITY_TYPE} {obj!r} as {as_actor!r}")
+
+        db_activity = Activity.query.filter(Activity.url == strip_end(obj.id, "/activity")).first()
+        if not db_activity:
+            current_app.logger.debug(f"inbox_delete no known activity for {obj!r}")
+            return
+
+        # Test types
+        # TODO how to check if it's an Actor which is deleted
+        object_type = db_activity.payload.get("object", {}).get("type", None)
+        if object_type == "Audio":
+            delete_remote_track(obj.id)
         else:
             raise NotImplementedError

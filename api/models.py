@@ -6,7 +6,7 @@ from flask_security import SQLAlchemyUserDatastore, UserMixin, RoleMixin
 from flask_security.utils import verify_password
 from flask_sqlalchemy import SQLAlchemy
 from slugify import slugify
-from sqlalchemy import event, UniqueConstraint, PrimaryKeyConstraint
+from sqlalchemy import event, UniqueConstraint, PrimaryKeyConstraint, and_
 from sqlalchemy.ext.hybrid import Comparator, hybrid_property
 from sqlalchemy.sql import func
 from sqlalchemy_searchable import make_searchable
@@ -96,6 +96,8 @@ class User(db.Model, UserMixin):
 
     timezone = db.Column(db.String(255), nullable=False, default="UTC")  # Managed and fed by pytz
 
+    flake_id = db.Column(UUID(as_uuid=True), unique=False, nullable=True)
+
     # should be removed since User.name is URL friendly
     slug = db.Column(db.String(255), nullable=True)
 
@@ -175,6 +177,17 @@ class User(db.Model, UserMixin):
             return os.path.join(self.slug, self.avatar_filename)
         else:
             return None
+
+    def acct(self):
+        if self.local:
+            return self.name
+        else:
+            name = self.name
+            if not len(self.actor) > 0:
+                print(f"user {self.id} has no actor")
+                return self.name  # *shrug*
+            instance = self.actor[0].domain
+            return f"{name}@{instance}"
 
     # Delete files file when COMMIT DELETE
     def __commit_delete__(self):
@@ -324,6 +337,7 @@ class Sound(db.Model):
     description = db.Column(db.UnicodeText(), nullable=True)
     private = db.Column(db.Boolean(), default=False, nullable=True)
     slug = db.Column(db.String(255), unique=True, nullable=True)
+    remote_uri = db.Column(db.String(255), unique=False, nullable=True)
     filename = db.Column(db.String(255), unique=False, nullable=True)
     filename_transcoded = db.Column(db.String(255), unique=False, nullable=True)
 
@@ -331,6 +345,7 @@ class Sound(db.Model):
     album_order = db.Column(db.Integer, nullable=True)
 
     artwork_filename = db.Column(db.String(255), unique=False, nullable=True)
+    remote_artwork_uri = db.Column(db.String(255), unique=False, nullable=True)
 
     transcode_needed = db.Column(db.Boolean(), default=False, nullable=True)
     transcode_state = db.Column(db.Integer(), default=0, nullable=False)
@@ -357,14 +372,24 @@ class Sound(db.Model):
         return el.total_seconds()
 
     def path_sound(self, orig=False):
+        username = self.user.slug
+        if self.remote_uri:
+            username = f"remote_{self.user.slug}"
+        filename = self.filename
         if self.transcode_needed and self.transcode_state == self.TRANSCODE_DONE and not orig:
-            return os.path.join(self.user.slug, self.filename_transcoded)
-        else:
-            return os.path.join(self.user.slug, self.filename)
+            filename = self.filename_transcoded
+
+        if not username or not filename:
+            return None
+
+        return os.path.join(username, self.filename)
 
     def path_artwork(self):
+        username = self.user.slug
+        if self.remote_artwork_uri:
+            username = f"remote_{self.user.slug}"
         if self.artwork_filename:
-            return os.path.join(self.user.slug, self.artwork_filename)
+            return os.path.join(username, self.artwork_filename)
         else:
             return None
 
@@ -388,18 +413,22 @@ class Sound(db.Model):
     # Delete files file when COMMIT DELETE
     def __commit_delete__(self):
         print("COMMIT DELETE: Deleting files")
-        fname = os.path.join(current_app.config["UPLOADED_SOUNDS_DEST"], self.path_sound(orig=True))
-        if os.path.isfile(fname):
-            os.unlink(fname)
-        else:
-            print(f"!!! COMMIT DELETE SOUND cannot delete orig file {fname}")
-
-        if self.transcode_needed:
-            fname = os.path.join(current_app.config["UPLOADED_SOUNDS_DEST"], self.path_sound(orig=False))
+        path_sound = self.path_sound(orig=True)
+        if path_sound:
+            fname = os.path.join(current_app.config["UPLOADED_SOUNDS_DEST"], path_sound)
             if os.path.isfile(fname):
                 os.unlink(fname)
             else:
-                print(f"!!! COMMIT DELETE SOUND cannot delete transcoded file {fname}")
+                print(f"!!! COMMIT DELETE SOUND cannot delete orig file {fname}")
+
+        if self.transcode_needed:
+            path_sound = self.path_sound(orig=False)
+            if path_sound:
+                fname = os.path.join(current_app.config["UPLOADED_SOUNDS_DEST"], path_sound)
+                if os.path.isfile(fname):
+                    os.unlink(fname)
+                else:
+                    print(f"!!! COMMIT DELETE SOUND cannot delete transcoded file {fname}")
 
         if self.artwork_filename:
             fname = os.path.join(current_app.config["UPLOADED_ARTWORKSOUNDS_DEST"], self.path_artwork())
@@ -655,7 +684,8 @@ class Activity(db.Model):
     __tablename__ = "activity"
     id = db.Column(db.Integer, primary_key=True)
 
-    actor = db.Column(db.Integer, db.ForeignKey("actor.id"))
+    actor_id = db.Column(db.Integer, db.ForeignKey("actor.id"), nullable=True)
+    actor = db.relationship("Actor", backref=db.backref("actor"))
 
     uuid = db.Column(UUID(as_uuid=True), server_default=sa_text("uuid_generate_v4()"), unique=True)
     url = db.Column(URLType(), unique=True, nullable=True)
@@ -759,4 +789,91 @@ def update_remote_actor(actor_id: int, activity_actor: ap.BaseActivity) -> None:
     actor.followers_url = activity_actor.followers
     actor.following_url = activity_actor.following
 
+    db.session.commit()
+
+
+def strip_end(text, suffix):
+    if not text.endswith(suffix):
+        return text
+    return text[: len(text) - len(suffix)]
+
+
+def update_remote_track(actor_id: int, update: ap.Update) -> int:
+    """
+    :param actor_id: an Actor db ID
+    :param obj: a Little Boxes Audio object
+    :return: nothing
+    """
+    obj = update.get_object()
+    current_app.logger.debug(f"asked to update a track {obj!r}")
+    current_app.logger.debug(f"obj id {obj.id}")
+    act_id = strip_end(obj.id, "/activity")
+    original_activity = Activity.query.filter(Activity.url == act_id).first()
+    if not original_activity:
+        # TODO(dashie) we should fetch it if not found
+        current_app.logger.error("fetching unknown activity not yet implemented")
+        raise NotImplementedError
+
+    update_activity = Activity.query.filter(Activity.url == strip_end(update.id, "/activity")).first()
+    if not update_activity:
+        current_app.logger.error(f"cannot get update activity from db {update!r}")
+        return
+
+    track = Sound.query.filter(Sound.activity_id == original_activity.id).first()
+    if not track:
+        current_app.logger.error(f"update_remote_track: {original_activity!r} has no associated sound")
+        return
+
+    # Update what is allowed to change
+    # If not found they should fallback to the actual .thing of the object in db
+    track.title = update_activity.payload.get("object", {}).get("name", track.title)
+    track.description = update_activity.payload.get("object", {}).get("content", track.description)
+    track.genre = update_activity.payload.get("object", {}).get("genre", track.genre)
+    track.licence = int(update_activity.payload.get("object", {}).get("licence", {}).get("id", 0))
+    old_remote_artwork_uri = track.remote_artwork_uri
+    track.remote_artwork_uri = update_activity.payload.get("object", {}).get("artwork", track.remote_artwork_uri)
+    if old_remote_artwork_uri != track.remote_artwork_uri:
+        pass  # TODO(call delete and refetch of artwork)
+
+    tags = update_activity.payload.get("object", {}).get("tags", None)
+    if tags:
+        # First remove tags which have been removed
+        for tag in track.tags:
+            if tag.name not in tags:
+                track.tags.remove(tag)
+
+        # Then add the new ones if new
+        for tag in tags:
+            if tag not in [a.name for a in track.tags]:
+                dbt = SoundTag.query.filter(SoundTag.name == tag).first()
+                if not dbt:
+                    dbt = SoundTag(name=tag)
+                    db.session.add(dbt)
+                track.tags.append(dbt)
+
+        # Purge orphaned tags
+        for otag in SoundTag.query.filter(and_(~SoundTag.sounds.any(), ~SoundTag.albums.any())).all():
+            db.session.delete(otag)
+
+    db.session.commit()
+    return track.id
+
+
+def delete_remote_track(obj_id: str) -> None:
+    original_activity = Activity.query.filter(Activity.url == strip_end(obj_id, "/activity")).first()
+    if not original_activity:
+        current_app.logger.error(f"unknown activity in db {obj_id!r}")
+        return
+
+    original_activity.meta_deleted = True
+
+    # TODO(dashie) all related activities to this object/track should be marked as meta_deleted=True too to return a Tombstone as required
+
+    sound = Sound.query.filter(Sound.activity_id == original_activity.id).first()
+    if not sound:
+        current_app.logger.error(f"activity object {obj_id!r} has no related sound in db")
+        db.session.commit()
+        return
+
+    db.session.delete(sound)
     db.session.commit()

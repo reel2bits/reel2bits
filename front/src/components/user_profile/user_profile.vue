@@ -7,28 +7,28 @@
       <div class="row mt-4">
         <div class="col-md-8">
           <b-nav>
-            <b-nav-item :active="isTimelineTracks" :to="{ name: 'user-profile-tracks' }"
+            <b-nav-item :active="isTimelineTracks" :to="linkToProfileSpecific(user, 'user-profile-tracks')"
                         class="border-right pr-3"
             >
               <translate translate-context="Content/UserProfile/Tab/Text">
                 Tracks
               </translate>
             </b-nav-item>
-            <b-nav-item :active="isTimelineAlbums" :to="{ name: 'user-profile-albums' }"
+            <b-nav-item v-if="!isExternal" :active="isTimelineAlbums" :to="linkToProfileSpecific(user, 'user-profile-albums')"
                         class="border-right px-3"
             >
               <translate translate-context="Content/UserProfile/Tab/Text">
                 Albums
               </translate>
             </b-nav-item>
-            <b-nav-item v-if="isUs" :active="isTimelineDrafts" :to="{ name: 'user-profile-drafts' }"
+            <b-nav-item v-if="isUs" :active="isTimelineDrafts" :to="linkToProfileSpecific(user, 'user-profile-drafts')"
                         class="border-right px-3"
             >
               <translate translate-context="Content/UserProfile/Tab/Text">
                 Drafts
               </translate>
             </b-nav-item>
-            <b-nav-item v-if="isUs" :active="isTimelineUnprocessed" :to="{ name: 'user-profile-unprocessed' }"
+            <b-nav-item v-if="isUs" :active="isTimelineUnprocessed" :to="linkToProfileSpecific(user, 'user-profile-unprocessed')"
                         class="px-3"
             >
               <translate translate-context="Content/UserProfile/Tab/Text">
@@ -71,6 +71,7 @@ import get from 'lodash/get'
 import Timeline from '../timeline/timeline.vue'
 import Sidebar from '../sidebar/sidebar.vue'
 import fileSizeFormatService from '../../services/file_size_format/file_size_format.js'
+import generateRemoteLink from 'src/services/remote_user_link_generator/remote_user_link_generator.js'
 
 export default {
   components: {
@@ -88,14 +89,15 @@ export default {
       return this.$store.getters.findUser(this.userId)
     },
     isExternal () {
-      return this.$route.name === 'external-user-profile'
+      return this.$route.name.startsWith('external-user-profile')
     },
     isUs () {
-      return this.userId && this.$store.state.users.currentUser.id &&
-        this.userId === this.$store.state.users.currentUser.id
+      return this.userId && this.$store.state.users.currentUser.flakeId &&
+        this.userId === this.$store.state.users.currentUser.flakeId
     },
     isTimelineTracks () {
-      return this.$route.name === 'user-profile-tracks' || this.$route.name === 'user-profile'
+      // Can be external- too, uses endsWith to match it
+      return this.$route.name.endsWith('user-profile-tracks') || this.$route.name.endsWith('user-profile')
     },
     isTimelineAlbums () {
       return this.$route.name === 'user-profile-albums'
@@ -149,17 +151,24 @@ export default {
     this.cleanUp()
   },
   methods: {
+    linkToProfileSpecific (user, suffix) {
+      return generateRemoteLink(
+        user.flakeId, user.screen_name,
+        this.$store.state.instance.restrictedNicknames,
+        suffix
+      )
+    },
     load (userNameOrId) {
       console.debug('loading profile for ' + userNameOrId)
       const user = this.$store.getters.findUser(userNameOrId)
       if (user) {
-        this.userId = user.id
+        this.userId = user.flakeId
         console.warn('we already know the user')
       } else {
         this.$store.dispatch('fetchUser', userNameOrId)
-          .then(({ id }) => {
-            this.userId = id
-            console.warn('fetched by ID: ' + id)
+          .then(({ flakeId }) => {
+            this.userId = flakeId
+            console.warn('fetched by ID: ' + flakeId)
           })
           .catch((reason) => {
             console.warn('cannot fetch user: ' + reason)

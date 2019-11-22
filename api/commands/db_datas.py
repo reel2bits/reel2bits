@@ -107,12 +107,16 @@ def update_file_sizes():
     non breaking.
     """
     for track in Sound.query.filter(Sound.file_size.is_(None)).all():
-        track.file_size = os.path.getsize(
-            os.path.join(current_app.config["UPLOADED_SOUNDS_DEST"], track.path_sound(orig=True))
-        )
+        path_sound = track.path_sound(orig=True)
+        if not path_sound:
+            continue
+        track.file_size = os.path.getsize(os.path.join(current_app.config["UPLOADED_SOUNDS_DEST"], path_sound))
         if track.transcode_needed:
+            path_sound = track.path_sound(orig=False)
+            if not path_sound:
+                continue
             track.transcode_file_size = os.path.getsize(
-                os.path.join(current_app.config["UPLOADED_SOUNDS_DEST"], track.path_sound(orig=False))
+                os.path.join(current_app.config["UPLOADED_SOUNDS_DEST"], path_sound)
             )
     db.session.commit()
 
@@ -143,4 +147,19 @@ def generate_albums_uuid():
     for album in db.session.query(Album).all():
         if not album.flake_id:
             album.flake_id = UUID(int=flake_gen.get())
+    db.session.commit()
+
+
+@db_datas.command(name="007-generate-users-uuids")
+@with_appcontext
+def generate_users_uuid():
+    """
+    Generate tracks UUIDs when missing (41_7eb56606e9d6)
+
+    non breaking.
+    """
+    flake_gen = FlakeId()
+    for user in db.session.query(User).all():
+        if not user.flake_id:
+            user.flake_id = UUID(int=flake_gen.get())
     db.session.commit()

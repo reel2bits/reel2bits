@@ -38,7 +38,7 @@ def user_actor_json(name):
         #     Activity.type == "Delete",
         #     Activity.box == "outbox",
         #     Activity.local.is_(True),
-        #     Activity.actor == actor.id,
+        #     Activity.actor_id == actor.id,
         #     Activity.payload[("object", "type")].astext == "Tombstone",
         #     Activity.payload[("object", "id")].astext == actor.url,
         # ).one()

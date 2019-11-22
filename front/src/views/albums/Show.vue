@@ -143,7 +143,7 @@ export default {
   created () {
     const user = this.$store.getters.findUser(this.userName)
     if (user) {
-      this.userId = user.id
+      this.userId = user.flakeId
     } else {
       this.$bvToast.toast(this.$pgettext('Content/TrackAlbum/Toast/Error/Message', 'Not found'), {
         title: this.$pgettext('Content/TrackAlbum/Toast/Error/Title', 'User'),

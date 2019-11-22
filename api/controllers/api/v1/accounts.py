@@ -20,15 +20,17 @@ from app_oauth import authorization, require_oauth
 from authlib.flask.oauth2 import current_token
 from datas_helpers import to_json_track, to_json_account, to_json_relationship
 from utils.various import forbidden_username, add_user_log, add_log, get_hashed_filename
-from tasks import send_update_profile, federate_delete_actor
+from tasks import send_update_profile, federate_delete_actor, post_to_outbox
 import re
 from sqlalchemy import or_
+import sqlalchemy.exc
 from flask_mail import Message
 from flask import render_template
 import smtplib
 from utils.defaults import Reel2bitsDefaults
 from flask_uploads import UploadSet
 import os
+import little_boxes.activitypub as ap
 
 
 bp_api_v1_accounts = Blueprint("bp_api_v1_accounts", __name__)
@@ -205,12 +207,12 @@ def account_get(username_or_id):
         schema:
             $ref: '#/definitions/Account'
     """
-    if username_or_id.isdigit():
-        # an int is DB ID
-        user = User.query.filter(User.id == int(username_or_id)).first()
-    else:
-        # a string is Local User
-        user = User.query.filter(User.name == username_or_id, User.local.is_(True)).first()
+    user = User.query.filter(User.name == username_or_id, User.local.is_(True)).first()
+    if not user:
+        try:
+            user = User.query.filter(User.flake_id == username_or_id).first()
+        except sqlalchemy.exc.DataError:
+            abort(404)
 
     if not user:
         abort(404)
@@ -452,9 +454,9 @@ def accounts_update_credentials():
     return jsonify(to_json_account(current_user))
 
 
-@bp_api_v1_accounts.route("/api/v1/accounts/<int:user_id>/statuses", methods=["GET"])
+@bp_api_v1_accounts.route("/api/v1/accounts/<string:username_or_id>/statuses", methods=["GET"])
 @require_oauth(optional=True)
-def user_statuses(user_id):
+def user_statuses(username_or_id):
     """
     User statuses.
     ---
@@ -484,7 +486,12 @@ def user_statuses(user_id):
     page = int(request.args.get("page", 1))
 
     # Get associated user
-    user = User.query.filter(User.id == user_id).first()
+    user = User.query.filter(User.name == username_or_id, User.local.is_(True)).first()
+    if not user:
+        try:
+            user = User.query.filter(User.flake_id == username_or_id).first()
+        except sqlalchemy.exc.DataError:
+            abort(404)
     if not user:
         abort(404)
 
@@ -495,7 +502,7 @@ def user_statuses(user_id):
 
     q = q.filter(Activity.payload["to"].astext.contains("https://www.w3.org/ns/activitystreams#Public"))
 
-    q = q.filter(Activity.actor == user.actor[0].id)
+    q = q.filter(Activity.actor_id == user.actor[0].id)
 
     q = q.join(Sound, Sound.activity_id == Activity.id)
     q = q.order_by(Activity.creation_date.desc())
@@ -573,14 +580,14 @@ def relationships():
         schema:
             $ref: '#/definitions/Relationship'
     """
-    ids = request.args.getlist("id")
+    flake_ids = request.args.getlist("id")
     of_user = current_token.user
 
     rels = []
-    for id in ids:
-        against_user = User.query.filter(User.id == id).first()
+    for id in flake_ids:
+        against_user = User.query.filter(User.flake_id == id).first()
         if not against_user:
-            if len(ids) > 1:
+            if len(flake_ids) > 1:
                 next
             else:
                 return jsonify([])
@@ -588,9 +595,9 @@ def relationships():
     return jsonify(rels)
 
 
-@bp_api_v1_accounts.route("/api/v1/accounts/<int:user_id>/follow", methods=["POST"])
+@bp_api_v1_accounts.route("/api/v1/accounts/<string:username_or_id>/follow", methods=["POST"])
 @require_oauth("write")
-def follow(user_id):
+def follow(username_or_id):
     """
     Follow an account.
     ---
@@ -612,7 +619,12 @@ def follow(user_id):
     if not current_user:
         abort(400)
 
-    user = User.query.filter(User.id == user_id).first()
+    user = User.query.filter(User.name == username_or_id, User.local.is_(True)).first()
+    if not user:
+        try:
+            user = User.query.filter(User.flake_id == username_or_id).first()
+        except sqlalchemy.exc.DataError:
+            abort(404)
     if not user:
         abort(404)
 
@@ -624,13 +636,21 @@ def follow(user_id):
         return jsonify([to_json_relationship(current_user, user)])
     else:
         # We need to initiate a follow request
-        # FIXME TODO
-        abort(501)
+        # Check if not already following
+        rel = Follower.query.filter(Follower.actor_id == actor_me.id, Follower.target_id == actor_them.id).first()
+
+        if not rel:
+            # Initiate a Follow request from actor_me to actor_target
+            follow = ap.Follow(actor=actor_me.url, object=actor_them.url)
+            post_to_outbox(follow)
+            return jsonify(""), 202
+        else:
+            return jsonify({"error": "already following"}), 409
 
 
-@bp_api_v1_accounts.route("/api/v1/accounts/<int:user_id>/unfollow", methods=["POST"])
+@bp_api_v1_accounts.route("/api/v1/accounts/<string:username_or_id>/unfollow", methods=["POST"])
 @require_oauth("write")
-def unfollow(user_id):
+def unfollow(username_or_id):
     """
     Unfollow an account.
     ---
@@ -652,7 +672,12 @@ def unfollow(user_id):
     if not current_user:
         abort(400)
 
-    user = User.query.filter(User.id == user_id).first()
+    user = User.query.filter(User.name == username_or_id, User.local.is_(True)).first()
+    if not user:
+        try:
+            user = User.query.filter(User.flake_id == username_or_id).first()
+        except sqlalchemy.exc.DataError:
+            abort(404)
     if not user:
         abort(404)
 
@@ -663,14 +688,38 @@ def unfollow(user_id):
         actor_me.unfollow(actor_them)
         return jsonify([to_json_relationship(current_user, user)])
     else:
-        # We need to initiate a follow request
-        # FIXME TODO
-        abort(501)
+        # Get the relation of the follow
+        follow_relation = Follower.query.filter(
+            Follower.actor_id == actor_me.id, Follower.target_id == actor_them.id
+        ).first()
+        if not follow_relation:
+            return jsonify({"error": "follow relation not found"}), 404
+
+        # Fetch the related Activity of the Follow relation
+        accept_activity = Activity.query.filter(Activity.url == follow_relation.activity_url).first()
+        if not accept_activity:
+            current_app.logger.error(f"cannot find accept activity {follow_relation.activity_url}")
+            return jsonify({"error": "cannot found the accept activity"}), 500
+        # Then the Activity ID of the ACcept will be the object id
+        activity = ap.parse_activity(payload=accept_activity.payload)
+
+        # get the final activity (the Follow one)
+        follow_activity = Activity.query.filter(Activity.url == activity.get_object_id()).first()
+        if not follow_activity:
+            current_app.logger.error(f"cannot find follow activity {activity.get_object_id()}")
+            return jsonify({"error": "cannot find follow activity"}), 500
+
+        ap_follow_activity = ap.parse_activity(payload=follow_activity.payload)
+
+        # initiate an Undo of the Follow request
+        unfollow = ap_follow_activity.build_undo()
+        post_to_outbox(unfollow)
+        return jsonify(""), 202
 
 
-@bp_api_v1_accounts.route("/api/v1/accounts/<int:user_id>/followers", methods=["GET"])
+@bp_api_v1_accounts.route("/api/v1/accounts/<string:username_or_id>/followers", methods=["GET"])
 @require_oauth(optional=True)
-def followers(user_id):
+def followers(username_or_id):
     """
     Accounts which follow the given account.
     ---
@@ -697,7 +746,12 @@ def followers(user_id):
         schema:
             $ref: '#/definitions/Account'
     """
-    user = User.query.filter(User.id == user_id).first()
+    user = User.query.filter(User.name == username_or_id, User.local.is_(True)).first()
+    if not user:
+        try:
+            user = User.query.filter(User.flake_id == username_or_id).first()
+        except sqlalchemy.exc.DataError:
+            abort(404)
     if not user:
         abort(404)
 
@@ -722,9 +776,9 @@ def followers(user_id):
     return jsonify(resp)
 
 
-@bp_api_v1_accounts.route("/api/v1/accounts/<int:user_id>/following", methods=["GET"])
+@bp_api_v1_accounts.route("/api/v1/accounts/<string:username_or_id>/following", methods=["GET"])
 @require_oauth(optional=True)
-def following(user_id):
+def following(username_or_id):
     """
     Accounts followed by the given account.
     ---
@@ -751,7 +805,12 @@ def following(user_id):
         schema:
             $ref: '#/definitions/Account'
     """
-    user = User.query.filter(User.id == user_id).first()
+    user = User.query.filter(User.name == username_or_id, User.local.is_(True)).first()
+    if not user:
+        try:
+            user = User.query.filter(User.flake_id == username_or_id).first()
+        except sqlalchemy.exc.DataError:
+            abort(404)
     if not user:
         abort(404)
 
@@ -806,7 +865,7 @@ def account_delete():
         db.session.delete(prt)
 
     # set all activities as deleted
-    activities = Activity.query.filter(Activity.actor == current_user.actor[0].id)
+    activities = Activity.query.filter(Activity.actor_id == current_user.actor[0].id)
     for activity in activities.all():
         activity.meta_deleted = True
 

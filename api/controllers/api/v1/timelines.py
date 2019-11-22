@@ -95,6 +95,9 @@ def public():
         tracks = []
         for t in q.items:
             if t.Sound:
+                # TODO(dashie) FIXME can probably be moved out to the q.filter()
+                if not t.Sound.transcode_state == Sound.TRANSCODE_DONE:
+                    continue
                 relationship = False
                 if current_token and current_token.user:
                     relationship = to_json_relationship(current_token.user, t.Sound.user)
@@ -195,7 +198,7 @@ def albums():
         - name: user
           in: query
           type: string
-          description: the user ID to get albums list
+          description: the user flake id to get albums list
     responses:
         200:
             description: Returns array of Status
@@ -206,7 +209,7 @@ def albums():
     if not user:
         abort(400)
 
-    user = User.query.filter(User.id == user).first()
+    user = User.query.filter(User.flake_id == user).first()
     if not user:
         return jsonify({"error": "User does not exist"}), 404
 
