@@ -579,4 +579,7 @@ def artwork(username, trackslug):
 
     db.session.commit()
 
+    # trigger a sound update
+    send_update_sound(track)
+
     return jsonify({"status": "ok", "path": track.path_artwork()})
