@@ -23,7 +23,7 @@ setup(
         "bcrypt==3.1.7",
         "pydub==0.23.1",
         "psycopg2-binary==2.8.4",
-        "mutagen==1.42.0",
+        "mutagen==1.43.0",
         "unidecode==1.1.1",
         "Flask_Babelex==0.9.3",
         "texttable==1.6.1",
