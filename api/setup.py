@@ -16,7 +16,7 @@ setup(
         "WTForms-Alchemy==0.16.9",
         "SQLAlchemy-Searchable==1.1.0",
         "SQLAlchemy-Utils==0.35.0",
-        "Bootstrap-Flask==1.0.10",
+        "Bootstrap-Flask==1.2.0",
         "Flask-Mail==0.9.1",
         "Flask-Migrate==2.4.0",
         "Flask-Uploads==0.2.1",
