@@ -382,28 +382,28 @@ export default {
       if (this.track.file) {
         const file = event.target.files[0]
 
-        let msg = this.$pgettext('Content/TrackUpload/File.Description', 'Maximum file size: %{maxSize}, current file: %{curSize}')
-        let ffsMax = fileSizeFormatService.fileSizeFormat(this.$store.state.instance.trackSizeLimit)
-        let ffsCur = fileSizeFormatService.fileSizeFormat(file.size)
+        const msg = this.$pgettext('Content/TrackUpload/File.Description', 'Maximum file size: %{maxSize}, current file: %{curSize}')
+        const ffsMax = fileSizeFormatService.fileSizeFormat(this.$store.state.instance.trackSizeLimit)
+        const ffsCur = fileSizeFormatService.fileSizeFormat(file.size)
         return this.$gettextInterpolate(msg, { maxSize: ffsMax.num + ffsMax.unit, curSize: ffsCur.num + ffsCur.unit })
       }
-      let msg = this.$pgettext('Content/TrackUpload/File.Description', 'Maximum file size: %{maxSize}')
-      let ffs = fileSizeFormatService.fileSizeFormat(this.$store.state.instance.trackSizeLimit)
+      const msg = this.$pgettext('Content/TrackUpload/File.Description', 'Maximum file size: %{maxSize}')
+      const ffs = fileSizeFormatService.fileSizeFormat(this.$store.state.instance.trackSizeLimit)
       return this.$gettextInterpolate(msg, { maxSize: ffs.num + ffs.unit })
     },
     currentUserQuota () {
       if (this.currentUser.reel2bits.quota_limit > 0) {
-        let max = fileSizeFormatService.fileSizeFormat(this.currentUser.reel2bits.quota_limit)
-        let msg = this.$pgettext('Content/TrackUpload/Alert/Quota', 'Quota: %{rem} left')
-        let cur = fileSizeFormatService.fileSizeFormat(this.currentUser.reel2bits.quota_count)
-        let rem = fileSizeFormatService.fileSizeFormat(this.currentUser.reel2bits.quota_limit - this.currentUser.reel2bits.quota_count)
+        const max = fileSizeFormatService.fileSizeFormat(this.currentUser.reel2bits.quota_limit)
+        const msg = this.$pgettext('Content/TrackUpload/Alert/Quota', 'Quota: %{rem} left')
+        const cur = fileSizeFormatService.fileSizeFormat(this.currentUser.reel2bits.quota_count)
+        const rem = fileSizeFormatService.fileSizeFormat(this.currentUser.reel2bits.quota_limit - this.currentUser.reel2bits.quota_count)
         return this.$gettextInterpolate(msg, { max: max.num + ' ' + max.unit, cur: cur.num + ' ' + cur.unit, rem: rem.num + ' ' + rem.unit })
       }
       return null
     }
   },
   watch: {
-    'curTag': 'getTags'
+    curTag: 'getTags'
   },
   created () {
     // Fetch licenses
@@ -425,10 +425,10 @@ export default {
     // Fetch user albums
     this.$store.state.api.backendInteractor.fetchUserAlbums({ userId: this.$store.state.users.currentUser.id, short: true })
       .then((albums) => {
-        let noAlbum = [
+        const noAlbum = [
           { value: '__None', text: 'No album' }
         ]
-        let userAlbums = albums.map(function (x) { return { value: x.id, text: (x.private ? `${x.title} (private)` : x.title) } })
+        const userAlbums = albums.map(function (x) { return { value: x.id, text: (x.private ? `${x.title} (private)` : x.title) } })
         this.albumChoices = noAlbum.concat(userAlbums)
       })
       .catch((e) => {
@@ -478,7 +478,7 @@ export default {
         const allowedSize = fileSizeFormatService.fileSizeFormat(
           this.$store.state.instance.trackSizeLimit
         )
-        let errMsg = this.$pgettext('Content/TrackUpload/Error', 'file too big: ')
+        const errMsg = this.$pgettext('Content/TrackUpload/Error', 'file too big: ')
         this.trackUploadError =
           errMsg +
           filesize.num +
@@ -490,12 +490,12 @@ export default {
       }
 
       // Compute quota
-      let quotaCurrent = this.currentUser.reel2bits.quota_count
-      let quotaLimit = this.currentUser.reel2bits.quota_limit
+      const quotaCurrent = this.currentUser.reel2bits.quota_count
+      const quotaLimit = this.currentUser.reel2bits.quota_limit
 
       if (quotaCurrent + file.size > quotaLimit) {
         this.currentUserQuotaLevel = 'danger'
-        let errMsg = this.$pgettext('Content/TrackUpload/Error', 'File is too big for the current remaining quota')
+        const errMsg = this.$pgettext('Content/TrackUpload/Error', 'File is too big for the current remaining quota')
         this.trackUploadError = errMsg
         return
       } else {

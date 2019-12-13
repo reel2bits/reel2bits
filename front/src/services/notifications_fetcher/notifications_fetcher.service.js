@@ -15,16 +15,16 @@ const fetchAndUpdate = ({ store, credentials, older = false }) => {
   const rootState = store.rootState || store.state
   const timelineData = rootState.statuses.notifications
 
-  args['timeline'] = 'notifications'
+  args.timeline = 'notifications'
   if (older) {
     if (timelineData.minId !== Number.POSITIVE_INFINITY) {
-      args['until'] = timelineData.minId
+      args.until = timelineData.minId
     }
     return fetchNotifications({ store, args, older })
   } else {
     // fetch new notifications
     if (timelineData.maxId !== Number.POSITIVE_INFINITY) {
-      args['since'] = timelineData.maxId
+      args.since = timelineData.maxId
     }
     const result = fetchNotifications({ store, args, older })
 
@@ -32,7 +32,7 @@ const fetchAndUpdate = ({ store, credentials, older = false }) => {
     const notifications = timelineData.data
     const unread = notifications.filter(n => !n.seen).map(n => n.id)
     if (unread.length) {
-      args['since'] = Math.min(...unread)
+      args.since = Math.min(...unread)
       fetchNotifications({ store, args, older })
     }
 

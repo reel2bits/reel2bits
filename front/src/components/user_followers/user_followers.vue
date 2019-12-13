@@ -87,7 +87,7 @@ export default {
             if (errorMessage) {
               this.error = errorMessage
             } else {
-              let msg = this.$pgettext('Content/UserFollowers/Error', 'Error loading user: %{errorMsg}')
+              const msg = this.$pgettext('Content/UserFollowers/Error', 'Error loading user: %{errorMsg}')
               this.error = this.$gettextInterpolate(msg, { errorMsg: errorMessage })
               this.$bvToast.toast(this.$pgettext('Content/UserFollowers/Toast/Error/Message', 'Cannot fetch user'), {
                 title: this.$pgettext('Content/UserFollowers/Toast/Error/Title', 'Followers'),
@@ -112,7 +112,7 @@ export default {
         })
         .catch((e) => {
           console.log('cannot fetch user followers: ' + e.message)
-          let msg = this.$pgettext('Content/UserFollowers/Error', 'Error loading user followers: %{errorMsg}')
+          const msg = this.$pgettext('Content/UserFollowers/Error', 'Error loading user followers: %{errorMsg}')
           this.error = this.$gettextInterpolate(msg, { errorMsg: e.message })
           this.usersError = e
           this.usersLoaded = false

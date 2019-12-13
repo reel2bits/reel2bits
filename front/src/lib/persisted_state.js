@@ -32,7 +32,7 @@ export default function createPersistedState ({
   key = 'vuex-lz',
   paths = [],
   getState = (key, storage) => {
-    let value = storage.getItem(key)
+    const value = storage.getItem(key)
     return value
   },
   setState = (key, state, storage) => {

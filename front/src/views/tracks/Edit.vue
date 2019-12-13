@@ -298,7 +298,7 @@ export default {
     }
   },
   watch: {
-    'curTag': 'getTags'
+    curTag: 'getTags'
   },
   async created () {
     // Fetch licenses
@@ -320,10 +320,10 @@ export default {
     // Fetch user albums
     this.$store.state.api.backendInteractor.fetchUserAlbums({ userId: this.$store.state.users.currentUser.id, short: true })
       .then((albums) => {
-        let noAlbum = [
+        const noAlbum = [
           { value: '__None', text: 'No album' }
         ]
-        let userAlbums = albums.map(function (x) { return { value: x.id, text: (x.private ? `${x.title} (private)` : x.title) } })
+        const userAlbums = albums.map(function (x) { return { value: x.id, text: (x.private ? `${x.title} (private)` : x.title) } })
         this.albumChoices = noAlbum.concat(userAlbums)
       })
       .catch((e) => {

@@ -51,6 +51,8 @@ module.exports = {
         "allowFirstLine": true
       }
     }],
-    'vue/require-default-prop': 0
+    'vue/require-default-prop': 0,
+    'no-async-promise-executor': 0,
+    'no-prototype-builtins': 0
   }
 }

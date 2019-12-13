@@ -154,7 +154,7 @@ export default {
       this.error = false
     },
     focusOnPasswordInput () {
-      let passwordInput = this.$refs.passwordInput
+      const passwordInput = this.$refs.passwordInput
       passwordInput.focus()
       passwordInput.setSelectionRange(0, passwordInput.value.length)
     }

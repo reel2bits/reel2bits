@@ -11,7 +11,7 @@ export const getOrCreateApp = ({ clientId, clientSecret, commit }) => {
   }
   console.debug('registering a new app')
 
-  const url = `/api/v1/apps`
+  const url = '/api/v1/apps'
   const form = new window.FormData()
 
   form.append('client_name', `reel2bit_front_${window.___reel2bitsfe_commit_hash}_${(new Date()).toISOString()}`)
@@ -52,7 +52,7 @@ const login = ({ clientId }) => {
 // Used on : login
 const getTokenWithCredentials = ({ clientId, clientSecret, username, password }) => {
   console.debug('getTokenWithCredentials')
-  const url = `/oauth/token`
+  const url = '/oauth/token'
   const form = new window.FormData()
 
   form.append('client_id', clientId)
@@ -70,7 +70,7 @@ const getTokenWithCredentials = ({ clientId, clientSecret, username, password })
 
 const getToken = ({ clientId, clientSecret, code }) => {
   console.debug('getToken')
-  const url = `/oauth/token`
+  const url = '/oauth/token'
   const form = new window.FormData()
 
   form.append('client_id', clientId)
@@ -89,7 +89,7 @@ const getToken = ({ clientId, clientSecret, code }) => {
 
 export const getClientToken = ({ clientId, clientSecret }) => {
   console.debug('getClientToken')
-  const url = `/oauth/token`
+  const url = '/oauth/token'
   const form = new window.FormData()
 
   form.append('client_id', clientId)
@@ -105,7 +105,7 @@ export const getClientToken = ({ clientId, clientSecret }) => {
 }
 
 const revokeToken = ({ app, token }) => {
-  const url = `/oauth/revoke`
+  const url = '/oauth/revoke'
   const form = new window.FormData()
 
   form.append('client_id', app.clientId)
@@ -115,7 +115,7 @@ const revokeToken = ({ app, token }) => {
   const auth = window.btoa(token)
 
   return window.fetch(url, {
-    headers: { 'Authorization': `Basic ${auth}` },
+    headers: { Authorization: `Basic ${auth}` },
     method: 'POST',
     body: form
   }).then((data) => data.json())

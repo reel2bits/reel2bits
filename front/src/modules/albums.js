@@ -36,7 +36,7 @@ const albums = {
       store.commit('createPending')
 
       try {
-        let data = await apiService.albumNew(albumInfo, store)
+        const data = await apiService.albumNew(albumInfo, store)
         store.commit('createSuccess', data)
       } catch (e) {
         let errors = JSON.parse(e.message)

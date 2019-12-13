@@ -252,7 +252,7 @@ export default {
       if (num === 0) {
         return 0
       }
-      let ffs = fileSizeFormatService.fileSizeFormat(num)
+      const ffs = fileSizeFormatService.fileSizeFormat(num)
       return ffs.num + ' ' + ffs.unit
     }
   },

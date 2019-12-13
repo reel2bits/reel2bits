@@ -49,7 +49,7 @@ const REEL2BITS_UNPROCESSED_TIMELINE = '/api/v1/timelines/unprocessed'
 
 const oldfetch = window.fetch
 
-let fetch = (url, options) => {
+const fetch = (url, options) => {
   options = options || {}
   const baseUrl = ''
   const fullUrl = baseUrl + url
@@ -59,7 +59,7 @@ let fetch = (url, options) => {
 
 const authHeaders = (accessToken) => {
   if (accessToken) {
-    return { 'Authorization': `Bearer ${accessToken}` }
+    return { Authorization: `Bearer ${accessToken}` }
   } else {
     return {}
   }
@@ -69,7 +69,7 @@ const promisedRequest = ({ method, url, payload, credentials, headers = {} }, st
   const options = {
     method,
     headers: {
-      'Accept': 'application/json',
+      Accept: 'application/json',
       'Content-Type': 'application/json',
       ...headers
     }
@@ -181,7 +181,7 @@ const trackUpload = (trackInfo, store) => {
 }
 
 const trackFetch = ({ userId, trackId, credentials }) => {
-  let url = TRACKS_FETCH_URL(userId, trackId)
+  const url = TRACKS_FETCH_URL(userId, trackId)
 
   return fetch(url, { headers: authHeaders(credentials) })
     .then((data) => {
@@ -195,7 +195,7 @@ const trackFetch = ({ userId, trackId, credentials }) => {
 }
 
 const trackDelete = ({ userId, trackId, credentials }) => {
-  let url = TRACKS_DELETE_URL(userId, trackId)
+  const url = TRACKS_DELETE_URL(userId, trackId)
 
   return fetch(url, {
     headers: authHeaders(credentials),
@@ -231,7 +231,7 @@ const trackEdit = ({ userId, trackId, track, credentials }) => {
 }
 
 const fetchTrackLogs = ({ userId, trackId, credentials }) => {
-  let url = TRACKS_LOGS_URL(userId, trackId)
+  const url = TRACKS_LOGS_URL(userId, trackId)
 
   return fetch(url, { headers: authHeaders(credentials) })
     .then((data) => {
@@ -261,13 +261,13 @@ const albumReorder = ({ userId, albumId, tracksOrder, credentials }) => {
 }
 
 const fetchUser = ({ id, credentials }) => {
-  let url = `${MASTODON_USER_URL}/${id}`
+  const url = `${MASTODON_USER_URL}/${id}`
   return promisedRequest({ url, credentials })
     .then((data) => parseUser(data))
 }
 
 const fetchUserRelationship = ({ id, credentials }) => {
-  let url = `${MASTODON_USER_RELATIONSHIPS_URL}/?id=${id}`
+  const url = `${MASTODON_USER_RELATIONSHIPS_URL}/?id=${id}`
   return fetch(url, { headers: authHeaders(credentials) })
     .then((response) => {
       return new Promise((resolve, reject) => response.json()
@@ -290,7 +290,7 @@ const updateUserSettings = ({ settings, credentials }) => {
 }
 
 const fetchLicenses = () => {
-  let url = REEL2BITS_LICENSES
+  const url = REEL2BITS_LICENSES
 
   return fetch(url)
     .then((data) => {
@@ -401,7 +401,7 @@ const albumNew = (albumInfo, store) => {
 }
 
 const albumFetch = ({ userId, albumId, credentials }) => {
-  let url = ALBUMS_FETCH_URL(userId, albumId)
+  const url = ALBUMS_FETCH_URL(userId, albumId)
 
   return fetch(url, { headers: authHeaders(credentials) })
     .then((data) => {
@@ -415,7 +415,7 @@ const albumFetch = ({ userId, albumId, credentials }) => {
 }
 
 const albumDelete = ({ userId, albumId, credentials }) => {
-  let url = ALBUMS_DELETE_URL(userId, albumId)
+  const url = ALBUMS_DELETE_URL(userId, albumId)
 
   return fetch(url, {
     headers: authHeaders(credentials),
@@ -448,8 +448,8 @@ const albumEdit = ({ userId, albumId, album, credentials }) => {
 }
 
 const fetchUserLogs = (user, currentPage, perPage, store) => {
-  let url = ACCOUNT_LOGS_URL(user, currentPage, perPage)
-  let credentials = store.getters.getToken()
+  const url = ACCOUNT_LOGS_URL(user, currentPage, perPage)
+  const credentials = store.getters.getToken()
 
   return fetch(url, { headers: authHeaders(credentials) })
     .then((data) => {
@@ -462,8 +462,8 @@ const fetchUserLogs = (user, currentPage, perPage, store) => {
 }
 
 const fetchUserQuota = (user, currentPage, perPage, store) => {
-  let url = ACCOUNT_QUOTA_URL(user, currentPage, perPage)
-  let credentials = store.getters.getToken()
+  const url = ACCOUNT_QUOTA_URL(user, currentPage, perPage)
+  const credentials = store.getters.getToken()
 
   return fetch(url, { headers: authHeaders(credentials) })
     .then((data) => {
@@ -490,7 +490,7 @@ const fetchTimeline = ({
     friends: MASTODON_USER_HOME_TIMELINE_URL,
     dms: MASTODON_DIRECT_MESSAGES_TIMELINE_URL,
     notifications: MASTODON_USER_NOTIFICATIONS_URL,
-    'publicAndExternal': MASTODON_PUBLIC_TIMELINE,
+    publicAndExternal: MASTODON_PUBLIC_TIMELINE,
     user: MASTODON_USER_TIMELINE_URL,
     drafts: REEL2BITS_DRAFTS_TIMELINE,
     albums: REEL2BITS_ALBUMS_TIMELINE,
@@ -596,7 +596,7 @@ const resetPasswordToken = ({ token, password, passwordConfirm }) => {
 }
 
 const followUser = ({ id, credentials }) => {
-  let url = MASTODON_FOLLOW_URL(id)
+  const url = MASTODON_FOLLOW_URL(id)
   return fetch(url, {
     headers: authHeaders(credentials),
     method: 'POST'
@@ -604,7 +604,7 @@ const followUser = ({ id, credentials }) => {
 }
 
 const unfollowUser = ({ id, credentials }) => {
-  let url = MASTODON_UNFOLLOW_URL(id)
+  const url = MASTODON_UNFOLLOW_URL(id)
   return fetch(url, {
     headers: authHeaders(credentials),
     method: 'POST'

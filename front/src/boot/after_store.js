@@ -9,7 +9,7 @@ import backendInteractorService from '../services/backend_interactor_service/bac
 
 const getNodeInfo = async ({ store }) => {
   try {
-    const res = await window.fetch(`/nodeinfo/2.1`)
+    const res = await window.fetch('/nodeinfo/2.1')
     if (res.ok) {
       const data = await res.json()
       store.dispatch('setInstanceOption', { name: 'registrationOpen', value: data.openRegistrations })

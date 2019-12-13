@@ -32,7 +32,8 @@ export default (store) => {
 
   // On new routes, don't forget to update utile.py::forbidden_username list
   return [
-    { name: 'home',
+    {
+      name: 'home',
       path: '/',
       redirect: _to => {
         return (store.state.users.currentUser

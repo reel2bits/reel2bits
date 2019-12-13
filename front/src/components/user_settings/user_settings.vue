@@ -218,7 +218,7 @@ export default {
     },
     saveError: false,
     saveOk: false,
-    changePasswordInputs: [ '', '', '' ],
+    changePasswordInputs: ['', '', ''],
     changedPassword: false,
     changePasswordError: false,
     pickAvatarBtnVisible: true

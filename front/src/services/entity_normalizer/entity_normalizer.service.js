@@ -192,8 +192,8 @@ export const parseStatus = (data) => {
 
 export const parseNotification = (data) => {
   const mastoDict = {
-    'favourite': 'like',
-    'reblog': 'repeat'
+    favourite: 'like',
+    reblog: 'repeat'
   }
   const masto = !data.hasOwnProperty('ntype')
   const output = {}

@@ -131,7 +131,7 @@ const UserCard = {
       return this.$store.state.users.currentUser
     },
     userAvatarAlt () {
-      let msg = this.$pgettext('Content/UserCard/Image/Avatar alt', '%{username} avatar')
+      const msg = this.$pgettext('Content/UserCard/Image/Avatar alt', '%{username} avatar')
       return this.$gettextInterpolate(msg, { username: this.user.screen_name })
     }
   },

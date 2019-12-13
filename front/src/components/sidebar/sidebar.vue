@@ -60,14 +60,14 @@ const Sidebar = {
       if (this.displayUser.reel2bits.quota_count === 0) {
         quotaCount = '0'
       } else {
-        let ffs = fileSizeFormatService.fileSizeFormat(this.displayUser.reel2bits.quota_count)
+        const ffs = fileSizeFormatService.fileSizeFormat(this.displayUser.reel2bits.quota_count)
         quotaCount = ffs.num + ffs.unit
       }
 
       if (this.displayUser.reel2bits.quota_limit === 0) {
         quotaLimit = '0'
       } else {
-        let ffs = fileSizeFormatService.fileSizeFormat(this.displayUser.reel2bits.quota_limit)
+        const ffs = fileSizeFormatService.fileSizeFormat(this.displayUser.reel2bits.quota_limit)
         quotaLimit = ffs.num + ffs.unit
       }
 

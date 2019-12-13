@@ -40,7 +40,7 @@ const api = {
     },
     startFetchingNotifications (store) {
       // Don't start fetching if we already are.
-      if (store.state.fetchers['notifications']) return
+      if (store.state.fetchers.notifications) return
 
       const fetcher = store.state.backendInteractor.startFetchingNotifications({ store })
       store.commit('addFetcher', { fetcherName: 'notifications', fetcher })
@@ -69,7 +69,7 @@ const api = {
       commit('setSocket', null)
     },
     removeFollowRequest (store, request) {
-      let requests = store.state.followRequests.filter((it) => it !== request)
+      const requests = store.state.followRequests.filter((it) => it !== request)
       store.commit('setFollowRequests', requests)
     }
   }

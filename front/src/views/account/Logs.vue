@@ -68,7 +68,7 @@ export default {
   methods: {
     async fetchLogs () {
       try {
-        let data = await apiService.fetchUserLogs(this.currentUser.screen_name, this.currentPage, this.perPage, this.$store)
+        const data = await apiService.fetchUserLogs(this.currentUser.screen_name, this.currentPage, this.perPage, this.$store)
         this.items = data.items
         this.totalItems = data.totalItems
       } catch (e) {

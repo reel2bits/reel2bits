@@ -36,7 +36,7 @@ const tracks = {
       store.commit('uploadPending')
 
       try {
-        let data = await apiService.trackUpload(trackInfo, store)
+        const data = await apiService.trackUpload(trackInfo, store)
         store.commit('uploadSuccess', data)
       } catch (e) {
         let errors = JSON.parse(e.message)

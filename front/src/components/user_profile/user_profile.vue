@@ -115,14 +115,14 @@ export default {
       if (this.user.reel2bits.quota_count === 0) {
         quotaCount = '0'
       } else {
-        let ffs = fileSizeFormatService.fileSizeFormat(this.user.reel2bits.quota_count)
+        const ffs = fileSizeFormatService.fileSizeFormat(this.user.reel2bits.quota_count)
         quotaCount = ffs.num + ffs.unit
       }
 
       if (this.user.reel2bits.quota_limit === 0) {
         quotaLimit = '0'
       } else {
-        let ffs = fileSizeFormatService.fileSizeFormat(this.user.reel2bits.quota_limit)
+        const ffs = fileSizeFormatService.fileSizeFormat(this.user.reel2bits.quota_limit)
         quotaLimit = ffs.num + ffs.unit
       }
 
@@ -176,7 +176,7 @@ export default {
             if (errorMessage) {
               this.error = errorMessage
             } else {
-              let msg = this.$pgettext('Content/UserProfile/Error', 'Error loading user: %{errorMsg}')
+              const msg = this.$pgettext('Content/UserProfile/Error', 'Error loading user: %{errorMsg}')
               this.error = this.$gettextInterpolate(msg, { errorMsg: errorMessage })
             }
             this.$bvToast.toast(this.$pgettext('Content/UserProfile/Toast/Error/Message', 'Cannot fetch user'), {

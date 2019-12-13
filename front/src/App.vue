@@ -110,7 +110,7 @@ export default {
     sitename () { return this.$store.state.instance.name },
     atUsername () { return '@' + this.currentUser.screen_name },
     usernameAvatar () {
-      let msg = this.$pgettext('Header/*/Image/Avatar alt', '%{username} avatar')
+      const msg = this.$pgettext('Header/*/Image/Avatar alt', '%{username} avatar')
       return this.$gettextInterpolate(msg, { username: this.currentUser.screen_name })
     },
     labels () {
@@ -148,12 +148,12 @@ export default {
         if (newValue === 'en_us') {
           return this.$store.dispatch('setOption', { name: 'momentLocale', value: 'en' })
         }
-        let momentLocale = newValue.replace('_', '-').toLowerCase()
+        const momentLocale = newValue.replace('_', '-').toLowerCase()
         import(`moment/locale/${momentLocale}.js`).then(() => {
           this.$store.dispatch('setOption', { name: 'momentLocale', value: momentLocale })
         }).catch(() => {
           console.log('No momentjs locale available for', momentLocale)
-          let shortLocale = momentLocale.split('-')[0]
+          const shortLocale = momentLocale.split('-')[0]
           import(`moment/locale/${shortLocale}.js`).then(() => {
             this.$store.dispatch('setOption', { name: 'momentLocale', value: shortLocale })
           }).catch(() => {
@@ -181,13 +181,13 @@ export default {
         return
       }
       console.log('user not logged in, detecting language...')
-      let userLanguage = navigator.language || navigator.userLanguage
-      let available = locales.locales.map(e => { return e.code })
+      const userLanguage = navigator.language || navigator.userLanguage
+      const available = locales.locales.map(e => { return e.code })
       let candidate
-      let matching = available.filter((a) => {
+      const matching = available.filter((a) => {
         return userLanguage.replace('-', '_') === a
       })
-      let almostMatching = available.filter((a) => {
+      const almostMatching = available.filter((a) => {
         return userLanguage.replace('-', '_').split('_')[0] === a.split('_')[0]
       })
       if (matching.length > 0) {

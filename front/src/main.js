@@ -27,8 +27,8 @@ import afterStoreSetup from './boot/after_store.js'
 
 Vue.config.productionTip = false
 
-let availableLanguages = (function () {
-  let l = {}
+const availableLanguages = (function () {
+  const l = {}
   locales.locales.forEach(c => {
     l[c.code] = c.label
   })

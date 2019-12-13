@@ -264,7 +264,7 @@ export default {
     }
   },
   watch: {
-    'curTag': 'getTags'
+    curTag: 'getTags'
   },
   async created () {
     this.fetchAlbum()

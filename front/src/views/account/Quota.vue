@@ -38,7 +38,7 @@ export default {
       if (num === 0) {
         return 0
       }
-      let ffs = fileSizeFormatService.fileSizeFormat(num)
+      const ffs = fileSizeFormatService.fileSizeFormat(num)
       return ffs.num + ' ' + ffs.unit
     }
   },
@@ -68,10 +68,10 @@ export default {
     currentUser () { return this.$store.state.users.currentUser },
     currentUserQuota () {
       if (this.currentUser.reel2bits.quota_limit > 0) {
-        let max = fileSizeFormatService.fileSizeFormat(this.currentUser.reel2bits.quota_limit)
-        let msg = this.$pgettext('Content/TrackUpload/Alert/Quota', '(%{cur} of %{max}. %{rem} remaining)')
-        let cur = fileSizeFormatService.fileSizeFormat(this.currentUser.reel2bits.quota_count)
-        let rem = fileSizeFormatService.fileSizeFormat(this.currentUser.reel2bits.quota_limit - this.currentUser.reel2bits.quota_count)
+        const max = fileSizeFormatService.fileSizeFormat(this.currentUser.reel2bits.quota_limit)
+        const msg = this.$pgettext('Content/TrackUpload/Alert/Quota', '(%{cur} of %{max}. %{rem} remaining)')
+        const cur = fileSizeFormatService.fileSizeFormat(this.currentUser.reel2bits.quota_count)
+        const rem = fileSizeFormatService.fileSizeFormat(this.currentUser.reel2bits.quota_limit - this.currentUser.reel2bits.quota_count)
         return this.$gettextInterpolate(msg, { max: max.num + ' ' + max.unit, cur: cur.num + ' ' + cur.unit, rem: rem.num + ' ' + rem.unit })
       }
       return null
@@ -94,7 +94,7 @@ export default {
   methods: {
     async fetchQuota () {
       try {
-        let data = await apiService.fetchUserQuota(this.currentUser.screen_name, this.currentPage, this.perPage, this.$store)
+        const data = await apiService.fetchUserQuota(this.currentUser.screen_name, this.currentPage, this.perPage, this.$store)
         this.items = data.items
         this.totalItems = data.totalItems
       } catch (e) {

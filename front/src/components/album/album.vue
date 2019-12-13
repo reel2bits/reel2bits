@@ -87,7 +87,7 @@ const Album = {
     changeCurrentTrack (trackId) {
       console.log(`changing track by id ${trackId}`)
       // Find track
-      let track = this.album.tracks.find(t => t.id === trackId)
+      const track = this.album.tracks.find(t => t.id === trackId)
       if (track) {
         console.log(track)
         this.currentTrack = track

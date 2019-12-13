@@ -241,7 +241,7 @@ export default {
     }
   },
   watch: {
-    'curTag': 'getTags'
+    curTag: 'getTags'
   },
   methods: {
     ...mapActions(['albumNew']),

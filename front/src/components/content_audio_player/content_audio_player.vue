@@ -175,7 +175,7 @@ export default {
       return `waveform-${this.track.slug}`
     },
     userAvatarAlt () {
-      let msg = this.$pgettext('Content/Track/Image/User Avatar alt', '%{username} avatar')
+      const msg = this.$pgettext('Content/Track/Image/User Avatar alt', '%{username} avatar')
       return this.$gettextInterpolate(msg, { username: this.track.account.screen_name })
     },
     userProfileLink () {
@@ -186,7 +186,7 @@ export default {
     }
   },
   watch: {
-    'track': 'reloadTrack', // if track change, reload wavesurfer
+    track: 'reloadTrack', // if track change, reload wavesurfer
     '$store.state.player.track': 'stopPlaying'
   },
   created () {
@@ -195,7 +195,7 @@ export default {
       return // no wavesurfer initialisation if processing isn't done
     }
     this.$nextTick(() => {
-      let opts = {
+      const opts = {
         container: `#${this.wavesurferContainer}`,
         height: 40,
         progressColor: '#C728B6',
@@ -205,7 +205,7 @@ export default {
       }
       // TODO: WebAudio (default) seems a bit slow to start the playback with ~1/2s delay
       if (!this.track.waveform) {
-        opts['normalize'] = true
+        opts.normalize = true
       }
       this.wavesurfer = WaveSurfer.create(opts)
 
@@ -272,7 +272,7 @@ export default {
 
       // Load new file and waveform
       // Create an <audio> Element
-      let audio = document.createElement('audio')
+      const audio = document.createElement('audio')
       // Don't forget to set the id to an unique one
       audio.setAttribute('id', `audio-${this.wavesurferContainer}`)
       // Set the source
