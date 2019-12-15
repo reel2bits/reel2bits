@@ -203,6 +203,13 @@ class User(db.Model, UserMixin):
 event.listen(User.name, "set", User.generate_slug, retval=False)
 
 
+@event.listens_for(User, "after_insert")
+def generate_user_flakeid(mapper, connection, target):
+    if not target.flake_id:
+        flake_id = uuid.UUID(int=current_app.flake_id.get())
+        connection.execute(User.__table__.update().where(User.__table__.c.id == target.id).values(flake_id=flake_id))
+
+
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 
 
