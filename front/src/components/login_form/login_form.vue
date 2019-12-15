@@ -5,6 +5,11 @@
         An email has been sent to confirm your account, you cannot login before this is done.
       </b-alert>
     </div>
+    <div v-if="accountIsConfirmed" class="row justify-content-md-center">
+      <b-alert v-translate variant="success" show>
+        Your account has been successfully activated, you can login.
+      </b-alert>
+    </div>
 
     <div class="row justify-content-md-center">
       <div class="col-md-3">
@@ -112,7 +117,8 @@ export default {
         passwordLabel: this.$pgettext('Content/Login/Input.Label/Password', 'Password:'),
         passwordPlaceholder: this.$pgettext('Content/Login/Input.Placeholder/Password', 'Enter password')
       }
-    }
+    },
+    accountIsConfirmed () { return 'account_confirmed' in this.$route.query }
   },
   methods: {
     ...mapActions({ login: 'authFlow/login' }),

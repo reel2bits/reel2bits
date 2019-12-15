@@ -173,8 +173,8 @@ class BaseConfig(object):
     SECURITY_EMAIL_SUBJECT_REGISTER = os.getenv("SECURITY_EMAIL_SUBJECT_REGISTER", "Welcome to reel2bits")
 
     # Old stuff while we still have parts of the frontend in the backend
-    SECURITY_POST_LOGIN_VIEW = "/home"
-    SECURITY_POST_LOGOUT_VIEW = "/home"
+    SECURITY_POST_LOGIN_VIEW = "/login?account_confirmed"
+    SECURITY_POST_LOGOUT_VIEW = "/"
 
     # Don't touch
     SWAGGER_UI_DOC_EXPANSION = "list"
