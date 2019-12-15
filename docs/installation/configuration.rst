@@ -44,7 +44,7 @@ Configuration keys and definitions
 +-------------------------+----------------------------------------------------+---------------------------------------------------------------------------+
 | SQLALCHEMY_ECHO         | False                                              | Do SQLAlchemy needs to echo every queries, useful in dev/debug            |
 +-------------------------+----------------------------------------------------+---------------------------------------------------------------------------+
-| SECURITY_CONFIRMABLE    | True                                               | Should users have to confirm their email address                          |
+| SECURITY_CONFIRMABLE    | True                                               | Should users have to confirm their email address, this is highly recommended to avoid getting used for spam. Requires a working email server. |
 +-------------------------+----------------------------------------------------+---------------------------------------------------------------------------+
 | BABEL_DEFAULT_LOCALE    | en                                                 | Backend default locale                                                    |
 +-------------------------+----------------------------------------------------+---------------------------------------------------------------------------+
