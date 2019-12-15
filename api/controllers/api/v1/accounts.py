@@ -160,6 +160,7 @@ def accounts():
 
     if FSConfirmable.requires_confirmation(u):
         FSConfirmable.send_confirmation_instructions(u)
+        return jsonify({"need_confirmation": True, "message": "need email confirmation"}), 200
 
     # get the matching item from the given bearer
     bearer_item = OAuth2Token.query.filter(OAuth2Token.access_token == bearer).first()

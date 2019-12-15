@@ -163,14 +163,23 @@ const users = {
       })
     },
     async signUp (store, userInfo) {
+      // Returns true if autologin, false if account needs confirmation
       console.debug('users:signUp')
       store.commit('signUpPending')
 
       try {
         const data = await apiService.register(userInfo, store)
         store.commit('signUpSuccess')
-        store.commit('setToken', data.access_token)
-        store.dispatch('loginUser', data.access_token)
+        if (data.need_confirmation) {
+          // user needs to confirm his account through email
+          console.debug('email confirmation is enabled')
+          return false // no autologin
+        } else {
+          // email confirmation not enabled, we got an access token
+          store.commit('setToken', data.access_token)
+          store.dispatch('loginUser', data.access_token)
+          return true // autologin
+        }
       } catch (e) {
         store.commit('signUpFailure', e.errors)
         throw e
