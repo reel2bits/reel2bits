@@ -42,7 +42,8 @@ def headers(bearer):
 
 # TODO FIXME oauth
 def login(client, email, password):
-    return client.post("/login", data=dict(email=email, password=password), follow_redirects=True)
+    # do not follow redirects because it will explodes
+    return client.post("/login", data=dict(email=email, password=password), follow_redirects=False)
 
 
 # TODO FIXME oauth

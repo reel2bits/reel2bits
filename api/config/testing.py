@@ -4,6 +4,7 @@ from .config import BaseConfig
 class Config(BaseConfig):
     DEBUG = True
     TESTING = True
+    MAIL_DEBUG = True
     WTF_CSRF_ENABLED = False
     REGISTRATION_ENABLED = True
     SECRET_KEY = "udf298euf02uf2f02f2uf0"
@@ -18,6 +19,7 @@ class Config(BaseConfig):
     SECURITY_SEND_REGISTER_EMAIL = False
     SECURITY_SEND_PASSWORD_CHANGE_EMAIL = False
     SECURITY_SEND_PASSWORD_RESET_NOTICE_EMAIL = False
+    SECURITY_SEND_PASSWORD_RESET_EMAIL = False
     # Bcrypt algorithm hashing rounds (reduced for testing purposes only!)
     BCRYPT_LOG_ROUNDS = 4
     CELERY_BROKER_URL = "redis://redis:6379/0"
