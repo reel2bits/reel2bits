@@ -1,13 +1,18 @@
 <template>
   <div>
     <div v-if="needsEmailConfirmation" class="row justify-content-md-center">
-      <b-alert v-translate variant="warning" show>
-        An email has been sent to confirm your account, you cannot login before this is done.
+      <b-alert variant="warning" show>
+        <translate>
+          An email has been sent to confirm your account, you cannot login before this is done.
+        </translate>
       </b-alert>
     </div>
+    
     <div v-if="accountIsConfirmed" class="row justify-content-md-center">
-      <b-alert v-translate variant="success" show>
-        Your account has been successfully activated, you can login.
+      <b-alert variant="success" show>
+        <translate>
+          Your account has been successfully activated, you can login.
+        </translate>
       </b-alert>
     </div>
 
