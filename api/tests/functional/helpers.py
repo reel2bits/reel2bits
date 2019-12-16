@@ -73,9 +73,12 @@ def get_oauth_client_token_with_credentials(c, client_id, client_secret, usernam
     return resp.json["access_token"]
 
 
-def headers(bearer):
+def headers(bearer=False):
     # Used for API calls to be authentified
-    return {"Content-Type": "application/json", "Authorization": f"Bearer {bearer}"}
+    hdrs = {"Content-Type": "application/json"}
+    if bearer:
+        hdrs["Authorization"] = f"Bearer {bearer}"
+    return hdrs
 
 
 def login(c, username, password):

@@ -38,25 +38,17 @@ def test_login_logout(client, session):
     assert logged_out
 
 
-def test_accounts(client, session):
-    # register
-    pass
-
-
-def test_account_get(client, session):
+def test_account_get_no_bearer(client, session):
     """
     Get accounts
     /api/v1/accounts/<username_or_id>
     """
-    pass
+    resp = client.get("/api/v1/accounts/testusera", headers=headers())
+    assert resp.status_code == 200
 
-
-def test_accounts_verify_credentials(client, session):
-    """
-    Test own user credentials
-    /api/v1/accounts/verify_credentials
-    """
-    pass
+    assert resp.json["display_name"] == "test user A"
+    assert resp.json["username"] == "testusera"
+    assert resp.json["acct"] == "testusera"
 
 
 def test_accounts_update_credentials(client, session):
