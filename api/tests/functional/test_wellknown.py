@@ -2,6 +2,18 @@ from helpers import register, assert_valid_schema
 from flask import current_app
 import json
 
+"""
+controllers/api/v1/well_known.py
+"""
+
+
+def test_host_meta(client, session):
+    method = current_app.config["REEL2BITS_PROTOCOL"]
+    domain = current_app.config["AP_DOMAIN"]
+    resp = client.get("/.well-known/host-meta")
+    assert resp.status_code
+    assert f"{method}://{domain}/.well-known/webfinger?resource={{uri}}".encode() in resp.data
+
 
 def test_webfinger(client, session):
     resp = register(client, "dashie+webfinger@sigpipe.me", "fluttershy", "TestWebfinger", "Test Webfinger")
