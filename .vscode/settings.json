@@ -12,6 +12,9 @@
         "**/__pycache__": true,
         "**/*.egg-info": true
     },
+    "editor.codeActionsOnSave": {
+      "source.fixAll": true
+    },
     "eslint.autoFixOnSave": true,
     "eslint.validate": [
        {
