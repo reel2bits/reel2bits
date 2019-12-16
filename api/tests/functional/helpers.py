@@ -7,56 +7,96 @@ import datetime
 def create_oauth_app(c):
     resp = c.post(
         "/api/v1/apps",
-        data=dict(
-            client_name=f"pytest_{datetime.datetime.utcnow()}",
-            redirect_uris="urn:ietf:wg:oauth:2.0:oob",
-            scopes="read write follow push",
+        data=json.dumps(
+            dict(
+                client_name=f"pytest_{datetime.datetime.utcnow()}",
+                redirect_uris="urn:ietf:wg:oauth:2.0:oob",
+                scopes="read write follow push",
+            )
         ),
-        follow_redirects=True,
+        follow_redirects=False,
+        headers={"Accept": "application/json", "Content-Type": "application/json"},
     )
-    resp = json.loads(resp.data)
-    assert "client_id" in resp
-    assert "client_secret" in resp
-    return resp["client_id"], resp["client_secret"]
+    assert resp.status_code == 200
+    assert resp.json
+    assert "client_id" in resp.json
+    assert "client_secret" in resp.json
+    assert "id" in resp.json
+    assert "name" in resp.json
+    assert "redirect_uri" in resp.json
+    assert "website" in resp.json
+    assert "vapid_key" in resp.json
+    return resp.json["client_id"], resp.json["client_secret"]
 
 
 def get_oauth_client_token(c, client_id, client_secret):
     resp = c.post(
         "/oauth/token",
-        data=dict(
-            client_id=client_id,
-            client_secret=client_secret,
-            grant_type="client_credentials",
-            scope="read write follow push",
-            redirect_uri="urn:ietf:wg:oauth:2.0:oob",
+        data=json.dumps(
+            dict(
+                client_id=client_id,
+                client_secret=client_secret,
+                grant_type="client_credentials",
+                scope="read write follow push",
+                redirect_uri="urn:ietf:wg:oauth:2.0:oob",
+            )
         ),
+        follow_redirects=False,
+        headers={"Accept": "application/json", "Content-Type": "application/json"},
     )
-    resp = json.loads(resp.data)
-    assert "access_token" in resp
-    return resp["access_token"]
+    assert resp.status_code == 200
+    assert resp.json
+    assert "access_token" in resp.json
+    return resp.json["access_token"]
+
+
+def get_oauth_client_token_with_credentials(c, client_id, client_secret, username, password):
+    resp = c.post(
+        "/oauth/token",
+        data=json.dumps(
+            dict(
+                client_id=client_id,
+                client_secret=client_secret,
+                grant_type="password",
+                scope="read write follow push",
+                redirect_uri="urn:ietf:wg:oauth:2.0:oob",
+                username=username,
+                password=password,
+            )
+        ),
+        follow_redirects=True,
+        headers={"Accept": "application/json", "Content-Type": "application/json"},
+    )
+    assert resp.status_code == 200, resp.data
+    assert resp.json
+    assert "access_token" in resp.json
+    return resp.json["access_token"]
 
 
 def headers(bearer):
+    # Used for API calls to be authentified
     return {"Content-Type": "application/json", "Authorization": f"Bearer {bearer}"}
 
 
-# TODO FIXME oauth
-def login(client, email, password):
-    # do not follow redirects because it will explodes
-    return client.post("/login", data=dict(email=email, password=password), follow_redirects=False)
-
-
-# TODO FIXME oauth
-def logout(client):
-    return client.get("/logout", follow_redirects=True)
-
-
-def register(c, email, password, username, display_name):
+def login(c, username, password):
+    # TODO: save client_id, client_secret and access_token in the session
     client_id, client_secret = create_oauth_app(c)
-    bearer = get_oauth_client_token(c, client_id, client_secret)
+    access_token = get_oauth_client_token_with_credentials(c, client_id, client_secret, username, password)
+
+    return client_id, client_secret, access_token
+
+
+def logout(client):
+    # TODO: remove client_id, client_secret and access_token from the session
+    return True
+
+
+def register(client, email, password, username, display_name):
+    client_id, client_secret = create_oauth_app(client)
+    bearer = get_oauth_client_token(client, client_id, client_secret)
     assert bearer is not None
 
-    resp = c.post(
+    resp = client.post(
         "/api/v1/accounts",
         data=json.dumps(
             {
@@ -72,6 +112,11 @@ def register(c, email, password, username, display_name):
         ),
         headers=headers(bearer),
     )
+    assert resp.status_code == 200
+    assert "access_token" in resp.json
+    assert "token_type" in resp.json
+    assert "scope" in resp.json
+    assert "created_at" in resp.json
     return resp
 
 

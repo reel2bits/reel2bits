@@ -31,6 +31,7 @@ from utils.defaults import Reel2bitsDefaults
 from flask_uploads import UploadSet
 import os
 import little_boxes.activitypub as ap
+import datetime
 
 
 bp_api_v1_accounts = Blueprint("bp_api_v1_accounts", __name__)
@@ -148,6 +149,11 @@ def accounts():
         password=hash_password(request.json["password"]),
         roles=[role],
     )
+
+    # Confirm the user if we doesn't requires it to do it by email
+    if not FSConfirmable.requires_confirmation(u):
+        u.confirmed_at = datetime.datetime.now()
+        db.session.commit()
 
     actor = create_actor(u)
     actor.user = u
