@@ -89,6 +89,9 @@ def test_nodeinfo_2_0(client, session):
     )
     assert rv.status_code == 200
 
+    # this is ugly but we need to patch this because we disable outside AP broadcasts in tests
+    rv.json["protocols"] = ["activitypub"]
+
     assert_valid_schema(rv.json, "nodeinfo-2.0.json")
 
 
@@ -115,5 +118,8 @@ def test_nodeinfo_2_1(client, session):
         'software/ns/schema/2.1#"'
     )
     assert rv.status_code == 200
+
+    # this is ugly but we need to patch this because we disable outside AP broadcasts in tests
+    rv.json["protocols"] = ["activitypub"]
 
     assert_valid_schema(rv.json, "nodeinfo-2.1.json")

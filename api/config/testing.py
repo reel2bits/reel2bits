@@ -27,4 +27,5 @@ class Config(BaseConfig):
     REEL2BITS_HOSTNAME = "localhost.localdomain"
     SERVER_NAME = REEL2BITS_HOSTNAME
     REEL2BITS_PROTOCOL = "http"
-    AP_ENABLED = True
+    # AP is internally enabled, it will just not broadcast things outside
+    AP_ENABLED = False
