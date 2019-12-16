@@ -85,6 +85,9 @@ def login(c, username, password):
     # TODO: save client_id, client_secret and access_token in the session
     client_id, client_secret = create_oauth_app(c)
     access_token = get_oauth_client_token_with_credentials(c, client_id, client_secret, username, password)
+    assert client_id
+    assert client_secret
+    assert access_token
 
     return client_id, client_secret, access_token
 

@@ -21,9 +21,6 @@ def test_login_logout(client, session):
 
     # try to login
     client_id, client_secret, access_token = login(client, "testusera", "testusera")
-    assert client_id
-    assert client_secret
-    assert access_token
 
     # try to fetch own account
     resp = client.get("/api/v1/accounts/verify_credentials", headers=headers(access_token))
@@ -38,12 +35,28 @@ def test_login_logout(client, session):
     assert logged_out
 
 
-def test_account_get_no_bearer(client, session):
+def test_register_another_user(client, session):
+    """
+    Register an user B
+    """
+    resp = register(client, "testuserb@reel2bits.org", "testuserb", "testuserb", "test user B")
+    assert resp.status_code == 200
+
+    user = User.query.filter(User.name == "testuserb").first()
+    assert user.check_password("testuserb")
+    assert user.local
+    assert user.confirmed_at
+    assert user.active
+
+
+def test_account_get_with_bearer(client, session):
     """
     Get accounts
     /api/v1/accounts/<username_or_id>
     """
-    resp = client.get("/api/v1/accounts/testusera", headers=headers())
+    client_id, client_secret, access_token = login(client, "testuserb", "testuserb")
+
+    resp = client.get("/api/v1/accounts/testusera", headers=headers(access_token))
     assert resp.status_code == 200
 
     assert resp.json["display_name"] == "test user A"
@@ -51,7 +64,7 @@ def test_account_get_no_bearer(client, session):
     assert resp.json["acct"] == "testusera"
 
 
-def test_accounts_update_credentials(client, session):
+def test_account_update_credentials(client, session):
     """
     Test updating account
     /api/v1/accounts/update_credentials
