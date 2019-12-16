@@ -224,8 +224,12 @@ export default {
       if (!this.$v.$invalid) {
         try {
           console.debug('register:registering')
-          await this.signUp(this.user)
-          this.$router.push({ name: 'profile' })
+          const autologin = await this.signUp(this.user)
+          if (autologin) {
+            this.$router.push({ name: 'profile' })
+          } else {
+            this.$router.push({ name: 'login_form', params: { needsEmailConfirmation: true } })
+          }
         } catch (error) {
           console.warn('Registration failed: ' + error)
           this.$bvToast.toast(this.$pgettext('Content/Register/Toast/Error/Message', 'An error occured'), {

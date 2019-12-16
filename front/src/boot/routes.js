@@ -45,7 +45,7 @@ export default (store) => {
     { name: 'public-timeline', path: '/main/public', component: PublicTimeline },
     { name: 'friends', path: '/main/friends', component: FriendsTimeline, beforeEnter: validateAuthenticatedRoute },
     { path: '/about', name: 'about', component: About },
-    { path: '/login', name: 'login_form', component: LoginForm },
+    { path: '/login', name: 'login_form', component: LoginForm, props: true },
     { path: '/register', name: 'register', component: Register },
     { name: 'password-reset', path: '/password-reset', component: PasswordReset },
     { name: 'password-reset-token', path: '/password-reset/:token', component: PasswordResetToken },

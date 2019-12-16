@@ -55,3 +55,5 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 - Waveform JSON generation through a .dat now use the right pixels per second; avoid huge waveforms datas for long tracks (#179)
 - Flake ID generation have been rewritten and should be good now
+- Flask Security email confirmation is now respected on registration and login workflows
+- User flake_id are now properly generated on insert
