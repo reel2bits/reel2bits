@@ -30,7 +30,7 @@ setup(
         "python-slugify==4.0.0",
         "python-magic==0.4.15",
         "redis==3.3.11",
-        "celery==4.3.0",
+        "celery==4.4.0",
         "flask-accept==0.0.6",
     ],
     setup_requires=["pytest-runner"],
