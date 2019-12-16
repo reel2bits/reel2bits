@@ -1,5 +1,5 @@
 """
-This file (test_models_user.py) contains the unit tests for the models.py User model.
+This file (test_models.py) contains the unit tests for the models.py file.
 """
 
 from flask_security.utils import hash_password
