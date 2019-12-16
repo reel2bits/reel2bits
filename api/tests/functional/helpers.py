@@ -85,7 +85,7 @@ def assert_valid_schema(data, schema_file):
 def _load_json_schema(filename):
     """ Loads the given schema file """
 
-    relative_path = join("schemas", filename)
+    relative_path = join("../schemas", filename)
     absolute_path = join(dirname(__file__), relative_path)
 
     with open(absolute_path) as schema_file:

@@ -3,7 +3,6 @@ from flask import current_app
 import json
 
 
-# TODO FIXME oauth
 def test_webfinger(client, session):
     resp = register(client, "dashie+webfinger@sigpipe.me", "fluttershy", "TestWebfinger", "Test Webfinger")
     assert resp.status_code == 200
@@ -26,7 +25,6 @@ def test_webfinger(client, session):
     assert datas["subject"] == f"acct:TestWebfinger@" f"{current_app.config['AP_DOMAIN']}"
 
 
-# TODO FIXME oauth
 def test_webfinger_case(client, session):
     resp = register(client, "dashie+webfingercase@sigpipe.me", "fluttershy", "TestWebfingerCase", "Test Webfinger Case")
     assert resp.status_code == 200
