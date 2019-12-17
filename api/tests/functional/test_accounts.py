@@ -218,19 +218,23 @@ def test_account_delete(client, session):
     /api/v1/accounts
     """
     pytest.skip("doesn't make sqlalchemy happy")
-    # user exists
-    resp = client.get("/api/v1/accounts/testusera", headers=headers())
+    # register a new user
+    resp = register(client, "testuserdeleted@reel2bits.org", "testuserdeleted", "testuserdeleted", "test user deleted")
     assert resp.status_code == 200
-    assert resp.json["display_name"] == "test user A"
-    assert resp.json["username"] == "testusera"
-    assert resp.json["acct"] == "testusera"
+
+    # user exists
+    resp = client.get("/api/v1/accounts/testuserdeleted", headers=headers())
+    assert resp.status_code == 200
+    assert resp.json["display_name"] == "test user deleted"
+    assert resp.json["username"] == "testuserdeleted"
+    assert resp.json["acct"] == "testuserdeleted"
 
     # login and delete account
-    client_id, client_secret, access_token = login(client, "testusera", "testusera")
+    client_id, client_secret, access_token = login(client, "testuserdeleted", "testuserdeleted")
 
     resp = client.delete("/api/v1/accounts", headers=headers(access_token))
     assert resp.status_code == 200
 
     # try to fetch deleted account
-    resp = client.get("/api/v1/accounts/testusera", headers=headers())
+    resp = client.get("/api/v1/accounts/testuserdeleted", headers=headers())
     assert resp.status_code == 404

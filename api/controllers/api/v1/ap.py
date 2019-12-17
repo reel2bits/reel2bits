@@ -113,6 +113,7 @@ def user_outbox(name):
     current_app.logger.debug(f"raw_data={data}")
 
 
+# TODO: unused, delete
 @bp_ap.route("/user/<string:name>/followings", methods=["GET", "POST"])
 def user_followings(name):
     """
@@ -143,6 +144,7 @@ def user_followings(name):
     return jsonify(**build_ordered_collection(followings_list, actor.url, request.args.get("page"), switch_side=True))
 
 
+# TODO: unused, delete
 @bp_ap.route("/user/<string:name>/followers", methods=["GET", "POST"])
 def user_followers(name):
     """
