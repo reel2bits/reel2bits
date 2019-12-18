@@ -16,7 +16,7 @@ def test_host_meta(client, session):
 
 
 def test_webfinger(client, session):
-    resp = register(client, "dashie+webfinger@sigpipe.me", "fluttershy", "TestWebfinger", "Test Webfinger")
+    resp = register(client, "dashie+webfinger@reel2bits.org", "fluttershy", "TestWebfinger", "Test Webfinger")
     assert resp.status_code == 200
 
     resp = json.loads(resp.data)
@@ -38,7 +38,9 @@ def test_webfinger(client, session):
 
 
 def test_webfinger_case(client, session):
-    resp = register(client, "dashie+webfingercase@sigpipe.me", "fluttershy", "TestWebfingerCase", "Test Webfinger Case")
+    resp = register(
+        client, "dashie+webfingercase@reel2bits.org", "fluttershy", "TestWebfingerCase", "Test Webfinger Case"
+    )
     assert resp.status_code == 200
 
     resp = json.loads(resp.data)

@@ -12,25 +12,25 @@ def test_login_logout(client, session):
     """
     Make sure login and logout works
     """
-    resp = register(client, "testusera@reel2bits.org", "testusera", "testusera", "test user A")
+    resp = register(client, "testuserll@reel2bits.org", "testuserll", "testuserll", "test user ll")
     assert resp.status_code == 200
 
-    user = User.query.filter(User.name == "testusera").first()
-    assert user.check_password("testusera")
+    user = User.query.filter(User.name == "testuserll").first()
+    assert user.check_password("testuserll")
     assert user.local
     assert user.confirmed_at
     assert user.active
 
     # try to login
-    client_id, client_secret, access_token = login(client, "testusera", "testusera")
+    client_id, client_secret, access_token = login(client, "testuserll", "testuserll")
 
     # try to fetch own account
     resp = client.get("/api/v1/accounts/verify_credentials", headers=headers(access_token))
     assert resp.status_code == 200
 
-    assert resp.json["display_name"] == "test user A"
-    assert resp.json["username"] == "testusera"
-    assert resp.json["acct"] == "testusera"
+    assert resp.json["display_name"] == "test user ll"
+    assert resp.json["username"] == "testuserll"
+    assert resp.json["acct"] == "testuserll"
 
     # logout
     logged_out = logout(client)  # useless for now
@@ -39,13 +39,13 @@ def test_login_logout(client, session):
 
 def test_register_another_user(client, session):
     """
-    Register an user B
+    Register an user ll
     """
-    resp = register(client, "testuserb@reel2bits.org", "testuserb", "testuserb", "test user B")
+    resp = register(client, "testuserll2@reel2bits.org", "testuserll2", "testuserll2", "test user ll2")
     assert resp.status_code == 200
 
-    user = User.query.filter(User.name == "testuserb").first()
-    assert user.check_password("testuserb")
+    user = User.query.filter(User.name == "testuserll2").first()
+    assert user.check_password("testuserll2")
     assert user.local
     assert user.confirmed_at
     assert user.active
@@ -56,12 +56,12 @@ def test_account_get_with_bearer(client, session):
     Get accounts
     /api/v1/accounts/<username_or_id>
     """
-    client_id, client_secret, access_token = login(client, "testuserb", "testuserb")
+    client_id, client_secret, access_token = login(client, "testusera", "testusera")
 
     resp = client.get("/api/v1/accounts/testusera", headers=headers(access_token))
     assert resp.status_code == 200
 
-    assert resp.json["display_name"] == "test user A"
+    assert resp.json["display_name"] == "test user a"
     assert resp.json["username"] == "testusera"
     assert resp.json["acct"] == "testusera"
 
@@ -77,7 +77,7 @@ def test_account_update_credentials_change_bio(client, session):
     assert not resp.json["note"]
 
     # login
-    client_id, client_secret, access_token = login(client, "testuserb", "testuserb")
+    client_id, client_secret, access_token = login(client, "testusera", "testusera")
 
     # update and check return
     resp = client.patch(

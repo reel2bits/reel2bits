@@ -15,7 +15,7 @@ def test_user_actor_json(client, session):
     """
     resp = client.get("/user/testusera", headers=headers())
     assert resp.status_code == 200
-    assert resp.json["name"] == "test user A"
+    assert resp.json["name"] == "test user a"
     assert resp.json["preferredUsername"] == "testusera"
     assert resp.json["type"] == "Person"
 
