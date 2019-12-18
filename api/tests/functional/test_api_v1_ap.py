@@ -20,6 +20,9 @@ def test_user_actor_json(client, session):
     assert resp.json["type"] == "Person"
 
 
+# TODO test actor with wrong user
+
+
 def test_user_actor_json_tombstone(client, session):
     """
     Test that we get a correct tombstone for deleted user

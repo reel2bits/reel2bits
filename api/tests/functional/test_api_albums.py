@@ -3,6 +3,7 @@ controllers/api/albums.py
 """
 
 """
+# TODO all of that
 POST /api/albums
 
 GET /api/albums/<username_or_id>/<albumslug>

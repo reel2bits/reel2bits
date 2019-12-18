@@ -20,6 +20,9 @@ def test_logs(client, session):
     assert isinstance(items, list)
 
 
+# TODO add a track to test logs content
+
+
 def test_quota(client, session):
     """
     GET /api/users/<username>/quota
@@ -32,3 +35,6 @@ def test_quota(client, session):
     assert isinstance(resp.json, dict)
     items = resp.json.get("items")
     assert isinstance(items, list)
+
+
+# TODO add a track to test quota change

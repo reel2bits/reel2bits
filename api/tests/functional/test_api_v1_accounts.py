@@ -37,6 +37,9 @@ def test_login_logout(client, session):
     assert logged_out
 
 
+# Todo test invalid login
+
+
 def test_register_another_user(client, session):
     """
     Register an user ll
@@ -49,6 +52,9 @@ def test_register_another_user(client, session):
     assert user.local
     assert user.confirmed_at
     assert user.active
+
+
+# TODO test invalid registration
 
 
 def test_account_get_with_bearer(client, session):
@@ -64,6 +70,9 @@ def test_account_get_with_bearer(client, session):
     assert resp.json["display_name"] == "test user a"
     assert resp.json["username"] == "testusera"
     assert resp.json["acct"] == "testusera"
+
+
+# TODO test account with wrong bearer
 
 
 def test_account_update_credentials_change_bio(client, session):
@@ -142,6 +151,9 @@ def test_follow(client, session):
     assert rel["muting"] is False
 
 
+# TODO test follow with wrong user
+
+
 def test_followers(client, session):
     """
     Test followers list
@@ -210,6 +222,9 @@ def test_unfollow(client, session):
     assert rel["followed_by"] is False
     assert rel["blocking"] is False
     assert rel["muting"] is False
+
+
+# TODO test unfollow with wrong user
 
 
 def test_account_delete(client, session):
