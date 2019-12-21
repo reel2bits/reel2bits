@@ -86,6 +86,14 @@ def headers(bearer=False):
     return hdrs
 
 
+def bearerhdr(bearer=False):
+    # Used for API calls to be authentified
+    hdrs = {}
+    if bearer:
+        hdrs["Authorization"] = f"Bearer {bearer}"
+    return hdrs
+
+
 def login(c, username, password, should_fail=False):
     # TODO: save client_id, client_secret and access_token in the session
     client_id, client_secret = create_oauth_app(c)

@@ -96,7 +96,13 @@ def test_account_get_with_bearer(client, session):
     assert resp.json["acct"] == "testusera"
 
 
-# TODO test account with wrong bearer
+def test_account_get_with_wrong_bearer(client, session):
+    """
+    Get accounts
+    /api/v1/accounts/<username_or_id>
+    """
+    resp = client.get("/api/v1/accounts/testusera", headers=headers("ottersdoessqueaksqueak"))
+    assert resp.status_code == 401
 
 
 def test_account_update_credentials_change_bio(client, session):
