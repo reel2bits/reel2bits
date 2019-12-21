@@ -24,7 +24,7 @@ On Debian-like systems, you can install them using:
     # Install dependencies
     sudo apt-get install python3-pip python3-venv git
     # reel2bits dependencies
-    sudo apt install build-essential sox ffmpeg libavcodec-extra libjpeg-dev libmagic-dev libpq-dev postgresql-client python3-dev make libtag1v5 libmagic1 libffi6 libsox-dev libsox-fmt-all libtag1-dev libmagic-dev libffi-dev libgd-dev libmad0-dev libsndfile1-dev libid3tag0-dev libmediainfo-dev
+    sudo apt install build-essential sox ffmpeg libavcodec-extra libjpeg-dev libmagic-dev libpq-dev postgresql-client python3-dev make libtag1v5 libmagic1 libffi6 libsox-dev libsox-fmt-all libtag1-dev libffi-dev libgd-dev libmad0-dev libsndfile1-dev libid3tag0-dev libmediainfo-dev
 
 Layout
 ------
