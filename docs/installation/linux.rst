@@ -62,9 +62,9 @@ Still under your ``reel2bits`` user:
 .. code-block:: shell
 
     # if release:
-    git checkout -b v0.5 https://github.com/reel2bits/reel2bits/
+    git clone -b v0.5 https://github.com/reel2bits/reel2bits/
     # Or master
-    git checkout https://github.com/reel2bits/reel2bits/
+    git clone https://github.com/reel2bits/reel2bits/
 
 Python dependencies
 --------------------
