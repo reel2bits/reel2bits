@@ -51,6 +51,7 @@ def new():
     form = AlbumForm()
 
     if form.validate_on_submit():
+        print(f"album private: {form.private.data!r}")
         rec = Album()
         rec.user_id = current_user.id
         rec.title = form.title.data
@@ -239,8 +240,10 @@ def edit(username, albumslug):
     genre = request.json.get("genre")
     tags = request.json.get("tags")
 
-    if album.private and not private:
-        return jsonify({"error": "Cannot change to private: album already federated"})
+    print(f"Album privacy: {album.private!r}, want: {private!r}")
+
+    if not album.private and private:
+        return jsonify({"error": "Cannot change to private: album already federated"}), 400
 
     if not title:
         return jsonify({"error": "Album title is required"}), 400
