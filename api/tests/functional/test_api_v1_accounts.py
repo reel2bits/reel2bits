@@ -37,7 +37,14 @@ def test_login_logout(client, session):
     assert logged_out
 
 
-# Todo test invalid login
+def test_invalid_login(client, session):
+    """
+    Makes sure an invalid login don't work
+    """
+    client_id, client_secret, access_token = login(client, "idontexist", "atall", should_fail=True)
+    assert not client_id
+    assert not client_secret
+    assert not access_token
 
 
 def test_register_another_user(client, session):
@@ -54,7 +61,24 @@ def test_register_another_user(client, session):
     assert user.active
 
 
-# TODO test invalid registration
+@pytest.mark.parametrize(
+    ("email", "password", "username", "display_name"),
+    (
+        ("invalidemail", "aaaaa", "coin", "pouet pouet"),
+        ("okemail@reel2bits.org", "some password", "invalid username", "display name"),
+        ("okemail@reel2bits.org", "", "username", "aaa"),
+        ("", "aaaaa", "aaaa", "aaaa"),
+        ("okemail@reel2bits.org", "aaaaa", "", "oh"),
+        ("testusera@reel2bits.org", "aaaaa", "aaa", "aaa"),
+        ("okemail@reel2bits.org", "aaaaaa", "testusera", "testuseraaa"),
+    ),
+)
+def test_register_invalid(client, session, email, password, username, display_name):
+    """
+    Test registering invalid users
+    """
+    resp = register(client, email, password, username, display_name, should_fail=True)
+    assert resp.status_code == 400
 
 
 def test_account_get_with_bearer(client, session):
@@ -151,7 +175,19 @@ def test_follow(client, session):
     assert rel["muting"] is False
 
 
-# TODO test follow with wrong user
+def test_follow_insexistant_user(client, session):
+    """
+    Test follow with inexistant user
+    /api/v1/accounts/<username_or_id>/follow
+
+    user A follow inexistant user
+    """
+    # Login as user A
+    client_id, client_secret, access_token = login(client, "testusera", "testusera")
+
+    # then follow user DAVENULL
+    resp = client.post("/api/v1/accounts/davenull/follow", headers=headers(access_token))
+    assert resp.status_code == 404
 
 
 def test_followers(client, session):
@@ -224,7 +260,17 @@ def test_unfollow(client, session):
     assert rel["muting"] is False
 
 
-# TODO test unfollow with wrong user
+def test_unfollow_inexistant_user(client, session):
+    """
+    Test unfollow inexistant user
+    /api/v1/accounts/<username_or_id>/unfollow
+    """
+    # login as user A
+    client_id, client_secret, access_token = login(client, "testusera", "testusera")
+
+    # then unfollow user DAVENULL
+    resp = client.post("/api/v1/accounts/davenull/unfollow", headers=headers(access_token))
+    assert resp.status_code == 404
 
 
 def test_account_delete(client, session):

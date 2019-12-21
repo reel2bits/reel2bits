@@ -50,7 +50,7 @@ def get_oauth_client_token(c, client_id, client_secret):
     return resp.json["access_token"]
 
 
-def get_oauth_client_token_with_credentials(c, client_id, client_secret, username, password):
+def get_oauth_client_token_with_credentials(c, client_id, client_secret, username, password, should_fail=False):
     resp = c.post(
         "/oauth/token",
         data=json.dumps(
@@ -67,6 +67,11 @@ def get_oauth_client_token_with_credentials(c, client_id, client_secret, usernam
         follow_redirects=True,
         headers={"Accept": "application/json", "Content-Type": "application/json"},
     )
+    if should_fail:
+        # used for testing bad login
+        assert resp.status_code == 400
+        return None
+
     assert resp.status_code == 200, resp.data
     assert resp.json
     assert "access_token" in resp.json
@@ -81,10 +86,14 @@ def headers(bearer=False):
     return hdrs
 
 
-def login(c, username, password):
+def login(c, username, password, should_fail=False):
     # TODO: save client_id, client_secret and access_token in the session
     client_id, client_secret = create_oauth_app(c)
-    access_token = get_oauth_client_token_with_credentials(c, client_id, client_secret, username, password)
+    access_token = get_oauth_client_token_with_credentials(c, client_id, client_secret, username, password, should_fail)
+    if should_fail:
+        assert access_token is None
+        return None, None, None
+
     assert client_id
     assert client_secret
     assert access_token
@@ -97,7 +106,7 @@ def logout(client):
     return True
 
 
-def register(client, email, password, username, display_name):
+def register(client, email, password, username, display_name, should_fail=False):
     client_id, client_secret = create_oauth_app(client)
     bearer = get_oauth_client_token(client, client_id, client_secret)
     assert bearer is not None
@@ -118,7 +127,11 @@ def register(client, email, password, username, display_name):
         ),
         headers=headers(bearer),
     )
-    assert resp.status_code == 200
+    if should_fail:
+        # Don't check, used for testing wrong registration
+        return resp
+
+    assert resp.status_code == 200, resp.data
     assert "access_token" in resp.json
     assert "token_type" in resp.json
     assert "scope" in resp.json

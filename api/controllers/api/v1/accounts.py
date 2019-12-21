@@ -32,6 +32,7 @@ from flask_uploads import UploadSet
 import os
 import little_boxes.activitypub as ap
 import datetime
+from validate_email import validate_email
 
 
 bp_api_v1_accounts = Blueprint("bp_api_v1_accounts", __name__)
@@ -114,6 +115,9 @@ def accounts():
     if request.json["password"] != request.json["confirm"]:
         return jsonify({"error": str({"confirm": ["passwords doesn't match"]})}), 400
 
+    if len(request.json["password"]) == 0 or len(request.json["password"]) <= 4:
+        return jsonify({"error": str({"password": ["password is not secure enough"]})}), 400
+
     if "agreement" not in request.json:
         return jsonify({"error": str({"agreement": ["you need to accept the terms and conditions"]})}), 400
 
@@ -136,6 +140,10 @@ def accounts():
     # /^[a-zA-Z\d]+$/
     if not username_is_legal.match(request.json["username"]):
         return jsonify({"error": str({"ap_id": ["should contains only letters and numbers"]})}), 400
+
+    # Check if email is valid
+    if not validate_email(request.json["email"], check_mx=False, verify=False):
+        return jsonify({"error": str({"email": ["email format is invalid"]})}), 400
 
     # Proceed to register the user
     role = Role.query.filter(Role.name == "user").first()
