@@ -20,7 +20,13 @@ def test_user_actor_json(client, session):
     assert resp.json["type"] == "Person"
 
 
-# TODO test actor with wrong user
+def test_user_actor_json_wrong_one(client, session):
+    """
+    Test that we get a correct user
+    /user/<name>
+    """
+    resp = client.get("/user/thisusershouldnotexist", headers=headers())
+    assert resp.status_code == 404
 
 
 def test_user_actor_json_tombstone(client, session):
