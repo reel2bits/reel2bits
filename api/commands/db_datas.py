@@ -154,7 +154,7 @@ def generate_albums_uuid():
 @with_appcontext
 def generate_users_uuid():
     """
-    Generate tracks UUIDs when missing (41_7eb56606e9d6)
+    Generate user UUIDs when missing
 
     non breaking.
     """
