@@ -7,7 +7,7 @@
         </translate>
       </b-alert>
     </div>
-    
+
     <div v-if="accountIsConfirmed" class="row justify-content-md-center">
       <b-alert variant="success" show>
         <translate>

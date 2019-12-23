@@ -136,6 +136,15 @@ export default {
       handler (newValue) {
         console.log('Switching interface language to', newValue)
         console.log('Available languages:', this.$language.available)
+        const momentLocale = newValue.replace('_', '-').toLowerCase()
+
+        // Shortcut for en_US language, there are no files to fetch
+        if (momentLocale === 'en-us') {
+          this.$language.current = 'en_US'
+          return this.$store.dispatch('setOption', { name: 'momentLocale', value: 'en' })
+        }
+
+        // Set Vue translations
         import(`./translations/${newValue}.json`).then((response) => {
           Vue.$translations[newValue] = response.default[newValue]
         }).finally(() => {
@@ -145,10 +154,8 @@ export default {
           this.$language.current = newValue
           console.log('Interface set to', newValue)
         })
-        if (newValue === 'en_us') {
-          return this.$store.dispatch('setOption', { name: 'momentLocale', value: 'en' })
-        }
-        const momentLocale = newValue.replace('_', '-').toLowerCase()
+
+        // Set locale for MomentJs
         import(`moment/locale/${momentLocale}.js`).then(() => {
           this.$store.dispatch('setOption', { name: 'momentLocale', value: momentLocale })
         }).catch(() => {
