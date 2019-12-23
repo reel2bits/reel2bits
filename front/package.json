@@ -67,7 +67,7 @@
     "babel-register": "^6.0.0",
     "chai": "^4.2.0",
     "easygettext": "^2.9.0",
-    "eslint": "^6.7.2",
+    "eslint": "^6.8.0",
     "eslint-friendly-formatter": "^4.0.1",
     "eslint-loader": "^3.0.3",
     "eslint-plugin-import": "^2.19.1",
