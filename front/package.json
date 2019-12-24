@@ -89,7 +89,7 @@
     "sass-loader": "git://github.com/webpack-contrib/sass-loader",
     "shelljs": "^0.8.3",
     "sinon": "^7.5.0",
-    "sinon-chai": "^3.3.0",
+    "sinon-chai": "^3.4.0",
     "vue-loader": "^14.0.0",
     "vue-template-compiler": "^2.6.11",
     "webpack-hot-middleware": "^2.25.0"
