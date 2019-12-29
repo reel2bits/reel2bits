@@ -26,7 +26,7 @@ cachetools==4.0.0
 flasgger==0.9.3
 pymediainfo==4.1
 feedgen==0.8.0
-waitress==1.4.0
+waitress==1.4.1
 Flask-SQLAlchemy==2.4.1
 git+https://github.com/jwag956/flask-security#egg=Flask-Security-too
 git+https://github.com/tsileo/little-boxes@master#egg=little-boxes
