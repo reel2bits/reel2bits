@@ -2,6 +2,7 @@ from helpers import login, bearerhdr
 from werkzeug.datastructures import FileStorage
 from models import Sound
 import pytest
+import os
 
 """
 controllers/api/tracks.py
@@ -19,15 +20,13 @@ create album; upload track with album; fetch
 
 create album; upload track; fetch; edit add in album; fetch
 
-upload mp3; test file exists locally; remove, test removed
-
 upload wav; test both file exists locally; remove, test both removed : depends on celery processing
 
 upload user A private; no fetch from user B : depends on celery processing
 """
 
 
-def test_track_upload(client, session, audio_file_mp3, mocker):
+def test_track_upload(app, client, session, audio_file_mp3, mocker):
     """
     POST /api/tracks
     """
@@ -72,6 +71,10 @@ def test_track_upload(client, session, audio_file_mp3, mocker):
 
     # Assert the celery remoulade
     m.assert_called_once_with(sound.id)
+
+    # Local file should exists
+    fpath = os.path.join(app.config["UPLOADED_SOUNDS_DEST"], sound.path_sound(orig=True))
+    assert os.path.exists(fpath)
 
 
 @pytest.mark.parametrize(
@@ -210,7 +213,7 @@ def test_track_get_invalid(client, session):
     print(resp.json)
 
 
-def test_track_delete(client, session, audio_file_mp3, mocker):
+def test_track_delete(app, client, session, audio_file_mp3, mocker):
     """
     DELETE /api/tracks/<username>/<soundslug>
     """
@@ -245,6 +248,10 @@ def test_track_delete(client, session, audio_file_mp3, mocker):
     # Assert the celery remoulade
     m.assert_called_once_with(sound.id)
 
+    # Local file should exists
+    fpath = os.path.join(app.config["UPLOADED_SOUNDS_DEST"], sound.path_sound(orig=True))
+    assert os.path.exists(fpath)
+
     # Delete track
     resp = client.delete(f"/api/tracks/testusera/{track_infos['slug']}", headers=bearerhdr(access_token))
     assert resp.status_code == 200, resp.data
@@ -252,6 +259,9 @@ def test_track_delete(client, session, audio_file_mp3, mocker):
     # Get track informations
     resp = client.get(f"/api/tracks/testusera/{track_infos['slug']}", headers=bearerhdr(access_token))
     assert resp.status_code == 404, resp.data
+
+    # File should not exists anymore
+    assert not os.path.exists(fpath)
 
 
 def test_track_delete_other_user(client, session, audio_file_mp3, mocker):
