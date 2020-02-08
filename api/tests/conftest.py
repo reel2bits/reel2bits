@@ -137,3 +137,21 @@ def test_default_users_exists(client, session, username, display_name):
     assert user.display_name == display_name
     assert len(user.actor) == 1
     assert isinstance(user.confirmed_at, datetime.datetime)
+
+
+@pytest.fixture()
+def audio_file_mp3():
+    data_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets")
+    path = os.path.join(data_dir, "cat.mp3")
+    assert os.path.exists(path)
+    with open(path, "rb") as f:
+        yield f
+
+
+@pytest.fixture()
+def audio_file_wav():
+    data_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets")
+    path = os.path.join(data_dir, "cat.wav")
+    assert os.path.exists(path)
+    with open(path, "rb") as f:
+        yield f
