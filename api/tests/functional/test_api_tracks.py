@@ -9,14 +9,9 @@ controllers/api/tracks.py
 
 """
 # TODO
-GET /api/tracks/<username_or_id>/<soundslug>
-
-DELETE /api/tracks/<username>/<soundslug>
 
 PATCH /api/tracks/<username>/<soundslug>
 w/ tags +/- etc., clearing title, etc.
-
-GET /api/tracks/<username_or_id>/<soundslug>
 
 POST /api/tracks/<username_or_id>/<soundslug>/retry_processing
 
@@ -25,6 +20,12 @@ PATCH /api/tracks/<username>/<soundslug>/artwork
 create album; upload track with album; fetch
 
 create album; upload track; fetch; edit add in album; fetch
+
+upload mp3; test file exists locally; remove, test removed
+
+upload wav; test both file exists locally; remove, test both removed : depends on celery processing
+
+upload user A private; no fetch from user B : depends on celery processing
 """
 
 
@@ -195,3 +196,110 @@ def test_track_upload_with_tags(client, session, audio_file_mp3, mocker, tags, t
 
     # Assert the celery remoulade
     m.assert_called_once_with(sound.id)
+
+
+def test_track_get_invalid(client, session):
+    """
+    GET /api/tracks/<username_or_id>/<soundslug>
+    """
+    # Login as user A
+    client_id, client_secret, access_token = login(client, "testusera", "testusera")
+
+    # Get track informations
+    resp = client.get("/api/tracks/testusera/999-squeak-squeak", headers=bearerhdr(access_token))
+    assert resp.status_code == 404, resp.data
+    print(resp.json)
+
+
+def test_track_delete(client, session, audio_file_mp3, mocker):
+    """
+    DELETE /api/tracks/<username>/<soundslug>
+    """
+    m = mocker.patch("tasks.upload_workflow.delay")
+    audio_file_mp3.seek(0)
+
+    # Login as user A
+    client_id, client_secret, access_token = login(client, "testusera", "testusera")
+
+    datas = {
+        "title": "test track delete",
+        "licence": 0,  # unspecified, see api/utils/defaults.py
+        "description": "test track delete",
+        "file": FileStorage(stream=audio_file_mp3, filename="cat.mp3"),
+    }
+    # Upload track
+    resp = client.post("/api/tracks", data=datas, headers=bearerhdr(access_token), content_type="multipart/form-data")
+    assert resp.status_code == 200, resp.data
+    assert len(resp.json["id"]) == 36
+    assert len(resp.json["slug"]) >= 5
+    # Save for later
+    track_infos = resp.json
+
+    # Get track informations
+    resp = client.get(f"/api/tracks/testusera/{resp.json['slug']}", headers=bearerhdr(access_token))
+    assert resp.status_code == 200, resp.data
+
+    # Fetch from database
+    sound = Sound.query.filter(Sound.flake_id == track_infos["id"]).one()
+    assert sound is not None
+
+    # Assert the celery remoulade
+    m.assert_called_once_with(sound.id)
+
+    # Delete track
+    resp = client.delete(f"/api/tracks/testusera/{track_infos['slug']}", headers=bearerhdr(access_token))
+    assert resp.status_code == 200, resp.data
+
+    # Get track informations
+    resp = client.get(f"/api/tracks/testusera/{track_infos['slug']}", headers=bearerhdr(access_token))
+    assert resp.status_code == 404, resp.data
+
+
+def test_track_delete_other_user(client, session, audio_file_mp3, mocker):
+    """
+    DELETE /api/tracks/<username>/<soundslug>
+    """
+    pytest.skip("cannot process from celery so not testable yet")
+    m = mocker.patch("tasks.upload_workflow.delay")
+    audio_file_mp3.seek(0)
+
+    # Login as user A
+    client_id, client_secret, access_token = login(client, "testusera", "testusera")
+
+    datas = {
+        "title": "test track delete",
+        "licence": 0,  # unspecified, see api/utils/defaults.py
+        "description": "test track delete",
+        "file": FileStorage(stream=audio_file_mp3, filename="cat.mp3"),
+    }
+    # Upload track
+    resp = client.post("/api/tracks", data=datas, headers=bearerhdr(access_token), content_type="multipart/form-data")
+    assert resp.status_code == 200, resp.data
+    assert len(resp.json["id"]) == 36
+    assert len(resp.json["slug"]) >= 5
+    # Save for later
+    track_infos = resp.json
+
+    # Get track informations
+    resp = client.get(f"/api/tracks/testusera/{resp.json['slug']}", headers=bearerhdr(access_token))
+    assert resp.status_code == 200, resp.data
+    assert resp.json["reel2bits"]["private"] is False
+
+    # Fetch from database
+    sound = Sound.query.filter(Sound.flake_id == track_infos["id"]).one()
+    assert sound is not None
+
+    # Assert the celery remoulade
+    m.assert_called_once_with(sound.id)
+
+    # Log as User B
+    client_id, client_secret, access_token = login(client, "testuserb", "testuserb")
+
+    # Try to delete track
+    resp = client.delete(f"/api/tracks/testusera/{track_infos['slug']}", headers=bearerhdr(access_token))
+    assert resp.status_code == 404, resp.data
+    assert resp.json["error"] == "Not found"
+
+    # Get track informations
+    resp = client.get(f"/api/tracks/testusera/{track_infos['slug']}", headers=bearerhdr(access_token))
+    assert resp.status_code == 200, resp.data
