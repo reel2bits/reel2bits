@@ -13,8 +13,6 @@ controllers/api/tracks.py
 PATCH /api/tracks/<username>/<soundslug>
 w/ tags +/- etc., clearing title, etc.
 
-POST /api/tracks/<username_or_id>/<soundslug>/retry_processing
-
 PATCH /api/tracks/<username>/<soundslug>/artwork
 
 create album; upload track with album; fetch
@@ -66,6 +64,7 @@ def test_track_upload(client, session, audio_file_mp3, mocker):
     assert resp.json["reel2bits"]["processing"]["done"] is False  # the celery workflow isn't ran
     assert len(resp.json["reel2bits"]["media_orig"]) >= 10
     assert len(resp.json["reel2bits"]["media_transcoded"]) >= 10
+    assert len(resp.json["reel2bits"]["tags"]) == 0
 
     # Fetch from database
     sound = Sound.query.filter(Sound.flake_id == track_infos["id"]).one()
