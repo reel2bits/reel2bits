@@ -2,6 +2,7 @@ import os
 import sys
 import pytest
 import datetime
+import shutil
 
 mypath = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, mypath + "/../")
@@ -21,6 +22,9 @@ def app():
     yield _app
 
     ctx.pop()
+    tmp_dir = _app.config["TESTING_UPLOADS_TMP_DIR"]
+    if tmp_dir:
+        shutil.rmtree(tmp_dir)
 
 
 def create_default_users(_db):
@@ -83,7 +87,14 @@ def db(app):
     yield _db
 
     print("DROP DB")
+    # magic fix, without it, drop_all() doesn't return
+    # also: SADeprecationWarning: The Session.close_all() method
+    # is deprecated and will be removed in a future release.
+    # Please refer to session.close_all_sessions().
+    # but.. exception
+    _db.session.close_all()
     _db.drop_all()
+    print("MEOW")
 
 
 @pytest.fixture(scope="session")

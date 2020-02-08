@@ -1,4 +1,6 @@
 from .config import BaseConfig
+import tempfile
+import os
 
 
 class Config(BaseConfig):
@@ -29,3 +31,11 @@ class Config(BaseConfig):
     REEL2BITS_PROTOCOL = "http"
     # AP is internally enabled, it will just not broadcast things outside
     AP_ENABLED = False
+    # Uploads directories
+    tmp_dir = tempfile.mkdtemp()
+    TESTING_UPLOADS_TMP_DIR = tmp_dir
+    UPLOADS_DEFAULT_DEST = os.path.join(tmp_dir, "uploads")
+    UPLOADED_SOUNDS_DEST = os.path.join(tmp_dir, "uploads/sounds")
+    UPLOADED_ARTWORKALBUMS_DEST = os.path.join(tmp_dir, "uploads/artwork_albums")
+    UPLOADED_ARTWORKSOUNDS_DEST = os.path.join(tmp_dir, "uploads/artwork_sounds")
+    UPLOADED_AVATARS_DEST = os.path.join(tmp_dir, "uploads/avatars")
