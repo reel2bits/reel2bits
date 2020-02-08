@@ -241,7 +241,7 @@ def test_followings(client, session):
     assert len(resp.json["items"]) == 0
 
 
-@pytest.mark.dependency(depends=["test_follow"])
+@pytest.mark.dependency(depends=["test_follow", "test_followings", "test_followers"])
 def test_unfollow(client, session):
     """
     Test unfollow
