@@ -69,7 +69,7 @@ def get_oauth_client_token_with_credentials(c, client_id, client_secret, usernam
     )
     if should_fail:
         # used for testing bad login
-        assert resp.status_code == 400
+        assert resp.status_code == 400, resp.data
         return None
 
     assert resp.status_code == 200, resp.data

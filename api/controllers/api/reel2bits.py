@@ -145,9 +145,11 @@ def change_password():
     # Check if old password match
     if verify_password(password, user.password):
         # change password
-        user.password = new_hash
+        # For some reasons, changing current_token.user.whatever isn't saved
+        u = User.query.filter(User.id == user.id).first()
+        u.password = new_hash
         db.session.commit()
-        add_user_log(user.id, user.id, "user", "info", "Password changed")
+        add_user_log(u.id, u.id, "user", "info", "Password changed")
         return jsonify({"status": "success"})
     return jsonify({"error": "old password doesn't match"}), 401
 
