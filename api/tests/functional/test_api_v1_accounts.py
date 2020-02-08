@@ -152,6 +152,7 @@ def test_relationships_empty(client, session):
     assert len(resp.json) == 0
 
 
+@pytest.mark.dependency()
 def test_follow(client, session):
     """
     Test follow
@@ -181,7 +182,7 @@ def test_follow(client, session):
     assert rel["muting"] is False
 
 
-def test_follow_insexistant_user(client, session):
+def test_follow_inexistant_user(client, session):
     """
     Test follow with inexistant user
     /api/v1/accounts/<username_or_id>/follow
@@ -196,6 +197,7 @@ def test_follow_insexistant_user(client, session):
     assert resp.status_code == 404
 
 
+@pytest.mark.dependency(depends=["test_follow"])
 def test_followers(client, session):
     """
     Test followers list
@@ -217,6 +219,7 @@ def test_followers(client, session):
     assert len(resp.json["items"]) == 1
 
 
+@pytest.mark.dependency(depends=["test_follow"])
 def test_followings(client, session):
     """
     Test followings list
@@ -238,6 +241,7 @@ def test_followings(client, session):
     assert len(resp.json["items"]) == 0
 
 
+@pytest.mark.dependency(depends=["test_follow"])
 def test_unfollow(client, session):
     """
     Test unfollow
