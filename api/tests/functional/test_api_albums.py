@@ -1,5 +1,6 @@
 from helpers import bearerhdr, headers, login
 import pytest
+from models import User
 
 """
 controllers/api/albums.py
@@ -7,8 +8,6 @@ controllers/api/albums.py
 
 """
 # TODO all of that
-GET /api/albums/<user_id>
-
 PATCH /api/albums/<username>/<albumslug>/reorder
 
 PATCH /api/albums/<username>/<albumslug>/artwork
@@ -229,3 +228,38 @@ def test_albums_edit_privacy(client, session, title, from_private, to_private, p
     else:
         assert resp.status_code == 400, f"{resp.status_code} - {resp.data!r}"
         assert "error" in resp.json
+
+
+def test_albums_user_get(client, session):
+    """
+    GET /api/albums/<user_id>
+    """
+
+    # Login as user A
+    client_id, client_secret, access_token = login(client, "testusera", "testusera")
+
+    album1 = {"title": "testalbumuserget1", "private": False, "description": "squeak", "genre": "", "tags": ""}
+    album2 = {"title": "testalbumuserget2", "private": False, "description": "squeak", "genre": "", "tags": ""}
+
+    # Create album1
+    resp = client.post("/api/albums", data=album1, headers=bearerhdr(access_token))
+    assert resp.status_code == 200, f"{resp.status_code} - {resp.data!r}"
+    assert "id" in resp.json, f"{resp.status_code} - {resp.data!r}"
+    assert "slug" in resp.json, f"{resp.status_code} - {resp.data!r}"
+
+    # Create album2
+    resp = client.post("/api/albums", data=album2, headers=bearerhdr(access_token))
+    assert resp.status_code == 200, f"{resp.status_code} - {resp.data!r}"
+    assert "id" in resp.json, f"{resp.status_code} - {resp.data!r}"
+    assert "slug" in resp.json, f"{resp.status_code} - {resp.data!r}"
+
+    # Get user A from DB
+    user = User.query.filter(User.name == "testusera").first()
+
+    # Get user albums
+    # Caveats: only short objects are implemented
+    resp = client.get(f"/api/albums/{user.id}?short=true", headers=bearerhdr(access_token))
+    assert resp.status_code == 200
+    albumslist = [x["title"] for x in resp.json]
+    assert "testalbumuserget1" in albumslist
+    assert "testalbumuserget2" in albumslist
