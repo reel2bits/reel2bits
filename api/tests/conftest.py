@@ -164,3 +164,12 @@ def logo_file():
     assert os.path.exists(path)
     with open(path, "rb") as f:
         yield f
+
+
+@pytest.fixture()
+def logo_file2():
+    data_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets")
+    path = os.path.join(data_dir, "logo.png")
+    assert os.path.exists(path)
+    with open(path, "rb") as f:
+        yield f

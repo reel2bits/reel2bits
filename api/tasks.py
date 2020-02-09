@@ -647,6 +647,10 @@ def send_update_sound(sound: Sound) -> None:
         url_artwork = None
 
     # Fetch object and update fields
+    # If AP_ENABLED=False, sound doesn't have an activity payload
+    if not sound.activity and current_app.config["TESTING"]:
+        # I know that's ugly but that's the current workaround for now
+        return
     object = sound.activity.payload["object"]
     object["name"] = sound.title
     object["content"] = sound.description
