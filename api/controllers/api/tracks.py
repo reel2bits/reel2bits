@@ -38,9 +38,9 @@ def upload():
     """
     errors = {}
 
-    current_user = current_token.user
-    if not current_user:
+    if not current_token.user:
         return jsonify({"error": "Unauthorized"}), 403
+    current_user = User.query.filter(User.id == current_token.user.id).one()
 
     if "file" not in request.files:
         errors["file"] = "No file present"
@@ -172,7 +172,7 @@ def show(username_or_id, soundslug):
     """
     # Get logged in user from bearer token, or None if not logged in
     if current_token:
-        current_user = current_token.user
+        current_user = User.query.filter(User.id == current_token.user.id).one()
     else:
         current_user = None
 
@@ -239,9 +239,9 @@ def edit(username, soundslug):
         200:
             description: Returns a Status with extra reel2bits params.
     """
-    current_user = current_token.user
-    if not current_user:
+    if not current_token.user:
         return jsonify({"error": "Unauthorized"}), 403
+    current_user = User.query.filter(User.id == current_token.user.id).one()
 
     # Get the track
     sound = Sound.query.filter(Sound.user_id == current_user.id, Sound.slug == soundslug).first()
@@ -337,9 +337,9 @@ def delete(username, soundslug):
         200:
             description: Returns track name.
     """
-    current_user = current_token.user
-    if not current_user:
+    if not current_token.user:
         return jsonify({"error": "Unauthorized"}), 403
+    current_user = User.query.filter(User.id == current_token.user.id).one()
 
     # Get the track
     sound = Sound.query.filter(Sound.user_id == current_user.id, Sound.slug == soundslug).first()
@@ -392,7 +392,7 @@ def logs(username_or_id, soundslug):
     """
     # Get logged in user from bearer token, or None if not logged in
     if current_token:
-        current_user = current_token.user
+        current_user = User.query.filter(User.id == current_token.user.id).one()
     else:
         current_user = None
 
@@ -463,7 +463,7 @@ def retry_processing(username_or_id, soundslug):
     """
     # Get logged in user from bearer token, or None if not logged in
     if current_token:
-        current_user = current_token.user
+        current_user = User.query.filter(User.id == current_token.user.id).one()
     else:
         current_user = None
 
@@ -543,9 +543,9 @@ def artwork(username, trackslug):
         200:
             description: Returns ok or not.
     """
-    current_user = current_token.user
-    if not current_user:
+    if not current_token.user:
         return jsonify({"error": "Unauthorized"}), 403
+    current_user = User.query.filter(User.id == current_token.user.id).one()
 
     # Get the track
     track = Sound.query.filter(Sound.user_id == current_user.id, Sound.slug == trackslug).first()

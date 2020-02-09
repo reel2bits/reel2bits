@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request, abort
 from app_oauth import require_oauth
 from authlib.flask.oauth2 import current_token
-from models import UserLogging
+from models import UserLogging, User
 
 bp_api_account = Blueprint("bp_api_account", __name__)
 
@@ -27,9 +27,9 @@ def logs(username):
         200:
             description: Returns user logs.
     """
-    current_user = current_token.user
-    if not current_user:
+    if not current_token.user:
         return jsonify({"error": "Unauthorized"}), 403
+    current_user = User.query.filter(User.id == current_token.user.id).one()
 
     if current_user.name != username:
         return jsonify({"error": "Unauthorized"}), 403
@@ -79,9 +79,9 @@ def quota(username):
         200:
             description: Returns user quota summary.
     """
-    current_user = current_token.user
-    if not current_user:
+    if not current_token.user:
         return jsonify({"error": "Unauthorized"}), 403
+    current_user = User.query.filter(User.id == current_token.user.id).one()
 
     if current_user.name != username:
         return jsonify({"error": "Unauthorized"}), 403

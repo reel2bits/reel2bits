@@ -279,7 +279,7 @@ def search():
     """
     # Get logged in user from bearer token, or None if not logged in
     if current_token:
-        current_user = current_token.user
+        current_user = User.query.filter(User.id == current_token.user.id).one()
     else:
         current_user = None
 

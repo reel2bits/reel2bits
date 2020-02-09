@@ -2,6 +2,8 @@ from helpers import login, logout, register, headers
 from models import User
 import json
 import pytest
+from werkzeug.datastructures import FileStorage
+import os
 
 """
 controllers/api/v1/accounts.py
@@ -124,6 +126,46 @@ def test_account_update_credentials_change_bio(client, session):
     )
     assert resp.status_code == 200
     assert resp.json["note"] == "squeak squeak"
+
+
+def test_account_update_credentials_change_avatar(app, client, session, logo_file):
+    """
+    Test updating account (change avatar)
+    /api/v1/accounts/update_credentials
+    """
+    logo_file.seek(0)
+    # Avatar should be default
+    resp = client.get("/api/v1/accounts/testusera", headers=headers())
+    assert resp.status_code == 200, resp.data
+    assert resp.json["avatar"] == resp.json["avatar_static"]
+    assert resp.json["avatar"] == "https://localhost.localdomain/static/userpic_placeholder.svg"
+
+    # login
+    client_id, client_secret, access_token = login(client, "testusera", "testusera")
+
+    # update and check return
+    datas = {
+        "avatar": FileStorage(stream=logo_file, filename="logo.png"),
+    }
+    resp = client.patch(
+        "/api/v1/accounts/update_credentials",
+        data=datas,
+        headers=headers(access_token),
+        content_type="multipart/form-data",
+    )
+    assert resp.status_code == 200, resp.data
+    print(resp.data)
+    assert resp.json["avatar"] == resp.json["avatar_static"]
+    assert resp.json["avatar"] != "https://localhost.localdomain/static/userpic_placeholder.svg"
+    assert resp.json["avatar"].startswith("https://localhost.localdomain/uploads/avatars/testusera/")
+
+    # Fetch user from database
+    user = User.query.filter(User.name == "testusera").first()
+    assert user is not None
+
+    # Local file should exists
+    fpath = os.path.join(app.config["UPLOADED_AVATARS_DEST"], user.path_avatar())
+    assert os.path.exists(fpath)
 
 
 def test_user_statuses_empty(client, session):

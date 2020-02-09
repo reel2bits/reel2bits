@@ -33,9 +33,9 @@ def new():
         200:
             description: Returns id and slug.
     """
-    current_user = current_token.user
-    if not current_user:
+    if not current_token.user:
         return jsonify({"error": "Unauthorized"}), 403
+    current_user = User.query.filter(User.id == current_token.user.id).one()
 
     # Check artwork file size
     if "artwork" in request.files:
@@ -113,7 +113,7 @@ def get(username_or_id, albumslug):
     """
     # Get logged in user from bearer token, or None if not logged in
     if current_token:
-        current_user = current_token.user
+        current_user = User.query.filter(User.id == current_token.user.id).one()
     else:
         current_user = None
 
@@ -179,9 +179,9 @@ def delete(username, albumslug):
         200:
             description: Returns nothing.
     """
-    current_user = current_token.user
-    if not current_user:
+    if not current_token.user:
         return jsonify({"error": "Unauthorized"}), 403
+    current_user = User.query.filter(User.id == current_token.user.id).one()
 
     # Get the track
     album = Album.query.filter(Album.user_id == current_user.id, Album.slug == albumslug).first()
@@ -225,9 +225,9 @@ def edit(username, albumslug):
         200:
             description: Returns a Status with extra reel2bits params.
     """
-    current_user = current_token.user
-    if not current_user:
+    if not current_token.user:
         return jsonify({"error": "Unauthorized"}), 403
+    current_user = User.query.filter(User.id == current_token.user.id).one()
 
     # Get the album
     album = Album.query.filter(Album.user_id == current_user.id, Album.slug == albumslug).first()
@@ -303,7 +303,7 @@ def list(user_id):
     """
     # Get logged in user from bearer token, or None if not logged in
     if current_token:
-        current_user = current_token.user
+        current_user = User.query.filter(User.id == current_token.user.id).one()
     else:
         current_user = None
 
@@ -357,9 +357,9 @@ def reorder(username, albumslug):
         200:
             description: Returns a Status with extra reel2bits params.
     """
-    current_user = current_token.user
-    if not current_user:
+    if not current_token.user:
         return jsonify({"error": "Unauthorized"}), 403
+    current_user = User.query.filter(User.id == current_token.user.id).one()
 
     # Get the album
     album = Album.query.filter(Album.user_id == current_user.id, Album.slug == albumslug).first()
@@ -408,9 +408,9 @@ def artwork(username, albumslug):
         200:
             description: Returns ok or not.
     """
-    current_user = current_token.user
-    if not current_user:
+    if not current_token.user:
         return jsonify({"error": "Unauthorized"}), 403
+    current_user = User.query.filter(User.id == current_token.user.id).one()
 
     # Get the album
     album = Album.query.filter(Album.user_id == current_user.id, Album.slug == albumslug).first()

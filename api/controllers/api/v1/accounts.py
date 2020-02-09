@@ -416,11 +416,11 @@ def accounts_update_credentials():
                     - $ref: '#/definitions/Source'
                     - $ref: '#/definitions/AccountPleroma'
     """
-    current_user = current_token.user
-
-    if not current_user:
+    if not current_token.user:
         # WTF ?
         return jsonify({"error": "User not found"}), 404
+
+    current_user = User.query.filter(User.id == current_token.user.id).one()
 
     # Update fields like bio, language, etc.
     if request.json:
@@ -630,9 +630,9 @@ def follow(username_or_id):
         schema:
             $ref: '#/definitions/Relationship'
     """
-    current_user = current_token.user
-    if not current_user:
+    if not current_token.user:
         abort(400)
+    current_user = User.query.filter(User.id == current_token.user.id).one()
 
     user = User.query.filter(User.name == username_or_id, User.local.is_(True)).first()
     if not user:
@@ -683,9 +683,9 @@ def unfollow(username_or_id):
         schema:
             $ref: '#/definitions/Relationship'
     """
-    current_user = current_token.user
-    if not current_user:
+    if not current_token.user:
         abort(400)
+    current_user = User.query.filter(User.id == current_token.user.id).one()
 
     user = User.query.filter(User.name == username_or_id, User.local.is_(True)).first()
     if not user:
@@ -862,9 +862,9 @@ def account_delete():
       200:
         description: Returns user username
     """
-    current_user = current_token.user
-    if not current_user:
+    if not current_token.user:
         abort(400)
+    current_user = User.query.filter(User.id == current_token.user.id).one()
 
     # store a few infos
     username = current_user.name
