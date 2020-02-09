@@ -429,3 +429,69 @@ def test_track_artwork_update(app, client, session, audio_file_mp3, logo_file, l
     assert os.path.exists(newfpath)
     assert newfpath != fpath
     assert not os.path.exists(fpath)
+
+
+def test_track_artwork_update_from_other_user(app, client, session, audio_file_mp3, logo_file, logo_file2, mocker):
+    """
+    PATCH /api/tracks/<username>/<soundslug>/artwork
+    Somehow depends on celery, workaround in place in tasks.py::send_update_sound
+    """
+    m = mocker.patch("tasks.upload_workflow.delay")
+    audio_file_mp3.seek(0)
+    logo_file.seek(0)
+    logo_file2.seek(0)
+    logo_fs = FileStorage(stream=logo_file, filename="logo.png")
+    logo_fs2 = FileStorage(stream=logo_file2, filename="logo.png")
+
+    # Login as user A
+    client_id, client_secret, access_token = login(client, "testusera", "testusera")
+
+    datas = {
+        "title": "test track upload",
+        "licence": 0,  # unspecified, see api/utils/defaults.py
+        "description": "test track upload",
+        "file": FileStorage(stream=audio_file_mp3, filename="cat.mp3"),
+        "artwork": logo_fs,
+    }
+    # Upload track
+    resp = client.post("/api/tracks", data=datas, headers=bearerhdr(access_token), content_type="multipart/form-data")
+    assert resp.status_code == 200, resp.data
+    assert len(resp.json["id"]) == 36
+    assert len(resp.json["slug"]) >= 5
+    # Save for later
+    track_infos = resp.json
+
+    # Get track informations
+    resp = client.get(f"/api/tracks/testusera/{track_infos['slug']}", headers=bearerhdr(access_token))
+    assert resp.status_code == 200, resp.data
+    assert resp.json["reel2bits"]["picture_url"] != "https://localhost.localdomain/static/userpic_placeholder.svg"
+    assert resp.json["reel2bits"]["picture_url"].startswith("https://localhost.localdomain/uploads/artwork_sounds/")
+
+    # Fetch from database
+    sound = Sound.query.filter(Sound.flake_id == track_infos["id"]).one()
+    assert sound is not None
+
+    # Assert the celery remoulade
+    m.assert_called_once_with(sound.id)
+
+    # Local audio file should exists
+    fpath = os.path.join(app.config["UPLOADED_SOUNDS_DEST"], sound.path_sound(orig=True))
+    assert os.path.exists(fpath)
+
+    # Local artwork file should exists
+    fpath = os.path.join(app.config["UPLOADED_ARTWORKSOUNDS_DEST"], sound.path_artwork())
+    assert os.path.exists(fpath)
+
+    # Login as user B
+    client_id, client_secret, access_token = login(client, "testuserb", "testuserb")
+
+    # "change" the artwork
+    datas = {"artwork": logo_fs2}
+    resp = client.patch(
+        f"/api/tracks/testusera/{track_infos['slug']}/artwork",
+        data=datas,
+        headers=bearerhdr(access_token),
+        content_type="multipart/form-data",
+    )
+    assert resp.status_code == 404, resp.data
+    assert os.path.exists(fpath)  # file shouldn't have changed
