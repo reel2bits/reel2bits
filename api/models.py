@@ -743,7 +743,14 @@ def create_remote_actor(activity_actor: ap.BaseActivity):
     """
     actor = Actor()
     actor.preferred_username = activity_actor.preferredUsername
-    domain = urlparse(activity_actor.url)
+    # TODO this should be handled better, like with pyld...
+    # handle funkwhale Actor types
+    url = activity_actor.url
+    if isinstance(url, list):
+        url = next(iter(item for item in url if item["type"] == "Link" and item["mediaType"] == "text/html"), None)[
+            "href"
+        ]
+    domain = urlparse(url)
     actor.domain = domain.netloc
     actor.type = "Person"
     actor.name = activity_actor.name
