@@ -690,7 +690,7 @@ class Actor(db.Model):
                 {
                     "type": "Link",
                     "mediaType": "text/html",
-                    "href": f"{current_app.config['REEL2BITS_URL']}/user/{self.preferred_username}",
+                    "href": f"{current_app.config['REEL2BITS_URL']}/{self.preferred_username}",
                 },
                 {"type": "Link", "mediaType": "application/atom+xml", "href": url_feed_atom},
                 {"type": "Link", "mediaType": "application/rss+xml", "href": url_feed_rss},
