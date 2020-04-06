@@ -24,6 +24,7 @@
             <span v-if="!$v.user.username.required" v-translate translate-context="Content/Register/Feedback/Username/Required">Username is required</span>
             <span v-if="!$v.user.username.usernameIsLegal" v-translate translate-context="Content/Register/Feedback/Username/InvalidChars">Username can only contains letters or numbers</span>
             <span v-if="!$v.user.username.usernameNotRestricted" v-translate translate-context="Content/Register/Feedback/Username/RestrictedUsername">This username cannot be used</span>
+            <span v-if="!$v.user.username.maxLength" v-translate translate-context="Content/Register/Feedback/Username/MaxLength">Username is too long</span>
           </b-form-invalid-feedback>
         </b-form-group>
 
@@ -42,8 +43,11 @@
             aria-describedby="fullname-live-feedback"
           />
           <b-form-invalid-feedback id="fullname-live-feedback">
-            <translate translate-context="Content/Register/Feedback/DisplayName/Required">
+            <translate v-if="!$v.user.fullname.required" translate-context="Content/Register/Feedback/DisplayName/Required">
               Display name is required
+            </translate>
+            <translate v-if="!$v.user.fullname.maxLength" translate-context="Content/Register/Feedback/DisplayName/MaxLength">
+              Display name is too long
             </translate>
           </b-form-invalid-feedback>
         </b-form-group>
@@ -98,9 +102,10 @@
             type="password"
           />
           <b-form-invalid-feedback id="password-live-feedback">
-            <translate translate-context="Content/Register/Feedback/Password/Required">
+            <translate v-if="!$v.user.password.required" translate-context="Content/Register/Feedback/Password/Required">
               A secure password is required
             </translate>
+            <span v-if="!$v.user.password.maxLength" v-translate translate-context="Content/Register/Feedback/Password/MaxLength">Password is too long</span>
           </b-form-invalid-feedback>
         </b-form-group>
 
@@ -122,6 +127,7 @@
           <b-form-invalid-feedback id="password-confirmation-live-feedback">
             <span v-if="!$v.user.confirm.required" v-translate translate-context="Content/Register/Feedback/PasswordConfirm/Required">You need to confirm your password</span>
             <span v-if="!$v.user.confirm.sameAsPassword" v-translate translate-context="Content/Register/Feedback/PasswordConfirm/NotSameAsPassword">Both passwords needs to match</span>
+            <span v-if="!$v.user.confirm.maxLength" v-translate translate-context="Content/Register/Feedback/PasswordConfirm/MaxLength">Password is too long</span>
           </b-form-invalid-feedback>
         </b-form-group>
 
@@ -172,7 +178,7 @@ export default {
     user: {
       email: { required, maxLength: maxLength(250) },
       username: { required, maxLength: maxLength(250), usernameIsLegal, usernameNotRestricted },
-      fullname: { required, maxLength: maxLength(250) },
+      fullname: { required, maxLength: maxLength(30) },
       password: { required, maxLength: maxLength(250) },
       confirm: {
         required,
