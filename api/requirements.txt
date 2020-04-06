@@ -1,4 +1,4 @@
-Flask_Babelex==0.9.3
+Flask_Babelex==0.9.4
 psycopg2-binary==2.8.4
 texttable==1.6.2
 Unidecode==1.1.1

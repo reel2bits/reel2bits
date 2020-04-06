@@ -8,12 +8,14 @@ windows:
       - export FLASK_ENV=development
       - export AUTHLIB_INSECURE_TRANSPORT=1
       - export APP_SETTINGS='config.development_secret.Config'
+      - source venv/bin/activate
       - cd api
       - flask run
   - workers:
       - export FLASK_ENV=development
       - export AUTHLIB_INSECURE_TRANSPORT=1
       - export APP_SETTINGS='config.development_secret.Config'
+      - source venv/bin/activate
       - cd api
       - celery worker -A tasks.celery --loglevel=error
   - frontend:
