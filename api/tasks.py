@@ -59,7 +59,7 @@ def federate_new_sound(sound: Sound) -> int:
         name=sound.title,
         content=sound.description,
         mediaType="text/plain",
-        url={"type": "Link", "href": url_orig, "mediaType": "audio/mp3"},
+        url={"type": "Link", "href": url_orig, "mediaType": "audio/mpeg"},
         # custom items
         tags=[t.name for t in sound.tags],
         genre=sound.genre,
