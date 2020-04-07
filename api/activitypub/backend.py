@@ -180,8 +180,9 @@ class Reel2BitsBackend(ap.Backend):
         act.box = box.value
 
         # Activity is local only if the url starts like BASE_URL
+        # TODO, maybe match on the actor instead ?
         base_url = current_app.config["BASE_URL"]
-        act.local = activity.id.startswith(base_url)
+        act.local = activity.id and activity.id.startswith(base_url)
 
         act.actor_id = actor.id
 
@@ -241,6 +242,11 @@ class Reel2BitsBackend(ap.Backend):
                 current_app.logger.debug(f"fetch_iri: owned inbox local activity {activity!r}")
                 return activity.payload
         else:
+            actor = Actor.query.filter(Actor.url == iri).first()
+            if actor:
+                current_app.logger.debug(f"fetch_iri: owned remote actor {actor!r}")
+                return actor.to_dict()
+
             # Check if in the inbox
             activity = Activity.query.filter(Activity.url == iri).first()
             if activity:
