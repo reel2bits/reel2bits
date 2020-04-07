@@ -17,7 +17,7 @@
         "url": {
             "type": "Link",
             "href": "http://reel2bits.dev.lan.sigpipe.me/uploads/sounds/dashie/db9833277fc5eced72b919485066d5e1fcd622e1ebc67c6af417e7f882777b29.mp3",
-            "mediaType": "audio/mp3"
+            "mediaType": "audio/mpeg"
         },
         "sensitive": false,
         "published": "2019-03-28T11:55:34Z",
