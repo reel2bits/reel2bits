@@ -229,9 +229,16 @@ class Reel2BitsBackend(ap.Backend):
                 current_app.logger.debug(f"fetch_iri: owned local actor {actor!r}")
                 return actor.to_dict()
 
+            # OUTBOX
             activity = Activity.query.filter(Activity.url == iri, Activity.box == Box.OUTBOX.value).first()
             if activity:
-                current_app.logger.debug(f"fetch_iri: owned local activity {activity!r}")
+                current_app.logger.debug(f"fetch_iri: owned outbox local activity {activity!r}")
+                return activity.payload
+
+            # INBOX
+            activity = Activity.query.filter(Activity.url == iri, Activity.box == Box.INBOX.value).first()
+            if activity:
+                current_app.logger.debug(f"fetch_iri: owned inbox local activity {activity!r}")
                 return activity.payload
         else:
             # Check if in the inbox
@@ -240,7 +247,7 @@ class Reel2BitsBackend(ap.Backend):
                 current_app.logger.debug(f"fetch_iri: local activity {activity!r}")
                 return activity.payload
 
-        current_app.logger.debug(f"fetch_iri: cannot find locally, fetching remote")
+        current_app.logger.debug(f"fetch_iri: cannot find {iri!r} locally, fetching remote")
         return super().fetch_iri(iri)
 
     def fetch_iri(self, iri: str) -> ap.ObjectType:
