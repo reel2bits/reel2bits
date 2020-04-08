@@ -51,6 +51,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Waveform generation now rounds the peaks to two digits
 - Remote Actor now have an associated User
 - User now have flake_id (migration needed + data command)
+- **Breaking:** AP Sound object artwork renamed to artwork to inline standard with Funkwhale
+- **Breaking:** AP Sound object tags renamed to tag to inline standard with Funkwhale
+- Funkwhale federation fixes
 
 ### Fixed
 - Waveform JSON generation through a .dat now use the right pixels per second; avoid huge waveforms datas for long tracks (#179)
