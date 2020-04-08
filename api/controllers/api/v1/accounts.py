@@ -501,7 +501,8 @@ def user_statuses(username_or_id):
     )
     q = q.filter(Activity.meta_deleted.is_(False))
 
-    q = q.filter(Activity.payload["to"].astext.contains("https://www.w3.org/ns/activitystreams#Public"))
+    # match on object.to instead of to because funkwhale to is followers collection, where object.to is public
+    q = q.filter(Activity.payload[("object", "to")].astext.contains("https://www.w3.org/ns/activitystreams#Public"))
 
     q = q.filter(Activity.actor_id == user.actor[0].id)
 
