@@ -66,7 +66,7 @@ def federate_new_sound(sound: Sound) -> int:
         content=sound.description,
         mediaType="text/plain",
         url={"type": "Link", "href": url_orig, "mediaType": "audio/mpeg"},
-        tags=[{"name": f"#{t.name}", "type": "Hashtag"} for t in sound.tags],
+        tag=[{"name": f"#{t.name}", "type": "Hashtag"} for t in sound.tags],
         image=obj_artwork,
         # custom items
         genre=sound.genre,
