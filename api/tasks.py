@@ -66,11 +66,11 @@ def federate_new_sound(sound: Sound) -> int:
         content=sound.description,
         mediaType="text/plain",
         url={"type": "Link", "href": url_orig, "mediaType": "audio/mpeg"},
+        tags=[{"name": f"#{t.name}", "type": "Hashtag"} for t in sound.tags],
+        image=obj_artwork,
         # custom items
-        tags=[t.name for t in sound.tags],
         genre=sound.genre,
         licence=licence,
-        image=obj_artwork,
         transcoded=sound.transcode_needed,
         transcode_url=(url_transcode if sound.transcode_needed else None),
     )
@@ -193,7 +193,7 @@ def create_sound_for_remote_track(activity: Activity) -> int:
         return None  # reject if no file available
 
     # Tags handling. Since it's a new track, no need to do magic tags recalculation.
-    tags = [t.strip() for t in activity.payload.get("object", {}).get("tags", [])]
+    tags = [t["name"].strip().replace("#", "") for t in activity.payload.get("object", {}).get("tag", [])]
     for tag in tags:
         dbt = SoundTag.query.filter(SoundTag.name == tag).first()
         if not dbt:
@@ -720,7 +720,7 @@ def send_update_sound(sound: Sound) -> None:
     object["name"] = sound.title
     object["content"] = sound.description
     # custom things that can change
-    object["tags"] = [t.name for t in sound.tags]
+    object["tag"] = [{"name": f"#{t.name}", "type": "Hashtag"} for t in sound.tags]
     object["genre"] = sound.genre
     licence = sound.licence_info()
     licence["id"] = str(licence["id"])  # integers makes jsonld cry
