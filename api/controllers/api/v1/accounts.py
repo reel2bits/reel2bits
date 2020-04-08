@@ -518,7 +518,11 @@ def user_statuses(username_or_id):
             if current_token and current_token.user:
                 relationship = to_json_relationship(current_token.user, t.Sound.user)
             account = to_json_account(t.Sound.user, relationship)
-            tracks.append(to_json_track(t.Sound, account))
+            # FIXME better.
+            try:
+                tracks.append(to_json_track(t.Sound, account))
+            except Exception as e:
+                print(f"Cannot add {t.Sound}: {e}")
         else:
             print(t.Activity)
     resp = {"page": page, "page_size": count, "totalItems": q.total, "items": tracks, "totalPages": q.pages}

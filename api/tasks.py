@@ -293,8 +293,6 @@ def upload_workflow(self, sound_id):
         print("- Cant find sound ID {id} in database".format(id=sound_id))
         return
 
-    print(sound.filename.startswith("remote_"))
-
     # First, if the sound isn't local, we need to fetch it
     if sound.activity and not sound.activity.local:
         fetch_remote_track(sound_id)
