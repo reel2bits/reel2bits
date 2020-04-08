@@ -717,15 +717,15 @@ def send_update_sound(sound: Sound) -> None:
 
     # Fetch object and update fields
     obj = sound.activity.payload["object"]
-    object["name"] = sound.title
-    object["content"] = sound.description
+    obj["name"] = sound.title
+    obj["content"] = sound.description
     # custom things that can change
-    object["tag"] = [{"name": f"#{t.name}", "type": "Hashtag"} for t in sound.tags]
-    object["genre"] = sound.genre
+    obj["tag"] = [{"name": f"#{t.name}", "type": "Hashtag"} for t in sound.tags]
+    obj["genre"] = sound.genre
     licence = sound.licence_info()
     licence["id"] = str(licence["id"])  # integers makes jsonld cry
-    object["licence"] = licence
-    object["image"] = obj_artwork
+    obj["licence"] = licence
+    obj["image"] = obj_artwork
 
     to = [follower.actor.url for follower in actor.followers]
     to.append(ap.AS_PUBLIC)
