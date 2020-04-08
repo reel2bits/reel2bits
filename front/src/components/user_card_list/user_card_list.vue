@@ -60,9 +60,7 @@
           </p>
         </div>
       </div>
-      <p class="card-text">
-        {{ user.description }}
-      </p>
+      <p class="card-text" v-html="user.description" />
       <ul class="nav nav-fill">
         <li class="nav-item border-right">
           <router-link :to="{ name: 'user-profile-tracks', params: { name: user.screen_name } }">
