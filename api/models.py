@@ -665,10 +665,19 @@ class Actor(db.Model):
         return self.followings.filter(Follower.target_id == target.id).first()
 
     def to_dict(self):
+        print("someone wants the actor")
         if self.user.path_avatar():
             url_avatar = url_for("get_uploads_stuff", thing="avatars", stuff=self.user.path_avatar(), _external=True)
         else:
             url_avatar = f"{current_app.config['REEL2BITS_URL']}/static/userpic_placeholder.svg"
+        # Could not build url for endpoint 'bp_feeds.tracks_atom' with values ['user_id']. Did you mean 'bootstrap.static' instead?
+        # why ? who knows
+        # url_feed_atom = url_for("bp_feeds.tracks_atom", user_id=self.user.flake_id, _external=True)
+        # url_feed_rss = url_for("bp_feeds.tracks_rss", user_id=self.user.flake_id, _external=True)
+        # TODO FIXME pleaseeeee
+        # to reproduce: just upload, it will explode, but silently, try ... catch Exception as e: print(e) if you want to get the exception...
+        url_feed_atom = f"{current_app.config['REEL2BITS_URL']}/feeds/tracks/{self.user.flake_id}.atom"
+        url_feed_rss = f"{current_app.config['REEL2BITS_URL']}/feeds/tracks/{self.user.flake_id}.rss"
 
         return {
             "@context": DEFAULT_CTX,
@@ -684,6 +693,15 @@ class Actor(db.Model):
             "publicKey": {"id": self.private_key_id(), "owner": self.url, "publicKeyPem": self.public_key},
             "endpoints": {"sharedInbox": self.shared_inbox_url},
             "icon": {"type": "Image", "url": url_avatar},
+            "url": [
+                {
+                    "type": "Link",
+                    "mediaType": "text/html",
+                    "href": f"{current_app.config['REEL2BITS_URL']}/{self.preferred_username}",
+                },
+                {"type": "Link", "mediaType": "application/atom+xml", "href": url_feed_atom},
+                {"type": "Link", "mediaType": "application/rss+xml", "href": url_feed_rss},
+            ],
         }
 
 

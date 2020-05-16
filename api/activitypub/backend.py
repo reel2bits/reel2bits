@@ -180,8 +180,9 @@ class Reel2BitsBackend(ap.Backend):
         act.box = box.value
 
         # Activity is local only if the url starts like BASE_URL
+        # TODO, maybe match on the actor instead ?
         base_url = current_app.config["BASE_URL"]
-        act.local = activity.id.startswith(base_url)
+        act.local = activity.id and activity.id.startswith(base_url)
 
         act.actor_id = actor.id
 
@@ -229,18 +230,30 @@ class Reel2BitsBackend(ap.Backend):
                 current_app.logger.debug(f"fetch_iri: owned local actor {actor!r}")
                 return actor.to_dict()
 
+            # OUTBOX
             activity = Activity.query.filter(Activity.url == iri, Activity.box == Box.OUTBOX.value).first()
             if activity:
-                current_app.logger.debug(f"fetch_iri: owned local activity {activity!r}")
+                current_app.logger.debug(f"fetch_iri: owned outbox local activity {activity!r}")
+                return activity.payload
+
+            # INBOX
+            activity = Activity.query.filter(Activity.url == iri, Activity.box == Box.INBOX.value).first()
+            if activity:
+                current_app.logger.debug(f"fetch_iri: owned inbox local activity {activity!r}")
                 return activity.payload
         else:
+            actor = Actor.query.filter(Actor.url == iri).first()
+            if actor:
+                current_app.logger.debug(f"fetch_iri: owned remote actor {actor!r}")
+                return actor.to_dict()
+
             # Check if in the inbox
             activity = Activity.query.filter(Activity.url == iri).first()
             if activity:
                 current_app.logger.debug(f"fetch_iri: local activity {activity!r}")
                 return activity.payload
 
-        current_app.logger.debug(f"fetch_iri: cannot find locally, fetching remote")
+        current_app.logger.debug(f"fetch_iri: cannot find {iri!r} locally, fetching remote")
         return super().fetch_iri(iri)
 
     def fetch_iri(self, iri: str) -> ap.ObjectType:

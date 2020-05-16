@@ -137,7 +137,11 @@ def work_transcode(sound_id):
         sound.id, sound.user.id, "sounds", "info", "Transcoding started for: {0} -- {1}".format(sound.id, sound.title)
     )
 
-    fname = os.path.join(current_app.config["UPLOADED_SOUNDS_DEST"], sound.user.slug, sound.filename)
+    if not sound.remote_uri:
+        fname = os.path.join(current_app.config["UPLOADED_SOUNDS_DEST"], sound.user.slug, sound.filename)
+    else:
+        fname = os.path.join(current_app.config["UPLOADED_SOUNDS_DEST"], f"remote_{sound.user.slug}", sound.filename)
+
     _file, _ext = splitext(fname)
 
     _start = time.time()
@@ -230,7 +234,7 @@ def work_metadatas(sound_id, force=False):
             fname_t = fname
 
         print("- GENERATING AUDIO DAT FILE")
-        dat_file_name = generate_audio_dat_file(fname_t, _infos.duration)
+        dat_file_name = generate_audio_dat_file(fname_t, _infos.duration, _infos.type)
 
         print("- WORKING WAVEFORM on {0}, {1}".format(sound.id, sound.filename))
         waveform_infos = get_waveform(dat_file_name, _infos.duration)

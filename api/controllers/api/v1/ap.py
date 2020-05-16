@@ -210,7 +210,7 @@ def inbox():
             return response
 
     activity = activitypub.parse_activity(data)
-    current_app.logger.debug(f"inbox_activity={activity}/{data}")
+    current_app.logger.debug(f"inbox_activity={activity!r}/{data!r}")
 
     post_to_inbox(activity)
 

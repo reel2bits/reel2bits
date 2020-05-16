@@ -1,4 +1,4 @@
-Flask_Babelex==0.9.3
+Flask_Babelex==0.9.4
 psycopg2-binary==2.8.4
 texttable==1.6.2
 Unidecode==1.1.1
@@ -13,7 +13,7 @@ bcrypt==3.1.7
 celery==4.4.0
 flask_mail==0.9.1
 flask_migrate==2.5.2
-flask_uploads==0.2.1
+git+https://github.com/maxcountryman/flask-uploads#egg=flask_uploads
 wtforms_alchemy==0.16.9
 sqlalchemy_searchable==1.1.0
 redis==3.3.11

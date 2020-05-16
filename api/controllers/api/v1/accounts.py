@@ -501,7 +501,8 @@ def user_statuses(username_or_id):
     )
     q = q.filter(Activity.meta_deleted.is_(False))
 
-    q = q.filter(Activity.payload["to"].astext.contains("https://www.w3.org/ns/activitystreams#Public"))
+    # match on object.to instead of to because funkwhale to is followers collection, where object.to is public
+    q = q.filter(Activity.payload[("object", "to")].astext.contains("https://www.w3.org/ns/activitystreams#Public"))
 
     q = q.filter(Activity.actor_id == user.actor[0].id)
 
@@ -517,7 +518,11 @@ def user_statuses(username_or_id):
             if current_token and current_token.user:
                 relationship = to_json_relationship(current_token.user, t.Sound.user)
             account = to_json_account(t.Sound.user, relationship)
-            tracks.append(to_json_track(t.Sound, account))
+            # FIXME better.
+            try:
+                tracks.append(to_json_track(t.Sound, account))
+            except Exception as e:
+                print(f"Cannot add {t.Sound}: {e}")
         else:
             print(t.Activity)
     resp = {"page": page, "page_size": count, "totalItems": q.total, "items": tracks, "totalPages": q.pages}

@@ -112,7 +112,7 @@ def determine_pps(duration):
     return pps if pps < 10000 else 9999
 
 
-def generate_audio_dat_file(filename, duration):
+def generate_audio_dat_file(filename, duration, input_format):
     binary = current_app.config["AUDIOWAVEFORM_BIN"]
     if not os.path.exists(binary) or not os.path.exists(filename):
         add_log("AUDIOWAVEFORM", "ERROR", "Filename {0} or binary {1} invalid".format(filename, binary))
@@ -124,7 +124,19 @@ def generate_audio_dat_file(filename, duration):
 
     # pixels-per-second is needed here or it will be ignored in the json waveform generation
     pps = determine_pps(duration)
-    cmd = [binary, "-i", filename, "-o", audio_dat, "--pixels-per-second", str(pps), "-b", "8"]
+    cmd = [
+        binary,
+        "-i",
+        filename,
+        "-o",
+        audio_dat,
+        "--pixels-per-second",
+        str(pps),
+        "-b",
+        "8",
+        "--input-format",
+        input_format.lower(),
+    ]
 
     try:
         process = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)

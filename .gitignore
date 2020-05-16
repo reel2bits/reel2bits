@@ -1,4 +1,5 @@
 *.pyc
+/venv
 /config.py
 /.idea
 *.db

@@ -7,12 +7,12 @@
         </div>
         <div class="align-self-center">
           <h2 class="h2 m-0">
-            <b-link :to="{ name: 'user-profile', params: { name: user.screen_name } }" class="text-decoration-none text-body">
+            <b-link :to="userProfileLink(user)" class="text-decoration-none text-body">
               {{ user.name }}
             </b-link>
           </h2>
           <p class="h3 font-weight-normal m-0">
-            <b-link :to="{ name: 'user-profile', params: { name: user.screen_name } }" class="text-decoration-none text-body">
+            <b-link :to="userProfileLink(user)" class="text-decoration-none text-body">
               @{{ user.screen_name }}
             </b-link>
           </p>
@@ -60,9 +60,7 @@
           </p>
         </div>
       </div>
-      <p class="card-text">
-        {{ user.description }}
-      </p>
+      <p class="card-text" v-html="user.description" />
       <ul class="nav nav-fill">
         <li class="nav-item border-right">
           <router-link :to="{ name: 'user-profile-tracks', params: { name: user.screen_name } }">
@@ -115,6 +113,8 @@
 
 <script>
 import { requestFollow, requestUnfollow } from '../../services/follow_manipulate/follow_manipulate.js'
+import generateRemoteLink from 'src/services/remote_user_link_generator/remote_user_link_generator.js'
+
 const UserCardList = {
   props: [
     'user'
@@ -153,6 +153,13 @@ const UserCardList = {
       requestUnfollow(this.user, store).then(() => {
         this.followRequestInProgress = false
       })
+    },
+    userProfileLink (user) {
+      return generateRemoteLink(
+        user.flakeId, user.screen_name,
+        this.$store.state.instance.restrictedNicknames,
+        'user-profile'
+      )
     }
   }
 }

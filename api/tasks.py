@@ -22,6 +22,8 @@ import smtplib
 from utils.various import add_log, add_user_log
 import urllib
 import os
+import re
+import magic
 
 # TRANSCODING
 
@@ -45,8 +47,12 @@ def federate_new_sound(sound: Sound) -> int:
 
     if sound.path_artwork():
         url_artwork = url_for("get_uploads_stuff", thing="artwork_sounds", stuff=sound.path_artwork(), _external=True)
+        mime_artwork = magic.from_file(
+            os.path.join(current_app.config["UPLOADED_ARTWORKSOUNDS_DEST"], sound.path_artwork()), mime=True
+        )
+        obj_artwork = {"type": "Image", "url": url_artwork, "mediaType": mime_artwork}
     else:
-        url_artwork = None
+        obj_artwork = None
 
     licence = sound.licence_info()
     licence["id"] = str(licence["id"])  # integers makes jsonld cry
@@ -59,12 +65,12 @@ def federate_new_sound(sound: Sound) -> int:
         name=sound.title,
         content=sound.description,
         mediaType="text/plain",
-        url={"type": "Link", "href": url_orig, "mediaType": "audio/mp3"},
+        url={"type": "Link", "href": url_orig, "mediaType": "audio/mpeg"},
+        tag=[{"name": f"#{t.name}", "type": "Hashtag"} for t in sound.tags],
+        image=obj_artwork,
         # custom items
-        tags=[t.name for t in sound.tags],
         genre=sound.genre,
         licence=licence,
-        artwork=url_artwork,
         transcoded=sound.transcode_needed,
         transcode_url=(url_transcode if sound.transcode_needed else None),
     )
@@ -126,18 +132,59 @@ def create_sound_for_remote_track(activity: Activity) -> int:
     sound.title = activity.payload.get("object", {}).get("name", None)
     sound.description = activity.payload.get("object", {}).get("content", None)
     sound.private = False
-    sound.transcode_needed = activity.payload.get("object", {}).get("transcoded", False)
-    if sound.transcode_needed:
-        sound.remote_uri = activity.payload.get("object", {}).get("transcode_url", None)
+
+    # get the best track available
+    # reel2bits
+    urls = activity.payload.get("object", {}).get("urls", None)
+    if not urls:
+        # Funkwhale temporary
+        urls = activity.payload.get("object", {}).get("url", None)
     else:
-        sound.remote_uri = activity.payload.get("object", {}).get("url", {}).get("href", None)
+        urls = [urls]
+
+    if not urls:
+        return None
+
+    print(urls)
+
+    url = None
+    media_type = None
+    for i in urls:
+        mediaType = i.get("mediaType", None)
+        if "mpeg" in "audio/mpeg":
+            url = i["href"]
+            media_type = mediaType
+        elif "ogg" in mediaType:
+            url = i["href"]
+            media_type = mediaType
+        elif "flac" in mediaType:
+            url = i["href"]
+            media_type = mediaType
+        elif "wav" in mediaType:
+            url = i["href"]
+            media_type = mediaType
+
+    if not url:
+        print(f"Activity cannot be transcoded: {activity!r}")
+        return None
+
+    # check for reel2bits field, fallback to mime type
+    sound.transcode_needed = activity.payload.get("object", {}).get("transcoded", "mpeg" not in media_type)
+
+    # Use reel2bits field, fallback to detected url
+    sound.remote_uri = activity.payload.get("object", {}).get("transcode_url", url)
     sound.transcode_state = 0
 
     # Get user through actor
     sound.user_id = activity.actor.user.id
     sound.activity_id = activity.id
+
+    # AP standard
+    artwork = activity.payload.get("object", {}).get("image", None)
+    if artwork:
+        sound.remote_artwork_uri = artwork.get("url", None)
+
     # custom from AP
-    sound.remote_artwork_uri = activity.payload.get("object", {}).get("artwork", None)
     sound.genre = activity.payload.get("object", {}).get("genre", None)
     sound.licence = activity.payload.get("object", {}).get("licence", {}).get("id", 0)
 
@@ -146,7 +193,7 @@ def create_sound_for_remote_track(activity: Activity) -> int:
         return None  # reject if no file available
 
     # Tags handling. Since it's a new track, no need to do magic tags recalculation.
-    tags = [t.strip() for t in activity.payload.get("object", {}).get("tags", [])]
+    tags = [t["name"].strip().replace("#", "") for t in activity.payload.get("object", {}).get("tag", [])]
     for tag in tags:
         dbt = SoundTag.query.filter(SoundTag.name == tag).first()
         if not dbt:
@@ -159,28 +206,42 @@ def create_sound_for_remote_track(activity: Activity) -> int:
     return sound.id
 
 
+def get_filename_from_cd(cd, default):
+    """
+    Get filename from content-disposition
+    """
+    if not cd:
+        return default
+    fname = re.findall("filename=(.+)", cd)
+    if len(fname) == 0:
+        return default
+    return fname[0]
+
+
 @celery.task(bind=True, max_retries=3)
 def fetch_remote_track(self, sound_id: int):
     print(f"Started fetching remote track {sound_id}")
-    sound = Sound.query.get(sound_id)
+    sound = db.session.query(Sound).get(sound_id)
 
     if not sound.remote_uri:
         print(f"ERROR: cannot fetch track {sound.id!r} because of no remote_uri")
         return False
 
+    # reel2bits logic
     track_url_path = urllib.parse.urlparse(sound.remote_uri).path
     track_filename = os.path.basename(os.path.normpath(track_url_path))
 
     os.makedirs(os.path.join(current_app.config["UPLOADED_SOUNDS_DEST"], f"remote_{sound.user.slug}"), exist_ok=True)
 
-    final_track_filename = os.path.join(
-        current_app.config["UPLOADED_SOUNDS_DEST"], f"remote_{sound.user.slug}", f"remote_{track_filename}"
-    )
-
     track_resp = requests.get(sound.remote_uri, stream=True)
 
     # maybe we should try except and handle that...
     track_resp.raise_for_status()
+
+    track_filename = get_filename_from_cd(track_resp.headers.get("content-disposition"), track_filename)
+    final_track_filename = os.path.join(
+        current_app.config["UPLOADED_SOUNDS_DEST"], f"remote_{sound.user.slug}", f"remote_{track_filename}"
+    )
 
     with open(final_track_filename, "wb") as handle:
         for block in track_resp.iter_content(1024):
@@ -193,7 +254,7 @@ def fetch_remote_track(self, sound_id: int):
 @celery.task(bind=True, max_retries=3)
 def fetch_remote_artwork(self, sound_id: int, update=False):
     print(f"Started fetching remote artwork {sound_id}")
-    sound = Sound.query.get(sound_id)
+    sound = db.session.query(Sound).get(sound_id)
 
     if not sound.remote_artwork_uri:
         print(f"ERROR: cannot fetch artwork of {sound.id!r} because of no remote_artwork_uri")
@@ -237,7 +298,7 @@ def fetch_remote_artwork(self, sound_id: int, update=False):
 def upload_workflow(self, sound_id):
     print("UPLOAD WORKFLOW started")
 
-    sound = Sound.query.get(sound_id)
+    sound = db.session.query(Sound).get(sound_id)
     if not sound:
         print("- Cant find sound ID {id} in database".format(id=sound_id))
         return
@@ -246,6 +307,8 @@ def upload_workflow(self, sound_id):
     if sound.activity and not sound.activity.local:
         fetch_remote_track(sound_id)
         fetch_remote_artwork(sound_id)
+        # refresh the sound object
+        sound = db.session.query(Sound).get(sound_id)
         if not sound.filename.startswith("remote_"):
             print("UPLOAD WORKFLOW had errors")
             add_log("global", "ERROR", f"Error fetching remote track {sound.id}")
@@ -254,6 +317,8 @@ def upload_workflow(self, sound_id):
     print("METADATAS started")
     metadatas = work_metadatas(sound_id)
     print("METADATAS finished")
+    # refresh the sound object
+    sound = db.session.query(Sound).get(sound_id)
 
     if not metadatas:
         # cannot process further
@@ -643,24 +708,28 @@ def send_update_sound(sound: Sound) -> None:
 
     if sound.path_artwork():
         url_artwork = url_for("get_uploads_stuff", thing="artwork_sounds", stuff=sound.path_artwork(), _external=True)
+        mime_artwork = magic.from_file(
+            os.path.join(current_app.config["UPLOADED_ARTWORKSOUNDS_DEST"], sound.path_artwork()), mime=True
+        )
+        obj_artwork = {"type": "Image", "url": url_artwork, "mediaType": mime_artwork}
     else:
-        url_artwork = None
+        obj_artwork = None
 
     # Fetch object and update fields
-    object = sound.activity.payload["object"]
-    object["name"] = sound.title
-    object["content"] = sound.description
+    obj = sound.activity.payload["object"]
+    obj["name"] = sound.title
+    obj["content"] = sound.description
     # custom things that can change
-    object["tags"] = [t.name for t in sound.tags]
-    object["genre"] = sound.genre
+    obj["tag"] = [{"name": f"#{t.name}", "type": "Hashtag"} for t in sound.tags]
+    obj["genre"] = sound.genre
     licence = sound.licence_info()
     licence["id"] = str(licence["id"])  # integers makes jsonld cry
-    object["licence"] = licence
-    object["artwork"] = url_artwork
+    obj["licence"] = licence
+    obj["image"] = obj_artwork
 
     to = [follower.actor.url for follower in actor.followers]
     to.append(ap.AS_PUBLIC)
-    raw_update = dict(to=to, actor=actor.to_dict(), object=object)
+    raw_update = dict(to=to, actor=actor.to_dict(), object=obj)
     raw_update["@context"] = DEFAULT_CTX
     current_app.logger.debug(f"recipients: {raw_update['to']}")
     update = ap.Update(**raw_update)
