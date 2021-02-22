@@ -1,4 +1,4 @@
-FROM node:11
+FROM node:12
 
 # needed to compile translations
 RUN curl -L -o /usr/local/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 && chmod +x /usr/local/bin/jq
