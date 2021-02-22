@@ -25,7 +25,7 @@ aliases:
         command: |
           sudo apt-get update
           sudo apt-get install -y sox libtag1v5 libmagic1 libffi6 ffmpeg postgresql-client-11 rsync
-          sudo apt-get install -y cmake build-essential git wget make libboost-all-dev
+          sudo apt-get install -y cmake build-essential git wget make libboost-all-dev rustc
           sudo apt-get install -y libsox-dev libsox-fmt-all libtag1-dev libmagic-dev libffi-dev libgd-dev libmad0-dev libsndfile1-dev libid3tag0-dev libmediainfo-dev
 
   - &install_audiowaveform
