@@ -174,7 +174,7 @@ def work_metadatas(sound_id, force=False):
     # force is unused for now
     sound = Sound.query.get(sound_id)
     if not sound:
-        print("- Cant find sound ID %(id)s in database".format(id=sound_id))
+        print("- Cant find sound ID {id}s in database".format(id=sound_id))
         return
 
     add_user_log(

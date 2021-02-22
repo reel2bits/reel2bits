@@ -40,7 +40,7 @@ def test_email(email):
     msg.html = render_template("email/test_email.html", instance=instance)
     try:
         mail.send(msg)
-    except:  # noqa: E772
+    except:  # noqa: E722
         print(f"Error sending mail: {sys.exc_info()[0]}")
 
 

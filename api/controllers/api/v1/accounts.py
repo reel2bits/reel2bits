@@ -42,6 +42,8 @@ avatars = UploadSet("avatars", Reel2bitsDefaults.avatar_extensions_allowed)
 #  nickname(==username), email, fullname, password, confirm, agreement, locale(dropped here for now)
 # Optionals:
 #  bio
+
+
 @bp_api_v1_accounts.route("/api/v1/accounts", methods=["POST"])
 def accounts():
     """
