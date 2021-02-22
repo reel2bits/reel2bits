@@ -3,7 +3,7 @@ from models import db, User, PasswordResetToken, Sound, SoundTag, Actor, Followe
 from utils.various import add_user_log, generate_random_token, add_log
 from datas_helpers import to_json_account, to_json_relationship, default_genres, to_json_track
 from app_oauth import require_oauth
-from authlib.flask.oauth2 import current_token
+from authlib.integrations.flask_oauth2 import current_token
 from flask_security.utils import hash_password, verify_password
 from flask_mail import Message
 import smtplib

@@ -17,7 +17,7 @@ from models import (
 from flask_security.utils import hash_password
 from flask_security import confirmable as FSConfirmable
 from app_oauth import authorization, require_oauth
-from authlib.flask.oauth2 import current_token
+from authlib.integrations.flask_oauth2 import current_token
 from datas_helpers import to_json_track, to_json_account, to_json_relationship
 from utils.various import forbidden_username, add_user_log, add_log, get_hashed_filename
 from tasks import send_update_profile, federate_delete_actor, post_to_outbox

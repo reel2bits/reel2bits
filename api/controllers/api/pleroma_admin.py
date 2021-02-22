@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify, abort
 from models import db, User
 from app_oauth import require_oauth
-from authlib.flask.oauth2 import current_token
+from authlib.integrations.flask_oauth2 import current_token
 
 bp_api_pleroma_admin = Blueprint("bp_api_pleroma_admin", __name__)
 

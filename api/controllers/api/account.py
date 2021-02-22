@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request, abort
 from app_oauth import require_oauth
-from authlib.flask.oauth2 import current_token
+from authlib.integrations.flask_oauth2 import current_token
 from models import UserLogging
 
 bp_api_account = Blueprint("bp_api_account", __name__)

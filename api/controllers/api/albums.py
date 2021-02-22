@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request, current_app
 from app_oauth import require_oauth
-from authlib.flask.oauth2 import current_token
+from authlib.integrations.flask_oauth2 import current_token
 from forms import AlbumForm
 from models import db, Album, User, Sound, SoundTag
 import json

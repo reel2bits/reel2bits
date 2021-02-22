@@ -1,4 +1,4 @@
-from authlib.flask.oauth2 import current_token
+from authlib.integrations.flask_oauth2 import current_token
 from flask_uploads import UploadSet, AUDIO
 from flask_wtf import FlaskForm as Form
 from flask_wtf.file import FileField, FileAllowed, FileRequired
