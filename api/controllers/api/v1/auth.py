@@ -45,11 +45,11 @@ def create_client():
     metadatas = {
         "client_name": req.get("client_name"),
         "client_uri": req.get("website", None),
-        "redirect_uris": req.get("redirect_uris"),
+        "redirect_uris": [req.get("redirect_uris")],  # TODO, should make a check or something
         "scope": req.get("scopes"),
         # this needs to be hardcoded for whatever reason
         "response_type": "code",
-        "grant_type": "authorization_code\r\nclient_credentials\r\npassword",
+        "grant_types": ["authorization_code", "client_credentials", "password"],
         "token_endpoint_auth_method": "client_secret_post",
     }
     if client.token_endpoint_auth_method == "none":
