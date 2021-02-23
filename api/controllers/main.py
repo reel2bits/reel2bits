@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template
-from flask_babelex import gettext
+from flask_babel import gettext
 
 from models import User
 

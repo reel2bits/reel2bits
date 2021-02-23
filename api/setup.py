@@ -25,7 +25,7 @@ setup(
         "psycopg2-binary==2.8.4",
         "mutagen==1.43.0",
         "unidecode==1.1.1",
-        "Flask_Babelex==0.9.3",
+        "Flask_Babel==2.0.0",
         "texttable==1.6.1",
         "python-slugify==4.0.0",
         "python-magic==0.4.15",
