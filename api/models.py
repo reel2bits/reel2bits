@@ -774,6 +774,7 @@ def create_remote_actor(activity_actor: ap.BaseActivity):
     user.confirmed_at = None
     user.display_name = activity_actor.name
     user.local = False
+    user.fs_uniquifier = uuid.uuid4().hex
 
     actor.user = user
 
