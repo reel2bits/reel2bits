@@ -19,7 +19,7 @@ setup(
         "Bootstrap-Flask==1.2.0",
         "Flask-Mail==0.9.1",
         "Flask-Migrate==2.4.0",
-        "Flask-Uploads==0.2.1",
+        "Flask-Reuploaded==0.5.0",
         "bcrypt==3.1.7",
         "pydub==0.23.1",
         "psycopg2-binary==2.8.4",

@@ -83,6 +83,7 @@ class User(db.Model, UserMixin):
     name = db.Column(db.String(255), nullable=False, info={"label": "Username"})
     password = db.Column(db.String(255), nullable=True, info={"label": "Password"})
     active = db.Column(db.Boolean())
+    fs_uniquifier = db.Column(db.String(255), unique=True, nullable=False)
     confirmed_at = db.Column(db.DateTime())
 
     created_at = db.Column(db.DateTime(timezone=False), default=datetime.datetime.utcnow)
