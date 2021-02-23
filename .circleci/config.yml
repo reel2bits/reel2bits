@@ -330,18 +330,15 @@ workflows:
             - install
       - front-test-lts:
           requires:
-            - install
             - front-lint-lts
       - front-lint:
           requires:
             - install
       - front-build:
           requires:
-            - install
             - front-lint
       - front-sync:
           requires:
-            - install
             - front-lint-lts
             - front-build
           filters:
