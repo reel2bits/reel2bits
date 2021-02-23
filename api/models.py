@@ -219,6 +219,14 @@ class OAuth2Client(db.Model, OAuth2ClientMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id", ondelete="CASCADE"))
+    client_name = db.Column(db.String(255))
+    client_uri = db.Column(db.Text())
+    redirect_uri = db.Column(db.Text())
+    scope = db.Column(db.Text(), nullable=False)
+    token_endpoint_auth_method = db.Column(db.String(50))
+    response_type = db.Column(db.Text(), nullable=False)
+    grant_type = db.Column(db.Text(), nullable=False)
+
     user = db.relationship("User")
 
 
