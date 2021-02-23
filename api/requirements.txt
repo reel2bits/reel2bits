@@ -21,7 +21,7 @@ redis==3.3.11
 flask-accept==0.0.6
 Bootstrap-Flask==1.2.0
 PyQRCode==1.2.1
-Authlib>=0.11
+Authlib==0.15.3
 flask-cors>=3.0.8
 cachetools==4.0.0
 flasgger==0.9.3
