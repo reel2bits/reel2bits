@@ -222,10 +222,10 @@ jobs:
       - image: circleci/python:3.7-buster-node
     <<: *install_python_dependencies
 
-  install-python3.8:
+  install-python3.9:
     <<: *defaults
     docker:
-      - image: circleci/python:3.8-rc-buster-node
+      - image: circleci/python:3.9-rc-buster-node
     <<: *install_python_dependencies
 
   test-python3.6:
@@ -248,10 +248,10 @@ jobs:
           POSTGRES_DB: reel2bits_test
     <<: *test_steps
 
-  test-python3.8:
+  test-python3.9:
     <<: *defaults
     docker:
-      - image: circleci/python:3.8-rc-buster-node
+      - image: circleci/python:3.9-rc-buster-node
       - image: circleci/postgres:11-alpine
         environment:
           POSTGRES_USER: postgres
@@ -313,13 +313,18 @@ workflows:
       - install-python3.7:
           requires:
             - install
-            - install-python3.6
+      - install-python3.9:
+          requires:
+            - install
       - test-python3.6:
           requires:
             - install-python3.6
       - test-python3.7:
           requires:
             - install-python3.7
+      - test-python3.9:
+          requires:
+            - install-python3.9
       - front-lint-lts:
           requires:
             - install
