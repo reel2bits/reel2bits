@@ -28,6 +28,5 @@ pymediainfo==4.1
 feedgen==0.9.0
 waitress==1.4.3
 Flask-SQLAlchemy==2.4.1
-Flask-Security==3.0.0
-git+https://github.com/jwag956/flask-security#egg=Flask-Security-too
+Flask-Security-Too==4.0.0
 git+https://github.com/tsileo/little-boxes@master#egg=little-boxes
