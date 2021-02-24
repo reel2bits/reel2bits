@@ -1,4 +1,4 @@
-"""Migrate to client_metadata
+"""empty message
 
 Revision ID: dff4edfb26b6
 Revises: 7df5c87e5fef
