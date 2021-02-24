@@ -69,7 +69,11 @@ def test_user_slugs(client, session):
         suffix = "".join(random.choices(string.ascii_letters + string.digits, k=20))
         username = f"test_slug_{count}_{suffix}"
         u = user_datastore.create_user(
-            name=username, email=f"test_slug_{count}@localhost", password=hash_password(f"slug_{count}"), roles=[role], fs_uniquifier=uuid.uuid4()
+            name=username,
+            email=f"test_slug_{count}@localhost",
+            password=hash_password(f"slug_{count}"),
+            roles=[role],
+            fs_uniquifier=uuid.uuid4(),
         )
         session.commit()
         assert u.id >= 0
