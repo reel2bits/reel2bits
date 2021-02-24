@@ -73,7 +73,6 @@ def test_user_slugs(client, session):
             email=f"test_slug_{count}@localhost",
             password=hash_password(f"slug_{count}"),
             roles=[role],
-            fs_uniquifier=uuid.uuid4(),
         )
         session.commit()
         assert u.id >= 0
