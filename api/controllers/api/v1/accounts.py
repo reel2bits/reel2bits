@@ -31,6 +31,7 @@ from utils.defaults import Reel2bitsDefaults
 from flask_uploads import UploadSet
 import os
 import little_boxes.activitypub as ap
+import uuid
 
 
 bp_api_v1_accounts = Blueprint("bp_api_v1_accounts", __name__)
@@ -149,6 +150,7 @@ def accounts():
         display_name=request.json["fullname"],
         password=hash_password(request.json["password"]),
         roles=[role],
+        fs_identifier=uuid.uuid4(),
     )
 
     actor = create_actor(u)
