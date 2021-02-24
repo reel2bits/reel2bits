@@ -3,7 +3,6 @@ import sys
 import pytest
 import random
 import string
-import uuid
 from flask_security.utils import hash_password
 
 mypath = os.path.dirname(os.path.abspath(__file__))
