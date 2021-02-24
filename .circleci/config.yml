@@ -5,7 +5,7 @@ version: 2
 aliases:
   - &defaults
     docker:
-      - image: circleci/python:3.6-buster-node
+      - image: cimg/python:3.6-node
     working_directory: ~/projects/reel2bits
 
   - &attach_workspace
@@ -219,25 +219,25 @@ jobs:
   install-python3.7:
     <<: *defaults
     docker:
-      - image: circleci/python:3.7-buster-node
+      - image: cimg/python:3.7-node
     <<: *install_python_dependencies
 
   install-python3.8:
     <<: *defaults
     docker:
-      - image: circleci/python:3.8-buster-node
+      - image: cimg/python:3.8-node
     <<: *install_python_dependencies
 
   install-python3.9:
     <<: *defaults
     docker:
-      - image: circleci/python:3.9-rc-buster-node
+      - image: cimg/python:3.9-node
     <<: *install_python_dependencies
 
   test-python3.6:
     <<: *defaults
     docker:
-      - image: circleci/python:3.6-buster-node
+      - image: cimg/python:3.6-node
       - image: circleci/postgres:11-alpine
         environment:
           POSTGRES_USER: postgres
@@ -247,7 +247,7 @@ jobs:
   test-python3.7:
     <<: *defaults
     docker:
-      - image: circleci/python:3.7-buster-node
+      - image: cimg/python:3.7-node
       - image: circleci/postgres:11-alpine
         environment:
           POSTGRES_USER: postgres
@@ -257,7 +257,7 @@ jobs:
   test-python3.8:
     <<: *defaults
     docker:
-      - image: circleci/python:3.8-buster-node
+      - image: cimg/python:3.8-node
       - image: circleci/postgres:11-alpine
         environment:
           POSTGRES_USER: postgres
@@ -267,47 +267,53 @@ jobs:
   test-python3.9:
     <<: *defaults
     docker:
-      - image: circleci/python:3.9-rc-buster-node
+      - image: cimg/python:3.9-node
       - image: circleci/postgres:11-alpine
         environment:
           POSTGRES_USER: postgres
           POSTGRES_DB: reel2bits_test
     <<: *test_steps
 
-  front-lint:
+  front-lint-current:
     <<: *defaults
     docker:
-      - image: circleci/node:12.9.0-buster-browsers
+      - image: cimg/node:current-browsers
     <<: *lint_steps_front
 
   front-lint-lts:
     <<: *defaults
     docker:
-      - image: circleci/node:10.16.3-buster-browsers
+      - image: cimg/node:lts-browsers
     <<: *lint_steps_front
 
   front-test-lts:
     <<: *defaults
     docker:
-      - image: circleci/node:10.16.3-buster-browsers
+      - image: cimg/node:lts-browsers
     <<: *test_steps_front
 
-  front-build:
+  front-build-lts:
     <<: *defaults
     docker:
-      - image: circleci/node:10.16.3-buster-browsers
+      - image: cimg/node:lts-browsers
     <<: *build_front
 
-  front-sync:
+  front-build-current:
     <<: *defaults
     docker:
-      - image: circleci/node:10.16.3-buster-browsers
+      - image: cimg/node:current-browsers
+    <<: *build_front
+
+  front-sync-current:
+    <<: *defaults
+    docker:
+      - image: cimg/node:current-browsers
     <<: *sync_front
 
   build-develop-doc:
     <<: *defaults
     docker:
-      - image: circleci/python:3.7-buster-node
+      - image: cimg/python:3.7-node
         environment:
           BUILD_PATH: ../docs-build
     <<: *build_and_sync_doc
@@ -353,16 +359,19 @@ workflows:
       - front-test-lts:
           requires:
             - front-lint-lts
-      - front-lint:
+      - front-build-lts:
+          requires:
+            - front-test-lts
+      - front-lint-current:
           requires:
             - install
-      - front-build:
+      - front-build-current:
           requires:
-            - front-lint
-      - front-sync:
+            - front-lint-current
+      - front-sync-current:
           requires:
             - front-lint-lts
-            - front-build
+            - front-build-current
           filters:
             branches:
               only: master
