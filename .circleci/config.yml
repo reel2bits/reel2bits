@@ -286,12 +286,6 @@ jobs:
       - image: cimg/node:lts-browsers
     <<: *lint_steps_front
 
-  front-test-current:
-    <<: *defaults
-    docker:
-      - image: cimg/node:current-browsers
-    <<: *test_steps_front
-
   front-test-lts:
     <<: *defaults
     docker:
@@ -371,12 +365,9 @@ workflows:
       - front-lint-current:
           requires:
             - install
-      - front-test-current:
-          requires:
-            - front-lint-current
       - front-build-current:
           requires:
-            - front-test-current
+            - front-lint-current
       - front-sync-current:
           requires:
             - front-lint-lts
