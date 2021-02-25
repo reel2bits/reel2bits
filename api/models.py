@@ -19,7 +19,7 @@ from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy import text as sa_text
 from little_boxes import activitypub as ap
 from urllib.parse import urlparse
-from authlib.integrations.sqla_oauth2 import OAuth2ClientMixin, OAuth2AuthorizationCodeMixin, OAuth2TokenMixin
+from authlib_sqla import OAuth2ClientMixin, OAuth2AuthorizationCodeMixin, OAuth2TokenMixin
 import time
 import uuid
 from utils.defaults import Reel2bitsDefaults

@@ -41,23 +41,20 @@ def create_client():
         return response
 
     client = OAuth2Client()
+    client.client_name = req.get("client_name")
+    client.client_uri = req.get("website", None)
+    client.redirect_uri = req.get("redirect_uris")
+    client.scope = req.get("scopes")
     client.client_id = gen_salt(24)
-    metadatas = {
-        "client_name": req.get("client_name"),
-        "client_uri": req.get("website", None),
-        "redirect_uris": [req.get("redirect_uris")],  # TODO, should make a check or something
-        "scope": req.get("scopes"),
-        # this needs to be hardcoded for whatever reason
-        "response_type": "code",
-        "grant_types": ["authorization_code", "client_credentials", "password"],
-        "token_endpoint_auth_method": "client_secret_post",
-    }
     if client.token_endpoint_auth_method == "none":
         client.client_secret = ""
     else:
         client.client_secret = gen_salt(48)
 
-    client.set_client_metadata(metadatas)
+    # this needs to be hardcoded for whatever reason
+    client.response_type = "code"
+    client.grant_type = "authorization_code\r\nclient_credentials\r\npassword"
+    client.token_endpoint_auth_method = "client_secret_post"
 
     db.session.add(client)
     db.session.commit()
@@ -67,7 +64,7 @@ def create_client():
         "client_secret": client.client_secret,
         "id": client.id,
         "name": client.client_name,
-        "redirect_uris": client.redirect_uris[0] if len(client.redirect_uris) else "",
+        "redirect_uri": client.redirect_uri,
         "website": client.client_uri,
         "vapid_key": None,  # FIXME to implement this
     }
@@ -140,7 +137,7 @@ def oauth_token():
             d["redirect_uri"] = request.json["redirect_uri"]
 
         request.form = ImmutableMultiDict(d)
-    return authorization.create_token_response(request)
+    return authorization.create_token_response()
 
 
 @bp_api_v1_auth.route("/oauth/revoke", methods=["POST"])
