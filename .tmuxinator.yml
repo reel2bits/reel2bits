@@ -9,13 +9,15 @@ windows:
       - export AUTHLIB_INSECURE_TRANSPORT=1
       - export APP_SETTINGS='config.development_secret.Config'
       - cd api
+      - source ../venv/bin/activate
       - flask run
   - workers:
       - export FLASK_ENV=development
       - export AUTHLIB_INSECURE_TRANSPORT=1
       - export APP_SETTINGS='config.development_secret.Config'
       - cd api
-      - celery worker -A tasks.celery --loglevel=error
+      - source ../venv/bin/activate
+      - celery -A tasks.celery worker --loglevel=error
   - frontend:
       - cd front
       - yarn dev
