@@ -90,7 +90,7 @@ class Reel2BitsBackend(ap.Backend):
         # Parse the activity
         ap_activity = ap.parse_activity(activity.payload)
         if not ap_activity:
-            current_app.logger.error(f"cannot parse undo follower activity")
+            current_app.logger.error("cannot parse undo follower activity")
             return
 
         actor = ap_activity.get_actor()
@@ -159,7 +159,7 @@ class Reel2BitsBackend(ap.Backend):
 
         # FIXME TODO: check if it still works with unknown remote actor
         if not actor:
-            current_app.logger.debug(f"cannot find actor")
+            current_app.logger.debug("cannot find actor")
             actor = Actor.query.filter(Actor.url == ap_actor.id).first()
             if not actor:
                 current_app.logger.debug(f"actor {ap_actor.id} not found")
@@ -240,7 +240,7 @@ class Reel2BitsBackend(ap.Backend):
                 current_app.logger.debug(f"fetch_iri: local activity {activity!r}")
                 return activity.payload
 
-        current_app.logger.debug(f"fetch_iri: cannot find locally, fetching remote")
+        current_app.logger.debug("fetch_iri: cannot find locally, fetching remote")
         return super().fetch_iri(iri)
 
     def fetch_iri(self, iri: str) -> ap.ObjectType:

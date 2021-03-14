@@ -14,7 +14,7 @@ from commands.db_datas import make_db_seed  # noqa: E402
 from models import user_datastore  # noqa: E402
 
 
-@pytest.yield_fixture(scope="session")
+@pytest.fixture(scope="session")
 def app():
     app = create_app(config_filename="config.testing.Config")
     ctx = app.app_context()
@@ -25,7 +25,7 @@ def app():
     ctx.pop()
 
 
-@pytest.yield_fixture(scope="session")
+@pytest.fixture(scope="session")
 def db(app):
     _db.drop_all()
     _db.engine.connect().execute('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";')
@@ -43,7 +43,7 @@ def client(app):
     return app.test_client()
 
 
-@pytest.yield_fixture(scope="function")
+@pytest.fixture(scope="function")
 def session(db):
     connection = db.engine.connect()
     transaction = connection.begin()
@@ -68,7 +68,10 @@ def test_user_slugs(client, session):
         suffix = "".join(random.choices(string.ascii_letters + string.digits, k=20))
         username = f"test_slug_{count}_{suffix}"
         u = user_datastore.create_user(
-            name=username, email=f"test_slug_{count}@localhost", password=hash_password(f"slug_{count}"), roles=[role]
+            name=username,
+            email=f"test_slug_{count}@localhost",
+            password=hash_password(f"slug_{count}"),
+            roles=[role],
         )
         session.commit()
         assert u.id >= 0

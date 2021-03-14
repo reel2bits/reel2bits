@@ -1,4 +1,4 @@
-from authlib.flask.oauth2 import current_token
+from authlib.integrations.flask_oauth2 import current_token
 from flask_uploads import UploadSet, AUDIO
 from flask_wtf import FlaskForm as Form
 from flask_wtf.file import FileField, FileAllowed, FileRequired
@@ -7,7 +7,7 @@ from wtforms import widgets
 from wtforms.fields.core import StringField
 from wtforms.validators import DataRequired, ValidationError, Length
 from wtforms_alchemy import model_form_factory
-from flask_babelex import lazy_gettext
+from flask_babel import lazy_gettext
 from wtforms_alchemy.fields import QuerySelectField
 
 from models import db, Album

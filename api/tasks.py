@@ -466,7 +466,7 @@ def finish_inbox_processing(self, iri: str) -> None:
             elif obj.has_type(ap.ActivityType.FOLLOW):
                 backend.undo_new_follower(actor, obj)
     except (ActivityGoneError, ActivityNotFoundError, NotAnActivityError):
-        current_app.logger.exception(f"no retry")
+        current_app.logger.exception("no retry")
     except Exception as err:  # noqa: F841
         current_app.logger.exception(f"failed to cache attachments for" f" {iri}")
 
@@ -511,7 +511,7 @@ def finish_post_to_outbox(self, iri: str) -> None:
             current_app.logger.debug(f"posting to {recp}")
             post_to_remote_inbox.delay(payload, recp)
     except (ActivityGoneError, ActivityNotFoundError):
-        current_app.logger.exception(f"no retry")
+        current_app.logger.exception("no retry")
     except Exception as err:  # noqa: F841
         current_app.logger.exception(f"failed to post " f"to remote inbox for {iri}")
 

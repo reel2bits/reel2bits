@@ -1,7 +1,7 @@
 import pytz
 import requests
 from flask import Blueprint, render_template, request, redirect, url_for, flash, Response, jsonify, current_app
-from flask_babelex import gettext
+from flask_babel import gettext
 from flask_security import login_required, current_user
 
 from forms import UserProfileForm

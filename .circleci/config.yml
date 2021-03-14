@@ -25,7 +25,7 @@ aliases:
         command: |
           sudo apt-get update
           sudo apt-get install -y sox libtag1v5 libmagic1 libffi6 ffmpeg postgresql-client-11 rsync
-          sudo apt-get install -y cmake build-essential git wget make libboost-all-dev
+          sudo apt-get install -y cmake build-essential git wget make libboost-all-dev rustc
           sudo apt-get install -y libsox-dev libsox-fmt-all libtag1-dev libmagic-dev libffi-dev libgd-dev libmad0-dev libsndfile1-dev libid3tag0-dev libmediainfo-dev
 
   - &install_audiowaveform
@@ -41,9 +41,7 @@ aliases:
         - run: python -V | tee /tmp/.python-version
         - restore_cache:
             keys:
-              - v1-dependencies-{{ checksum "/tmp/.python-version" }}-{{ checksum "api/requirements.txt" }}
-              - v1-dependencies-{{ checksum "/tmp/.python-version" }}-
-              - v1-dependencies-
+              - v2-dependencies-{{ checksum "/tmp/.python-version" }}-{{ checksum "api/requirements.txt" }}
         - run: python3 -m venv venv
         - run:
             command: |
@@ -53,7 +51,7 @@ aliases:
               pip install flake8
               touch front/dist/index.html
         - save_cache:
-            key: v1-dependencies-{{ checksum "/tmp/.python-version" }}-{{ checksum "api/requirements.txt" }}
+            key: v2-dependencies-{{ checksum "/tmp/.python-version" }}-{{ checksum "api/requirements.txt" }}
             paths:
               - ./venv
         - *persist_to_workspace
@@ -225,7 +223,13 @@ jobs:
   install-python3.8:
     <<: *defaults
     docker:
-      - image: circleci/python:3.8-rc-buster-node
+      - image: circleci/python:3.8-buster-node
+    <<: *install_python_dependencies
+
+  install-python3.9:
+    <<: *defaults
+    docker:
+      - image: circleci/python:3.9-rc-buster-node
     <<: *install_python_dependencies
 
   test-python3.6:
@@ -251,7 +255,17 @@ jobs:
   test-python3.8:
     <<: *defaults
     docker:
-      - image: circleci/python:3.8-rc-buster-node
+      - image: circleci/python:3.8-buster-node
+      - image: circleci/postgres:11-alpine
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_DB: reel2bits_test
+    <<: *test_steps
+
+  test-python3.9:
+    <<: *defaults
+    docker:
+      - image: circleci/python:3.9-rc-buster-node
       - image: circleci/postgres:11-alpine
         environment:
           POSTGRES_USER: postgres
@@ -313,32 +327,38 @@ workflows:
       - install-python3.7:
           requires:
             - install
-            - install-python3.6
+      - install-python3.8:
+          requires:
+            - install
+      - install-python3.9:
+          requires:
+            - install
       - test-python3.6:
           requires:
             - install-python3.6
       - test-python3.7:
           requires:
             - install-python3.7
+      - test-python3.8:
+          requires:
+            - install-python3.8
+      - test-python3.9:
+          requires:
+            - install-python3.9
       - front-lint-lts:
           requires:
             - install
       - front-test-lts:
           requires:
-            - install
             - front-lint-lts
       - front-lint:
           requires:
             - install
-            - front-lint-lts
       - front-build:
           requires:
-            - install
-            - front-lint-lts
             - front-lint
       - front-sync:
           requires:
-            - install
             - front-lint-lts
             - front-build
           filters:

@@ -78,7 +78,7 @@ services:
     depends_on:
       - postgres
       - redis
-    command: celery worker -A tasks.celery -l error -B
+    command: celery -A tasks.celery worker -l error -B
     environment:
       - "SQLALCHEMY_DATABASE_URI=postgresql://postgres@postgres/postgres"
       - "CELERY_BROKER_URL=redis://redis:6379/0"

@@ -38,7 +38,7 @@ def full_url(path):
 
 def embed_collection(total_items, first_page_id):
     """Helper creating a root OrderedCollection
-     with a link to the first page."""
+    with a link to the first page."""
     return {
         "type": ap.ActivityType.ORDERED_COLLECTION.value,
         "totalItems": total_items,
@@ -78,7 +78,7 @@ def activity_from_doc(item: Dict[str, Any], embed: bool = False) -> Dict[str, An
 
 def clean_activity(activity: ObjectType) -> Dict[str, Any]:
     """Clean the activity before rendering it.
-     - Remove the hidden bco and bcc field
+    - Remove the hidden bco and bcc field
     """
     for field in ["bto", "bcc", "source"]:
         if field in activity:

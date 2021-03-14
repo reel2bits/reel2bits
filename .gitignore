@@ -34,3 +34,4 @@ front/locales/en_US/LC_MESSAGES/app.po
 .env
 /data
 /api/celerybeat-schedule
+/venv

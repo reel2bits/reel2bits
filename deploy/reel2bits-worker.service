@@ -18,7 +18,7 @@ Environment="APP_SETTINGS='config.production_secret.Config'"
 # of CPUs. You can adjust this, by explicitly setting the --concurrency
 # flag:
 #   celery -A tasks.celery worker -l INFO --concurrency=4
-ExecStart=/home/reel2bits/reel2bits/venv/bin/celery worker -A tasks.celery -l INFO
+ExecStart=/home/reel2bits/reel2bits/venv/bin/celery -A tasks.celery worker -l INFO
 TimeoutSec=15
 Restart=always
 

@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, request, abort
 from models import db, Sound, Activity, Album, User
 from app_oauth import require_oauth
 from datas_helpers import to_json_track, to_json_account, to_json_album, to_json_relationship
-from authlib.flask.oauth2 import current_token
+from authlib.integrations.flask_oauth2 import current_token
 
 
 bp_api_v1_timelines = Blueprint("bp_api_v1_timelines", __name__)
