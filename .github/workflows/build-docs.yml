@@ -20,12 +20,11 @@ jobs:
       with:
         python-version: 3.9
     - name: Install dependencies
-      run:
-        - apt install -y graphviz
-        - pip3 install sphinx-guillotina-theme sphinx
+      run: |
+        apt install -y graphviz
+        pip3 install sphinx-guillotina-theme sphinx
     - name: Build docs
-      run:
-        - ./build_docs.sh
+      run: ./build_docs.sh
       working-directory: docs
     - name: Deploy docs
       uses: burnett01/rsync-deployments@4.1
