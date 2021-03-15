@@ -22,7 +22,7 @@ jobs:
           python-version: 3.9
       - name: Install dependencies
         run: |
-          apt install -y graphviz
+          sudo apt install -y graphviz
           pip3 install sphinx-guillotina-theme sphinx
       - name: Build docs
         run: ./build_docs.sh
