@@ -85,13 +85,11 @@ jobs:
 
       - name: Install system dependencies
         run: |
+          sudo add-apt-repository -y ppa:chris-needham/ppa
           sudo apt update
           sudo apt install -y sox libtag1v5 libmagic1 libffi7 ffmpeg postgresql-client-12 rsync
           sudo apt install -y cmake build-essential git wget make libboost-all-dev rustc cargo
-          sudo apt install -y libsox-dev libsox-fmt-all libtag1-dev libmagic-dev libffi-dev libgd-dev libmad0-dev libsndfile1-dev libid3tag0-dev libmediainfo-dev
-
-      - name: Install Audiowaveform
-        run: ./api/tests/install_audiowaveform.sh
+          sudo apt install -y libsox-dev libsox-fmt-all libtag1-dev libmagic-dev libffi-dev libgd-dev libmad0-dev libsndfile1-dev libid3tag0-dev libmediainfo-dev audiowaveform
 
       - name: Install python dependencies
         run: |
