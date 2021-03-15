@@ -116,7 +116,7 @@ jobs:
         run: |
           psql -U postgres -h localhost -w -c 'CREATE DATABASE reel2bits'
           psql -U postgres -h localhost -w -c 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";' reel2bits
-         flask db upgrade
+          flask db upgrade
           flask db-datas 000-seeds
           flask db-datas 001-generate-tracks-uuids
           flask db-datas 002-set-local-users
