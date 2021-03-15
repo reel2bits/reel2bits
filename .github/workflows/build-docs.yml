@@ -1,0 +1,37 @@
+name: Build documentation
+
+on:
+  push:
+    branches:
+      - master
+
+env:
+  BUILD_PATH: ../docs-build
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+  
+  steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+    - name: Install dependencies
+      run:
+        - apt install -y graphviz
+        - pip3 install sphinx-guillotina-theme sphinx
+    - name: Build docs
+      run:
+        - ./build_docs.sh
+      working-directory: docs
+    - name: Deploy docs
+      uses: burnett01/rsync-deployments@4.1
+      with:
+        switches: -avc --delete
+        path: docs-build/
+        remote_path: /
+        remote_host: ${{ secrets.DOCS_DEPLOY_HOST }}
+        remote_user: ${{ secrets.DOCS_DEPLOY_USER }}
+        remote_key: ${{ secrets.   }}

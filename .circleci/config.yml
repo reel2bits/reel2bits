@@ -312,12 +312,7 @@ jobs:
 
 workflows:
   version: 2
-  build-docs:
-    jobs:
-      - build-develop-doc:
-          filters:
-            branches:
-              only: master
+
   build-and-test:
     jobs:
       - install
