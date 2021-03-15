@@ -20,7 +20,7 @@ The project relies on the following components and services to work:
 Software requirements
 ---------------------
 
-A mostly up-to date OS, with a Python >= 3.6, and a reverse proxy such as Nginx.
+A mostly up-to date OS, with a Python >= 3.6, rust >=1.41.0, and a reverse proxy such as Nginx.
 
 Available installation methods
 -------------------------------
