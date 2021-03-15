@@ -54,7 +54,7 @@ jobs:
     
     services:
       postgres:
-        image: postgres
+        image: postgres:12
         env:
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: reel2bits_test
@@ -86,8 +86,8 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt update
-          sudo apt install -y sox libtag1v5 libmagic1 libffi6 ffmpeg postgresql-client-11 rsync
-          sudo apt install -y cmake build-essential git wget make libboost-all-dev rustc
+          sudo apt install -y sox libtag1v5 libmagic1 libffi7 ffmpeg postgresql-client-12 rsync
+          sudo apt install -y cmake build-essential git wget make libboost-all-dev rustc cargo
           sudo apt install -y libsox-dev libsox-fmt-all libtag1-dev libmagic-dev libffi-dev libgd-dev libmad0-dev libsndfile1-dev libid3tag0-dev libmediainfo-dev
 
       - name: Install Audiowaveform
