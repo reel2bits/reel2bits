@@ -97,15 +97,27 @@ jobs:
         working-directory: front
         if: github.ref == 'refs/heads/master'
 
-      - name: Deploy front
+      - name: Deploy front (tag)
         uses: burnett01/rsync-deployments@4.1
         with:
           switches: -avc
-          path: front-dist-*.zip
+          path: front-dist-${{ github.event.release.tag_name }}.zip
           remote_path: /
           remote_host: ${{ secrets.ASSETS_DEPLOY_HOST }}
           remote_user: ${{ secrets.ASSETS_DEPLOY_USER }}
           remote_key: ${{ secrets.ASSETS_DEPLOY_KEY }}
+        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+      
+      - name: Deploy front (master)
+        uses: burnett01/rsync-deployments@4.1
+        with:
+          switches: -avc
+          path: front-dist-master.zip
+          remote_path: /
+          remote_host: ${{ secrets.ASSETS_DEPLOY_HOST }}
+          remote_user: ${{ secrets.ASSETS_DEPLOY_USER }}
+          remote_key: ${{ secrets.ASSETS_DEPLOY_KEY }}
+        if: github.ref == 'refs/heads/master'
 
   backend:
     name: Test build backend
