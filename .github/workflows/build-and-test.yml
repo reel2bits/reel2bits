@@ -56,9 +56,9 @@ jobs:
       postgres:
         image: postgres:12
         env:
-          POSTGRES_PASSWORD: postgres
           POSTGRES_DB: reel2bits_test
           POSTGRES_USER: postgres
+          POSTGRES_HOST_AUTH_METHOD: trust
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
