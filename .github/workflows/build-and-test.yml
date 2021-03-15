@@ -1,0 +1,126 @@
+name: Test builds
+
+on: push
+
+jobs:
+  frontend:
+    name: Test build frontend
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node: [12.x, 14.x, 15.x]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Uses Node.JS ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Cache Node.js modules
+        uses: actions/cache@v2
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: ~/.npm
+          key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-node-
+            ${{ runner.OS }}-
+
+      - name: Install dependencies
+        run: |
+          yarn install --frozen-lockfile
+          apt install -y firefox
+        working-directory: front
+
+      - name: Lint code
+        run: npm run lint
+        working-directory: front
+
+      # might need firefox...
+      - name: Test front
+        run: npm run unit
+        working-directory: front
+
+  backend:
+    name: Test build backend
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python: [3.6, 3.7, 3.8, 3.9]
+    
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: reel2bits_test
+          POSTGRES_USER: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Uses Python ${{ matrix.python }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Cache pip
+        uses: actions/cache@v2
+        with:
+          # This path is specific to Ubuntu
+          path: ~/.cache/pip
+          # Look to see if there is a cache hit for the corresponding requirements file
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+            ${{ runner.os }}-
+
+      - name: Install system dependencies
+        run: |
+          apt update
+          apt install -y sox libtag1v5 libmagic1 libffi6 ffmpeg postgresql-client-11 rsync
+          apt install -y cmake build-essential git wget make libboost-all-dev rustc
+          apt install -y libsox-dev libsox-fmt-all libtag1-dev libmagic-dev libffi-dev libgd-dev libmad0-dev libsndfile1-dev libid3tag0-dev libmediainfo-dev
+
+      - name: Install Audiowaveform
+        run: ./api/tests/install_audiowaveform.sh
+
+      - name: Install python dependencies
+        run: |
+          pip install --requirement api/requirements.txt
+          pip install black
+          pip install flake8
+          touch front/dist/index.html
+
+      - name: Lint code
+        run: |
+          black --check .
+          flake8 . --count --show-source --statistics
+        working-directory: api
+      
+      - name: Test backend
+        run: python setup.py test
+        working-directory: api
+        env:
+          AUTHLIB_INSECURE_TRANSPORT: 1
+          APP_SETTINGS: "config.testing.Config"
+
+      - name: Test full migrations
+        run: |
+          psql -U postgres -h localhost -w -c 'CREATE DATABASE reel2bits'
+          psql -U postgres -h localhost -w -c 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";' reel2bits
+         flask db upgrade
+          flask db-datas 000-seeds
+          flask db-datas 001-generate-tracks-uuids
+          flask db-datas 002-set-local-users
+          flask db-datas 003-set-user-quota
+          flask db-datas 004-update-file-sizes
+          flask db-datas 005-update-user-quotas
+        working-directory: api
