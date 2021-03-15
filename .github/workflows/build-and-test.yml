@@ -106,6 +106,7 @@ jobs:
           remote_host: ${{ secrets.ASSETS_DEPLOY_HOST }}
           remote_user: ${{ secrets.ASSETS_DEPLOY_USER }}
           remote_key: ${{ secrets.ASSETS_DEPLOY_KEY }}
+        working-directory: front
         if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
       
       - name: Deploy front (master)
@@ -117,6 +118,7 @@ jobs:
           remote_host: ${{ secrets.ASSETS_DEPLOY_HOST }}
           remote_user: ${{ secrets.ASSETS_DEPLOY_USER }}
           remote_key: ${{ secrets.ASSETS_DEPLOY_KEY }}
+        working-directory: front
         if: github.ref == 'refs/heads/master'
 
   backend:
