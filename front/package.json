@@ -33,7 +33,7 @@
     "localforage": "^1.7.3",
     "lodash": "^4.17.19",
     "lodash.merge": "^4.6.2",
-    "moment": "^2.24.0",
+    "moment": "^2.29.4",
     "object-path": "^0.11.5",
     "opn": "^6.0.0",
     "phoenix": "^1.4.11",
